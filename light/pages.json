@@ -1,0 +1,66 @@
+{
+	"pages": [
+		{
+		    "path" : "pages/index/index",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/switchPages/index",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "Grace",
+		        "navigationStyle" : "custom",
+				"mp-weixin": {
+				  "usingComponents": {
+					  "mp-badge":"/wxcomponents/weui/badge/badge",
+				      "mp-searchbar": "/wxcomponents/weui/searchbar/searchbar"
+				  }
+				}
+		    }
+		}
+        ,{
+            "path" : "pages/switchPages/about",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "Grace · 关于",
+				"navigationStyle" : "custom"
+            }
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "Grace",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#FFFFFF"
+	},
+	"tabBar": {
+		"color": "#B6C3D2",
+		"selectedColor": "#2B2E3D",
+		"borderStyle": "black",
+		"backgroundColor": "#F8F8F8",
+		"list": [
+			{
+				"pagePath": "pages/switchPages/index",
+				"iconPath": "static/menu_imgs/menu_1.png",
+				"selectedIconPath": "static/menu_imgs/menu_1a.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/switchPages/about",
+				"iconPath": "static/menu_imgs/menu_2.png",
+				"selectedIconPath": "static/menu_imgs/menu_2a.png",
+				"text": "关于"
+			}
+		]
+	},
+	"easycom": {
+		"autoscan" : true,
+		"custom": {
+			"gui-(.*)" : "@/Grace6/components/gui-$1.vue",
+			"^wd-(.*)": "wot-design-uni/components/wd-$1/wd-$1.vue"
+		}
+	}
+}

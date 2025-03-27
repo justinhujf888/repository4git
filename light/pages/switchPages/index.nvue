@@ -1,0 +1,41 @@
+<template>
+	<gui-page :customHeader="true">
+		<template v-slot:gHeader>
+			<!-- #ifdef MP -->
+			<view style="height:20px;"></view>
+			<!-- #endif -->
+		</template>
+		<!-- 请开始您的开发 ~ -->
+		<template v-slot:gBody>
+			<list>
+				<cell>
+					<view class="gui-padding">
+						<logo></logo>
+					</view>
+				</cell>
+				<cell>
+					<view class="gui-padding-x gui-margin-top">
+						<page-demo></page-demo>
+					</view>
+				</cell>
+				<cell>
+					<view style="height:30rpx;"></view>
+				</cell>
+			</list>
+		</template>
+	</gui-page>
+</template>
+<script>
+export default {
+	data() { 
+		return {
+			
+		}
+	},
+	methods: {
+		
+	}
+}
+</script>
+<style scoped>
+</style>
