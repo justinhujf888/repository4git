@@ -31,7 +31,7 @@ export const ConnectController = {
 	 * 读取特征值监听
 	 */
 	addCharacteristicValueChangeListen(callBackFunc) {
-		this._characteristicValueChangeFunc = callBackFunc;
+		this.common._characteristicValueChangeFunc = callBackFunc;
 	},
 	characteristicValueChangeListen(params) {
 		if (this.common._characteristicValueChangeFunc) {

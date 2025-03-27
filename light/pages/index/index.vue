@@ -182,13 +182,12 @@
 	   preDeviceList.value = [];
 	   Blue.callBle();
 	   
-	   ConnectController.addConnectStateListen(data=>{
+	   ConnectController.addConnectStateListen((data)=>{
 	   	console.log("data",data);
 	   	// this.state = data.label;
 	   	if(data.deviceId) {
 	   		Blue.setBleConnectDeviceID(data.deviceId);
-			Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");
-			
+			Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");			
 			if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 				let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
 				device.connected = true;
@@ -202,14 +201,14 @@
 	   	}
 	   });
 	   
-	    ConnectController.addDevicesListen(device=>{
+	    ConnectController.addDevicesListen((device)=>{
 			console.log("device",device);
 			device.connected = false;
 			preDeviceList.value.push(device);
 			viewStatus.value = 1;
 		});
 		
-		ConnectController.addCharacteristicValueChangeListen(characteristic=>{
+		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("characteristic_read",characteristic);
 		});
 	}

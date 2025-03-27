@@ -213,7 +213,6 @@ export const Blue = {
 			writeType: "write",
 			success:(res)=> {
 				console.log(res);
-				this.readBLEValue();
 			},
 			fail: (er)=> {
 				console.log(er);
@@ -249,28 +248,55 @@ export const Blue = {
 		
 	createBLEConnection(deviceId) {
 		if (bleConnectDeviceID == null) {
-			wx.createBLEConnection({
-				deviceId: deviceId,
-				success: (res)=> {
-					console.log("connedres",res);
-					this.connectState = 200
-		
-					ConnectController.connectStateListen({
-						...BLUE_STATE.CONNECTSUCCESS,
-						deviceId
-					})
-					this.onBLEConnectionStateChange();
-					this.onBLECharacteristicValueChange();
-					uni.stopBluetoothDevicesDiscovery();
-					uni.showToast({
-						icon: 'none',
-						title: '设备已连接'
+			
+			(async ()=>{
+				
+				await new Promise(resolve => {
+					uni.createBLEConnection({
+						deviceId: deviceId,
+						success: (res)=> {
+							console.log("connedres",res);
+							this.connectState = 200
+							
+							ConnectController.connectStateListen({
+								...BLUE_STATE.CONNECTSUCCESS,
+								deviceId
+							});
+							uni.stopBluetoothDevicesDiscovery();
+							uni.showToast({
+								icon: 'none',
+								title: '设备已连接'
+							});
+							resolve();
+						},
+						fail: ()=> {
+							ConnectController.connectStateListen(BLUE_STATE.CONNECTFAILED)
+						},
 					});
-				},
-				fail: ()=> {
-					ConnectController.connectStateListen(BLUE_STATE.CONNECTFAILED)
-				},
-			})
+				});
+				
+				await new Promise(resolve => {
+					this.onBLEConnectionStateChange();
+					setTimeout(()=>{
+						resolve();
+					}, 2000);
+				});
+				
+				await new Promise(resolve => {
+					this.onNotifyBLECharacteristicValueChange();
+					setTimeout(()=>{
+						resolve();
+					}, 2000);
+				});
+				
+				await new Promise(resolve => {
+					this.onBLECharacteristicValueChange();
+					setTimeout(()=>{
+						resolve();
+					}, 2000);
+				});
+				
+			})();
 		}
 	},
 		
@@ -282,6 +308,18 @@ export const Blue = {
 				this.closeBlue()
 			}
 		})
+	},
+	
+	onNotifyBLECharacteristicValueChange() {
+		uni.notifyBLECharacteristicValueChange({
+			state: true,
+			deviceId: bleConnectDeviceID,
+			serviceId: csValue.serviceId,
+			characteristicId: csValue.readId,
+				success(res) {
+				console.log('notifyBLECharacteristicValueChange success', res.errMsg);
+			}
+		});
 	},
 	
 	onBLECharacteristicValueChange() {
