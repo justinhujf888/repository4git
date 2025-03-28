@@ -1,7 +1,7 @@
 import App from './App'
 import 'uno.css';
 /* 全局挂载请求库 */
-import lodash from "lodash";
+// import lodash from "lodash";
 import GraceRequest from '@/Grace6/js/request.js'
 uni.gRequest = GraceRequest;
 
@@ -19,7 +19,8 @@ app.$mount()
 import { createSSRApp } from 'vue'
 export function createApp() {
   const app = createSSRApp(App);
-  app.config.globalProperties.lodash= lodash;
+  // app.config.globalProperties.lodash= lodash;
+
   return {
     app
   }

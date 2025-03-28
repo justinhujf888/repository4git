@@ -20,6 +20,9 @@ export const Blue = {
 	 */
 	connectState: -1,
 	
+	getBleConnectDeviceID() {
+		return bleConnectDeviceID;
+	},
 	setBleConnectDeviceID(deviceId) {
 		bleConnectDeviceID = deviceId;
 	},
@@ -49,18 +52,30 @@ export const Blue = {
 				console.error('打开蓝牙适配器失败：', res)
 				if (res.errCode === 10001) {
 					if(res.state === 3) {
-						ConnectController.connectStateListen(BLUE_STATE.NOBLUETOOTHPERMISSION)
+						ConnectController.connectStateListen({
+							...BLUE_STATE.NOBLUETOOTHPERMISSION,
+							...res
+						});
 					}else {
-						ConnectController.connectStateListen(BLUE_STATE.UNAVAILABLE)
+						ConnectController.connectStateListen({
+							...BLUE_STATE.UNAVAILABLE,
+							...res
+						});
 					}
 			
 				}
 				// Android 系统特有，系统版本低于 4.3 不支持 BLE
 				if(res.errCode === 10009) {
-					ConnectController.connectStateListen(BLUE_STATE.VERSIONLOW)
+					ConnectController.connectStateListen({
+						...BLUE_STATE.VERSIONLOW,
+						...res
+					})
 				}
 				if(res.errCode === 10008) {
-					ConnectController.connectStateListen(BLUE_STATE.SYSTEMERROR)
+					ConnectController.connectStateListen({
+						...BLUE_STATE.SYSTEMERROR,
+						...res
+					});
 				}
 			},
 			complete: ()=> {
@@ -151,7 +166,10 @@ export const Blue = {
 				const { locationAuthorized } = uni.getSystemInfoSync()
 				if(res.errCode === -1 && (res.errno === 1509008 || res.errno === 1509009) || !locationAuthorized) {
 					this.closeBlue()
-					ConnectController.connectStateListen(BLUE_STATE.NOLOCATIONPERMISSION)
+					ConnectController.connectStateListen({
+						...BLUE_STATE.NOLOCATIONPERMISSION,
+						...res
+					});
 				}
 			}
 		})
@@ -235,7 +253,9 @@ export const Blue = {
 	},
 		
 	onBluetoothDeviceFound() {
-		ConnectController.connectStateListen(BLUE_STATE.SCANING)
+		ConnectController.connectStateListen({
+			...BLUE_STATE.SCANING
+		});
 		
 		wx.onBluetoothDeviceFound((res)=> {
 			res.devices.forEach(device=> {
@@ -256,12 +276,7 @@ export const Blue = {
 						deviceId: deviceId,
 						success: (res)=> {
 							console.log("connedres",res);
-							this.connectState = 200
-							
-							ConnectController.connectStateListen({
-								...BLUE_STATE.CONNECTSUCCESS,
-								deviceId
-							});
+
 							uni.stopBluetoothDevicesDiscovery();
 							uni.showToast({
 								icon: 'none',
@@ -269,8 +284,11 @@ export const Blue = {
 							});
 							resolve();
 						},
-						fail: ()=> {
-							ConnectController.connectStateListen(BLUE_STATE.CONNECTFAILED)
+						fail: (er)=> {
+							ConnectController.connectStateListen({
+								...BLUE_STATE.CONNECTFAILED,
+								...er
+							});
 						},
 					});
 				});
@@ -303,9 +321,18 @@ export const Blue = {
 	onBLEConnectionStateChange() {
 		uni.onBLEConnectionStateChange(res=> {
 			if (!res.connected) {
-				ConnectController.connectStateListen(BLUE_STATE.DISCONNECT)
-				this.connectState = -1
-				this.closeBlue()
+				ConnectController.connectStateListen({
+					...BLUE_STATE.DISCONNECT,
+					...res
+				});
+				this.connectState = -1;
+				this.closeBlue();
+			} else {
+				ConnectController.connectStateListen({
+					...BLUE_STATE.CONNECTSUCCESS,
+					...res
+				});
+				this.connectState = 200;
 			}
 		})
 	},
@@ -324,10 +351,10 @@ export const Blue = {
 	
 	onBLECharacteristicValueChange() {
 		uni.onBLECharacteristicValueChange((characteristic) => {
-		  console.log('characteristic value comed:', characteristic);
+		  console.log('characteristic value comed:', characteristic.value);
 		  ConnectController.characteristicValueChangeListen({
 			  ...BLUE_STATE.READSUSSES,
-			  characteristic
+			  ...characteristic
 		  });
 		});
 	}

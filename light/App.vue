@@ -1,4 +1,5 @@
 <script>
+	import { setNotifyDefaultOptions } from '@/uni_modules/wot-design-uni';
 	export default {
 		onLaunch: function() {
 			// #ifdef APP-PLUS
@@ -15,6 +16,14 @@
 				console.log(e);
 			})
 			// #endif
+			setNotifyDefaultOptions({
+				safeHeight: 90,
+				onClick: (event) => console.log('onClick', event),
+				onClosed: () => console.log('onClosed'),
+				onOpened: () => console.log('onOpened')
+			})
+			// 隐藏原生tabBar
+			// uni.hideTabBar()
 		},
 		onShow: function(){},
 		onHide: function(){}

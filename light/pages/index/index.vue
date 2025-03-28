@@ -1,4 +1,5 @@
 <template>
+	<wd-notify safeHeight="60" position="top"></wd-notify>
 	<view class="relative h-screen px-4">
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
@@ -56,13 +57,19 @@
 </template>
 
 <script setup>
-	import { ref } from 'vue';
+	import { ref,getCurrentInstance } from 'vue';
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
 	import lodash from "lodash";
+	
 	import { Blue } from '@/api/bluebooth/index.js';
 	import { ConnectController } from '@/api/bluebooth/controller.js';
 	import {BLUE_STATE} from "@/api/bluebooth/blueState.js";
 	import hexToolsS from "@/api/hexTools.js";
+	
+	import { useNotify } from '@/uni_modules/wot-design-uni';
+	const { showNotify, closeNotify } = useNotify();
+	// const {lodash} = getCurrentInstance().appContext.config.globalProperties;
+	// const { proxy } = getCurrentInstance();
 	const viewStatus = ref(-1);
 	const deviceList = ref([]);
 	const preDeviceList = ref([]);
@@ -71,6 +78,7 @@
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
+		
 	});
 	
 	onUnload(()=>{
@@ -183,9 +191,10 @@
 	    Blue.callBle();
 	   
 		ConnectController.addConnectStateListen((data)=>{
-			console.log("data",data);
+			console.log("addConnectStateListen",data);
 			// this.state = data.label;
 			if(data.deviceId && data.connected) {
+				console.log("connected",data);
 				Blue.setBleConnectDeviceID(data.deviceId);
 				Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");			
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
@@ -197,20 +206,23 @@
 					device.connected = true;
 				}
 				viewStatus.value = 2;
-			} else if (data.deviceId && !data.connected) {
-				Blue.createBLEConnection(data.deviceId);
-			}
+			} 
+			// else if (data.deviceId && !data.connected) {
+			// 	Blue.createBLEConnection(data.deviceId);
+			// }
+			showNotify(data.label);
 		});
 	   
 	    ConnectController.addDevicesListen((device)=>{
-			console.log("device",device);
+			console.log("addDevicesListen",device);
 			device.connected = false;
 			preDeviceList.value.push(device);
 			viewStatus.value = 1;
 		});
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
-			console.log("characteristic_read",characteristic);
+			console.log("addCharacteristicValueChangeListen_",hexToolsS.arrayBuffer2hex(characteristic.value));
+			console.log("addCharacteristicValueChangeListen_ay",hexToolsS.arrayBuffer2hexArray(characteristic.value));
 		});
 	}
 	
