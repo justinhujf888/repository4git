@@ -210,7 +210,9 @@
 			// else if (data.deviceId && !data.connected) {
 			// 	Blue.createBLEConnection(data.deviceId);
 			// }
-			showNotify(data.label);
+			if (data.label) {
+				showNotify(data.label);
+			}
 		});
 	   
 	    ConnectController.addDevicesListen((device)=>{
