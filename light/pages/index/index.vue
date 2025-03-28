@@ -179,27 +179,28 @@
 		}
 		*/
 	   // console.log(Blue._discoveryStarted);
-	   preDeviceList.value = [];
-	   Blue.callBle();
+	    preDeviceList.value = [];
+	    Blue.callBle();
 	   
-	   ConnectController.addConnectStateListen((data)=>{
-	   	console.log("data",data);
-	   	// this.state = data.label;
-	   	if(data.deviceId) {
-	   		Blue.setBleConnectDeviceID(data.deviceId);
-			Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");			
-			if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
-				let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
-				device.connected = true;
-				deviceList.value.push(device);
-			} else {
-				
-				let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
-				device.connected = true;
+		ConnectController.addConnectStateListen((data)=>{
+			console.log("data",data);
+			// this.state = data.label;
+			if(data.deviceId && data.connected) {
+				Blue.setBleConnectDeviceID(data.deviceId);
+				Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");			
+				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
+					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
+					device.connected = true;
+					deviceList.value.push(device);
+				} else {
+					let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
+					device.connected = true;
+				}
+				viewStatus.value = 2;
+			} else if (data.deviceId && !data.connected) {
+				Blue.createBLEConnection(data.deviceId);
 			}
-			viewStatus.value = 2;
-	   	}
-	   });
+		});
 	   
 	    ConnectController.addDevicesListen((device)=>{
 			console.log("device",device);
