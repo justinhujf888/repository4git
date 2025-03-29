@@ -1,5 +1,5 @@
 <template>
-	<wd-notify safeHeight="60" position="top"></wd-notify>
+	<wd-notify></wd-notify>
 	<view class="relative h-screen px-4">
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
@@ -78,7 +78,6 @@
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
-		
 	});
 	
 	onUnload(()=>{
