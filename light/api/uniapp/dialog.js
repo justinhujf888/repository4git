@@ -1,5 +1,3 @@
-import Vue from 'vue';
-
 export default class Dialog {
 	static alert(msg) {
 		uni.showModal({
@@ -7,7 +5,7 @@ export default class Dialog {
 			content: msg,
 			showCancel: false
 		});
-	},
+	}
 	static alertBack(msg, hasCancel, okfun, cancelfun) {
 		uni.showModal({
 		    title: '提示',
@@ -21,7 +19,7 @@ export default class Dialog {
 		        }
 		    }
 		});
-	},
+	}
 	static confirm(msgtxt, okfun, cancelfun) {
 		uni.showModal({
 			title: '提示',
@@ -34,43 +32,43 @@ export default class Dialog {
 				}
 			}
 		});
-	},
+	}
 	static openLoading(msg) {
 		uni.showLoading({
 			title: msg
 		})
-	},
+	}
 	static closeLoading() {
 		uni.hideLoading();
-	},
+	}
 	static hideLoading() {
 		uni.hideLoading();
-	},
+	}
 	static openNotify(msg) {
 	
-	},
+	}
 	static toastSuccess(msg) {
 		uni.showToast({
 			title: msg,
 			icon: "success"
 		});
-	},
+	}
 	static toastError(msg) {
 	
-	},
+	}
 	static toastNone(msg) {
 		uni.showToast({
 			title: msg,
 			icon: "none"
 		});
-	},
+	}
 	static showApiErrorMsg() {
 		uni.showModal({
 			title: "系统错误",
 			content: "发生系统错误，请稍后再试！",
 			showCancel: false
 		});
-	},
+	}
 	static previewImage(imgLists,currentImg) {
 		uni.previewImage({
 		  urls: imgLists,

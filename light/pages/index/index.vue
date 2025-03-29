@@ -1,6 +1,6 @@
 <template>
 	<wd-notify></wd-notify>
-	<view class="relative h-screen px-4">
+	<view class="relative h-screen px-3">
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">VASEE 生态智能</text>
@@ -14,10 +14,10 @@
 				<text class="text-xl">✚</text>
 			</button>
 		</view>
-		<view class="">
-			<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button>
+		<view class="mx-2">
+			<!-- <wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button> -->
 			<view v-if="viewStatus == 0" class="hwcenter mt-8">
-				<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="callBle()">添加设备</wd-button>
+				<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="scan()" click="callBle()">添加设备</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
 				<view v-for="device in preDeviceList" :key="device.id" class="bg-white rounded-xl px-2 py-4 mt-4 row">
@@ -29,18 +29,18 @@
 							<text class="text-sm font-bold text-green-500 mr-1">·</text>
 							<text class="text-sm font-semibold">{{device.name}}</text>
 						</view>
-						<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device.deviceId)">添加</wd-button>
+						<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" click="addDevice(device.deviceId)" @click="scaned()">连接</wd-button>
 					</view>
 				</view>
 			</view>
-			<view v-else-if="viewStatus == 2">
-				<view v-for="device in deviceList" :key="device.id" class="bg-white rounded-xl px-2 py-5 mt-4">
+			<view v-else-if="viewStatus == 2" class="px-2">
+				<view class="bg-white rounded-xl px-2 py-5 mt-4" @tap="page.navigateTo('../device/setupList',{})">
 					<view class="mx-10 center">
 						<img src="../../static/device.png" mode="widthFix"></img>
 					</view>
 					<view class="between mx-5 mt-5">
-						<text class="text-sm font-semibold">{{device.name}}</text>
-						<view class="row" v-if="device.connected">
+						<text class="text-sm font-semibold">{{theDevice.name}}</text>
+						<view class="row" v-if="theDevice.connected">
 							<text class="text-sm font-bold mr-1">·</text>
 							<text class="text-sm font-semibold">已连接</text>
 						</view>
@@ -65,6 +65,7 @@
 	import { ConnectController } from '@/api/bluebooth/controller.js';
 	import {BLUE_STATE} from "@/api/bluebooth/blueState.js";
 	import hexToolsS from "@/api/hexTools.js";
+	import page from "@/api/uniapp/page.js";
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	const { showNotify, closeNotify } = useNotify();
@@ -73,6 +74,7 @@
 	const viewStatus = ref(-1);
 	const deviceList = ref([]);
 	const preDeviceList = ref([]);
+	const theDevice = ref({});
 		
 	onLoad((option)=>{
 		viewStatus.value = 0;
@@ -81,7 +83,7 @@
 	});
 	
 	onUnload(()=>{
-		closeDevice();
+		// closeDevice();
 	});
 	
 	function aaa() {
@@ -146,9 +148,7 @@
 		viewStatus.value = 1;
 	}
 	function scaned() {
-		deviceList.value = [];
-		deviceList.value.push({id:"IDC2533",name:"Justin Device",connected:true});
-		deviceList.value.push({id:"IDC2533",name:"Justin Device",connected:true});
+		theDevice.value = {id:"IDC2533",name:"Justin Device",connected:true};
 		viewStatus.value = 2;
 	}
 	
@@ -199,10 +199,12 @@
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
 					device.connected = true;
-					deviceList.value.push(device);
+					// deviceList.value.push(device);
+					theDevice.value = device;
 				} else {
 					let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
 					device.connected = true;
+					theDevice.value = device;
 				}
 				viewStatus.value = 2;
 			} 

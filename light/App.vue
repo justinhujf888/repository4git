@@ -29,11 +29,10 @@
 		onHide: function(){}
 	}
 </script>
-<!-- #ifdef MP-WEIXIN -->
 <style lang="scss">
 	// @import "@/wxcomponents/weui/index.wxss";
+	@import '@/static/icons/iconfont.css';
 </style>
-<!-- #endif -->
 <!-- #ifndef APP-NVUE -->
 <style lang="scss">
 /* 加载框架核心样式 */

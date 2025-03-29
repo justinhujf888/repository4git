@@ -8,6 +8,20 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/setup",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/device/setupList",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
 		    "path" : "pages/switchPages/index",
 		    "style" :                                                                                    
 		    {
