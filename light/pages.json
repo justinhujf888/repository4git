@@ -20,29 +20,7 @@
 		    {
 		        "navigationStyle" : "custom"
 		    }
-		},
-		{
-		    "path" : "pages/switchPages/index",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "Grace",
-		        "navigationStyle" : "custom",
-				"mp-weixin": {
-				  "usingComponents": {
-					  "mp-badge":"/wxcomponents/weui/badge/badge",
-				      "mp-searchbar": "/wxcomponents/weui/searchbar/searchbar"
-				  }
-				}
-		    }
 		}
-        ,{
-            "path" : "pages/switchPages/about",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "Grace · 关于",
-				"navigationStyle" : "custom"
-            }
-        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -57,13 +35,13 @@
 		"backgroundColor": "#F8F8F8",
 		"list": [
 			{
-				"pagePath": "pages/switchPages/index",
+				"pagePath": "pages/index/index",
 				"iconPath": "static/menu_imgs/menu_1.png",
 				"selectedIconPath": "static/menu_imgs/menu_1a.png",
 				"text": "首页"
 			},
 			{
-				"pagePath": "pages/switchPages/about",
+				"pagePath": "pages/device/setup",
 				"iconPath": "static/menu_imgs/menu_2.png",
 				"selectedIconPath": "static/menu_imgs/menu_2a.png",
 				"text": "关于"
