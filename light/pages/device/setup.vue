@@ -40,7 +40,7 @@
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
 							<view class="row mt-5">
 								<view class="flex-1">
-									<sliderc :barWidth="30" :barHeight="30" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="" @change=""></sliderc>
+									<sliderc :ref="sds" :id="item.id" :barWidth="30" :barHeight="30" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="sdsChanging" @change=""></sliderc>
 								</view>
 								<view class="row w-14 justify-end items-end text-gray-400 -mt-2">
 									<text>{{item.value}}</text>
@@ -72,42 +72,67 @@
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
 	import lodash from "lodash";
 	
+	const {proxy} = getCurrentInstance();
 	const pgElmList = ref([]);
-	
+	const sdsArray = ref([]);
+	const sds = (el) => {
+		sdsArray.value.push(el);
+	}
 	
 	onLoad((option)=>{
 		pgElmList.value = [
 			{id:0,name:"light",els:[
-				{id:"0",ly:0,type:"slider",name:"全光谱",value:80,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
-				{id:"1",ly:0,type:"slider",name:"UVA",value:10,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"2",ly:0,type:"slider",name:"UVB",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"0x04",ly:0,type:"slider",name:"全光谱",value:80,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
+				{id:"0x07",ly:0,type:"slider",name:"UVA",value:10,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"0x06",ly:0,type:"slider",name:"UVB",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"3",ly:0,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:50,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
-				{id:"0",ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:80,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"0x08",ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:80,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"00",ly:1,type:"switch",name:"定时循环",value:false,style:{}},
-				{id:"01",ly:1,type:"textGroup",info:[
+				{id:"0x0B",ly:1,type:"textGroup",info:[
 					{id:0,prx:"运转时长",value:"---",afe:""},
 					{id:1,prx:"停歇时长",value:"---",afe:""}
 				]},
-				{id:"1",ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"0x09",ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"10",ly:1,type:"switch",name:"定时循环",value:true,style:{}},
-				{id:"11",ly:1,type:"textGroup",info:[
+				{id:"0x0c",ly:1,type:"textGroup",info:[
 					{id:0,prx:"运转时长",value:"10",afe:"分钟"},
 					{id:1,prx:"停歇时长",value:"2",afe:"分钟"}
 				]}
 			]},
 			{id:2,name:"cw",els:[
 				{id:"0",ly:0,type:"switch",name:"开灯除雾",value:true,style:{}},
-				{id:"00",ly:1,type:"textGroup",info:[
+				{id:"0x0D",ly:1,type:"textGroup",info:[
 					{id:0,prx:"除雾时长",value:"30",afe:"秒"},
 				]},
-				{id:"1",ly:0,type:"switch",name:"月光模式",value:true,style:{}},
-				{id:"10",ly:1,type:"slider",name:"亮度",value:30,style:{barClass:['border-fuchsia-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-fuchsia-300','border-4','border-solid'],bglineAClass:['bg-fuchsia-500','border-fuchsia-500','border-4','border-solid']}}
+				{id:"0x0E",ly:0,type:"switch",name:"月光模式",value:true,style:{}},
+				{id:"0x05",ly:1,type:"slider",name:"亮度",value:30,style:{barClass:['border-fuchsia-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-fuchsia-300','border-4','border-solid'],bglineAClass:['bg-fuchsia-500','border-fuchsia-500','border-4','border-solid']}}
 			]}
 		];
-		// console.log(pgElmList.value);
+		console.log(sdsArray.value);
 	});
+	
+	function sdsChanging(value) {
+		// console.log(sds.value);
+		for(let g of pgElmList.value) {
+			for(let v of g.els) {
+				if (v.id==value.id) {
+					v.value = value.v;
+					break;
+				}
+			}
+		}
+	// lodash.forEach(pgElmList.value,(g,j)=>{
+		// 	lodash.forEach(g.els,(v,i)=>{
+		// 		console.log(v.id,value.id);
+		// 		if (v.id==value.id) {
+		// 			v.value = value.v;
+		// 			return;
+		// 		}
+		// 	});
+		// });
+	}
 </script>
 
 <style>
