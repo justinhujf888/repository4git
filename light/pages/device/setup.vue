@@ -18,8 +18,8 @@
 					<text class="text-base">日光</text>
 				</view>
 				<view class="col justify-center items-center flex-1 mt-2">
-					<view class="row justify-center items-center">
-						<text>开灯9:00  关灯17:30</text>
+					<view class="row justify-center items-center" @tap="page.navigateTo('./kgtime',{times:{onTime:times.onTime,offTime:times.offTime}})">
+						<text>开灯{{times.onTime}}  关灯{{times.offTime}}</text>
 						<text class="gui-icons ml-2">&#xe69e;</text>
 					</view>
 					<view class="row justify-center items-center mt-2">
@@ -73,6 +73,8 @@
 	import lodash from "lodash";
 	
 	const {proxy} = getCurrentInstance();
+	
+	const times = ref({onTime:"9:00",offTime:"17:30"});
 	const pgElmList = ref([]);
 	const sdsArray = ref([]);
 	const sds = (el) => {
@@ -82,39 +84,39 @@
 	onLoad((option)=>{
 		pgElmList.value = [
 			{id:0,name:"light",els:[
-				{id:"0x04",ly:0,type:"slider",name:"全光谱",value:80,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
-				{id:"0x07",ly:0,type:"slider",name:"UVA",value:10,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"0x06",ly:0,type:"slider",name:"UVB",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"3",ly:0,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:50,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
+				{id:"01",cmd:"0x04",ly:0,type:"slider",name:"全光谱",value:80,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
+				{id:"02",cmd:"0x07",ly:0,type:"slider",name:"UVA",value:10,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"03",cmd:"0x06",ly:0,type:"slider",name:"UVB",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"04",cmd:"3",ly:0,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:50,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
-				{id:"0x08",ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:80,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"00",ly:1,type:"switch",name:"定时循环",value:false,style:{}},
-				{id:"0x0B",ly:1,type:"textGroup",info:[
+				{id:"10",cmd:"0x08",ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:80,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"11",cmd:"00",ly:1,type:"switch",name:"定时循环",value:false,style:{}},
+				{id:"12",cmd:"0x0B",ly:1,type:"textGroup",info:[
 					{id:0,prx:"运转时长",value:"---",afe:""},
 					{id:1,prx:"停歇时长",value:"---",afe:""}
 				]},
-				{id:"0x09",ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"10",ly:1,type:"switch",name:"定时循环",value:true,style:{}},
-				{id:"0x0c",ly:1,type:"textGroup",info:[
+				{id:"13",cmd:"0x09",ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:30,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"14",cmd:"10",ly:1,type:"switch",name:"定时循环",value:true,style:{}},
+				{id:"15",cmd:"0x0c",ly:1,type:"textGroup",info:[
 					{id:0,prx:"运转时长",value:"10",afe:"分钟"},
 					{id:1,prx:"停歇时长",value:"2",afe:"分钟"}
 				]}
 			]},
 			{id:2,name:"cw",els:[
-				{id:"0",ly:0,type:"switch",name:"开灯除雾",value:true,style:{}},
-				{id:"0x0D",ly:1,type:"textGroup",info:[
+				{id:"20",cmd:"0",ly:0,type:"switch",name:"开灯除雾",value:true,style:{}},
+				{id:"21",cmd:"0x0D",ly:1,type:"textGroup",info:[
 					{id:0,prx:"除雾时长",value:"30",afe:"秒"},
 				]},
-				{id:"0x0E",ly:0,type:"switch",name:"月光模式",value:true,style:{}},
-				{id:"0x05",ly:1,type:"slider",name:"亮度",value:30,style:{barClass:['border-fuchsia-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-fuchsia-300','border-4','border-solid'],bglineAClass:['bg-fuchsia-500','border-fuchsia-500','border-4','border-solid']}}
+				{id:"22",cmd:"20",ly:0,type:"switch",name:"月光模式",value:true,style:{}},
+				{id:"23",cmd:"21",ly:1,type:"slider",name:"亮度",value:30,style:{barClass:['border-fuchsia-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-fuchsia-300','border-4','border-solid'],bglineAClass:['bg-fuchsia-500','border-fuchsia-500','border-4','border-solid']}}
 			]}
 		];
 		console.log(sdsArray.value);
 	});
 	
 	function sdsChanging(value) {
-		// console.log(sds.value);
+		// console.log(value);
 		for(let g of pgElmList.value) {
 			for(let v of g.els) {
 				if (v.id==value.id) {
@@ -132,9 +134,57 @@
 		// 		}
 		// 	});
 		// });
-	}
+	};
+	
+	const setTimes = (v) => {
+		times.value = v;
+	};
+	
+	defineExpose({
+		setTimes
+	});
 </script>
 
 <style>
+.kaiguan1 {
+	position: absolute;  
+	width: 8px;  
+	height: 34px;  
+	opacity: 1;  
+	display: flex;  
+	flex-direction: undefined;  
+	justify-content: undefined;  
+	align-items: undefined;  
+	padding: NaNpx;  
+	background: #FFFFFF;  
+}
 
+.kaiguan2 {
+	position: absolute;  
+	width: 99px;  
+	height: 99px;  
+	opacity: 1;  
+	display: flex;  
+	flex-direction: undefined;  
+	justify-content: undefined;  
+	align-items: undefined;  
+	padding: NaNpx;  
+	background: #6AAE36;  
+}
+
+.kaiguan3 {
+	position: absolute;  
+	width: 63px;  
+	height: 63px;  
+	transform: rotate(45deg);  
+	opacity: 1;  
+	display: flex;  
+	flex-direction: undefined;  
+	justify-content: undefined;  
+	align-items: undefined;  
+	padding: NaNpx;  
+	box-sizing: border-box;  
+	border: 6px solid #FFFFFF;
+}
+	
 </style>

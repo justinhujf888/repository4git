@@ -15,6 +15,13 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/kgtime",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
 		    "path" : "pages/device/setupList",
 		    "style" :                                                                                    
 		    {
