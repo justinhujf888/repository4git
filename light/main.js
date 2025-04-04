@@ -2,8 +2,10 @@ import App from './App'
 import 'uno.css';
 /* 全局挂载请求库 */
 // import lodash from "lodash";
+import dayjs from "dayjs";
 import GraceRequest from '@/Grace6/js/request.js'
 uni.gRequest = GraceRequest;
+uni.dayjs = dayjs;
 const prePage = ()=>{
 	let pages = getCurrentPages();
 	// let currPage = pages[pages.length - 1]; //当前页面
@@ -30,8 +32,8 @@ import { createSSRApp } from 'vue'
 export function createApp() {
   const app = createSSRApp(App);
   // app.config.globalProperties.lodash= lodash;
-  app.config.globalProperties.prePage = prePage;
-
+  app.config.globalProperties.$prePage = prePage;
+  app.config.globalProperties.$dayjs = dayjs;
   return {
     app
   }

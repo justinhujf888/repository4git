@@ -64,7 +64,7 @@
 	import { Blue } from '@/api/bluebooth/index.js';
 	import { ConnectController } from '@/api/bluebooth/controller.js';
 	import {BLUE_STATE} from "@/api/bluebooth/blueState.js";
-	import hexToolsS from "@/api/hexTools.js";
+	import hexTools from "@/api/hexTools.js";
 	import page from "@/api/uniapp/page.js";
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
@@ -114,26 +114,26 @@
 	function test() {
 		// let b = stringToHex("Hello");
 		// let a = hexCharCodeToStr("48656c6c6f");
-		// console.log(hexToolsS.hex2ByteString(b),a,b);
+		// console.log(hexTools.hex2ByteString(b),a,b);
 		let a = parseInt("0x01",16);
 		let b = parseInt("0x0B",16);
 		let c = parseInt("0x1E",16);
 		let d = parseInt("0xFF",16);
 		let w = parseInt("0x14F",16);
-		let e = hexToolsS.num2HexArray(11);
+		let e = hexTools.num2HexArray(11);
 		let sum = a + b + c;
-		let x = hexToolsS.num2Hex(sum ^ d);
+		let x = hexTools.num2Hex(sum ^ d);
 		let h = parseInt(b,16);
-		let j = "0x"+hexToolsS.num2Hex(11).toUpperCase();
+		let j = "0x"+hexTools.num2Hex(11).toUpperCase();
 		let nn = 26;
 		let n = nn.toString(16);
 		
 		let ay1 = new Uint8Array([0x14F]);
 		let ay2 = new Uint8Array(["0x4F"]);
 		
-		let ay = hexToolsS.bleBuffer(0x01,11,30);
+		let ay = hexTools.bleBuffer(0x01,11,30);
 		
-		console.log(ay,hexToolsS.arrayBuffer2hexArray(ay));
+		console.log(ay,hexTools.arrayBuffer2hexArray(ay));
 		
 		const hexStrings = ["68", "06", "AA", "01", "05", "A0", "0F", "00", "16"];
 		const intArray = hexStrings.map(str => "0x"+str);
@@ -224,8 +224,8 @@
 		});
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
-			console.log("addCharacteristicValueChangeListen_",hexToolsS.arrayBuffer2hex(characteristic.value));
-			console.log("addCharacteristicValueChangeListen_ay",hexToolsS.arrayBuffer2hexArray(characteristic.value));
+			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
+			console.log("addCharacteristicValueChangeListen_ay",hexTools.arrayBuffer2hexArray(characteristic.value));
 		});
 	}
 	
@@ -245,7 +245,7 @@
 		if (i>4) i=0;
 		f = f==0 ? 1 : 0;
 		ff = ff==30 ? 80 : 30;
-		Blue.writeBLEValue(hexToolsS.bleBuffer(cd[i].cmd,cd[i].d1,cd[i].d2).buffer);
+		Blue.writeBLEValue(hexTools.bleBuffer(cd[i].cmd,cd[i].d1,cd[i].d2).buffer);
 		i++;
 	}
 </script>
