@@ -1,16 +1,16 @@
 <template>
 	<view 
-	class="gui-sg-slider" 
+	class="my-sg-slider" 
 	@touchstart="touchstart" 
 	@touchmove.stop.prevent="touchmove" 
 	@touchend="touchend" 
-	ref="gracesgslider" 
-	id="gracesgslider" 
+	ref="myslider" 
+	id="myslider" 
 	:style="{
 		height:barHeight+borderHeight+'rpx'
 	}">
 		<view 
-		class="gui-sg-slider-line ml-2" 
+		class="my-sg-slider-line ml-2" 
 		:class="bglineClass" 
 		:style="{
 			opacity:0.6,
@@ -19,7 +19,7 @@
 			borderRadius:borderRadius
 		}"></view>
 		<view 
-		class="gui-sg-slider-a-line" 
+		class="my-sg-slider-a-line" 
 		:class="bglineAClass" 
 		:style="{
 			width:(left+2)+'px',
@@ -27,7 +27,7 @@
 			height:bglineSize+'rpx', 
 			borderRadius:borderRadius}"></view>
 		<text 
-		class="gui-sg-slider-bar ggui-block" 
+		class="my-sg-slider-bar" 
 		:class="barClass" 
 		:style="{
 			width:barWidth+'rpx', 
@@ -79,7 +79,7 @@ export default{
 	methods:{
 		init : function(){
 			// #ifdef APP-NVUE
-			var el = this.$refs.gracesgslider;
+			var el = this.$refs.myslider;
 			dom.getComponentRect(el, (res) => {
 				if(!res.result || res.size.width < 5){
 					setTimeout(()=>{this.init();}, 100);
@@ -91,7 +91,7 @@ export default{
 			});
 			// #endif
 			// #ifndef APP-NVUE
-			uni.createSelectorQuery().in(this).select('#gracesgslider').fields(
+			uni.createSelectorQuery().in(this).select('#myslider').fields(
 				{size: true, rect:true}, (res) => {
 					if(res == null){
 						setTimeout(()=>{this.init();}, 100);
@@ -153,7 +153,7 @@ export default{
 }
 </script>
 <style scoped>
-.gui-sg-slider{overflow:hidden; position:relative;}
-.gui-sg-slider-a-line{position:absolute; left:0; top:0;}
-.gui-sg-slider-bar{position:absolute; left:0; top:0; font-size:20rpx; text-align:center; color:#323232; overflow:hidden;}
+.my-sg-slider{overflow:hidden; position:relative;}
+.my-sg-slider-a-line{position:absolute; left:0; top:0;}
+.my-sg-slider-bar{position:absolute; left:0; top:0; font-size:20rpx; text-align:center; color:#323232; overflow:hidden;}
 </style>
