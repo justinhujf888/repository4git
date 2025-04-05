@@ -43,15 +43,15 @@
 		"list": [
 			{
 				"pagePath": "pages/index/index",
-				"iconPath": "static/menu_imgs/menu_1.png",
-				"selectedIconPath": "static/menu_imgs/menu_1a.png",
-				"text": "首页"
+				// "iconPath": "static/menu_imgs/menu_1.png",
+				// "selectedIconPath": "static/menu_imgs/menu_1a.png",
+				"text": ""
 			},
 			{
-				"pagePath": "pages/device/setup",
-				"iconPath": "static/menu_imgs/menu_2.png",
-				"selectedIconPath": "static/menu_imgs/menu_2a.png",
-				"text": "关于"
+				"pagePath": "pages/device/setupList",
+				// "iconPath": "static/menu_imgs/menu_2.png",
+				// "selectedIconPath": "static/menu_imgs/menu_2a.png",
+				"text": ""
 			}
 		]
 	},

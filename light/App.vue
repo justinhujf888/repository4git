@@ -23,7 +23,7 @@
 				onOpened: () => console.log('onOpened')
 			})
 			// 隐藏原生tabBar
-			// uni.hideTabBar()
+			uni.hideTabBar()
 		},
 		onShow: function(){},
 		onHide: function(){}

@@ -17,7 +17,7 @@
 		<view class="mx-2">
 			<!-- <wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button> -->
 			<view v-if="viewStatus == 0" class="hwcenter mt-8">
-				<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="scan()" click="callBle()">添加设备</wd-button>
+				<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">添加设备</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
 				<view v-for="device in preDeviceList" :key="device.id" class="bg-white rounded-xl px-2 py-4 mt-4 row">
@@ -29,12 +29,12 @@
 							<text class="text-sm font-bold text-green-500 mr-1">·</text>
 							<text class="text-sm font-semibold">{{device.name}}</text>
 						</view>
-						<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" click="addDevice(device.deviceId)" @click="scaned()">连接</wd-button>
+						<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device.deviceId)" click="scaned()">连接</wd-button>
 					</view>
 				</view>
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
-				<view class="bg-white rounded-xl px-2 py-5 mt-4" @tap="page.navigateTo('../device/setupList',{})">
+				<view class="bg-white rounded-xl px-2 py-5 mt-4" @tap="page.navigateTo('../device/setup',{})">
 					<view class="mx-10 center">
 						<img src="../../static/device.png" mode="widthFix"></img>
 					</view>
@@ -54,6 +54,7 @@
 			</button>
 		</view>
 	</view>
+	<tabbar></tabbar>
 </template>
 
 <script setup>
@@ -66,6 +67,9 @@
 	import {BLUE_STATE} from "@/api/bluebooth/blueState.js";
 	import hexTools from "@/api/hexTools.js";
 	import page from "@/api/uniapp/page.js";
+	import dialog from "@/api/uniapp/dialog.js";
+	
+	import cmdjson from "@/api/datas/cmd.json";
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	const { showNotify, closeNotify } = useNotify();
@@ -80,6 +84,7 @@
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
+		// console.log(cmdjson);
 	});
 	
 	onUnload(()=>{
@@ -226,6 +231,13 @@
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
 			console.log("addCharacteristicValueChangeListen_ay",hexTools.arrayBuffer2hexArray(characteristic.value));
+			let array = hexTools.arrayBuffer2hexArray(characteristic.value);
+			if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
+				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command=="0x"+array[1].toUpperCase()});
+				if (cmd) {
+					dialog.toastNone(cmd.description+":成功设置");
+				}
+			}
 		});
 	}
 	
