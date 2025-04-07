@@ -59,6 +59,8 @@ export default{
 		borderHeight    : {type:Number,  default:0},
 		borderWidth     : {type:Number,  default:0},
 		num     : {type:Number,  default:0},
+		min     : {type:Number,  default:0},
+		max     : {type:Number,  default:100},
 		id : {type:String,  default:''},
 		onChanging: {}
 	},
@@ -123,19 +125,19 @@ export default{
 		changeBar : function(x,e){
 			var left = x - this.startLeft;
 			let v = left;
-			if(left <= 0){
-				this.left = 0;
-				v = 0;
+			if(left <= this.min){
+				this.left = this.min;
+				v = this.min;
 				this.$emit('changing', {v:v,id:this.id});
 			}else if(left + this.barWidthPX > this.width){
 				left = this.width - this.barWidthPX-this.borderWidth;
 				this.left = left;
-				v = 100;
+				v = this.max;
 				this.$emit('changing', {v:v,id:this.id});
 			}else{
 				this.left = left;
 				var scale = this.left / (this.width - this.barWidthPX);
-				v = Math.round(scale * 100);
+				v = Math.round(scale * this.max);
 				this.$emit('changing', {v:v,id:this.id});
 				if (e) {
 					this.$emit('change', {v:v,id:this.id});
@@ -144,9 +146,9 @@ export default{
 		},
 		setProgress : function (value){
 			if(this.width < 1){ setTimeout(()=>{this.setProgress(value), 300}); return ;}
-			if(value < 0){value = 0;}
-			if(value > 100){value = 100;}
-			this.left = ( value / 100 ) * (this.width - this.barWidthPX);
+			if(value < this.min){value = this.min;}
+			if(value > this.max){value = this.max;}
+			this.left = ( value / this.max ) * (this.width - this.barWidthPX);
 		}
 	},
 	emits:['change']

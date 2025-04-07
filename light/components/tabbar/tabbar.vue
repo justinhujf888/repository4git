@@ -26,7 +26,7 @@
 				page.reLaunch("/pages/index/index",{});
 				break;
 			case 1:
-				page.reLaunch("/pages/device/setup",{});
+				page.reLaunch("/pages/user/index",{});
 				break;
 			default:
 				break;

@@ -84,7 +84,6 @@
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
-		// console.log(cmdjson);
 	});
 	
 	onUnload(()=>{
@@ -162,6 +161,7 @@
 	}
 	
 	function addDevice(deviceId) {
+		dialog.openLoading("正在连接设备……");
 		Blue.createBLEConnection(deviceId);
 	}
 
@@ -199,6 +199,7 @@
 			// this.state = data.label;
 			if(data.deviceId && data.connected) {
 				console.log("connected",data);
+				dialog.closeLoading();
 				Blue.setBleConnectDeviceID(data.deviceId);
 				Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");			
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
@@ -227,18 +228,6 @@
 			preDeviceList.value.push(device);
 			viewStatus.value = 1;
 		});
-		
-		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
-			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
-			console.log("addCharacteristicValueChangeListen_ay",hexTools.arrayBuffer2hexArray(characteristic.value));
-			let array = hexTools.arrayBuffer2hexArray(characteristic.value);
-			if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
-				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command=="0x"+array[1].toUpperCase()});
-				if (cmd) {
-					dialog.toastNone(cmd.description+":成功设置");
-				}
-			}
-		});
 	}
 	
 	let f = 0;
@@ -260,6 +249,10 @@
 		Blue.writeBLEValue(hexTools.bleBuffer(cd[i].cmd,cd[i].d1,cd[i].d2).buffer);
 		i++;
 	}
+	
+	defineExpose({
+		
+	});
 </script>
 
 <style lang="scss">

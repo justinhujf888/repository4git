@@ -125,7 +125,25 @@
         { "name": "模式", "options": { "0": "关灯模式（夜晚）", "1": "开灯模式（白天）" } }
       ],
       "success_response": "0xA6 0x0E 0xFE 0x00 0xF3"
-    }
+    },
+	{
+	  "command": "0x0F",
+	  "description": "月光模式时月光灯的亮度",
+	  "parameters": [
+	    { "name": "未使用", "fixed_value": "0x00" },
+	    { "name": "模式", "min": 0, "max": 100}
+	  ],
+	  "success_response": "0xA6 0x0F 0xFE 0x00 0xF3"
+	},
+	{
+	  "command": "0x10",
+	  "description": "开关灯渐变时长（设置开关节点上的自然光模式）",
+	  "parameters": [
+	    { "name": "未使用", "fixed_value": "0x00" },
+	    { "name": "除雾分钟数", "min": 0, "max": 120 }
+	  ],
+	  "success_response": "0xA6 0x0D 0xFE 0x00 0xF4"
+	}
   ],
   "query_commands": [
     {

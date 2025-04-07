@@ -14,7 +14,7 @@ export default class Dialog {
 		    success: function (res) {
 		        if (res.confirm) {
 		            okfun();
-		        } else if (res.cancel) {
+		        } else if (res.cancel && hasCancel) {
 		            cancelfun();
 		        }
 		    }

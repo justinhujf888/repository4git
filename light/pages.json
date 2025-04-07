@@ -27,6 +27,13 @@
 		    {
 		        "navigationStyle" : "custom"
 		    }
+		},
+		{
+		    "path" : "pages/user/index",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
 		}
     ],
 	"globalStyle": {
@@ -48,7 +55,7 @@
 				"text": ""
 			},
 			{
-				"pagePath": "pages/device/setupList",
+				"pagePath": "pages/user/index",
 				// "iconPath": "static/menu_imgs/menu_2.png",
 				// "selectedIconPath": "static/menu_imgs/menu_2a.png",
 				"text": ""
