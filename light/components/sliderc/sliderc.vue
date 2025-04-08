@@ -120,7 +120,7 @@ export default{
 		touchend : function (e) {
 			if(!this.canSlide){return ;}
 			var touch = e.touches[0] || e.changedTouches[0];
-			this.changeBar(touch.pageX, true);
+			// this.changeBar(touch.pageX, true);
 		},
 		changeBar : function(x,e){
 			var left = x - this.startLeft;

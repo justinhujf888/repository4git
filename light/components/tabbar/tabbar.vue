@@ -1,23 +1,30 @@
 <template>
-	<wd-tabbar fixed v-model="tabbar" bordered safeAreaInsetBottom placeholder @change="handleChange">
+	<wd-tabbar fixed :v-model="tabIndex" bordered safeAreaInsetBottom placeholder @change="handleChange">
 	  <wd-tabbar-item title="">
 		  <template #icon>
-			  <text class="gui-icons text-base text-green-500">&#xe63b;</text>
+			  <text class="gui-icons text-base" :class="tabClass(0)">&#xe63b;</text>
 		  </template>
 	  </wd-tabbar-item>
 	  <wd-tabbar-item title="" icon="user">
 		  <template #icon>
-				<text class="iconfont text-base text-gray-400">&#xe67e;</text>
+				<text class="iconfont text-base" :class="tabClass(1)">&#xe67e;</text>
 		  </template>
 	  </wd-tabbar-item>
 	</wd-tabbar>
 </template>
 <script setup>
-	import { ref,getCurrentInstance } from 'vue';
+	import { ref,getCurrentInstance, toRefs } from 'vue';
+	import { defineProps, defineEmits } from 'vue';
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
 	import page from "@/api/uniapp/page.js";
 	
-	const tabbar = ref(0);
+	const props = defineProps({
+		tabIndex: {
+			type: Number,
+			default: 0
+		}
+	});
+	const {tabIndex} = toRefs(props);
 	
 	const handleChange = (v)=>{
 		// console.log(value.value);
@@ -32,6 +39,15 @@
 				break;
 		}
 	};
+	
+	const tabClass = (v)=>{
+		// console.log(v,tabIndex.value);
+		if (v==tabIndex.value) {
+			return "text-green-500";
+		} else {
+			return "text-gray-400"
+		}
+	}
 </script>
 <style>
 

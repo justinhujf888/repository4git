@@ -7,7 +7,7 @@
 			</view>
 		</template>
 	</wd-navbar>
-	<tabbar></tabbar>
+	<tabbar :tabIndex="1"></tabbar>
 </template>
 
 <script>

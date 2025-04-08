@@ -54,7 +54,7 @@
 			</button>
 		</view>
 	</view>
-	<tabbar></tabbar>
+	<tabbar :tabIndex="0"></tabbar>
 </template>
 
 <script setup>
