@@ -62,6 +62,7 @@ export default{
 		min     : {type:Number,  default:0},
 		max     : {type:Number,  default:100},
 		id : {type:String,  default:''},
+		obj: {type:Object,  default:null},
 		onChanging: {}
 	},
 	data() {
@@ -128,19 +129,19 @@ export default{
 			if(left <= this.min){
 				this.left = this.min;
 				v = this.min;
-				this.$emit('changing', {v:v,id:this.id});
+				this.$emit('changing', {v:v,id:this.id,obj:this.obj});
 			}else if(left + this.barWidthPX > this.width){
 				left = this.width - this.barWidthPX-this.borderWidth;
 				this.left = left;
 				v = this.max;
-				this.$emit('changing', {v:v,id:this.id});
+				this.$emit('changing', {v:v,id:this.id,obj:this.obj});
 			}else{
 				this.left = left;
 				var scale = this.left / (this.width - this.barWidthPX);
 				v = Math.round(scale * this.max);
-				this.$emit('changing', {v:v,id:this.id});
+				this.$emit('changing', {v:v,id:this.id,obj:this.obj});
 				if (e) {
-					this.$emit('change', {v:v,id:this.id});
+					this.$emit('change', {v:v,id:this.id,obj:this.obj});
 				}
 			}
 		},

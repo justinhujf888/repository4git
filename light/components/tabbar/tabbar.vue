@@ -33,7 +33,7 @@
 				page.reLaunch("/pages/index/index",{});
 				break;
 			case 1:
-				page.reLaunch("/pages/user/index",{});
+				page.reLaunch("/pages/device/setup",{});
 				break;
 			default:
 				break;

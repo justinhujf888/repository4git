@@ -42,7 +42,7 @@
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
 							<view class="row mt-5">
 								<view class="flex-1">
-									<sliderc :ref="sds" :id="item.id" :max="item.max" :min="item.min" :barWidth="30" :barHeight="30" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="sdsChanging" @change=""></sliderc>
+									<sliderc :ref="sds" :id="item.id" :obj="{groupId:group.id,id:item.id}" :max="item.max" :min="item.min" :barWidth="30" :barHeight="30" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="sdsChanging" @change=""></sliderc>
 								</view>
 								<view class="row w-16 justify-end items-end text-gray-400 -mt-2">
 									<text>{{item.value}}</text>
@@ -51,12 +51,14 @@
 								</view>
 							</view>
 						</view>
-						<view v-else-if="item.type=='textGroup'" class="row text-base between" :class="item.ly==0 ? 'mt-8' : 'mt-5'">
-							<view v-for="(txt,txti) in item.info" :key="txt.id" class="row">
-								<text>{{txt.prx}}</text>
-								<!-- <text class="ml-2">{{txt.value}}</text> -->
-								<input :id="item.id + '_' + txt.id" class="ml-2 minput w-6" v-model="txt.value" type="number" :min="txt.min" :max="txt.max" input="checkInput"/>
-								<text class="ml-2">{{txt.afe}}</text>
+						<view v-else-if="item.type=='textGroup'" class="col text-base between" :class="item.ly==0 ? 'mt-8' : 'mt-5'">
+							<view v-for="(txt,txti) in item.info" :key="txt.id" class="row my-2">
+								<text class="mr-2 -mt-1">{{txt.prx}}</text>
+								<!-- <input :id="item.id + '_' + txt.id" class="ml-2 minput w-6" v-model="txt.value" type="number" :min="txt.min" :max="txt.max" input="checkInput"/> -->
+								<view class="flex-1">
+									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id}" :max="txt.max" :min="txt.min" :barWidth="30" :barHeight="30" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change=""></sliderc>
+								</view>
+								<text class="-mt-1">{{txt.value}} {{txt.afe}}</text>
 							</view>
 						</view>
 						<view v-else-if="item.type=='switch'" class="row text-xl between" :class="item.ly==0  && i>0 ? 'mt-10' : 'mt-5'">
@@ -102,6 +104,8 @@
 	let cday = null;
 	let intervalId = null;
 	let loadingTime = null;
+	let isWriteCmd = false;
+	
 	const loopLoading = ()=>{
 		intervalId = setInterval(()=>{
 			if (uni.dayjs().isAfter(cday.add(5,"second"))) {
@@ -117,47 +121,55 @@
 	onLoad((option)=>{
 		pgElmList.value = [
 			{id:0,name:"light",els:[
-				{id:"01",cmd:"0x04",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
-				{id:"02",cmd:"0x07",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"03",cmd:"0x06",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"04",cmd:"0x10",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:0,min:0,max:120,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
+				{id:"01",cmd:"0x04",rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
+				{id:"02",cmd:"0x07",rcmd:"0x17",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"03",cmd:"0x06",rcmd:"0x16",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"04",cmd:"0x10",rcmd:"0x10",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:0,min:0,max:120,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
-				{id:"10",cmd:"0x08",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"11",dId:"12",cmd:"",ly:1,type:"switch",name:"定时循环",value:false,style:{}},
-				{id:"12",cmd:"0x0B",isRun:false,ly:1,type:"textGroup",isRun:false,info:[
-					{id:0,prx:"运转时长",value:"0",afe:"分钟",min: 0, max: 15},
-					{id:1,prx:"停歇时长",value:"0",afe:"分钟",min: 0, max: 15}
+				{id:"12",cmd:"0x0B",rcmd:"0x1B",isRun:false,ly:1,type:"textGroup",isRun:false,info:[
+					{id:"120",prx:"运转时长",value:0,afe:"分钟",min: 0, max: 15},
+					{id:"121",prx:"停歇时长",value:0,afe:"分钟",min: 0, max: 15}
 				]},
-				{id:"13",cmd:"0x09",isRun:true,ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:25,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"13",cmd:"0x09",rcmd:"0x19",isRun:true,ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:25,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"14",dId:"15",cmd:"",ly:1,type:"switch",name:"定时循环",value:true,style:{}},
-				{id:"15",cmd:"0x0C",isRun:true,ly:1,type:"textGroup",isRun:true,info:[
-					{id:0,prx:"运转时长",value:"0",afe:"分钟",min: 0, "max": 15},
-					{id:1,prx:"停歇时长",value:"0",afe:"分钟",min: 0, "max": 15}
+				{id:"15",cmd:"0x0C",rcmd:"0x1C",isRun:true,ly:1,type:"textGroup",isRun:true,info:[
+					{id:"150",prx:"运转时长",value:0,afe:"分钟",min: 0, max: 15},
+					{id:"151",prx:"停歇时长",value:0,afe:"分钟",min: 0, max: 15}
 				]}
 			]},
 			{id:2,name:"cw",els:[
 				{id:"20",dId:"21",cmd:"",ly:0,type:"switch",name:"开灯除雾",value:true,style:{}},
-				{id:"21",cmd:"0x0D",isRun:true,ly:1,type:"textGroup",isRun:true,info:[
-					{id:0,prx:"除雾时长",value:"4",afe:"分钟",min: 0, max: 60},
+				{id:"21",cmd:"0x0D",rcmd:"0x1D",isRun:true,ly:1,type:"textGroup",isRun:true,info:[
+					{id:"210",prx:"除雾时长",value:4,afe:"分钟",min: 0, max: 60},
 				]},
 				{id:"22",dId:"23",cmd:"",ly:0,type:"switch",name:"月光模式",value:false,style:{}},
-				{id:"23",cmd:"0x0F",isRun:true,ly:1,type:"slider",name:"亮度",value:0,min:0,max:100,style:{barClass:['border-indigo-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-indigo-300','border-4','border-solid'],bglineAClass:['bg-indigo-300','border-findigo-500','border-4','border-solid']}}
+				{id:"23",cmd:"0x0F",rcmd:"0x1F",isRun:true,ly:1,type:"slider",name:"亮度",value:0,min:0,max:100,style:{barClass:['border-indigo-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-indigo-300','border-4','border-solid'],bglineAClass:['bg-indigo-300','border-findigo-500','border-4','border-solid']}}
 			]}
 		];
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
 			console.log("addCharacteristicValueChangeListen_ay",hexTools.arrayBuffer2hexArray(characteristic.value));
-			cday = uni.dayjs();
-			let array = hexTools.arrayBuffer2hexArray(characteristic.value);
-			let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
-			if (cmd) {
-				if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
-					showNotify(cmd.description+":成功设置");
-				} else {
-					showNotify(cmd.description+":设置失败");
+			if (isWriteCmd) {
+				cday = uni.dayjs();
+				let array = hexTools.arrayBuffer2hexArray(characteristic.value);
+				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
+				if (cmd) {
+					if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
+						showNotify(cmd.description+":成功设置");
+					} else {
+						showNotify(cmd.description+":设置失败");
+					}
 				}
+			} else {
+				let array = hexTools.arrayBuffer2hexArray(characteristic.value);
+				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
+				findPgElmList("rcmd",("0x"+array[1]).toUpperCase(),(it)=>{
+					
+				},true);
 			}
 		});
 	});
@@ -175,23 +187,19 @@
 	
 	const sdsChanging = (value)=>{
 		// console.log(value);
-		for(let g of pgElmList.value) {
-			for(let v of g.els) {
-				if (v.id==value.id) {
-					v.value = value.v;
-					break;
-				}
-			}
-		}
-	// lodash.forEach(pgElmList.value,(g,j)=>{
-		// 	lodash.forEach(g.els,(v,i)=>{
-		// 		console.log(v.id,value.id);
-		// 		if (v.id==value.id) {
-		// 			v.value = value.v;
-		// 			return;
-		// 		}
-		// 	});
-		// });
+		// findPgElmList("id",value.id,(it)=>{
+		// 	it.value = value.v;
+		// },true);
+		let g = lodash.find(pgElmList.value,(o)=>{return o.id==value.obj.groupId});
+		let it = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
+		it.value = value.v;
+	};
+	
+	const infoChanging = (value)=>{
+		let g = lodash.find(pgElmList.value,(o)=>{return o.id==value.obj.groupId});
+		let item = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
+		let it = lodash.find(item.info,(o)=>{return o.id==value.obj.infoId});
+		it.value = value.v;
 	};
 	
 	const setTimes = (v)=>{
@@ -207,14 +215,24 @@
 		Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 	};
 	
-	let findArray = (id,value)=>{
-		lodash.forEach(pgElmList.value,(o,g)=>{
-			lodash.forEach(o.els,(it,j)=>{
-				if (it.id==id) {
-					it.isRun = value;
+	let findPgElmList = (field,value,fun,firstOnly)=>{
+		// lodash.forEach(pgElmList.value,(o,g)=>{
+		// 	lodash.forEach(o.els,(it,j)=>{
+		// 		if (it[field]==value) {
+		// 			fun(it);
+		// 		}
+		// 	});
+		// });
+		for(let g of pgElmList.value) {
+			for(let it of g.els) {
+				if (it[field]==value) {
+					fun(it);
+					if (firstOnly) {
+						break;
+					}
 				}
-			});
-		});
+			}
+		}
 	};
 	
 	const save = ()=>{
