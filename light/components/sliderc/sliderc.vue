@@ -1,9 +1,7 @@
 <template>
 	<view 
 	class="my-sg-slider" 
-	@touchstart="touchstart" 
-	@touchmove.stop.prevent="touchmove" 
-	@touchend="touchend" 
+	
 	ref="myslider" 
 	id="myslider" 
 	:style="{
@@ -26,7 +24,9 @@
 			top:((barHeight - bglineSize) / 2)+'rpx', 
 			height:bglineSize+'rpx', 
 			borderRadius:borderRadius}"></view>
-		<text 
+		<text @touchstart="touchstart" 
+	@touchmove.stop.prevent="touchmove" 
+	@touchend="touchend" 
 		class="my-sg-slider-bar" 
 		:class="barClass" 
 		:style="{
@@ -111,7 +111,7 @@ export default{
 		touchstart : function (e) {
 			if(!this.canSlide){return ;}
 			var touch = e.touches[0] || e.changedTouches[0];
-			//this.changeBar(touch.pageX);
+			this.changeBar(touch.pageX);
 		},
 		touchmove : function (e) {
 			if(!this.canSlide){return ;}
@@ -121,7 +121,7 @@ export default{
 		touchend : function (e) {
 			if(!this.canSlide){return ;}
 			var touch = e.touches[0] || e.changedTouches[0];
-			// this.changeBar(touch.pageX, true);
+			this.changeBar(touch.pageX, true);
 		},
 		changeBar : function(x,e){
 			var left = x - this.startLeft;

@@ -25,7 +25,7 @@
 						<text class="gui-icons ml-2">&#xe69e;</text>
 					</view>
 					<view class="row justify-center items-center mt-2" @tap="syncTime">
-						<text class="rounded-2xl py-1 px-4 bg-gray-400 text-white text-base">手动同步时钟</text>
+						<text class="rounded-2xl py-1 px-4 btn2 text-white text-base">手动同步时钟</text>
 					</view>
 				</view>
 				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-25'" @tap="setRDay">
@@ -42,7 +42,7 @@
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
 							<view class="row mt-5">
 								<view class="flex-1">
-									<sliderc :ref="sds" :id="item.id" :obj="{groupId:group.id,id:item.id}" :max="item.max" :min="item.min" :barWidth="30" :barHeight="30" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="sdsChanging" @change=""></sliderc>
+									<sliderc :id="item.id" :obj="{groupId:group.id,id:item.id}" :max="item.max" :min="item.min" :barWidth="30" :barHeight="30" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="sdsChanging" @change="sdsChange"></sliderc>
 								</view>
 								<view class="row w-16 justify-end items-end text-gray-400 -mt-2">
 									<text>{{item.value}}</text>
@@ -51,28 +51,32 @@
 								</view>
 							</view>
 						</view>
-						<view v-else-if="item.type=='textGroup'" class="col text-base between" :class="item.ly==0 ? 'mt-8' : 'mt-5'">
+						<view v-else-if="item.type=='textGroup'" :sstyle="item.isRun ? 'pointer-events:' : 'pointer-events:none'" class="col text-base between" :class="item.ly==0 ? 'mt-8' : 'mt-5'">
 							<view v-for="(txt,txti) in item.info" :key="txt.id" class="row my-2">
 								<text class="mr-2 -mt-1">{{txt.prx}}</text>
 								<!-- <input :id="item.id + '_' + txt.id" class="ml-2 minput w-6" v-model="txt.value" type="number" :min="txt.min" :max="txt.max" input="checkInput"/> -->
-								<view class="flex-1">
-									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id}" :max="txt.max" :min="txt.min" :barWidth="30" :barHeight="30" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change=""></sliderc>
+								<view class="flex-1" :class="item.isRun ? '' : 'bg-gray-200'">
+									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id,cmd:item.cmd}" :max="txt.max" :min="txt.min" :canSlide="item.isRun" :barWidth="30" :barHeight="30" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change="infoChange"></sliderc>
 								</view>
-								<text class="-mt-1">{{txt.value}} {{txt.afe}}</text>
+								<view class="row justify-start items-center pl-2 w-16 -mt-1">
+									<text class="w-6">{{txt.value}}</text>
+									<text class="ml-1 flex-1">{{txt.afe}}</text>
+								</view>
+								
 							</view>
 						</view>
 						<view v-else-if="item.type=='switch'" class="row text-xl between" :class="item.ly==0  && i>0 ? 'mt-10' : 'mt-5'">
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
-							<wd-switch v-model="item.value" active-color="#13ce66"/>
+							<wd-switch v-model="item.value" active-color="#13ce66" @change="switchChange"/>
 						</view>
 					</view>
 				</view>
 			</view>
 		</view>
 		
-		<view class="center mt-8 mb-8">
+<!-- 		<view class="center mt-8 mb-8">
 			<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="save">保存</wd-button>
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -95,10 +99,12 @@
 	
 	const times = ref({onTime:"8:00",offTime:"18:00"});
 	const pgElmList = ref([]);
+	
 	const sdsArray = ref([]);
 	const sds = (el) => {
 		sdsArray.value.push(el);
 	}
+	
 	const rday = ref(1);
 	
 	let cday = null;
@@ -146,7 +152,9 @@
 					{id:"210",prx:"除雾时长",value:4,afe:"分钟",min: 0, max: 60},
 				]},
 				{id:"22",dId:"23",cmd:"",ly:0,type:"switch",name:"月光模式",value:false,style:{}},
-				{id:"23",cmd:"0x0F",rcmd:"0x1F",isRun:true,ly:1,type:"slider",name:"亮度",value:0,min:0,max:100,style:{barClass:['border-indigo-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-indigo-300','border-4','border-solid'],bglineAClass:['bg-indigo-300','border-findigo-500','border-4','border-solid']}}
+				{id:"23",cmd:"0x0F",rcmd:"0x1F",isRun:false,ly:1,type:"textGroup",name:"亮度",value:0,min:0,max:100,style:{},info:[
+					{id:"230",prx:"亮度",value:0,afe:"分钟",min: 0, max: 100}
+				]}
 			]}
 		];
 		
@@ -195,11 +203,55 @@
 		it.value = value.v;
 	};
 	
+	const sdsChange = (value)=>{
+		let g = lodash.find(pgElmList.value,(o)=>{return o.id==value.obj.groupId});
+		let it = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
+		// console.log(it.value);
+		Blue.writeBLEValue(hexTools.bleBuffer(it.cmd,0,parseInt(it.value)).buffer);
+	};
+	
 	const infoChanging = (value)=>{
 		let g = lodash.find(pgElmList.value,(o)=>{return o.id==value.obj.groupId});
 		let item = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
 		let it = lodash.find(item.info,(o)=>{return o.id==value.obj.infoId});
 		it.value = value.v;
+	};
+	
+	const infoChange = (value)=>{
+		let g = lodash.find(pgElmList.value,(o)=>{return o.id==value.obj.groupId});
+		let item = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
+		// console.log(item.info);
+		if (item.info.length==2) {
+			Blue.writeBLEValue(hexTools.bleBuffer(item.cmd,parseInt(item.info[0].value),item.info[1].value).buffer);
+		} else {
+			Blue.writeBLEValue(hexTools.bleBuffer(item.cmd,0,item.info[0].value).buffer);
+		}
+	};
+	
+	const switchChange = (v)=>{
+		findPgElmList("type","switch",(it)=>{
+			findPgElmList("id",it.dId,(itt)=>{
+				itt.isRun = it.value;
+				if (it.value) {
+					if (itt.info.length==2) {
+						setTimeout(()=>{
+							Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,parseInt(itt.info[0].value),itt.info[1].value).buffer);
+						},1000);
+					} else {
+						setTimeout(()=>{
+							Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,itt.info[0].value).buffer);
+						},1000);
+					}
+				} else {
+					setTimeout(()=>{
+						Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,0).buffer);
+					},1000);
+				}
+			},true);
+		},false);
+		if (!v.value) {
+			
+		}
 	};
 	
 	const setTimes = (v)=>{
@@ -212,6 +264,7 @@
 	
 	const syncTime = ()=>{
 		// console.log(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))));
+		cday = uni.dayjs();
 		Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 	};
 	
@@ -300,5 +353,10 @@
 </script>
 
 <style>
-	
+	.btn1 {
+		background-color: #ABBCCF;
+	}
+	.btn2 {
+		background-color: #7993AF;
+	}
 </style>
