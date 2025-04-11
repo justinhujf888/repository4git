@@ -11,12 +11,12 @@
 	<wd-notify></wd-notify>
 	<view class="relative px-4">
 		<view class="mt-5 col justify-center items-center text-gray-400">
-			<text class="text-base">运作中</text>
-			<text class="iconfont text-6xl text-green-500 mt-1">&#xe858;</text>
+			<text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text>
+			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-2" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
 			<view class="row justify-center items-center w-full text-base">
-				<view class="col justify-center items-center" :class="rday==1 ? '' : 'opacity-25'" @tap="setRDay">
-					<text class="iconfont text-3xl">&#xe61f;</text>
-					<text class="text-base">日光</text>
+				<view class="col justify-center items-center" :class="rday==1 ? '' : 'opacity-15'" tap="setRDay">
+					<text class="iconfont text-3xl text-green-500">&#xe61f;</text>
+					<text class="text-base text-green-500 font-semibold">日光</text>
 				</view>
 				<view class="col justify-center items-center flex-1 mt-2">
 					<view class="row justify-center items-center" @tap="page.navigateTo('./kgtime',{times:{onTime:times.onTime,offTime:times.offTime}})">
@@ -25,12 +25,12 @@
 						<text class="gui-icons ml-2">&#xe69e;</text>
 					</view>
 					<view class="row justify-center items-center mt-2" @tap="syncTime">
-						<text class="rounded-2xl py-1 px-4 btn2 text-white text-base">手动同步时钟</text>
+						<text class="rounded-2xl py-1 px-4 btn1 text-white text-sm">手动同步时钟</text>
 					</view>
 				</view>
-				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-25'" @tap="setRDay">
+				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-15'" tap="setRDay">
 					<text class="iconfont text-3xl">&#xe655;</text>
-					<text class="text-base">月光</text>
+					<text class="text-base font-semibold">月光</text>
 				</view>
 			</view>
 		</view>
@@ -256,10 +256,20 @@
 	
 	const setTimes = (v)=>{
 		times.value = v;
+		
+		let onTimeAy = times.value.onTime.split(":");
+		let offTimeAy  = times.value.offTime.split(":");
+		Blue.writeBLEValue(hexTools.bleBuffer("0x02",parseInt(onTimeAy[0]),parseInt(onTimeAy[1])).buffer);
+		setTimeout(()=>{
+			Blue.writeBLEValue(hexTools.bleBuffer("0x03",parseInt(offTimeAy[0]),parseInt(offTimeAy[1])).buffer);
+		},3000);
 	};
 	
 	const setRDay = ()=>{
 		rday.value = rday.value==0 ? 1 : 0;
+		setTimeout(()=>{
+			Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+		},1000);
 	};
 	
 	const syncTime = ()=>{
