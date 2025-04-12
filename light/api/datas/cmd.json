@@ -215,6 +215,16 @@
       "command": "0x1E",
       "description": "查询当前模式（开灯/关灯）",
       "response_format": "0xA6 [命令码] [未使用] [模式值] [校验]"
-    }
+    },
+	{
+	  "command": "0x1F",
+	  "description": "查询月光模式下月光灯强度值（%）",
+	  "response_format": "0xA6 [命令码] [未使用] [模式值] [校验]"
+	},
+	{
+	  "command": "0x20",
+	  "description": "查询目前开关灯渐变时长（分钟）-自然光",
+	  "response_format": "0xA6 [命令码] [未使用] [模式值] [校验]"
+	}
   ]
 }

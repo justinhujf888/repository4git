@@ -2,7 +2,7 @@
 	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
 		<template #title>
 			<view class="justify-center items-center">
-				<text class="text-base">20缸默认</text>
+				<text class="text-base"></text>
 				<text class="gui-icons text-gray-400 ml-2">&#xe69e;</text>
 			</view>
 		</template>
@@ -14,7 +14,7 @@
 			<text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text>
 			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-2" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
 			<view class="row justify-center items-center w-full text-base">
-				<view class="col justify-center items-center" :class="rday==1 ? '' : 'opacity-15'" tap="setRDay">
+				<view class="col justify-center items-center" :class="rday==1 ? '' : 'opacity-15'">
 					<text class="iconfont text-3xl text-green-500">&#xe61f;</text>
 					<text class="text-base text-green-500 font-semibold">日光</text>
 				</view>
@@ -28,7 +28,7 @@
 						<text class="rounded-2xl py-1 px-4 btn1 text-white text-sm">手动同步时钟</text>
 					</view>
 				</view>
-				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-15'" tap="setRDay">
+				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-15'">
 					<text class="iconfont text-3xl">&#xe655;</text>
 					<text class="text-base font-semibold">月光</text>
 				</view>
@@ -59,10 +59,9 @@
 									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id,cmd:item.cmd}" :max="txt.max" :min="txt.min" :canSlide="item.isRun" :barWidth="30" :barHeight="30" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change="infoChange"></sliderc>
 								</view>
 								<view class="row justify-start items-center pl-2 w-16 -mt-1">
-									<text class="w-6">{{txt.value}}</text>
+									<text class="w-6 text-right">{{txt.value}}</text>
 									<text class="ml-1 flex-1">{{txt.afe}}</text>
 								</view>
-								
 							</view>
 						</view>
 						<view v-else-if="item.type=='switch'" class="row text-xl between" :class="item.ly==0  && i>0 ? 'mt-10' : 'mt-5'">
@@ -127,10 +126,10 @@
 	onLoad((option)=>{
 		pgElmList.value = [
 			{id:0,name:"light",els:[
-				{id:"01",cmd:"0x04",rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
+				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
 				{id:"02",cmd:"0x07",rcmd:"0x17",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"03",cmd:"0x06",rcmd:"0x16",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"04",cmd:"0x10",rcmd:"0x10",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:0,min:0,max:120,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
+				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:0,min:0,max:120,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
 				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
@@ -158,12 +157,17 @@
 			]}
 		];
 		
+		for(let c of cmdjson.query_commands) {
+			Blue.writeBLEValue(hexTools.bleBuffer(c.command,0,0).buffer);
+		}
+	
+		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
-			console.log("addCharacteristicValueChangeListen_ay",hexTools.arrayBuffer2hexArray(characteristic.value));
+			let array = hexTools.arrayBuffer2hexArray(characteristic.value);
+			console.log("array",array);
 			if (isWriteCmd) {
 				cday = uni.dayjs();
-				let array = hexTools.arrayBuffer2hexArray(characteristic.value);
 				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
 				if (cmd) {
 					if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
@@ -173,7 +177,6 @@
 					}
 				}
 			} else {
-				let array = hexTools.arrayBuffer2hexArray(characteristic.value);
 				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
 				findPgElmList("rcmd",("0x"+array[1]).toUpperCase(),(it)=>{
 					
@@ -208,6 +211,13 @@
 		let it = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
 		// console.log(it.value);
 		Blue.writeBLEValue(hexTools.bleBuffer(it.cmd,0,parseInt(it.value)).buffer);
+		if (it.exCmd) {
+			for(let cmd of it.exCmd) {
+				setTimeout(()=>{
+					Blue.writeBLEValue(hexTools.bleBuffer(cmd,0,parseInt(it.value)).buffer);
+				},1000);
+			}
+		}
 	};
 	
 	const infoChanging = (value)=>{
