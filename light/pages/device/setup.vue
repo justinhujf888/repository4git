@@ -9,7 +9,7 @@
 	</wd-navbar>
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
-	<view class="relative px-4">
+	<view v-if="reshow" class="relative px-4">
 		<view class="mt-5 col justify-center items-center text-gray-400">
 			<text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text>
 			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-2" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
@@ -96,6 +96,8 @@
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	const { showNotify, closeNotify } = useNotify();
 	
+	const reshow = ref(false);
+	
 	const times = ref({onTime:"8:00",offTime:"18:00"});
 	const pgElmList = ref([]);
 	
@@ -124,6 +126,7 @@
 	};
 	
 	onLoad((option)=>{
+		dialog.openLoading("读取设备信息……");
 		pgElmList.value = [
 			{id:0,name:"light",els:[
 				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
@@ -164,25 +167,70 @@
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
-			let array = hexTools.arrayBuffer2hexArray(characteristic.value);
+			let array = lodash.chunk(hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase()),5);
 			console.log("array",array);
-			if (isWriteCmd) {
-				cday = uni.dayjs();
-				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
-				if (cmd) {
-					if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
-						showNotify(cmd.description+":成功设置");
+			for(let ay of array) {
+				if (ay[0]=="0xA6") {
+					if (lodash.findIndex(cmdjson.query_commands,(o)=>{return o.command==ay[1]}) > -1) {
+						//read command
+						if (ay[1]=="0x11") {
+							
+						} else if (ay[1]=="0x12") {
+							times.value.onTime = `${parseInt(ay[2],16)}:${parseInt(ay[3],16)}`;
+						} else if (ay[1]=="0x13") {
+							times.value.offTime = `${parseInt(ay[2],16)}:${parseInt(ay[3],16)}`;
+						} else if (ay[1]=="0x1E") {
+							rday.value = parseInt(ay[3],16);
+						} else {
+							findPgElmList("rcmd",ay[1],(it)=>{
+								if (it.cmd) {
+									if (it.type=="textGroup") {
+										if (it.info.length > 1) {
+											it.info[0].value = parseInt(ay[2],16);
+											it.info[1].value = parseInt(ay[3],16);
+										} else {
+											it.info[0].value = parseInt(ay[3],16);
+										}
+									} else {
+										it.value = parseInt(ay[3],16);
+									}
+								}
+							},true);
+						}
 					} else {
-						showNotify(cmd.description+":设置失败");
+						let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==ay[1]});
+						//write command
+						if (ay[2]=="0xFE" && ay[3]=="0x00") {
+							showNotify(cmd.description+":成功设置");
+						} else {
+							showNotify(cmd.description+":设置失败");
+						}
 					}
 				}
-			} else {
-				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
-				findPgElmList("rcmd",("0x"+array[1]).toUpperCase(),(it)=>{
-					
-				},true);
 			}
+			
+			// if (isWriteCmd) {
+			// 	cday = uni.dayjs();
+			// 	let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
+			// 	if (cmd) {
+			// 		if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
+			// 			showNotify(cmd.description+":成功设置");
+			// 		} else {
+			// 			showNotify(cmd.description+":设置失败");
+			// 		}
+			// 	}
+			// } else {
+			// 	let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
+			// 	findPgElmList("rcmd",("0x"+array[1]).toUpperCase(),(it)=>{
+					
+			// 	},true);
+			// }
 		});
+		
+		setTimeout(()=>{
+			reshow.value = true;
+			dialog.closeLoading();
+		},6000);
 	});
 	
 	const checkInput = (e)=>{
