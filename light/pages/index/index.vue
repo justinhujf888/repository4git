@@ -216,9 +216,11 @@
 				let cday = uni.dayjs();
 				Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 			} 
-			// else if (data.deviceId && !data.connected) {
-			// 	Blue.createBLEConnection(data.deviceId);
-			// }
+			else if (data.deviceId && !data.connected) {
+				Blue.createBLEConnection(data.deviceId);
+			} else {
+				viewStatus.value = 0;
+			}
 			if (data.label) {
 				showNotify(data.label);
 			}

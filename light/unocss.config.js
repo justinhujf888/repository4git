@@ -19,6 +19,7 @@ export default ({
 			row: 'flex flex-row',
 			col: 'flex flex-col',
 			hwcenter: 'absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]',
+			wcenter: 'absolute left-1/2 translate-x-[-50%]'
 		}
     ]
     

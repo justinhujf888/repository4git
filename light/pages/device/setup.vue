@@ -9,7 +9,7 @@
 	</wd-navbar>
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
-	<view v-if="reshow" class="relative px-4">
+	<view class="relative px-4">
 		<view class="mt-5 col justify-center items-center text-gray-400">
 			<text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text>
 			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-2" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
@@ -66,7 +66,7 @@
 						</view>
 						<view v-else-if="item.type=='switch'" class="row text-xl between" :class="item.ly==0  && i>0 ? 'mt-10' : 'mt-5'">
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
-							<wd-switch v-model="item.value" active-color="#13ce66" @change="switchChange"/>
+							<dsetup :value="item.value" :obj="{groupId:group.id,id:item.id}" @change="switchChange"/>
 						</view>
 					</view>
 				</view>
@@ -96,8 +96,6 @@
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	const { showNotify, closeNotify } = useNotify();
 	
-	const reshow = ref(false);
-	
 	const times = ref({onTime:"8:00",offTime:"18:00"});
 	const pgElmList = ref([]);
 	
@@ -126,7 +124,6 @@
 	};
 	
 	onLoad((option)=>{
-		dialog.openLoading("读取设备信息……");
 		pgElmList.value = [
 			{id:0,name:"light",els:[
 				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
@@ -160,10 +157,11 @@
 			]}
 		];
 		
+		dialog.openLoading("读取设备信息……");
+		
 		for(let c of cmdjson.query_commands) {
 			Blue.writeBLEValue(hexTools.bleBuffer(c.command,0,0).buffer);
 		}
-	
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
@@ -176,9 +174,15 @@
 						if (ay[1]=="0x11") {
 							
 						} else if (ay[1]=="0x12") {
-							times.value.onTime = `${parseInt(ay[2],16)}:${parseInt(ay[3],16)}`;
+							let td = uni.dayjs();
+							td = td.hour(parseInt(ay[2],16));
+							td = td.minute(parseInt(ay[3],16));
+							times.value.onTime = td.format("HH:mm");
 						} else if (ay[1]=="0x13") {
-							times.value.offTime = `${parseInt(ay[2],16)}:${parseInt(ay[3],16)}`;
+							let td = uni.dayjs();
+							td = td.hour(parseInt(ay[2],16));
+							td = td.minute(parseInt(ay[3],16));
+							times.value.offTime = td.format("HH:mm");
 						} else if (ay[1]=="0x1E") {
 							rday.value = parseInt(ay[3],16);
 						} else {
@@ -209,6 +213,7 @@
 				}
 			}
 			
+			
 			// if (isWriteCmd) {
 			// 	cday = uni.dayjs();
 			// 	let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
@@ -228,7 +233,21 @@
 		});
 		
 		setTimeout(()=>{
-			reshow.value = true;
+			lodash.forEach(pgElmList.value,(g,i)=>{
+				lodash.forEach(g.els,(o,j)=>{
+					if (o.type=="switch") {
+						let it = lodash.find(g.els,(x)=>{return o.dId==x.id});
+						if (it.type=="textGroup") {
+							if (it.info.length > 1) {
+								o.value = !(it.info[0].value==0 && it.info[1].value==0);
+							} else {
+								o.value = !(it.info[0].value == 0);
+							}
+							it.isRun = o.value;
+						}
+					}
+				});
+			});
 			dialog.closeLoading();
 		},6000);
 	});
@@ -286,30 +305,52 @@
 		}
 	};
 	
-	const switchChange = (v)=>{
-		findPgElmList("type","switch",(it)=>{
-			findPgElmList("id",it.dId,(itt)=>{
-				itt.isRun = it.value;
-				if (it.value) {
-					if (itt.info.length==2) {
-						setTimeout(()=>{
-							Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,parseInt(itt.info[0].value),itt.info[1].value).buffer);
-						},1000);
-					} else {
-						setTimeout(()=>{
-							Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,itt.info[0].value).buffer);
-						},1000);
-					}
-				} else {
-					setTimeout(()=>{
-						Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,0).buffer);
-					},1000);
-				}
-			},true);
-		},false);
-		if (!v.value) {
-			
+	const switchChange = (value)=>{
+		// console.log(value.v,value.obj);
+		let g = lodash.find(pgElmList.value,(o)=>{return o.id==value.obj.groupId});
+		let it = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
+		let itt = lodash.find(g.els,(o)=>{return o.id==it.dId});
+		// console.log(it,itt);
+		
+		itt.isRun = value.v;
+		it.value = value.v;
+		// findPgElmList("id",itt.id,(o)=>{
+		// 	o.isRun = value.v;
+		// });
+		
+		if (value.v) {
+			if (itt.info.length==2) {
+				Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,parseInt(itt.info[0].value),itt.info[1].value).buffer);
+			} else {
+				Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,itt.info[0].value).buffer);
+			}
+		} else {
+			Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,0).buffer);
 		}
+		
+		// findPgElmList("type","switch",(it)=>{
+		// 	findPgElmList("id",it.dId,(itt)=>{
+		// 		itt.isRun = it.value;
+		// 		if (it.value) {
+		// 			if (itt.info.length==2) {
+		// 				setTimeout(()=>{
+		// 					Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,parseInt(itt.info[0].value),itt.info[1].value).buffer);
+		// 				},1000);
+		// 			} else {
+		// 				setTimeout(()=>{
+		// 					Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,itt.info[0].value).buffer);
+		// 				},1000);
+		// 			}
+		// 		} else {
+		// 			setTimeout(()=>{
+		// 				Blue.writeBLEValue(hexTools.bleBuffer(itt.cmd,0,0).buffer);
+		// 			},1000);
+		// 		}
+		// 	},true);
+		// },false);
+		// if (!v.value) {
+			
+		// }
 	};
 	
 	const setTimes = (v)=>{

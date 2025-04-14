@@ -79,6 +79,11 @@ export default{
 	mounted:function(){
 		this.init();
 	},
+	watch: {
+		num(newVal, oldVal) {
+			this.setProgress(newVal);
+		}
+	},
 	methods:{
 		init : function(){
 			// #ifdef APP-NVUE

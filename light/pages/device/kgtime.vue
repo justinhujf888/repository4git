@@ -6,39 +6,43 @@
 			</view>
 		</template>
 	</wd-navbar>
-	<view class="relative px-4">
-		<view class="mt-4 bg-white rounded-xl p-4 text-gray-400">
-			<view class="row">
-				<text class="iconfont text-3xl">&#xe61f;</text>
-				<text class="text-base mt-2 ml-2">开灯时间</text>
-			</view>
-			<view class="mt-4">
-				<view class="between text-base justify-center items-center">
-					<text class="mx-10">小时</text>
-					<text class="mx-5">:</text>
-					<text class="mx-10">分钟</text>
+	<view class="relative">
+		<view class="px-2 mx-2">
+			<view class="mt-4 bg-white rounded-xl p-4 text-gray-400">
+				<view class="row">
+					<text class="iconfont text-3xl">&#xe61f;</text>
+					<text class="text-base mt-2 ml-2">开灯时间</text>
 				</view>
-				<wd-datetime-picker-view type="time" v-model="times.onTime" customClass="bg-white" @change="onTime"/>
+				<view class="mt-4">
+					<view class="between text-base justify-center items-center">
+						<text class="mx-10">小时</text>
+						<text class="mx-5">:</text>
+						<text class="mx-10">分钟</text>
+					</view>
+					<wd-datetime-picker-view type="time" v-model="times.onTime" customClass="bg-white" @change="onTime"/>
+				</view>
+			</view>
+			
+			<view class="mt-4 bg-white rounded-xl p-4 text-gray-400">
+				<view class="row">
+					<text class="iconfont text-3xl">&#xe655;</text>
+					<text class="text-base mt-2 ml-2">关灯时间</text>
+				</view>
+				<view class="mt-4">
+					<view class="between text-base justify-center items-center">
+						<text class="mx-10">小时</text>
+						<text class="mx-5">:</text>
+						<text class="mx-10">分钟</text>
+					</view>
+					<wd-datetime-picker-view type="time" v-model="times.offTime" customClass="bg-white" @change="offTime"/>
+				</view>
 			</view>
 		</view>
 		
-		<view class="mt-4 bg-white rounded-xl p-4 text-gray-400">
-			<view class="row">
-				<text class="iconfont text-3xl">&#xe655;</text>
-				<text class="text-base mt-2 ml-2">关灯时间</text>
+		<view class="mt-2 mb-8 fixed w-full">
+			<view class="center">
+				<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="save">保存</wd-button>
 			</view>
-			<view class="mt-4">
-				<view class="between text-base justify-center items-center">
-					<text class="mx-10">小时</text>
-					<text class="mx-5">:</text>
-					<text class="mx-10">分钟</text>
-				</view>
-				<wd-datetime-picker-view type="time" v-model="times.offTime" customClass="bg-white" @change="offTime"/>
-			</view>
-		</view>
-		
-		<view class="center mt-8 mb-8">
-			<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="save">保存</wd-button>
 		</view>
 	</view>
 </template>

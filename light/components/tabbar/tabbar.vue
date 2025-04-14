@@ -14,7 +14,6 @@
 </template>
 <script setup>
 	import { ref,getCurrentInstance, toRefs } from 'vue';
-	import { defineProps, defineEmits } from 'vue';
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
 	import page from "@/api/uniapp/page.js";
 	
