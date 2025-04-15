@@ -191,6 +191,7 @@
 		}
 		*/
 	   // console.log(Blue._discoveryStarted);
+	   dialog.openLoading("扫描设备……");
 	    preDeviceList.value = [];
 	    Blue.callBle();
 	   
@@ -220,6 +221,7 @@
 				Blue.createBLEConnection(data.deviceId);
 			} else {
 				viewStatus.value = 0;
+				dialog.closeLoading();
 			}
 			if (data.label) {
 				showNotify(data.label);
@@ -231,6 +233,7 @@
 			device.connected = false;
 			preDeviceList.value.push(device);
 			viewStatus.value = 1;
+			dialog.closeLoading();
 		});
 	}
 	

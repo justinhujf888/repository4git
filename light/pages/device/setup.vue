@@ -123,6 +123,23 @@
 		},1000);
 	};
 	
+	let stepIndex = 0;
+	const readDeviceInfo = (fun)=>{
+		// for(let c of cmdjson.query_commands) {
+		// 	setTimeout(()=>{
+		// 		Blue.writeBLEValue(hexTools.bleBuffer(c.command,0,0).buffer);
+		// 	},800);
+		// }
+		if (stepIndex < cmdjson.query_commands.length) {
+			Blue.writeBLEValue(hexTools.bleBuffer(cmdjson.query_commands[stepIndex].command,0,0).buffer);
+			stepIndex = stepIndex + 1;
+		} else {
+			if (fun) {
+				fun();
+			}
+		}
+	};
+	
 	onLoad((option)=>{
 		pgElmList.value = [
 			{id:0,name:"light",els:[
@@ -152,16 +169,14 @@
 				]},
 				{id:"22",dId:"23",cmd:"",ly:0,type:"switch",name:"月光模式",value:false,style:{}},
 				{id:"23",cmd:"0x0F",rcmd:"0x1F",isRun:false,ly:1,type:"textGroup",name:"亮度",value:0,min:0,max:100,style:{},info:[
-					{id:"230",prx:"亮度",value:0,afe:"分钟",min: 0, max: 100}
+					{id:"230",prx:"亮度",value:0,afe:"%",min: 0, max: 100}
 				]}
 			]}
 		];
 		
 		dialog.openLoading("读取设备信息……");
 		
-		for(let c of cmdjson.query_commands) {
-			Blue.writeBLEValue(hexTools.bleBuffer(c.command,0,0).buffer);
-		}
+		readDeviceInfo(null);
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
@@ -201,6 +216,24 @@
 								}
 							},true);
 						}
+						readDeviceInfo(()=>{
+							lodash.forEach(pgElmList.value,(g,i)=>{
+								lodash.forEach(g.els,(o,j)=>{
+									if (o.type=="switch") {
+										let it = lodash.find(g.els,(x)=>{return o.dId==x.id});
+										if (it.type=="textGroup") {
+											if (it.info.length > 1) {
+												o.value = !(it.info[0].value==0 && it.info[1].value==0);
+											} else {
+												o.value = !(it.info[0].value == 0);
+											}
+											it.isRun = o.value;
+										}
+									}
+								});
+							});
+							dialog.closeLoading();
+						});
 					} else {
 						let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==ay[1]});
 						//write command
@@ -212,7 +245,6 @@
 					}
 				}
 			}
-			
 			
 			// if (isWriteCmd) {
 			// 	cday = uni.dayjs();
@@ -231,25 +263,6 @@
 			// 	},true);
 			// }
 		});
-		
-		setTimeout(()=>{
-			lodash.forEach(pgElmList.value,(g,i)=>{
-				lodash.forEach(g.els,(o,j)=>{
-					if (o.type=="switch") {
-						let it = lodash.find(g.els,(x)=>{return o.dId==x.id});
-						if (it.type=="textGroup") {
-							if (it.info.length > 1) {
-								o.value = !(it.info[0].value==0 && it.info[1].value==0);
-							} else {
-								o.value = !(it.info[0].value == 0);
-							}
-							it.isRun = o.value;
-						}
-					}
-				});
-			});
-			dialog.closeLoading();
-		},6000);
 	});
 	
 	const checkInput = (e)=>{
@@ -276,7 +289,6 @@
 	const sdsChange = (value)=>{
 		let g = lodash.find(pgElmList.value,(o)=>{return o.id==value.obj.groupId});
 		let it = lodash.find(g.els,(o)=>{return o.id==value.obj.id});
-		// console.log(it.value);
 		Blue.writeBLEValue(hexTools.bleBuffer(it.cmd,0,parseInt(it.value)).buffer);
 		if (it.exCmd) {
 			for(let cmd of it.exCmd) {

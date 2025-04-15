@@ -65,15 +65,20 @@ export const Blue = {
 			
 				}
 				// Android 系统特有，系统版本低于 4.3 不支持 BLE
-				if(res.errCode === 10009) {
+				else if(res.errCode === 10009) {
 					ConnectController.connectStateListen({
 						...BLUE_STATE.VERSIONLOW,
 						...res
 					})
 				}
-				if(res.errCode === 10008) {
+				else if(res.errCode === 10008) {
 					ConnectController.connectStateListen({
 						...BLUE_STATE.SYSTEMERROR,
+						...res
+					});
+				}
+				else {
+					ConnectController.connectStateListen({
 						...res
 					});
 				}

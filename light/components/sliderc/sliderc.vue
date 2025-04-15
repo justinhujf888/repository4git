@@ -145,9 +145,9 @@ export default{
 				var scale = this.left / (this.width - this.barWidthPX);
 				v = Math.round(scale * this.max);
 				this.$emit('changing', {v:v,id:this.id,obj:this.obj});
-				if (e) {
-					this.$emit('change', {v:v,id:this.id,obj:this.obj});
-				}
+			}
+			if (e) {
+				this.$emit('change', {v:v,id:this.id,obj:this.obj});
 			}
 		},
 		setProgress : function (value){
