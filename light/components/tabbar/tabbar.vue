@@ -31,8 +31,11 @@
 			case 0:
 				page.reLaunch("/pages/index/index",{});
 				break;
-			case 1:
+			case 11:
 				page.reLaunch("/pages/user/index",{});
+				break;
+			case 1:
+				page.reLaunch("/pages/device/setup",{});
 				break;
 			default:
 				break;

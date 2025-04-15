@@ -283,10 +283,6 @@ export const Blue = {
 							console.log("connedres",res);
 
 							uni.stopBluetoothDevicesDiscovery();
-							uni.showToast({
-								icon: 'none',
-								title: '设备已连接'
-							});
 							resolve();
 						},
 						fail: (er)=> {

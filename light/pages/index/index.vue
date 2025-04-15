@@ -17,7 +17,7 @@
 		<view class="mx-2">
 			<!-- <wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button> -->
 			<view v-if="viewStatus == 0" class="hwcenter mt-8">
-				<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">添加设备</wd-button>
+				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">添加设备</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
 				<view v-for="device in preDeviceList" :key="device.id" class="bg-white rounded-xl px-2 py-4 mt-4 row">
@@ -191,16 +191,14 @@
 		}
 		*/
 	   // console.log(Blue._discoveryStarted);
-	   dialog.openLoading("扫描设备……");
+	    dialog.openLoading("扫描设备……");
 	    preDeviceList.value = [];
 	    Blue.callBle();
-	   
 		ConnectController.addConnectStateListen((data)=>{
 			console.log("addConnectStateListen",data);
 			// this.state = data.label;
 			if(data.deviceId && data.connected) {
 				console.log("connected",data);
-				dialog.closeLoading();
 				Blue.setBleConnectDeviceID(data.deviceId);
 				Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");			
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
@@ -213,9 +211,13 @@
 					device.connected = true;
 					theDevice.value = device;
 				}
-				viewStatus.value = 2;
+				
 				let cday = uni.dayjs();
 				Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
+				setTimeout(()=>{
+					viewStatus.value = 2;
+					dialog.closeLoading();
+				},5000);
 			} 
 			else if (data.deviceId && !data.connected) {
 				Blue.createBLEConnection(data.deviceId);

@@ -39,10 +39,8 @@
 			</view>
 		</view>
 		
-		<view class="mt-2 mb-8 fixed w-full">
-			<view class="center">
-				<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="save">保存</wd-button>
-			</view>
+		<view class="absolute right-5 top-1">
+			<wd-button size="small" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="save">保存</wd-button>
 		</view>
 	</view>
 </template>

@@ -42,7 +42,7 @@
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
 							<view class="row mt-5">
 								<view class="flex-1">
-									<sliderc :id="item.id" :obj="{groupId:group.id,id:item.id}" :max="item.max" :min="item.min" :barWidth="30" :barHeight="30" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="sdsChanging" @change="sdsChange"></sliderc>
+									<sliderc :id="item.id" :obj="{groupId:group.id,id:item.id}" :max="item.max" :min="item.min" :barWidth="50" :barHeight="50" :barClass="item.style.barClass" :bglineClass="item.style.bglineClass" :bglineAClass="item.style.bglineAClass" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="item.value" @changing="sdsChanging" @change="sdsChange"></sliderc>
 								</view>
 								<view class="row w-16 justify-end items-end text-gray-400 -mt-2">
 									<text>{{item.value}}</text>
@@ -56,7 +56,7 @@
 								<text class="mr-2 -mt-1">{{txt.prx}}</text>
 								<!-- <input :id="item.id + '_' + txt.id" class="ml-2 minput w-6" v-model="txt.value" type="number" :min="txt.min" :max="txt.max" input="checkInput"/> -->
 								<view class="flex-1" :class="item.isRun ? '' : 'bg-gray-200'">
-									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id,cmd:item.cmd}" :max="txt.max" :min="txt.min" :canSlide="item.isRun" :barWidth="30" :barHeight="30" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change="infoChange"></sliderc>
+									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id,cmd:item.cmd}" :max="txt.max" :min="txt.min" :canSlide="item.isRun" :barWidth="50" :barHeight="50" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change="infoChange"></sliderc>
 								</view>
 								<view class="row justify-start items-center pl-2 w-16 -mt-1">
 									<text class="w-6 text-right">{{txt.value}}</text>
@@ -124,6 +124,7 @@
 	};
 	
 	let stepIndex = 0;
+	let readInfoArray = [];
 	const readDeviceInfo = (fun)=>{
 		// for(let c of cmdjson.query_commands) {
 		// 	setTimeout(()=>{
@@ -176,11 +177,35 @@
 		
 		dialog.openLoading("读取设备信息……");
 		
-		readDeviceInfo(null);
+		setTimeout(()=>{
+			readDeviceInfo(null);
+		},10);
+		
+		setTimeout(()=>{
+			lodash.forEach(pgElmList.value,(g,i)=>{
+				lodash.forEach(g.els,(o,j)=>{
+					if (o.type=="switch") {
+						let it = lodash.find(g.els,(x)=>{return o.dId==x.id});
+						if (it.type=="textGroup") {
+							if (it.info.length > 1) {
+								o.value = !(it.info[0].value==0 && it.info[1].value==0);
+							} else {
+								o.value = !(it.info[0].value == 0);
+							}
+							it.isRun = o.value;
+						}
+					}
+				});
+			});
+			dialog.closeLoading();
+			console.log("readInfoArray",readInfoArray);
+		},8000);
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
-			let array = lodash.chunk(hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase()),5);
+			let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
+			readInfoArray.push(...data);
+			let array = lodash.chunk(data,5);
 			console.log("array",array);
 			for(let ay of array) {
 				if (ay[0]=="0xA6") {
@@ -216,24 +241,9 @@
 								}
 							},true);
 						}
-						readDeviceInfo(()=>{
-							lodash.forEach(pgElmList.value,(g,i)=>{
-								lodash.forEach(g.els,(o,j)=>{
-									if (o.type=="switch") {
-										let it = lodash.find(g.els,(x)=>{return o.dId==x.id});
-										if (it.type=="textGroup") {
-											if (it.info.length > 1) {
-												o.value = !(it.info[0].value==0 && it.info[1].value==0);
-											} else {
-												o.value = !(it.info[0].value == 0);
-											}
-											it.isRun = o.value;
-										}
-									}
-								});
-							});
-							dialog.closeLoading();
-						});
+						setTimeout(()=>{
+							readDeviceInfo(null);
+						},50);
 					} else {
 						let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==ay[1]});
 						//write command
