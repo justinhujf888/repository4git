@@ -10,8 +10,8 @@
 			<view class="flex-1">
 				<text v-if="false" class="text-gray-400 text-base gui-icons">上午 10:30 &#xe69e;</text>
 			</view>
-			<button vv-if="viewStatus != 1" class="btnbg rounded-full w-7 h-7 text-white center" @tap="callBle()">
-				<text class="text-xl">✚</text>
+			<button v-if="viewStatus != 0" class="btnbg rounded-full w-7 h-7 text-white center" @tap="callBle()">
+				<text class="text-xl gui-icons">&#xe635;</text>
 			</button>
 		</view>
 		<view class="mx-2">

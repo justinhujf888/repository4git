@@ -111,17 +111,6 @@
 	let loadingTime = null;
 	let isWriteCmd = false;
 	
-	const loopLoading = ()=>{
-		intervalId = setInterval(()=>{
-			if (uni.dayjs().isAfter(cday.add(5,"second"))) {
-				dialog.closeLoading();
-				clearInterval(intervalId);
-				dialog.alertBack("设置完成",false,()=>{
-					page.navBack();
-				},null)
-			}
-		},1000);
-	};
 	
 	let stepIndex = 0;
 	let readInfoArray = [];
@@ -135,10 +124,76 @@
 			Blue.writeBLEValue(hexTools.bleBuffer(cmdjson.query_commands[stepIndex].command,0,0).buffer);
 			stepIndex = stepIndex + 1;
 		} else {
+			isWriteCmd = true;
 			if (fun) {
 				fun();
 			}
 		}
+	};
+	
+	const loopLoading = ()=>{
+		intervalId = setInterval(()=>{
+			if (uni.dayjs().isAfter(cday.add(10,"second"))) {
+				isWriteCmd = true;
+				let array = lodash.chunk(readInfoArray,5);
+				console.log("group",array);
+				for(let ay of array) {
+					if (ay[0]=="0xA6") {
+						if (lodash.findIndex(cmdjson.query_commands,(o)=>{return o.command==ay[1]}) > -1) {
+							//read command
+							if (ay[1]=="0x11") {
+								
+							} else if (ay[1]=="0x12") {
+								let td = uni.dayjs();
+								td = td.hour(parseInt(ay[2],16));
+								td = td.minute(parseInt(ay[3],16));
+								times.value.onTime = td.format("HH:mm");
+							} else if (ay[1]=="0x13") {
+								let td = uni.dayjs();
+								td = td.hour(parseInt(ay[2],16));
+								td = td.minute(parseInt(ay[3],16));
+								times.value.offTime = td.format("HH:mm");
+							} else if (ay[1]=="0x1E") {
+								rday.value = parseInt(ay[3],16);
+							} else {
+								findPgElmList("rcmd",ay[1],(it)=>{
+									if (it.cmd) {
+										if (it.type=="textGroup") {
+											if (it.info.length > 1) {
+												it.info[0].value = parseInt(ay[2],16);
+												it.info[1].value = parseInt(ay[3],16);
+											} else {
+												it.info[0].value = parseInt(ay[3],16);
+											}
+										} else {
+											it.value = parseInt(ay[3],16);
+										}
+									}
+								},true);
+							}
+						}
+					}
+				}
+				
+				lodash.forEach(pgElmList.value,(g,i)=>{
+					lodash.forEach(g.els,(o,j)=>{
+						if (o.type=="switch") {
+							let it = lodash.find(g.els,(x)=>{return o.dId==x.id});
+							if (it.type=="textGroup") {
+								if (it.info.length > 1) {
+									o.value = !(it.info[0].value==0 && it.info[1].value==0);
+								} else {
+									o.value = !(it.info[0].value == 0);
+								}
+								it.isRun = o.value;
+							}
+						}
+					});
+				});
+				dialog.closeLoading();
+				clearInterval(intervalId);
+			}
+		},1000);
 	};
 	
 	onLoad((option)=>{
@@ -176,84 +231,27 @@
 		];
 		
 		dialog.openLoading("读取设备信息……");
+		loopLoading();
 		
-		setTimeout(()=>{
-			readDeviceInfo(null);
-		},10);
-		
-		setTimeout(()=>{
-			lodash.forEach(pgElmList.value,(g,i)=>{
-				lodash.forEach(g.els,(o,j)=>{
-					if (o.type=="switch") {
-						let it = lodash.find(g.els,(x)=>{return o.dId==x.id});
-						if (it.type=="textGroup") {
-							if (it.info.length > 1) {
-								o.value = !(it.info[0].value==0 && it.info[1].value==0);
-							} else {
-								o.value = !(it.info[0].value == 0);
-							}
-							it.isRun = o.value;
-						}
-					}
-				});
-			});
-			dialog.closeLoading();
-			console.log("readInfoArray",readInfoArray);
-		},8000);
+		readDeviceInfo(null);
 		
 		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
-			console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
+			cday = uni.dayjs();
+			// console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
 			let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
-			readInfoArray.push(...data);
-			let array = lodash.chunk(data,5);
-			console.log("array",array);
-			for(let ay of array) {
-				if (ay[0]=="0xA6") {
-					if (lodash.findIndex(cmdjson.query_commands,(o)=>{return o.command==ay[1]}) > -1) {
-						//read command
-						if (ay[1]=="0x11") {
-							
-						} else if (ay[1]=="0x12") {
-							let td = uni.dayjs();
-							td = td.hour(parseInt(ay[2],16));
-							td = td.minute(parseInt(ay[3],16));
-							times.value.onTime = td.format("HH:mm");
-						} else if (ay[1]=="0x13") {
-							let td = uni.dayjs();
-							td = td.hour(parseInt(ay[2],16));
-							td = td.minute(parseInt(ay[3],16));
-							times.value.offTime = td.format("HH:mm");
-						} else if (ay[1]=="0x1E") {
-							rday.value = parseInt(ay[3],16);
-						} else {
-							findPgElmList("rcmd",ay[1],(it)=>{
-								if (it.cmd) {
-									if (it.type=="textGroup") {
-										if (it.info.length > 1) {
-											it.info[0].value = parseInt(ay[2],16);
-											it.info[1].value = parseInt(ay[3],16);
-										} else {
-											it.info[0].value = parseInt(ay[3],16);
-										}
-									} else {
-										it.value = parseInt(ay[3],16);
-									}
-								}
-							},true);
-						}
-						setTimeout(()=>{
-							readDeviceInfo(null);
-						},50);
-					} else {
-						let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==ay[1]});
-						//write command
-						if (ay[2]=="0xFE" && ay[3]=="0x00") {
-							showNotify(cmd.description+":成功设置");
-						} else {
-							showNotify(cmd.description+":设置失败");
-						}
-					}
+			console.log("characteristic array",data);
+			
+			if (isWriteCmd) {
+				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==data[1]});
+				//write command
+				if (data[2]=="0xFE" && data[3]=="0x00") {
+					showNotify(cmd.description+":成功设置");
+				} else {
+					showNotify(cmd.description+":设置失败");
 				}
+			} else {
+				readInfoArray.push(...data);
+				readDeviceInfo(null);
 			}
 			
 			// if (isWriteCmd) {
