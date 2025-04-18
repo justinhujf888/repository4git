@@ -168,29 +168,35 @@
 	
 		
 	async function callBle() {
-		/*
-		navigator.bluetooth.requestDevice({
-			filters: [{ services: [0xFFF0] }],
-			acceptAllDevices: false,
-			// optionalServices: ['battery_service']
-		})
-		.then(device => device.gatt.connect())
-		.then(server => server.getPrimaryService('heart_rate'))
-		.then(service => service.getCharacteristic('heart_rate_measurement'))
-		.then(characteristic => characteristic.startNotifications())
-		.then(characteristic => {
-		    characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
-		    console.log('Notifications have been started.');
-		})
-		.catch(error => { console.error(error); });
-		function handleCharacteristicValueChanged(event) {
-		    const value = event.target.value;
-		    console.log('Received ' + value);
-		    // TODO: Parse Heart Rate Measurement value.
-		    // See https://github.com/WebBluetoothCG/demos/blob/gh-pages/heart-rate-sensor/heartRateSensor.js
-		}
-		*/
+		// #ifdef H5
+		const device = await navigator.bluetooth.requestDevice({
+			filters: [{ services: [Blue.getBlueServiceId().toLowerCase()] }],
+		});
+		// navigator.bluetooth.requestDevice({
+			// filters: [{ services: [Blue.getBlueServiceId()] }],
+			// acceptAllDevices: true,
+			// optionalServices: ["0000FFF0-0000-1000-8000-00805F9B34FB"]
+		// });
+		// .then(device => device.gatt.connect())
+		// .then(server => server.getPrimaryService('heart_rate'))
+		// .then(service => service.getCharacteristic('heart_rate_measurement'))
+		// .then(characteristic => characteristic.startNotifications())
+		// .then(characteristic => {
+		//     characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
+		//     console.log('Notifications have been started.');
+		// })
+		// .catch(error => { console.error(error); });
+		// function handleCharacteristicValueChanged(event) {
+		//     const value = event.target.value;
+		//     console.log('Received ' + value);
+		//     // TODO: Parse Heart Rate Measurement value.
+		//     // See https://github.com/WebBluetoothCG/demos/blob/gh-pages/heart-rate-sensor/heartRateSensor.js
+		// }
+		// #endif
+	   
+	   
 	   // console.log(Blue._discoveryStarted);
+	   // #ifdef MP
 	    dialog.openLoading("扫描设备……");
 	    preDeviceList.value = [];
 	    Blue.callBle();
@@ -237,6 +243,8 @@
 			viewStatus.value = 1;
 			dialog.closeLoading();
 		});
+		
+		// #endif
 	}
 	
 	let f = 0;
