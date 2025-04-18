@@ -20,6 +20,10 @@ export const Blue = {
 	 */
 	connectState: -1,
 	
+	getBlueServiceId() {
+		return pserviceId;
+	},
+	
 	getBleConnectDeviceID() {
 		return bleConnectDeviceID;
 	},
