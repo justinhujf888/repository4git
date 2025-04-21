@@ -73,8 +73,7 @@
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	const { showNotify, closeNotify } = useNotify();
-	// const {lodash} = getCurrentInstance().appContext.config.globalProperties;
-	// const { proxy } = getCurrentInstance();
+	const { proxy } = getCurrentInstance();
 	const viewStatus = ref(-1);
 	const deviceList = ref([]);
 	const preDeviceList = ref([]);

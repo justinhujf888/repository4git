@@ -1,10 +1,10 @@
 import App from './App'
 import 'uno.css';
 /* 全局挂载请求库 */
-// import lodash from "lodash";
+import lodash from "lodash";
 import dayjs from "dayjs";
-import GraceRequest from '@/Grace6/js/request.js'
-uni.gRequest = GraceRequest;
+// import GraceRequest from '@/Grace6/js/request.js'
+// uni.gRequest = GraceRequest;
 uni.dayjs = dayjs;
 const prePage = ()=>{
 	let pages = getCurrentPages();
@@ -31,9 +31,9 @@ app.$mount()
 import { createSSRApp } from 'vue'
 export function createApp() {
   const app = createSSRApp(App);
-  // app.config.globalProperties.lodash= lodash;
+  app.config.globalProperties.lodash= lodash;
   app.config.globalProperties.$prePage = prePage;
-  app.config.globalProperties.$dayjs = dayjs;
+  app.config.globalProperties.dayjs = dayjs;
   return {
     app
   }
