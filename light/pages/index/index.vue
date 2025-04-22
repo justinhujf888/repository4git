@@ -217,8 +217,8 @@
 					theDevice.value = device;
 				}
 				
-				let cday = uni.dayjs();
-				Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
+				// let cday = uni.dayjs();
+				// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 				setTimeout(()=>{
 					viewStatus.value = 2;
 					dialog.closeLoading();

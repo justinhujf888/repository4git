@@ -9,10 +9,15 @@
 	</wd-navbar>
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
-	<view class="relative px-4">
+	<view v-if="isWriteCmd" class="relative px-4">
 		<view class="mt-5 col justify-center items-center text-gray-400">
-			<text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text>
-			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-2" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
+			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
+			<view class="row justify-center items-center mt-2 text-sm">
+				<text>当前时钟</text>
+				<text class="ml-1">{{currentTime}}</text>
+				<text class="rounded-2xl py-1 px-4 btn1 text-white ml-1" @tap="syncTime">手动同步时钟</text>
+			</view>
+			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-4" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
 			<view class="row justify-center items-center w-full text-base">
 				<view class="col justify-center items-center" :class="rday==1 ? '' : 'opacity-15'">
 					<text class="iconfont text-3xl text-green-500">&#xe61f;</text>
@@ -23,9 +28,6 @@
 						<text>开灯 {{times.onTime}}</text>
 						<text class="ml-2">关灯 {{times.offTime}}</text>
 						<text class="gui-icons ml-2">&#xe69e;</text>
-					</view>
-					<view class="row justify-center items-center mt-2" @tap="syncTime">
-						<text class="rounded-2xl py-1 px-4 btn1 text-white text-sm">手动同步时钟</text>
 					</view>
 				</view>
 				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-15'">
@@ -96,6 +98,8 @@
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	const { showNotify, closeNotify } = useNotify();
 	
+	const isWriteCmd = ref(false);
+	const currentTime = ref("");
 	const times = ref({onTime:"8:00",offTime:"18:00"});
 	const pgElmList = ref([]);
 	
@@ -109,7 +113,6 @@
 	let cday = null;
 	let intervalId = null;
 	let loadingTime = null;
-	let isWriteCmd = false;
 	
 	
 	let stepIndex = 0;
@@ -124,7 +127,7 @@
 			Blue.writeBLEValue(hexTools.bleBuffer(cmdjson.query_commands[stepIndex].command,0,0).buffer);
 			stepIndex = stepIndex + 1;
 		} else {
-			isWriteCmd = true;
+			isWriteCmd.value = true;
 			if (fun) {
 				fun();
 			}
@@ -133,16 +136,20 @@
 	
 	const loopLoading = ()=>{
 		intervalId = setInterval(()=>{
-			if (uni.dayjs().isAfter(cday.add(10,"second"))) {
-				isWriteCmd = true;
+			let now = proxy.dayjs();
+			if (cday && now.isAfter(cday.add(10,"second"))) {
+				isWriteCmd.value = true;
 				let array = lodash.chunk(readInfoArray,5);
-				console.log("group",array);
+				console.log("group",now.format("HH:mm:ss"),array);
 				for(let ay of array) {
 					if (ay[0]=="0xA6") {
 						if (lodash.findIndex(cmdjson.query_commands,(o)=>{return o.command==ay[1]}) > -1) {
 							//read command
 							if (ay[1]=="0x11") {
-								
+								let td = proxy.dayjs();
+								td = td.hour(parseInt(ay[2],16));
+								td = td.minute(parseInt(ay[3],16));
+								currentTime.value = td.format("HH:mm");
 							} else if (ay[1]=="0x12") {
 								let td = uni.dayjs();
 								td = td.hour(parseInt(ay[2],16));
@@ -230,47 +237,54 @@
 			]}
 		];
 		
+		syncTime();
+		
 		dialog.openLoading("读取设备信息……");
-		loopLoading();
-		
-		readDeviceInfo(null);
-		
-		ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
-			cday = uni.dayjs();
-			// console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
-			let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
-			console.log("characteristic array",data);
-			
-			if (isWriteCmd) {
-				let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==data[1]});
-				//write command
-				if (data[2]=="0xFE" && data[3]=="0x00") {
-					showNotify(cmd.description+":成功设置");
+		setTimeout(()=>{
+			ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
+				cday = uni.dayjs();
+				// console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
+				let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
+				console.log("characteristic array",cday.format("HH:mm:ss"),data);
+				
+				if (isWriteCmd.value) {
+					let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==data[1]});
+					//write command
+					if (data[2]=="0xFE" && data[3]=="0x00") {
+						showNotify(cmd.description+":成功设置");
+					} else {
+						showNotify(cmd.description+":设置失败");
+					}
 				} else {
-					showNotify(cmd.description+":设置失败");
+					readInfoArray.push(...data);
+					setTimeout(()=>{
+						readDeviceInfo(null);
+					},500);
 				}
-			} else {
-				readInfoArray.push(...data);
-				readDeviceInfo(null);
-			}
+				
+				// if (isWriteCmd.value) {
+				// 	cday = uni.dayjs();
+				// 	let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
+				// 	if (cmd) {
+				// 		if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
+				// 			showNotify(cmd.description+":成功设置");
+				// 		} else {
+				// 			showNotify(cmd.description+":设置失败");
+				// 		}
+				// 	}
+				// } else {
+				// 	let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
+				// 	findPgElmList("rcmd",("0x"+array[1]).toUpperCase(),(it)=>{
+						
+				// 	},true);
+				// }
+			});
 			
-			// if (isWriteCmd) {
-			// 	cday = uni.dayjs();
-			// 	let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
-			// 	if (cmd) {
-			// 		if (array[2].toUpperCase()=="FE" && array[3].toUpperCase()=="00") {
-			// 			showNotify(cmd.description+":成功设置");
-			// 		} else {
-			// 			showNotify(cmd.description+":设置失败");
-			// 		}
-			// 	}
-			// } else {
-			// 	let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command.toUpperCase()==("0x"+array[1]).toUpperCase()});
-			// 	findPgElmList("rcmd",("0x"+array[1]).toUpperCase(),(it)=>{
-					
-			// 	},true);
-			// }
-		});
+			isWriteCmd.value = false;
+			readInfoArray = [];
+			loopLoading();
+			readDeviceInfo(null);
+		},2000);
 	});
 	
 	const checkInput = (e)=>{
@@ -395,6 +409,7 @@
 		// console.log(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))));
 		cday = uni.dayjs();
 		Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
+		currentTime.value = cday.format("HH:mm");
 	};
 	
 	let findPgElmList = (field,value,fun,firstOnly)=>{
