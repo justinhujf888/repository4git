@@ -138,9 +138,10 @@
 		intervalId = setInterval(()=>{
 			let now = proxy.dayjs();
 			if (cday && now.isAfter(cday.add(10,"second"))) {
+				console.log("group",now.format("HH:mm:ss"),readInfoArray);
 				isWriteCmd.value = true;
 				let array = lodash.chunk(readInfoArray,5);
-				console.log("group",now.format("HH:mm:ss"),array);
+				console.log("group2",now.format("HH:mm:ss"),array);
 				for(let ay of array) {
 					if (ay[0]=="0xA6") {
 						if (lodash.findIndex(cmdjson.query_commands,(o)=>{return o.command==ay[1]}) > -1) {
@@ -256,7 +257,10 @@
 						showNotify(cmd.description+":设置失败");
 					}
 				} else {
-					readInfoArray.push(...data);
+					lodash.forEach(data,(v,i)=>{
+						readInfoArray.push(v);
+					});
+					// readInfoArray.push(...data);
 					setTimeout(()=>{
 						readDeviceInfo(null);
 					},500);
