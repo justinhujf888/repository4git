@@ -137,7 +137,7 @@
 	const loopLoading = ()=>{
 		intervalId = setInterval(()=>{
 			let now = proxy.dayjs();
-			if (cday && now.isAfter(cday.add(10,"second"))) {
+			if (cday && now.isAfter(cday.add(15,"second"))) {
 				console.log("group",now.format("HH:mm:ss"),readInfoArray);
 				isWriteCmd.value = true;
 				let array = lodash.chunk(readInfoArray,5);
@@ -238,6 +238,8 @@
 			]}
 		];
 		
+		// 按照逻辑应该执行下面语句，但考虑到没有读取设备数据之前，不让页面显示，所以取消。
+		// isWriteCmd.value = true;
 		syncTime();
 		
 		dialog.openLoading("读取设备信息……");
@@ -247,7 +249,7 @@
 				// console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
 				let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
 				console.log("characteristic array",cday.format("HH:mm:ss"),data);
-				
+
 				if (isWriteCmd.value) {
 					let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==data[1]});
 					//write command

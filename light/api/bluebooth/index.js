@@ -30,6 +30,9 @@ export const Blue = {
 	setBleConnectDeviceID(deviceId) {
 		bleConnectDeviceID = deviceId;
 	},
+	getBleCharacteristicInfo() {
+		return csValue;
+	},
 	
 	callBle() {
 		if (!opened) {
