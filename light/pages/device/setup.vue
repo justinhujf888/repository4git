@@ -10,6 +10,9 @@
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
 	<view v-if="isWriteCmd" class="relative px-4">
+		<view class="absolute left-2 top-1">
+			<wd-button @click="test">0x11</wd-button>
+		</view>
 		<view class="mt-5 col justify-center items-center text-gray-400">
 			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
 			<view class="row justify-center items-center mt-2 text-sm">
@@ -115,7 +118,9 @@
 	let loadingTime = null;
 	
 	
+	// let csTestdata = ["0xA6", "0x11", "0x00", "0x01", "0xE1", "0xA6", "0x12", "0x00", "0x01", "0xE1", "0xA6", "0x13", "0x00", "0x01", "0xE1", "0xA6", "0x14", "0x00", "0x01", "0xE1", "0xA6", "0x15", "0x00", "0x01", "0xE1", "0xA6", "0x16", "0x00", "0x01", "0xE1", "0xA6", "0x17", "0x00", "0x01", "0xE1", "0xA6", "0x18", "0x00", "0x01", "0xE1", "0xA6", "0x19", "0x00", "0x01", "0xE1", "0xA6", "0x1A", "0x00", "0x01", "0xE1", "0xA6", "0x1B", "0x00", "0x01", "0xE1", "0xA6", "0x1C", "0x00", "0x01", "0xE1", "0xA6", "0x1D", "0x00", "0x01", "0xE1", "0xA6", "0x1E", "0x00", "0x01", "0xE1", "0xA6", "0x1F", "0x00", "0x01", "0xE1", "0xA6", "0x20", "0x00", "0x01", "0xE1"];
 	let stepIndex = 0;
+	let say = [];
 	let readInfoArray = [];
 	const readDeviceInfo = (fun)=>{
 		// for(let c of cmdjson.query_commands) {
@@ -127,7 +132,6 @@
 			Blue.writeBLEValue(hexTools.bleBuffer(cmdjson.query_commands[stepIndex].command,0,0).buffer);
 			stepIndex = stepIndex + 1;
 		} else {
-			isWriteCmd.value = true;
 			if (fun) {
 				fun();
 			}
@@ -246,7 +250,11 @@
 		setTimeout(()=>{
 			ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 				cday = uni.dayjs();
-				// console.log("addCharacteristicValueChangeListen_",hexTools.arrayBuffer2hex(characteristic.value));
+				// console.log("addCharacteristicValueChangeListen_",characteristic.value);
+				
+				// for test
+				// let data = characteristic.value.map(str => "0x"+str.toUpperCase());
+				
 				let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
 				console.log("characteristic array",cday.format("HH:mm:ss"),data);
 
@@ -260,12 +268,18 @@
 					}
 				} else {
 					lodash.forEach(data,(v,i)=>{
+						say.push(v);
 						readInfoArray.push(v);
 					});
-					// readInfoArray.push(...data);
-					setTimeout(()=>{
+					if (say.length>=5) {
+						say = [];
 						readDeviceInfo(null);
-					},500);
+					}
+					
+					// readInfoArray.push(...data);
+					// setTimeout(()=>{
+					// 	readDeviceInfo(null);
+					// },500);
 				}
 				
 				// if (isWriteCmd.value) {
@@ -287,9 +301,10 @@
 			});
 			
 			isWriteCmd.value = false;
+			say = [];
 			readInfoArray = [];
-			loopLoading();
 			readDeviceInfo(null);
+			loopLoading();
 		},2000);
 	});
 	
@@ -437,6 +452,14 @@
 			}
 		}
 	};
+	
+	const test = ()=>{
+		isWriteCmd.value = false;
+		Blue.writeBLEValue(hexTools.bleBuffer("0x11",0,0).buffer);
+		setTimeout(()=>{
+			isWriteCmd.value = true;
+		},9000);
+	}
 	
 	const save = ()=>{
 		dialog.openLoading("与设备交互中……");
