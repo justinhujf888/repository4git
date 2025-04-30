@@ -10,9 +10,9 @@
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
 	<view v-if="isWriteCmd" class="relative px-4">
-		<view class="absolute left-2 top-1">
+<!-- 		<view class="absolute left-2 top-1">
 			<wd-button @click="test">0x11</wd-button>
-		</view>
+		</view> -->
 		<view class="mt-5 col justify-center items-center text-gray-400">
 			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
 			<view class="row justify-center items-center mt-2 text-sm">
@@ -141,7 +141,7 @@
 	const loopLoading = ()=>{
 		intervalId = setInterval(()=>{
 			let now = proxy.dayjs();
-			if (cday && now.isAfter(cday.add(15,"second"))) {
+			if (cday && now.isAfter(cday.add(8,"second"))) {
 				console.log("group",now.format("HH:mm:ss"),readInfoArray);
 				isWriteCmd.value = true;
 				let array = lodash.chunk(readInfoArray,5);
@@ -259,12 +259,18 @@
 				console.log("characteristic array",cday.format("HH:mm:ss"),data);
 
 				if (isWriteCmd.value) {
-					let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==data[1]});
-					//write command
-					if (data[2]=="0xFE" && data[3]=="0x00") {
-						showNotify(cmd.description+":成功设置");
-					} else {
-						showNotify(cmd.description+":设置失败");
+					say.push(...data);
+					if (say.length>=5) {
+						let cmd = lodash.find(cmdjson.commands,(o)=>{return o.command==say[1]});
+						//write command
+						if (cmd) {
+							if (say[2]=="0xFE" && say[3]=="0x00") {
+								showNotify(cmd.description+":成功设置");
+							} else {
+								showNotify(cmd.description+":设置失败");
+							}
+						}
+						say = [];
 					}
 				} else {
 					lodash.forEach(data,(v,i)=>{
