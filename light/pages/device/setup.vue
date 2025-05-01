@@ -93,6 +93,7 @@
 	import hexTools from "@/api/hexTools.js";
 	
 	import lodash from "lodash";
+	import isBetween from 'dayjs/plugin/isBetween';
 	import dialog from "@/api/uniapp/dialog.js";
 	import cmdjson from "@/api/datas/cmd.json";
 	
@@ -141,6 +142,9 @@
 	const loopLoading = ()=>{
 		intervalId = setInterval(()=>{
 			let now = proxy.dayjs();
+			let td1 = proxy.dayjs(now);
+			let td2 = proxy.dayjs(now);
+			
 			if (cday && now.isAfter(cday.add(8,"second"))) {
 				console.log("group",now.format("HH:mm:ss"),readInfoArray);
 				isWriteCmd.value = true;
@@ -156,15 +160,13 @@
 								td = td.minute(parseInt(ay[3],16));
 								currentTime.value = td.format("HH:mm");
 							} else if (ay[1]=="0x12") {
-								let td = uni.dayjs();
-								td = td.hour(parseInt(ay[2],16));
-								td = td.minute(parseInt(ay[3],16));
-								times.value.onTime = td.format("HH:mm");
+								td1 = td1.hour(parseInt(ay[2],16));
+								td1 = td1.minute(parseInt(ay[3],16));
+								times.value.onTime = td1.format("HH:mm");
 							} else if (ay[1]=="0x13") {
-								let td = uni.dayjs();
-								td = td.hour(parseInt(ay[2],16));
-								td = td.minute(parseInt(ay[3],16));
-								times.value.offTime = td.format("HH:mm");
+								td2 = td2.hour(parseInt(ay[2],16));
+								td2 = td2.minute(parseInt(ay[3],16));
+								times.value.offTime = td2.format("HH:mm");
 							} else if (ay[1]=="0x1E") {
 								rday.value = parseInt(ay[3],16);
 							} else {
@@ -202,8 +204,18 @@
 						}
 					});
 				});
+				
 				dialog.closeLoading();
 				clearInterval(intervalId);
+				//判断灯光状态与定时设定
+				proxy.dayjs.extend(isBetween);
+				if (proxy.dayjs().isBetween(td1,td2,null,"[]")!=(rday.value==1)) {
+					dialog.confirm("当前灯光状态与定时设定不符，是否仍保持当前状态？",()=>{},()=>{
+						rday.value = (rday.value==0 ? 1 : 0);
+						Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+					});
+				}
+				//end
 			}
 		},1000);
 	};
