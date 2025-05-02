@@ -34,15 +34,19 @@
 				</view>
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
-				<view class="bg-white rounded-xl px-2 py-5 mt-4" @tap="page.navigateTo('../device/setup',{})">
-					<view class="mx-10 center">
+				<view class="bg-white rounded-xl px-2 py-5 mt-4">
+					<view class="mx-10 center" @tap="page.navigateTo('../device/setup',{})">
 						<img src="../../static/device.png" mode="widthFix"></img>
 					</view>
+					<wd-divider></wd-divider>
 					<view class="between mx-5 mt-5">
 						<text class="text-sm font-semibold">{{theDevice.name}}</text>
-						<view class="row" v-if="theDevice.connected">
+						<view class="row items-center" v-if="theDevice.connected">
 							<text class="text-sm font-bold mr-1">·</text>
-							<text class="text-sm font-semibold">已连接</text>
+							<text class="text-sm font-semibold mr-2">已连接</text>
+							<view class="row" @click.stop="closeConnection()">
+								<wd-button size="small" type="error" custom-class="py-1 px-2 text-xs text-white w-15 self-end">断开连接</wd-button>
+							</view>
 						</view>
 					</view>
 				</view>
@@ -164,7 +168,11 @@
 		Blue.createBLEConnection(deviceId);
 	}
 
-	
+	const closeConnection = ()=>{
+		dialog.confirm("是否断开设备连接",()=>{
+			Blue.closeBLEConnection();
+		},null);
+	};
 		
 	async function callBle() {
 		// #ifdef H5
@@ -225,8 +233,7 @@
 				},5000);
 			} 
 			else if (data.deviceId && !data.connected) {
-				Blue.createBLEConnection(data.deviceId);
-			} else {
+				// Blue.createBLEConnection(data.deviceId);
 				viewStatus.value = 0;
 				dialog.closeLoading();
 			}

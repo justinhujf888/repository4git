@@ -15,7 +15,9 @@ export default class Dialog {
 		        if (res.confirm) {
 		            okfun();
 		        } else if (res.cancel && hasCancel) {
-		            cancelfun();
+		            if (cancelfun) {
+						cancelfun();
+					}
 		        }
 		    }
 		});
@@ -28,7 +30,9 @@ export default class Dialog {
 				if (res.confirm) {
 					okfun();
 				} else if (res.cancel) {
-					cancelfun();
+					if (cancelfun) {
+						cancelfun();
+					}
 				}
 			}
 		});

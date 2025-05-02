@@ -155,6 +155,9 @@ export const Blue = {
 					icon: 'none',
 					title: '蓝牙已断开连接'
 				})
+			},
+			fail:(er)=>{
+				console.log(er);
 			}
 		})
 	},
