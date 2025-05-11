@@ -575,7 +575,7 @@ select w.name,w.description,w.imgurl,w.phonetics,w.sortnum,w.updatename from wor
             case (3 as byte):
                 for(Map map in sortList)
                 {
-                    this.executeEQL("update WordLabel set sortNum = :sortNum where wordLabelPK.wordId = :wordId and wordLabelPK.label = :label and wordType = :wordType",["wordId":map.wordId,"label":map.label,"wordType":map.wordType,"sortNum":map.sortNum]);
+                    this.executeEQL("update WordLabel set sortNum = :sortNum where wordLabelPK.wordId = :wordId and wordLabelPK.label = :label and wordLabelPK.wordType = :wordType",["wordId":map.wordId,"label":map.label,"wordType":map.wordType,"sortNum":map.sortNum]);
                 }
                 break;
         //            question
