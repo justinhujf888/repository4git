@@ -1,0 +1,85 @@
+Manifest-Version: 1.0
+Main-Class: com.weavict.carshopapp.app.CarshopappApplication
+Class-Path: micrometer-observation-1.13.1.jar jersey-client-3.1.7.jar sn
+ akeyaml-2.2.jar commons-io-2.8.0.jar jackson-module-jakarta-xmlbind-ann
+ otations-2.17.1.jar jandex-3.1.2.jar tomcat-embed-websocket-10.1.25.jar
+  jackson-jakarta-rs-json-provider-2.17.1.jar slf4j-api-2.0.13.jar osgi-
+ resource-locator-1.0.3.jar spring-jdbc-6.1.10.jar spring-core-6.1.10.ja
+ r camunda-engine-spring-6-7.21.0.jar hk2-core-3.0.6.jar spring-boot-sta
+ rter-data-redis-3.3.1.jar HikariCP-5.1.0.jar camunda-engine-feel-juel-7
+ .21.0.jar jackson-module-parameter-names-2.17.1.jar camunda-connect-con
+ nectors-all-1.6.0.jar asm-commons-9.6.jar hk2-api-3.0.6.jar spring-boot
+ -starter-logging-3.3.1.jar camunda-engine-feel-scala-7.21.0.jar netty-t
+ ransport-4.1.111.Final.jar jersey-container-servlet-core-3.1.7.jar log4
+ j-api-2.23.1.jar feel-engine-1.17.5-scala-shaded.jar jersey-bean-valida
+ tion-3.1.7.jar jaxb-impl-4.0.5.jar jakarta.validation-api-3.0.2.jar spr
+ ing-boot-autoconfigure-3.3.1.jar camunda-bpmn-model-7.21.0.jar camunda-
+ spin-core-1.23.0.jar spring-oxm-6.1.10.jar jboss-logging-3.5.3.Final.ja
+ r spring-context-support-6.1.10.jar hk2-utils-3.0.6.jar spring-boot-sta
+ rter-json-3.3.1.jar jackson-core-2.17.1.jar antlr4-runtime-4.13.0.jar j
+ ackson-databind-2.17.1.jar spring-aspects-6.1.10.jar spring-boot-starte
+ r-tomcat-3.3.1.jar tomcat-embed-core-10.1.25.jar spring-boot-starter-ao
+ p-3.3.1.jar spring-jcl-6.1.10.jar jakarta.transaction-api-2.0.1.jar jer
+ sey-entity-filtering-3.1.7.jar logback-classic-1.5.6.jar classmate-1.7.
+ 0.jar commons-lang3-3.14.0.jar camunda-engine-7.21.0.jar camunda-bpm-sp
+ ring-boot-starter-webapp-core-7.21.0.jar log4j-to-slf4j-2.23.1.jar nett
+ y-resolver-4.1.111.Final.jar jackson-datatype-jsr310-2.17.1.jar mybatis
+ -3.5.15.jar joda-time-2.12.5.jar byte-buddy-1.14.17.jar camunda-spin-da
+ taformat-all-1.23.0.jar jul-to-slf4j-2.0.13.jar jackson-annotations-2.1
+ 7.1.jar netty-codec-4.1.111.Final.jar jackson-datatype-jdk8-2.17.1.jar 
+ postgresql-42.7.3.jar logback-core-1.5.6.jar camunda-engine-plugin-spin
+ -7.21.0.jar spring-web-6.1.10.jar netty-common-4.1.111.Final.jar reacti
+ ve-streams-1.0.4.jar jersey-media-json-jackson-3.1.7.jar tomcat-embed-e
+ l-10.1.25.jar jersey-common-3.1.7.jar class-model-3.0.6.jar spring-expr
+ ession-6.1.10.jar camunda-webapp-jakarta-7.21.0-classes.jar jersey-serv
+ er-3.1.7.jar spring-aop-6.1.10.jar java-uuid-generator-4.3.0.jar camund
+ a-engine-feel-api-7.21.0.jar camunda-juel-7.21.0.jar spring-beans-6.1.1
+ 0.jar hk2-locator-3.0.6.jar istack-commons-runtime-4.1.2.jar netty-tran
+ sport-native-unix-common-4.1.111.Final.jar netty-handler-4.1.111.Final.
+ jar javassist-3.30.2-GA.jar camunda-webapp-webjar-7.21.0.jar jakarta.an
+ notation-api-2.1.1.jar jakarta.xml.bind-api-4.0.2.jar camunda-xml-model
+ -7.21.0.jar camunda-commons-typed-values-7.21.0.jar jackson-jakarta-rs-
+ base-2.17.1.jar spring-boot-starter-jersey-3.3.1.jar camunda-bpm-spring
+ -boot-starter-webapp-7.21.0.jar jersey-spring6-3.1.7.jar groovy-4.0.21.
+ jar spring-tx-6.1.10.jar hibernate-validator-8.0.1.Final.jar spring-orm
+ -6.1.10.jar camunda-bpm-spring-boot-starter-7.21.0.jar jersey-container
+ -servlet-3.1.7.jar commons-pool2-2.12.0.jar aspectjweaver-1.9.22.jar sp
+ ring-boot-starter-web-3.3.1.jar camunda-engine-rest-core-jakarta-7.21.0
+ .jar angus-activation-2.0.2.jar reactor-core-3.6.7.jar lettuce-core-6.3
+ .2.RELEASE.jar spring-webmvc-6.1.10.jar txw2-4.0.5.jar spring-data-keyv
+ alue-3.3.1.jar spring-boot-starter-3.3.1.jar camunda-commons-logging-1.
+ 13.0.jar commons-fileupload-1.5.jar jaxb-core-4.0.5.jar jakarta.ws.rs-a
+ pi-3.1.0.jar camunda-commons-utils-1.13.0.jar hibernate-commons-annotat
+ ions-6.0.6.Final.jar camunda-dmn-model-7.21.0.jar checker-qual-3.42.0.j
+ ar spring-boot-devtools-3.3.1.jar camunda-connect-core-1.6.0.jar jersey
+ -hk2-3.1.7.jar hibernate-core-6.5.2.Final.jar spring-data-commons-3.3.1
+ .jar spring-boot-3.3.1.jar spring-data-jpa-3.3.1.jar camunda-bpm-spring
+ -boot-starter-rest-7.21.0.jar jakarta.activation-api-2.1.3.jar spring-b
+ ridge-3.0.6.jar jaxb-runtime-4.0.5.jar netty-buffer-4.1.111.Final.jar s
+ pring-data-redis-3.3.1.jar spring-boot-starter-jdbc-3.3.1.jar jakarta.i
+ nject-api-2.0.1.jar spring-boot-starter-data-jpa-3.3.1.jar jaxb-core-4.
+ 0.5.jar micrometer-commons-1.13.1.jar spring-context-6.1.10.jar aopalli
+ ance-repackaged-3.0.6.jar jcommon.jar commons-io.jar jodd-3.6.7.jar gso
+ n-2.10.1.jar ini4j-0.5.4.jar websitecomm.jar cglib-3.2.10.jar groovy-4.
+ 0.22.jar jdom2-2.0.6.1.jar fastjson-1.2.7.jar httpmime-4.3.6.jar httpco
+ re-4.4.16.jar jcommander-1.47.jar jodd-all-5.0.13.jar stax2-api-4.2.2.j
+ ar emoji-java-4.0.0.jar fastjson2-2.0.51.jar slf4j-api-2.0.13.jar commo
+ ns-beanutils.jar groovy-ant-4.0.22.jar groovy-jmx-4.0.22.jar groovy-nio
+ -4.0.22.jar groovy-sql-4.0.22.jar groovy-xml-4.0.22.jar httpclient-4.5.
+ 13.jar hutool-all-5.8.29.jar groovy-ginq-4.0.22.jar groovy-json-4.0.22.
+ jar groovy-test-4.0.22.jar groovy-toml-4.0.22.jar groovy-yaml-4.0.22.ja
+ r commons-logging-1.2.jar groovy-macro-4.0.22.jar groovy-swing-4.0.22.j
+ ar woodstox-core-6.6.2.jar commons-codec-1.16.1.jar groovy-jsr223-4.0.2
+ 2.jar groovy-testng-4.0.22.jar aliyun-sdk-oss-3.17.4.jar bcprov-jdk15to
+ 18-1.69.jar groovy-console-4.0.22.jar groovy-servlet-4.0.22.jar groovy-
+ datetime-4.0.22.jar groovy-dateutil-4.0.22.jar groovy-groovysh-4.0.22.j
+ ar groovy-contracts-4.0.22.jar groovy-groovydoc-4.0.22.jar groovy-templ
+ ates-4.0.22.jar groovy-astbuilder-4.0.22.jar aliyun-java-sdk-ram-3.1.0.
+ jar groovy-cli-commons-4.0.22.jar groovy-cli-picocli-4.0.22.jar groovy-
+ test-junit5-4.0.22.jar aliyun-java-sdk-kms-2.11.0.jar groovy-docgenerat
+ or-4.0.22.jar groovy-typecheckers-4.0.22.jar aliyun-java-sdk-core-4.5.1
+ 0.jar groovy-macro-library-4.0.22.jar jackson-dataformat-xml-2.17.1.jar
+  hk2-runlevel-3.0.6.jar expressly-5.0.0.jar hk2-3.0.6.jar camunda-cmmn-
+ model-7.21.0.jar spring-boot-starter-validation-3.3.1.jar jakarta.persi
+ stence-api-3.1.0.jar camunda-engine-dmn-7.21.0.jar
+
