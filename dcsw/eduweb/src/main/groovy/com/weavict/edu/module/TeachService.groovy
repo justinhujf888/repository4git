@@ -627,6 +627,7 @@ select w.name,w.description,w.imgurl,w.phonetics,w.sortnum,w.updatename from wor
                 this.executeEQL("update QuestionnaireItems set bookId = :bookId,bookUniId = :bookUniId where id = :id",["bookId":newBookId,"bookUniId":newBookUniId,"id":questionnaireItemsId]);
                 break;
             case 1 as byte:
+//                暂未实现
                 break;
         }
     }
