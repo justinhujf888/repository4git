@@ -206,6 +206,8 @@
 	   // #ifdef MP
 	    dialog.openLoading("扫描设备……");
 	    preDeviceList.value = [];
+		Blue.setBlueServiceId("76617365-6570-6c61-6e74-776f726c6473");
+		Blue.setServiceFilter(["76617365-6570-6c61-6e74-776f726c6473"]);
 	    Blue.callBle();
 		ConnectController.addConnectStateListen((data)=>{
 			console.log("addConnectStateListen",data);
