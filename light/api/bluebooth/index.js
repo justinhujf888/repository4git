@@ -2,8 +2,8 @@ import { BLUE_STATE } from './blueState.js';
 import { ConnectController } from './controller.js';
 import lodash from "lodash";
 
-let pserviceId = "76617365-6570-6c61-6e74-776f726c6473";//"0000FFF0-0000-1000-8000-00805F9B34FB";
-let serviceFilter = [pserviceId];
+let pserviceId = "";//"0000FFF0-0000-1000-8000-00805F9B34FB" "76617365-6570-6c61-6e74-776f726c6473";
+let serviceFilter = null;
 let bleConnectDeviceID = null;
 let opened = false;
 let csValue = {serviceId:null,readId:null,writeId:null};
@@ -175,6 +175,7 @@ export const Blue = {
 			return
 		}
 		this._discoveryStarted = true
+		console.log(serviceFilter);
 		wx.startBluetoothDevicesDiscovery({
 			allowDuplicatesKey: false,
 			interval: 1000,

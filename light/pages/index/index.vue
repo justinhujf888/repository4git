@@ -29,7 +29,7 @@
 							<text class="text-sm font-bold text-green-500 mr-1">·</text>
 							<text class="text-sm font-semibold">{{device.name}}</text>
 						</view>
-						<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device.deviceId)" click="scaned()">连接</wd-button>
+						<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
 					</view>
 				</view>
 			</view>
@@ -163,9 +163,11 @@
 		Blue.closeBlue();
 	}
 	
-	function addDevice(deviceId) {
+	function addDevice(device) {
 		dialog.openLoading("正在连接设备……");
-		Blue.createBLEConnection(deviceId);
+		console.log("connect...",device.advertisServiceUUIDs);
+		Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
+		Blue.createBLEConnection(device.deviceId);
 	}
 
 	const closeConnection = ()=>{
@@ -204,10 +206,11 @@
 	   
 	   // console.log(Blue._discoveryStarted);
 	   // #ifdef MP
-	    dialog.openLoading("扫描设备……");
+	    // dialog.openLoading("扫描设备……");
 	    preDeviceList.value = [];
-		Blue.setBlueServiceId("76617365-6570-6c61-6e74-776f726c6473");
-		Blue.setServiceFilter(["76617365-6570-6c61-6e74-776f726c6473"]);
+		// Blue.setBlueServiceId(serviceId);
+		
+		Blue.setServiceFilter(["0000FFF0-0000-1000-8000-00805F9B34FB".toUpperCase(),"00007365-0000-1000-8000-00805F9B34FB".toUpperCase(),"76617365-6570-6c61-6e74-776f726c6473".toUpperCase()]);
 	    Blue.callBle();
 		ConnectController.addConnectStateListen((data)=>{
 			console.log("addConnectStateListen",data);
@@ -215,7 +218,8 @@
 			if(data.deviceId && data.connected) {
 				console.log("connected",data);
 				Blue.setBleConnectDeviceID(data.deviceId);
-				Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");			
+				Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");	
+				// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
 					device.connected = true;
