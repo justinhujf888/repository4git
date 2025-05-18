@@ -67,3 +67,74 @@ class Buyer extends BEntity implements Serializable, IEntity
 
     }
 }
+
+@Table
+@Entity
+class BuyerAppInfo extends BEntity implements Serializable,IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    BuyerAppInfoPK buyerAppInfoPK;
+
+    @Column(length=20)
+    String loginName;
+
+    @Column(length=50)
+    String password;
+
+    @Column(length=32)
+    String wxid;
+
+    @Column(length=32)
+    String wxopenid;
+
+    @Column(length=150)
+    String headImgUrl;
+
+    @Column(length=20)
+    String wxNickName;
+
+    @Column(length=20)
+    String wxNickEm;
+
+    @Column(length=30)
+    Integer amb;
+
+    @Column(length=8)
+    int money;
+
+    @Column(length=500)
+    String description;
+
+    @Column(length=80)
+    String workCompany;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Embeddable
+class BuyerAppInfoPK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(name="appid",length=30,nullable=false, insertable=false, updatable=false)
+    String appId;
+
+    @Column(name="buyerid",length=20,nullable=false, insertable=false, updatable=false)
+    String buyerId;
+
+    BuyerAppInfoPK()
+    {
+
+    }
+
+    BuyerAppInfoPK(String appId,String buyerId)
+    {
+        this.appId = appId;
+        this.buyerId = buyerId;
+    }
+}
