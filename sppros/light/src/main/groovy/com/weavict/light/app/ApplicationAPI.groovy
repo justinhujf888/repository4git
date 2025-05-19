@@ -1,5 +1,6 @@
 package com.weavict.light.app
 
+import com.weavict.light.rest.DeviceRest
 import com.weavict.light.rest.OtherRest
 import com.weavict.light.rest.RequestClientWriterInterceptor
 import com.weavict.light.rest.RequestServerReaderInterceptor
@@ -37,6 +38,7 @@ class ApplicationAPI extends ResourceConfig
         register(RequestClientWriterInterceptor.class);
         register(RequestServerReaderInterceptor.class);
 
+        register(DeviceRest.class);
         register(OtherRest.class);
 
 //        register(JerseyFeature.class);

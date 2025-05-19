@@ -66,6 +66,8 @@
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
 	import lodash from "lodash";
 	
+	import device from "@/api/dbs/device.js";
+	
 	import { Blue } from '@/api/bluebooth/index.js';
 	import { ConnectController } from '@/api/bluebooth/controller.js';
 	import {BLUE_STATE} from "@/api/bluebooth/blueState.js";
@@ -87,6 +89,9 @@
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
+		device.qyBuyerDeviceList((data)=>{
+			console.log(data);
+		});
 	});
 	
 	onUnload(()=>{

@@ -11,6 +11,17 @@ import net.sf.cglib.beans.BeanMap
 
 class BaseRest
 {
+    static ObjectMapper objectMapper;
+
+    ObjectMapper buildObjectMapper()
+    {
+        if (objectMapper == null)
+        {
+            objectMapper = new ObjectMapper();
+        }
+        return objectMapper;
+    }
+
     void processExcetion(Exception e)
     {
         e.printStackTrace();
