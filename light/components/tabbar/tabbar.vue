@@ -1,5 +1,5 @@
 <template>
-	<wd-tabbar fixed :v-model="tabIndex" bordered safeAreaInsetBottom placeholder @change="handleChange">
+	<wd-tabbar fixed v-model="tabIndex" bordered safeAreaInsetBottom placeholder @change="handleChange">
 	  <wd-tabbar-item title="">
 		  <template #icon>
 			  <text class="gui-icons text-base" :class="tabClass(0)">&#xe63b;</text>

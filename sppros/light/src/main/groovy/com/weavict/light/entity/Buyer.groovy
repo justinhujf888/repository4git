@@ -64,7 +64,7 @@ class Buyer extends BEntity implements Serializable, IEntity
 
     void cancelLazyEr()
     {
-
+        deviceList = null;
     }
 }
 

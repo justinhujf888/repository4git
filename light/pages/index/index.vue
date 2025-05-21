@@ -20,17 +20,22 @@
 				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">添加设备</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
-				<view v-for="device in preDeviceList" :key="device.id" class="bg-white rounded-xl px-2 py-4 mt-4 row">
-					<view class="mx-2">
-						<img src="../../static/device.png" mode="widthFix" class="w-25 h-25"></img>
-					</view>
-					<view class="flex-1 col">
-						<view class="row mb-2">
-							<text class="text-sm font-bold text-green-500 mr-1">·</text>
-							<text class="text-sm font-semibold">{{device.name}}</text>
+				<view v-if="preDeviceList?.length > 0">
+					<view v-for="device in preDeviceList" :key="device.id" class="bg-white rounded-xl px-2 py-4 mt-4 row">
+						<view class="mx-2">
+							<img src="../../static/device.png" mode="widthFix" class="w-25 h-25"></img>
 						</view>
-						<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+						<view class="flex-1 col">
+							<view class="row mb-2">
+								<text class="text-sm font-bold text-green-500 mr-1">·</text>
+								<text class="text-sm font-semibold">{{device.name}}</text>
+							</view>
+							<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+						</view>
 					</view>
+				</view>
+				<view v-else class="hwcenter">
+					<text class="text-gray-800">没有搜索到设备</text>
 				</view>
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
@@ -58,6 +63,9 @@
 			</button>
 		</view>
 	</view>
+	
+	<my-wxLogin :isShow="loginShow" @close="loginClose"></my-wxLogin>
+	
 	<tabbar :tabIndex="0"></tabbar>
 </template>
 
@@ -66,7 +74,8 @@
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
 	import lodash from "lodash";
 	
-	import device from "@/api/dbs/device.js";
+	import wxRest from "@/api/uniapp/wx.js";
+	import deviceRest from "@/api/dbs/device.js";
 	
 	import { Blue } from '@/api/bluebooth/index.js';
 	import { ConnectController } from '@/api/bluebooth/controller.js';
@@ -84,12 +93,15 @@
 	const deviceList = ref([]);
 	const preDeviceList = ref([]);
 	const theDevice = ref({});
+	
+	const loginShow = ref(false);
 		
 	onLoad((option)=>{
+		console.log("wxInfo",wxRest.getLoginState());
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
-		device.qyBuyerDeviceList((data)=>{
+		deviceRest.qyBuyerDeviceList((data)=>{
 			console.log(data);
 		});
 	});
@@ -97,6 +109,10 @@
 	onUnload(()=>{
 		// closeDevice();
 	});
+	
+	const loginClose = (e)=>{
+		loginShow.value = e;
+	};
 	
 	function aaa() {
 		let a = "";
@@ -182,6 +198,11 @@
 	};
 		
 	async function callBle() {
+		if (!wxRest.checkLogin()) {
+			loginShow.value = true;
+			return;
+		}
+		
 		// #ifdef H5
 		const device = await navigator.bluetooth.requestDevice({
 			filters: [{ services: [Blue.getBlueServiceId().toLowerCase()] }],
@@ -214,6 +235,10 @@
 	    // dialog.openLoading("扫描设备……");
 	    preDeviceList.value = [];
 		// Blue.setBlueServiceId(serviceId);
+		
+		setTimeout(()=>{
+			viewStatus.value = 1;
+		},4000);
 		
 		Blue.setServiceFilter(["0000FFF0-0000-1000-8000-00805F9B34FB".toUpperCase(),"00007365-0000-1000-8000-00805F9B34FB".toUpperCase(),"76617365-6570-6c61-6e74-776f726c6473".toUpperCase()]);
 	    Blue.callBle();

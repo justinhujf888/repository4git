@@ -4,7 +4,7 @@ import com.weavict.light.rest.DeviceRest
 import com.weavict.light.rest.OtherRest
 import com.weavict.light.rest.RequestClientWriterInterceptor
 import com.weavict.light.rest.RequestServerReaderInterceptor
-
+import com.weavict.light.rest.WxRest
 import jakarta.ws.rs.ApplicationPath
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider
 import org.glassfish.jersey.logging.LoggingFeature
@@ -39,6 +39,7 @@ class ApplicationAPI extends ResourceConfig
         register(RequestServerReaderInterceptor.class);
 
         register(DeviceRest.class);
+        register(WxRest.class);
         register(OtherRest.class);
 
 //        register(JerseyFeature.class);

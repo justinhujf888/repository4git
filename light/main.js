@@ -3,6 +3,9 @@ import 'uno.css';
 /* 全局挂载请求库 */
 import lodash from "lodash";
 import dayjs from "dayjs";
+
+import wx from "@/api/uniapp/wx.js";
+wx.getUserOpenId();
 // import GraceRequest from '@/Grace6/js/request.js'
 // uni.gRequest = GraceRequest;
 uni.dayjs = dayjs;

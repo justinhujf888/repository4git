@@ -56,7 +56,7 @@ class WxRest extends BaseRest
         {
             m = Sign.sign(redisApi.ganTokenValue(query.appId,0 as byte,"jsTicket"),query.url);
         }
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = buildObjectMapper();
         return objectMapper.writeValueAsString(
             ["status":"OK",
                 wx:(
@@ -92,7 +92,7 @@ openid:${sk.openid}<br/>
 refresh_token:${sk.refresh_token}<br/>
 state:${request.getParameter("state").toString()}<br/><br/>
 """;
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                 ["status":"OK",
                     "sk":(
@@ -142,7 +142,7 @@ state:${request.getParameter("state").toString()}<br/><br/>
             println query.code;
             Jscode2sessionResult jr = SnsAPI.jscode2session(query.appId, redisApi.ganTokenValue(query.appId,1 as byte,"appSecret"), query.code);
             println jr.dump();
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "jr":(
@@ -174,7 +174,7 @@ state:${request.getParameter("state").toString()}<br/><br/>
             println query.encryptedData;
             println query.sessionKey;
             println query.iv;
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper();
             def jsonSlpuer = new JsonSlurper();
             def obj = jsonSlpuer.parseText(OtherUtils.decodeUserInfo4WxMp(query.encryptedData,query.sessionKey,query.iv));
             Buyer b = objToBean(query.buyer,Buyer.class,objectMapper);
