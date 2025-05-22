@@ -64,7 +64,7 @@
 		</view>
 	</view>
 	
-	<my-wxLogin :isShow="loginShow" @close="loginClose"></my-wxLogin>
+	<my-wxLogin :isShow="loginShow" @close="loginClose" @runAgain="loginRunAgain"></my-wxLogin>
 	
 	<tabbar :tabIndex="0"></tabbar>
 </template>
@@ -95,15 +95,31 @@
 	const theDevice = ref({});
 	
 	const loginShow = ref(false);
+	
+	let userInfo = null;
+	let deviceTypeList = null;
 		
 	onLoad((option)=>{
-		console.log("wxInfo",wxRest.getLoginState());
+		// console.log("wxInfo",wxRest.getLoginState());
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
-		deviceRest.qyBuyerDeviceList((data)=>{
-			console.log(data);
+		
+		deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
+			if (data.status=="OK") {
+				deviceTypeList = data.deviceTypeList;
+			}
 		});
+		
+		userInfo = wxRest.getUserInfo();
+		if (userInfo && userInfo.remark.userId) {
+			deviceRest.qyBuyerDeviceList(userInfo.remark.userId,(data)=>{
+				if (data.status=="OK") {
+					console.log(data);
+				}
+			});
+		}
+		// wxRest.clearLoginInfo();
 	});
 	
 	onUnload(()=>{
@@ -113,6 +129,10 @@
 	const loginClose = (e)=>{
 		loginShow.value = e;
 	};
+	
+	const loginRunAgain = (e)=>{
+		callBle();
+	}
 	
 	function aaa() {
 		let a = "";
@@ -198,10 +218,6 @@
 	};
 		
 	async function callBle() {
-		if (!wxRest.checkLogin()) {
-			loginShow.value = true;
-			return;
-		}
 		
 		// #ifdef H5
 		const device = await navigator.bluetooth.requestDevice({
@@ -232,6 +248,11 @@
 	   
 	   // console.log(Blue._discoveryStarted);
 	   // #ifdef MP
+		if (!wxRest.checkLogin()) {
+			loginShow.value = true;
+			return;
+		}
+	   
 	    // dialog.openLoading("扫描设备……");
 	    preDeviceList.value = [];
 		// Blue.setBlueServiceId(serviceId);

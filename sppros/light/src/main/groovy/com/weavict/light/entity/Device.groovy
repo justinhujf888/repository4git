@@ -49,6 +49,9 @@ class DeviceType extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String name;
 
+    @Column(length=30)
+    String appId;
+
     @Column(length=150)
     String serviceId;
 
