@@ -87,6 +87,7 @@
 	import cmdjson from "@/api/datas/cmd.json";
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
+import { Beans } from '../../api/dbs/beans';
 	const { showNotify, closeNotify } = useNotify();
 	const { proxy } = getCurrentInstance();
 	const viewStatus = ref(-1);
@@ -115,7 +116,7 @@
 		if (userInfo && userInfo.remark.userId) {
 			deviceRest.qyBuyerDeviceList(userInfo.remark.userId,(data)=>{
 				if (data.status=="OK") {
-					console.log(data);
+					deviceList.value = data.deviceList;
 				}
 			});
 		}
@@ -206,8 +207,13 @@
 	
 	function addDevice(device) {
 		dialog.openLoading("正在连接设备……");
-		console.log("connect...",device.advertisServiceUUIDs);
-		Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
+		
+		// console.log("connect...",device.advertisServiceUUIDs);
+		// Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
+		// Blue.createBLEConnection(device.deviceId);
+		// 换成了dbDrivice
+		console.log("connect...",device.deviceType.serviceId);
+		Blue.setBlueServiceId(device.deviceType.serviceId);
 		Blue.createBLEConnection(device.deviceId);
 	}
 
@@ -261,26 +267,33 @@
 			viewStatus.value = 1;
 		},4000);
 		
-		Blue.setServiceFilter(["0000FFF0-0000-1000-8000-00805F9B34FB".toUpperCase(),"00007365-0000-1000-8000-00805F9B34FB".toUpperCase(),"76617365-6570-6c61-6e74-776f726c6473".toUpperCase()]);
+		let serviceFilter = [];
+		for(let d of deviceTypeList) {
+			serviceFilter.push(d.serviceId.toUpperCase());
+		}
+		
+		Blue.setServiceFilter(serviceFilter);
 	    Blue.callBle();
 		ConnectController.addConnectStateListen((data)=>{
 			console.log("addConnectStateListen",data);
 			// this.state = data.label;
 			if(data.deviceId && data.connected) {
 				console.log("connected",data);
-				Blue.setBleConnectDeviceID(data.deviceId);
-				Blue.getBleCharacteristicsInfo("0000FFF1-0000-1000-8000-00805F9B34FB","0000FFF2-0000-1000-8000-00805F9B34FB");	
-				// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
-					device.connected = true;
+					device.tempMap.connected = true;
 					// deviceList.value.push(device);
 					theDevice.value = device;
 				} else {
 					let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
-					device.connected = true;
+					device.tempMap.connected = true;
 					theDevice.value = device;
 				}
+				
+				Blue.setBleConnectDeviceID(theDevice.deviceId);
+				
+				Blue.getBleCharacteristicsInfo(JSON.parse(theDevice.deviceType.characteristicsReadIds)[0],JSON.parse(theDevice.deviceType.characteristicsWriteIds)[0]);	
+				// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
 				
 				// let cday = uni.dayjs();
 				// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
@@ -302,7 +315,15 @@
 	    ConnectController.addDevicesListen((device)=>{
 			console.log("addDevicesListen",device);
 			device.connected = false;
-			preDeviceList.value.push(device);
+			let dbDevice = Beans.device();
+			dbDevice.deviceId = device.deviceId;
+			dbDevice.name = device.name;
+			dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.serviceId==device.advertisServiceUUIDs[0]});
+			dbDevice.tempMap = {};
+			dbDevice.tempMap.connected = false;
+			if (lodash.findIndex(deviceList,(o)=>{return o.deviceId==dbDevice.deviceId}) < 0) {
+				preDeviceList.value.push(dbDevice);
+			}
 			viewStatus.value = 1;
 			dialog.closeLoading();
 		});
