@@ -181,6 +181,12 @@ export const Blue = {
 			interval: 1000,
 			services: serviceFilter,
 			success: (res)=> {
+				// uni.getBluetoothDevices({
+				//   success(res) {
+				//     console.log("getBluetoothDevices",res)
+				//   }
+				// })
+				
 				console.log("startblueDiscovery",res);
 				this.onBluetoothDeviceFound()
 				console.log('扫描中.....')
