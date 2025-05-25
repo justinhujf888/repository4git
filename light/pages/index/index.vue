@@ -46,7 +46,7 @@
 					<wd-divider></wd-divider>
 					<view class="between mx-5 mt-5">
 						<text class="text-sm font-semibold">{{theDevice.name}}</text>
-						<view class="row items-center" v-if="theDevice.connected">
+						<view class="row items-center" v-if="theDevice.tempMap.connected">
 							<text class="text-sm font-bold mr-1">·</text>
 							<text class="text-sm font-semibold mr-2">已连接</text>
 							<view class="row" @click.stop="closeConnection()">
@@ -290,9 +290,11 @@ import { Beans } from '../../api/dbs/beans';
 					theDevice.value = device;
 				}
 				
-				Blue.setBleConnectDeviceID(theDevice.deviceId);
+				console.log("theDevice",theDevice.value);
 				
-				Blue.getBleCharacteristicsInfo(JSON.parse(theDevice.deviceType.characteristicsReadIds)[0],JSON.parse(theDevice.deviceType.characteristicsWriteIds)[0]);	
+				Blue.setBleConnectDeviceID(theDevice.value.deviceId);
+				
+				Blue.getBleCharacteristicsInfo(JSON.parse(theDevice.value.deviceType.characteristicsReadIds)[0],JSON.parse(theDevice.value.deviceType.characteristicsWriteIds)[0]);	
 				// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
 				
 				// let cday = uni.dayjs();
