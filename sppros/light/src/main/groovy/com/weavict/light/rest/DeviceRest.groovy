@@ -1,6 +1,7 @@
 package com.weavict.light.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.light.entity.Device
 import com.weavict.light.module.DeviceService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
@@ -59,6 +60,25 @@ class DeviceRest extends BaseRest
                         return deviceService.qyBuyerDeviceList(query.userId);
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/addBuyerDevice")
+    String addBuyerDevice(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            Device device = objToBean(query.device,Device.class,buildObjectMapper());
+            device.createDate = new Date();
+            deviceService.updateTheObject(device);
         }
         catch (Exception e)
         {

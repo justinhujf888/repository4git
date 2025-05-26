@@ -29,6 +29,9 @@ class Device extends BEntity implements Serializable, IEntity
     @ManyToOne(fetch=FetchType.EAGER)
     DeviceType deviceType;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
+
     void cancelLazyEr()
     {
 

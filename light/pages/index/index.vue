@@ -97,8 +97,9 @@ import { Beans } from '../../api/dbs/beans';
 	
 	const loginShow = ref(false);
 	
-	let userInfo = null;
+	let userId = null;
 	let deviceTypeList = null;
+	let location = {};
 		
 	onLoad((option)=>{
 		// console.log("wxInfo",wxRest.getLoginState());
@@ -106,20 +107,29 @@ import { Beans } from '../../api/dbs/beans';
 		preDeviceList.value = [];
 		deviceList.value = [];
 		
+		uni.getLocation({
+			type: 'wgs84',
+			success: (res)=>{
+				location.log = res.longitude;
+				location.lat = res.latitude;
+				console.log("location",location);
+			}
+		});
+		
 		deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
 			if (data.status=="OK") {
 				deviceTypeList = data.deviceTypeList;
 			}
 		});
 		
-		userInfo = wxRest.getUserInfo();
-		if (userInfo && userInfo.remark.userId) {
-			deviceRest.qyBuyerDeviceList(userInfo.remark.userId,(data)=>{
+		userId = wxRest.getLoginState().userId;
+		if (userId) {
+			deviceRest.qyBuyerDeviceList(userId,(data)=>{
 				if (data.status=="OK") {
 					deviceList.value = data.deviceList;
 				}
 			});
-		}
+		};
 		// wxRest.clearLoginInfo();
 	});
 	
@@ -282,11 +292,13 @@ import { Beans } from '../../api/dbs/beans';
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
 					device.tempMap.connected = true;
+					device.tempMap.isDB = false;
 					// deviceList.value.push(device);
 					theDevice.value = device;
 				} else {
 					let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
 					device.tempMap.connected = true;
+					device.tempMap.isDB = true;
 					theDevice.value = device;
 				}
 				
@@ -300,8 +312,20 @@ import { Beans } from '../../api/dbs/beans';
 				// let cday = uni.dayjs();
 				// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 				setTimeout(()=>{
-					viewStatus.value = 2;
-					dialog.closeLoading();
+					if (!device.tempMap.isDB) {
+						device.lat = location.lat;
+						device.log = location.log;
+						deviceRest.addBuyerDevice(device,(data)=>{
+							if (data.status=="OK") {
+								viewStatus.value = 2;
+								dialog.closeLoading();
+							}
+						});
+					} else {
+						viewStatus.value = 2;
+						dialog.closeLoading();
+					}
+					
 				},5000);
 			} 
 			else if (data.deviceId && !data.connected) {
@@ -321,6 +345,9 @@ import { Beans } from '../../api/dbs/beans';
 			dbDevice.deviceId = device.deviceId;
 			dbDevice.name = device.name;
 			dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.serviceId==device.advertisServiceUUIDs[0]});
+			let buyer = Beans.buyer();
+			buyer.phone = userId;
+			dbDevice.buyer = buyer;
 			dbDevice.tempMap = {};
 			dbDevice.tempMap.connected = false;
 			if (lodash.findIndex(deviceList,(o)=>{return o.deviceId==dbDevice.deviceId}) < 0) {
@@ -367,4 +394,3 @@ import { Beans } from '../../api/dbs/beans';
 	  }
 	}
 </style>
-
