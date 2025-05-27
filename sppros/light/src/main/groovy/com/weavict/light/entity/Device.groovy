@@ -1,7 +1,5 @@
 package com.weavict.light.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
 import jakarta.persistence.*
 
 @Table
@@ -11,7 +9,7 @@ class Device extends BEntity implements Serializable, IEntity
     static final long serialVersionUID = 1L;
 
     @Id
-    @Column(length=20)
+    @Column(length=80)
     String deviceId;
 
     @Column(length=30)
@@ -34,7 +32,8 @@ class Device extends BEntity implements Serializable, IEntity
 
     void cancelLazyEr()
     {
-
+        this.buyer?.cancelLazyEr();
+        this.deviceType?.cancelLazyEr();
     }
 
 }

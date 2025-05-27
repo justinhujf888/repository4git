@@ -20,22 +20,49 @@
 				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">添加设备</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
-				<view v-if="preDeviceList?.length > 0">
-					<view v-for="device in preDeviceList" :key="device.id" class="bg-white rounded-xl px-2 py-4 mt-4 row">
-						<view class="mx-2">
-							<img src="../../static/device.png" mode="widthFix" class="w-25 h-25"></img>
-						</view>
-						<view class="flex-1 col">
-							<view class="row mb-2">
-								<text class="text-sm font-bold text-green-500 mr-1">·</text>
-								<text class="text-sm font-semibold">{{device.name}}</text>
+				<view>
+					<text class="text-gray-600 text-sm">我的设备</text>
+					<view v-if="deviceList?.length > 0">
+						<view v-for="(device,index) in deviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row relative">
+							<view class="mx-2">
+								<img src="../../static/device.png" mode="widthFix" class="w-25 h-25"></img>
 							</view>
-							<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+							<view class="flex-1 col">
+								<view class="row mb-2">
+									<text class="text-sm font-bold text-green-500 mr-1">·</text>
+									<text class="text-sm font-semibold">{{device.name}}</text>
+								</view>
+								<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+							</view>
+							<view class="row top-2 right-4">
+								<text class="text-sm gui-icons ml-4" @tap="openRenameModel(device)">&#xe69e;</text>
+								<text class="text-sm gui-icons ml-4" @tap="delBuyerDevice(device.deviceId,index)">&#xe794;</text>
+							</view>
 						</view>
 					</view>
+					<view v-else class="center mt-10">
+						<text class="text-gray-500 text-xs">没有添加设备</text>
+					</view>
 				</view>
-				<view v-else class="hwcenter">
-					<text class="text-gray-800">没有搜索到设备</text>
+				<view class="mt-20">
+					<text class="text-gray-600 text-sm">搜索的设备</text>
+					<view v-if="preDeviceList?.length > 0">
+						<view v-for="device in preDeviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row">
+							<view class="mx-2">
+								<img src="../../static/device.png" mode="widthFix" class="w-25 h-25"></img>
+							</view>
+							<view class="flex-1 col">
+								<view class="row mb-2">
+									<text class="text-sm font-bold text-green-500 mr-1">·</text>
+									<text class="text-sm font-semibold">{{device.name}}</text>
+								</view>
+								<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+							</view>
+						</view>
+					</view>
+					<view v-else class="center mt-10">
+						<text class="text-gray-500 text-xs">没有搜索到设备</text>
+					</view>
 				</view>
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
@@ -64,6 +91,19 @@
 		</view>
 	</view>
 	
+	<wd-popup v-model="renameShow" position="top" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
+		<view class="col center text-gray-500 mt-40">
+			<text class="mt-2 row center">修改设备名称</text>
+			<view class="row mt-10">
+				<text class="text-xs">设备名称</text>
+				<input class="minput ml-2" v-model="theDevice.name"/>
+			</view>
+			<view class="mt-10">
+				<wd-button size="small" @click="rename()">确定</wd-button>
+			</view>
+		</view>
+	</wd-popup>
+	
 	<my-wxLogin :isShow="loginShow" @close="loginClose" @runAgain="loginRunAgain"></my-wxLogin>
 	
 	<tabbar :tabIndex="0"></tabbar>
@@ -87,7 +127,7 @@
 	import cmdjson from "@/api/datas/cmd.json";
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
-import { Beans } from '../../api/dbs/beans';
+	import { Beans } from '../../api/dbs/beans';
 	const { showNotify, closeNotify } = useNotify();
 	const { proxy } = getCurrentInstance();
 	const viewStatus = ref(-1);
@@ -95,6 +135,7 @@ import { Beans } from '../../api/dbs/beans';
 	const preDeviceList = ref([]);
 	const theDevice = ref({});
 	
+	const renameShow = ref(false);
 	const loginShow = ref(false);
 	
 	let userId = null;
@@ -110,7 +151,7 @@ import { Beans } from '../../api/dbs/beans';
 		uni.getLocation({
 			type: 'wgs84',
 			success: (res)=>{
-				location.log = res.longitude;
+				location.lng = res.longitude;
 				location.lat = res.latitude;
 				console.log("location",location);
 			}
@@ -119,6 +160,7 @@ import { Beans } from '../../api/dbs/beans';
 		deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
 			if (data.status=="OK") {
 				deviceTypeList = data.deviceTypeList;
+				callBle();
 			}
 		});
 		
@@ -127,6 +169,12 @@ import { Beans } from '../../api/dbs/beans';
 			deviceRest.qyBuyerDeviceList(userId,(data)=>{
 				if (data.status=="OK") {
 					deviceList.value = data.deviceList;
+					if (!deviceList.value) {
+						deviceList.value = [];
+					}
+					if (deviceList.value?.length > 0) {
+						viewStatus.value = 1;
+					}
 				}
 			});
 		};
@@ -143,7 +191,35 @@ import { Beans } from '../../api/dbs/beans';
 	
 	const loginRunAgain = (e)=>{
 		callBle();
-	}
+	};
+	
+	const openRenameModel = (device)=>{
+		renameShow.value = true;
+		theDevice.value = device;
+	};
+	
+	const rename = ()=>{
+		deviceRest.renameBuyerDevice(userId,theDevice.value.deviceId,theDevice.value.name,(data)=>{
+			if (data.status=="OK") {
+				let de = lodash.find(deviceList.value,(o)=>{return o.deviceId==theDevice.value.deviceId});
+				if (de) {
+					de.name = theDevice.value.name;
+					theDevice.value = {};
+					renameShow.value = false;
+				}
+			}
+		});
+	};
+	
+	const delBuyerDevice = (deviceId,index)=>{
+		dialog.confirm("是否删除这个设备？",()=>{
+			deviceRest.delBuyerDevice(userId,deviceId,(data)=>{
+				if (data.status=="OK") {
+					deviceList.value.splice(index,1);
+				}
+			});
+		},null);
+	};
 	
 	function aaa() {
 		let a = "";
@@ -217,7 +293,6 @@ import { Beans } from '../../api/dbs/beans';
 	
 	function addDevice(device) {
 		dialog.openLoading("正在连接设备……");
-		
 		// console.log("connect...",device.advertisServiceUUIDs);
 		// Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
 		// Blue.createBLEConnection(device.deviceId);
@@ -230,8 +305,18 @@ import { Beans } from '../../api/dbs/beans';
 	const closeConnection = ()=>{
 		dialog.confirm("是否断开设备连接",()=>{
 			Blue.closeBLEConnection();
+			callBle();
 		},null);
 	};
+	
+	function preCallBle() {
+		preDeviceList.value = [];
+		let serviceFilter = [];
+		for(let d of deviceTypeList) {
+			serviceFilter.push(d.serviceId.toUpperCase());
+		}
+		Blue.setServiceFilter(serviceFilter);
+	}
 		
 	async function callBle() {
 		
@@ -269,20 +354,13 @@ import { Beans } from '../../api/dbs/beans';
 			return;
 		}
 	   
-	    // dialog.openLoading("扫描设备……");
-	    preDeviceList.value = [];
-		// Blue.setBlueServiceId(serviceId);
+	    preCallBle();
 		
 		setTimeout(()=>{
 			viewStatus.value = 1;
 		},4000);
 		
-		let serviceFilter = [];
-		for(let d of deviceTypeList) {
-			serviceFilter.push(d.serviceId.toUpperCase());
-		}
 		
-		Blue.setServiceFilter(serviceFilter);
 	    Blue.callBle();
 		ConnectController.addConnectStateListen((data)=>{
 			console.log("addConnectStateListen",data);
@@ -291,12 +369,14 @@ import { Beans } from '../../api/dbs/beans';
 				console.log("connected",data);
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
+					device.tempMap = {};
 					device.tempMap.connected = true;
 					device.tempMap.isDB = false;
 					// deviceList.value.push(device);
 					theDevice.value = device;
 				} else {
 					let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
+					device.tempMap = {};
 					device.tempMap.connected = true;
 					device.tempMap.isDB = true;
 					theDevice.value = device;
@@ -312,30 +392,32 @@ import { Beans } from '../../api/dbs/beans';
 				// let cday = uni.dayjs();
 				// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 				setTimeout(()=>{
-					if (!device.tempMap.isDB) {
-						device.lat = location.lat;
-						device.log = location.log;
-						deviceRest.addBuyerDevice(device,(data)=>{
+					if (!theDevice.value.tempMap.isDB) {
+						theDevice.value.lat = location.lat;
+						theDevice.value.lng = location.lng;
+						deviceRest.addBuyerDevice(theDevice.value,(data)=>{
 							if (data.status=="OK") {
+								deviceList.value.push(theDevice.value);
 								viewStatus.value = 2;
-								dialog.closeLoading();
 							}
 						});
 					} else {
 						viewStatus.value = 2;
-						dialog.closeLoading();
 					}
 					
 				},5000);
 			} 
-			else if (data.deviceId && !data.connected) {
+			else if (data.code==BLUE_STATE.CONNECTFAILED) {
 				// Blue.createBLEConnection(data.deviceId);
-				viewStatus.value = 0;
-				dialog.closeLoading();
+				// viewStatus.value = 0;
+			}
+			else if (data.code==BLUE_STATE.DISCONNECT.code) {
+				viewStatus.value = 1;
 			}
 			if (data.label) {
 				showNotify(data.label);
 			}
+			dialog.closeLoading();
 		});
 	   
 	    ConnectController.addDevicesListen((device)=>{
@@ -350,7 +432,7 @@ import { Beans } from '../../api/dbs/beans';
 			dbDevice.buyer = buyer;
 			dbDevice.tempMap = {};
 			dbDevice.tempMap.connected = false;
-			if (lodash.findIndex(deviceList,(o)=>{return o.deviceId==dbDevice.deviceId}) < 0) {
+			if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId}) < 0) {
 				preDeviceList.value.push(dbDevice);
 			}
 			viewStatus.value = 1;

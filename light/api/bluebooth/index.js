@@ -298,12 +298,13 @@ export const Blue = {
 		
 	createBLEConnection(deviceId) {
 		if (bleConnectDeviceID == null) {
-			
+			bleConnectDeviceID = deviceId;
 			(async ()=>{
 				
 				await new Promise(resolve => {
 					uni.createBLEConnection({
 						deviceId: deviceId,
+						timeout: 3000,
 						success: (res)=> {
 							console.log("connedres",res);
 

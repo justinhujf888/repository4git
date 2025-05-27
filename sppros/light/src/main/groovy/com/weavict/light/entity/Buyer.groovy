@@ -1,7 +1,5 @@
 package com.weavict.light.entity
 
-import com.weavict.light.entity.BEntity
-import com.weavict.light.entity.IEntity
 import jakarta.persistence.*
 
 @Table
