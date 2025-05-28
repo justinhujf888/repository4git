@@ -5,7 +5,7 @@ import lodash from "lodash";
 import dayjs from "dayjs";
 
 import wx from "@/api/uniapp/wx.js";
-wx.getUserOpenId();
+// wx.getUserOpenId();
 // import GraceRequest from '@/Grace6/js/request.js'
 // uni.gRequest = GraceRequest;
 uni.dayjs = dayjs;

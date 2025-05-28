@@ -14,7 +14,9 @@ export default ({
     ],
     shortcuts: [
         {
+			start: 'flex justify-start items-start',
 			center: 'flex items-center justify-center',
+			end: 'flex items-end justify-end',
 			between: 'flex justify-between',
 			row: 'flex flex-row',
 			col: 'flex flex-col',

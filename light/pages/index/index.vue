@@ -34,17 +34,18 @@
 								</view>
 								<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
 							</view>
-							<view class="row top-2 right-4">
+<!-- 							<view class="row top-2 right-4">
 								<text class="text-sm gui-icons ml-4" @tap="openRenameModel(device)">&#xe69e;</text>
 								<text class="text-sm gui-icons ml-4" @tap="delBuyerDevice(device.deviceId,index)">&#xe794;</text>
-							</view>
+							</view> -->
 						</view>
 					</view>
 					<view v-else class="center mt-10">
 						<text class="text-gray-500 text-xs">没有添加设备</text>
 					</view>
 				</view>
-				<view class="mt-20">
+				<wd-divider></wd-divider>
+				<view class="mt-2">
 					<text class="text-gray-600 text-sm">搜索的设备</text>
 					<view v-if="preDeviceList?.length > 0">
 						<view v-for="device in preDeviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row">
@@ -144,6 +145,8 @@
 		
 	onLoad((option)=>{
 		// console.log("wxInfo",wxRest.getLoginState());
+		userId = wxRest.getLoginState()?.userId;
+		
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
@@ -160,11 +163,14 @@
 		deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
 			if (data.status=="OK") {
 				deviceTypeList = data.deviceTypeList;
-				callBle();
+				if (!userId) {
+					return;
+				} else {
+					callBle();
+				}
 			}
 		});
 		
-		userId = wxRest.getLoginState().userId;
 		if (userId) {
 			deviceRest.qyBuyerDeviceList(userId,(data)=>{
 				if (data.status=="OK") {
@@ -190,7 +196,7 @@
 	};
 	
 	const loginRunAgain = (e)=>{
-		callBle();
+		page.reLaunch("/pages/index/index",{});
 	};
 	
 	const openRenameModel = (device)=>{
@@ -349,11 +355,10 @@
 	   
 	   // console.log(Blue._discoveryStarted);
 	   // #ifdef MP
-		if (!wxRest.checkLogin()) {
+		if (!userId) {
 			loginShow.value = true;
 			return;
 		}
-	   
 	    preCallBle();
 		
 		setTimeout(()=>{
