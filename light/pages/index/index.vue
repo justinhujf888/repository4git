@@ -29,10 +29,15 @@
 							</view>
 							<view class="flex-1 col">
 								<view class="row mb-2">
-									<text class="text-sm font-bold text-green-500 mr-1">·</text>
+									<!-- <text class="text-sm font-bold text-green-500 mr-1">·</text> -->
 									<text class="text-sm font-semibold">{{device.name}}</text>
 								</view>
-								<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+								<view v-if="true || device.tempMap.near">
+									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+								</view>
+								<view v-else>
+									<text class="text-gray-400 text-xs">设备不可连接</text>
+								</view>
 							</view>
 <!-- 							<view class="row top-2 right-4">
 								<text class="text-sm gui-icons ml-4" @tap="openRenameModel(device)">&#xe69e;</text>
@@ -46,7 +51,7 @@
 				</view>
 				<wd-divider></wd-divider>
 				<view class="mt-2">
-					<text class="text-gray-600 text-sm">搜索的设备</text>
+					<text class="text-gray-600 text-sm">搜索其它设备</text>
 					<view v-if="preDeviceList?.length > 0">
 						<view v-for="device in preDeviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row">
 							<view class="mx-2">
@@ -179,6 +184,10 @@
 						deviceList.value = [];
 					}
 					if (deviceList.value?.length > 0) {
+						for(let d of deviceList.value) {
+							d.tempMap = {};
+							d.tempMap.near = false;
+						}
 						viewStatus.value = 1;
 					}
 				}
@@ -374,14 +383,18 @@
 				console.log("connected",data);
 				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
-					device.tempMap = {};
+					if (!device.tempMap) {
+						device.tempMap = {};
+					}
 					device.tempMap.connected = true;
 					device.tempMap.isDB = false;
 					// deviceList.value.push(device);
 					theDevice.value = device;
 				} else {
 					let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
-					device.tempMap = {};
+					if (!device.tempMap) {
+						device.tempMap = {};
+					}
 					device.tempMap.connected = true;
 					device.tempMap.isDB = true;
 					theDevice.value = device;
@@ -437,9 +450,14 @@
 			dbDevice.buyer = buyer;
 			dbDevice.tempMap = {};
 			dbDevice.tempMap.connected = false;
-			if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId}) < 0) {
+			
+			let index = lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId});
+			if (index < 0) {
 				preDeviceList.value.push(dbDevice);
+			} else {
+				deviceList.value[index].tempMap.near = true;
 			}
+			
 			viewStatus.value = 1;
 			dialog.closeLoading();
 		});

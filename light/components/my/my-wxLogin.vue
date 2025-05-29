@@ -36,7 +36,10 @@
 	
 	onMounted(()=>{
 		show.value = isShow.value;
+		console.log("getUserInfo",wxRest.getUserInfo());
 		if (!wxRest.getUserInfo()) {
+			wxRest.getUserOpenId();
+		} else if (!wxRest.getUserInfo().remark.userId) {
 			wxRest.getUserOpenId();
 		}
 	});
