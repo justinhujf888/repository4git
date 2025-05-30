@@ -171,6 +171,11 @@
 				if (!userId) {
 					return;
 				} else {
+					lodash.forEach(deviceTypeList,(v,i)=>{
+						// {serviceId:{scan:"00007365-0000-1000-8000-00805F9B34FB",uuid:"76617365-6570-6c61-6e74-776f726c6473"}}
+						v.tempMap = {};
+						v.tempMap.services = JSON.parse(v.serviceId);
+					});
 					callBle();
 				}
 			}
@@ -187,6 +192,7 @@
 						for(let d of deviceList.value) {
 							d.tempMap = {};
 							d.tempMap.near = false;
+							d.tempMap.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
 						}
 						viewStatus.value = 1;
 					}
@@ -312,8 +318,8 @@
 		// Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
 		// Blue.createBLEConnection(device.deviceId);
 		// 换成了dbDrivice
-		console.log("connect...",device.deviceType.serviceId);
-		Blue.setBlueServiceId(device.deviceType.serviceId);
+		console.log("connect...",device.tempMap.deviceType.tempMap.services.serviceId);
+		Blue.setBlueServiceId(device.tempMap.deviceType.tempMap.services.serviceId.uuid);
 		Blue.createBLEConnection(device.deviceId);
 	}
 
@@ -328,7 +334,7 @@
 		preDeviceList.value = [];
 		let serviceFilter = [];
 		for(let d of deviceTypeList) {
-			serviceFilter.push(d.serviceId.toUpperCase());
+			serviceFilter.push(d.tempMap.services.serviceId.scan.toUpperCase());
 		}
 		Blue.setServiceFilter(serviceFilter);
 	}
@@ -403,8 +409,8 @@
 				console.log("theDevice",theDevice.value);
 				
 				Blue.setBleConnectDeviceID(theDevice.value.deviceId);
-				
-				Blue.getBleCharacteristicsInfo(JSON.parse(theDevice.value.deviceType.characteristicsReadIds)[0],JSON.parse(theDevice.value.deviceType.characteristicsWriteIds)[0]);	
+
+				Blue.getBleCharacteristicsInfo(JSON.parse(theDevice.value.deviceType.characteristicsReadIds)[0].toUpperCase(),JSON.parse(theDevice.value.deviceType.characteristicsWriteIds)[0].toUpperCase());	
 				// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
 				
 				// let cday = uni.dayjs();
@@ -444,12 +450,13 @@
 			let dbDevice = Beans.device();
 			dbDevice.deviceId = device.deviceId;
 			dbDevice.name = device.name;
-			dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.serviceId==device.advertisServiceUUIDs[0]});
+			dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.scan==device.advertisServiceUUIDs[0]});
 			let buyer = Beans.buyer();
 			buyer.phone = userId;
 			dbDevice.buyer = buyer;
 			dbDevice.tempMap = {};
 			dbDevice.tempMap.connected = false;
+			dbDevice.tempMap.deviceType = dbDevice.deviceType;
 			
 			let index = lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId});
 			if (index < 0) {
