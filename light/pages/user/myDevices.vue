@@ -85,7 +85,7 @@
 	
 	const openRenameModel = (device)=>{
 		renameShow.value = true;
-		theDevice.value = device;
+		theDevice.value = lodash.cloneDeep(device);
 	};
 	
 	const rename = ()=>{
