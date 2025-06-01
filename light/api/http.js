@@ -9,7 +9,6 @@ export const Http = {
 		}
 		let str = new Date(+new Date() + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
 		ds.loginState = null;//login.getLoginState();
-		ds.currentAppId = Config.appId;
 		ds.appId = Config.appId;
 		uni.request({
 		    url: Config.apiBaseURL + url,
