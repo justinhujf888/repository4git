@@ -1,9 +1,16 @@
 package com.weavict.light.rest
 
+import com.aliyun.oss.ClientBuilderConfiguration
+import com.aliyun.oss.OSS
 import com.aliyun.oss.OSSClient
+import com.aliyun.oss.OSSClientBuilder
+import com.aliyun.oss.common.auth.CredentialsProvider
+import com.aliyun.oss.common.auth.DefaultCredentialProvider
+import com.aliyun.oss.common.comm.SignVersion
 import com.aliyun.oss.common.utils.BinaryUtil
 import com.aliyun.oss.model.CannedAccessControlList
 import com.aliyun.oss.model.PolicyConditions
+import com.aliyun.oss.model.PutObjectRequest
 import com.aliyuncs.CommonRequest
 import com.aliyuncs.CommonResponse
 import com.aliyuncs.DefaultAcsClient
@@ -12,13 +19,17 @@ import com.aliyuncs.http.MethodType
 import com.aliyuncs.profile.DefaultProfile
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.util.DateUtil
+import com.weavict.light.module.RedisApi
+
 //import com.weavict.website.common.ImgCompress
 import com.weavict.website.common.OtherUtils
 import com.yicker.utility.DES
 import groovy.json.JsonSlurper
+import jakarta.inject.Inject
 import jakarta.ws.rs.GET
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 
 import jakarta.servlet.http.HttpServletRequest
@@ -37,6 +48,9 @@ class OtherRest extends BaseRest
 {
     @Context
     HttpServletRequest request;
+
+    @Autowired
+    RedisApi redisApi;
 
     /**
      * 图片上传
@@ -104,8 +118,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         def ossKey = OtherUtils.genOssAccessKey(query.ramUser);
-                         OSSClient client = new OSSClient(OtherUtils.genOosHostUrl(), ossKey.accessId, ossKey.accessKey);
+                         OSS client = OtherUtils.genOSSClient();
                          long expireTime = 30;
                          long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
                          PolicyConditions policyConds = new PolicyConditions();
@@ -113,7 +126,7 @@ class OtherRest extends BaseRest
                          String postPolicy = client.generatePostPolicy(new Date(expireEndTime), policyConds);
                          String encodedPolicy = BinaryUtil.toBase64String(postPolicy.getBytes("utf-8"));
                          String postSignature = client.calculatePostSignature(postPolicy);
-                         return ["accessId":ossKey.accessId,"policy":encodedPolicy,"signature":postSignature,"expire":String.valueOf(expireEndTime / 1000)];
+                         return ["accessId":redisApi.ganAliYunStsValue("accessId"),"policy":encodedPolicy,"signature":postSignature,"expire":String.valueOf(expireEndTime / 1000)];
                      }).call()
                     ]);
         }
@@ -180,7 +193,7 @@ class OtherRest extends BaseRest
         try
         {
             //oss
-            OSSClient ossClient = OtherUtils.genOSSClient();
+            OSS ossClient = OtherUtils.genOSSClient();
             ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), query.imgPath);
             ossClient.shutdown();
             //oss end
@@ -203,11 +216,17 @@ class OtherRest extends BaseRest
         {
             ObjectMapper objectMapper = new ObjectMapper();
             // oss
-            OSSClient ossClient = OtherUtils.genOSSClient();
-            ossClient.putObject(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
+            OSS ossClient = OtherUtils.genOSSClient();
+            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
                     ({return query.fileObj}).call()
             ).getBytes("UTF-8")));
-            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
+            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+            // ObjectMetadata metadata = new ObjectMetadata();
+            // metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+            // metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+            // putObjectRequest.setMetadata(metadata);
+            ossClient.putObject(putObjectRequest);
+//            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
             ossClient.shutdown();
             //oss end
             return """{"status":"OK"}""";

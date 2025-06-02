@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.util.DateUtil
 import com.weavict.light.entity.*
 import com.weavict.light.redis.RedisUtil
+import com.weavict.website.common.OtherUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import weixin.popular.api.TicketAPI
@@ -123,6 +124,20 @@ class RedisApi
         return redisUtil.hGet("appToken_${appId}_${type}",field) as String;
     }
 
+    void buildAliYunSts2Redis()
+    {
+        Map stsMap = OtherUtils.genOssAccessKey();
+        redisUtil.hPut("aliyun_sts","expiration",stsMap["expiration"]);
+        redisUtil.hPut("aliyun_sts","accessId",stsMap["accessId"]);
+        redisUtil.hPut("aliyun_sts","accessKey",stsMap["accessKey"]);
+        redisUtil.hPut("aliyun_sts","securityToken",stsMap["securityToken"]);
+        redisUtil.hPut("aliyun_sts","requestId",stsMap["requestId"]);
+    }
+
+    String ganAliYunStsValue(String field)
+    {
+        return redisUtil.hGet("aliyun_sts",field) as String;
+    }
 
     @Transactional
     void test()

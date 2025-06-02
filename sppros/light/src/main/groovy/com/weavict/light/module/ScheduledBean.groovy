@@ -41,4 +41,12 @@ class ScheduledBean extends ModuleBean// implements Job
 		redisApi.buildToken2Redis();
 		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
 	}
+
+	@Scheduled(fixedDelay = 880000L)
+	void aliYunSts()
+	{
+		println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} begin---------------------------------";
+		redisApi.buildAliYunSts2Redis();
+		println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
+	}
 }

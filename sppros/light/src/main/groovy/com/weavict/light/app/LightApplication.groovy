@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
 @EnableScheduling
-@ComponentScan(basePackages = ["com.weavict.light"])
+@ComponentScan(basePackages = ["com.weavict"])
 @EntityScan(basePackages = ["com.weavict.light.entity"])
 @EnableProcessApplication
 class LightApplication extends SpringBootServletInitializer {
