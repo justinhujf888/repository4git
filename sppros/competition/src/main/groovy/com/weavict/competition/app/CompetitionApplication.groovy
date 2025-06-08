@@ -14,10 +14,10 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @ComponentScan(basePackages = ["com.weavict"])
 @EntityScan(basePackages = ["com.weavict.competition.entity"])
 @EnableProcessApplication
-class CompetitionApplication  extends SpringBootServletInitializer {
+class CompetitionApplication extends SpringBootServletInitializer {
 
 	static void main(String[] args) {
-		SpringApplication.run(CompetitionApplication, args);
+//		SpringApplication.run(CompetitionApplication, args);
 		new CompetitionApplication().configure(new SpringApplicationBuilder(CompetitionApplication.class)).run(args);
 	}
 
