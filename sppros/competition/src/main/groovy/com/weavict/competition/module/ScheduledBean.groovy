@@ -8,6 +8,7 @@ import com.weavict.common.util.MathUtil
 import com.weavict.competition.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
 import com.weavict.weichat.notifies.WxNotifiesFun
+import jakarta.annotation.PostConstruct
 import jodd.datetime.JDateTime
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -42,6 +43,7 @@ class ScheduledBean extends ModuleBean// implements Job
 		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
 	}
 
+	@PostConstruct
 	@Scheduled(fixedDelay = 880000L)
 	void aliYunSts()
 	{

@@ -8,9 +8,12 @@ import com.aliyun.oss.common.auth.CredentialsProvider
 import com.aliyun.oss.common.auth.DefaultCredentialProvider
 import com.aliyun.oss.common.comm.SignVersion
 import com.aliyun.oss.common.utils.BinaryUtil
+import com.aliyun.oss.internal.OSSHeaders
 import com.aliyun.oss.model.CannedAccessControlList
+import com.aliyun.oss.model.ObjectMetadata
 import com.aliyun.oss.model.PolicyConditions
 import com.aliyun.oss.model.PutObjectRequest
+import com.aliyun.oss.model.StorageClass
 import com.aliyuncs.CommonRequest
 import com.aliyuncs.CommonResponse
 import com.aliyuncs.DefaultAcsClient
@@ -221,10 +224,16 @@ class OtherRest extends BaseRest
                     ({return query.fileObj}).call()
             ).getBytes("UTF-8")));
             // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
-            // ObjectMetadata metadata = new ObjectMetadata();
-            // metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
-            // metadata.setObjectAcl(CannedAccessControlList.PublicRead);
-            // putObjectRequest.setMetadata(metadata);
+            if (query.fileAcl!=null)
+            {
+                ObjectMetadata metadata = new ObjectMetadata();
+                metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+                if (query.fileAcl.toUpperCase()=="PUBLIC")
+                {
+                    metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+                }
+                putObjectRequest.setMetadata(metadata);
+            }
             ossClient.putObject(putObjectRequest);
 //            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
             ossClient.shutdown();
@@ -279,4 +288,88 @@ class OtherRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/genAliOssAccessInfo")
+    String genAliOssAccessInfo(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "signatureInfo":({
+                        return ["expiration":redisApi.ganAliYunStsValue("expiration"),"accessId":redisApi.ganAliYunStsValue("accessId"),"accessKey":redisApi.ganAliYunStsValue("accessKey"),"securityToken":redisApi.ganAliYunStsValue("securityToken"),"requestId":redisApi.ganAliYunStsValue("requestId"),"endPoint":OtherUtils.givePropsValue("ali_oss_endPoint")];
+                     }).call()
+                    ]);
+            // oss
+            OSS ossClient = OtherUtils.genOSSClient();
+
+
+//            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
+
+            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
+                    """abcde adas"""
+            ).getBytes("UTF-8")));
+
+            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+            putObjectRequest.setMetadata(metadata);
+
+            ossClient.putObject(putObjectRequest);
+//            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
+            ossClient.shutdown();
+            //oss end
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/test")
+    String test(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = new ObjectMapper();
+            // oss
+            OSS ossClient = OtherUtils.genOSSClient();
+
+
+//            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
+
+            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
+                    """abcde adas"""
+            ).getBytes("UTF-8")));
+
+            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+            putObjectRequest.setMetadata(metadata);
+
+            ossClient.putObject(putObjectRequest);
+//            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
+            ossClient.shutdown();
+            //oss end
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
 }

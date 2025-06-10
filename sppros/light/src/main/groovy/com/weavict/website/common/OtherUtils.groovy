@@ -157,12 +157,12 @@ class OtherUtils
 		// 使用credentialsProvider初始化客户端
 		ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
 		// 显式声明使用 V4 签名算法
-//		clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
+		clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
 		// 创建OSSClient实例。
 		// 当OSSClient实例不再使用时，调用shutdown方法以释放资源。
 		return OSSClientBuilder.create()
 		// 请设置目的OSS访问域名  例如杭州地域：https://oss-cn-hangzhou.aliyuncs.com
-				.endpoint(givePropsValue("ali_ram_endPoint"))
+				.endpoint(givePropsValue("ali_oss_endPoint"))
 				.credentialsProvider(credentialsProvider)
 				.clientConfiguration(clientBuilderConfiguration)
 		// 请设置为目标Bucket所处region  例如杭州地域：cn-hangzhou
