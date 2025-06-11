@@ -129,6 +129,7 @@ class OtherRest extends BaseRest
                          String postPolicy = client.generatePostPolicy(new Date(expireEndTime), policyConds);
                          String encodedPolicy = BinaryUtil.toBase64String(postPolicy.getBytes("utf-8"));
                          String postSignature = client.calculatePostSignature(postPolicy);
+                         client.shutdown();
                          return ["accessId":redisApi.ganAliYunStsValue("accessId"),"policy":encodedPolicy,"signature":postSignature,"expire":String.valueOf(expireEndTime / 1000)];
                      }).call()
                     ]);
@@ -304,27 +305,6 @@ class OtherRest extends BaseRest
                         return ["expiration":redisApi.ganAliYunStsValue("expiration"),"accessId":redisApi.ganAliYunStsValue("accessId"),"accessKey":redisApi.ganAliYunStsValue("accessKey"),"securityToken":redisApi.ganAliYunStsValue("securityToken"),"requestId":redisApi.ganAliYunStsValue("requestId"),"endPoint":OtherUtils.givePropsValue("ali_oss_endPoint")];
                      }).call()
                     ]);
-            // oss
-            OSS ossClient = OtherUtils.genOSSClient();
-
-
-//            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
-
-            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
-                    """abcde adas"""
-            ).getBytes("UTF-8")));
-
-            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
-            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
-            putObjectRequest.setMetadata(metadata);
-
-            ossClient.putObject(putObjectRequest);
-//            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
-            ossClient.shutdown();
-            //oss end
-            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {
