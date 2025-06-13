@@ -27,6 +27,9 @@ class Device extends BEntity implements Serializable, IEntity
     @ManyToOne(fetch=FetchType.EAGER)
     DeviceType deviceType;
 
+    @OneToMany(mappedBy="device",fetch = FetchType.LAZY)
+    List<DeviceScript> deviceScriptList;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
@@ -34,6 +37,7 @@ class Device extends BEntity implements Serializable, IEntity
     {
         this.buyer?.cancelLazyEr();
         this.deviceType?.cancelLazyEr();
+        this.deviceScriptList = null;
     }
 
 }
@@ -71,4 +75,29 @@ class DeviceType extends BEntity implements Serializable, IEntity
         this.deviceList = null;
     }
 
+}
+
+@Table
+@Entity
+class DeviceScript extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String id;
+
+    @Column(length=30)
+    String name;
+
+    @ManyToOne(fetch=FetchType.EAGER)
+    Device device;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
+
+    void cancelLazyEr()
+    {
+        device = null;
+    }
 }
