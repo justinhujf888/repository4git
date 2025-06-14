@@ -10,7 +10,7 @@
 			<view class="flex-1">
 				<text v-if="false" class="text-gray-400 text-base gui-icons">上午 10:30 &#xe69e;</text>
 			</view>
-			<button v-if="viewStatus != 0" class="btnbg rounded-full w-7 h-7 text-white center" @tap="callBle()">
+			<button v-if="viewStatus != 0" class="btnbg rounded-full w-7 h-7 text-white center" @tap="refreshDevices()">
 				<text class="text-xl gui-icons">&#xe635;</text>
 			</button>
 		</view>
@@ -35,7 +35,7 @@
 									<text class="text-sm font-semibold">{{device.name}}</text>
 								</view>
 								<view v-if="true || device.tempMap.near">
-									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" @click="addDevice(device)" click="scaned()">连接</wd-button>
+									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" @click="addDevice(device)" click="scaned()">连接</wd-button>
 								</view>
 								<view v-else>
 									<text class="text-gray-400 text-xs">设备不可连接</text>
@@ -206,23 +206,10 @@
 	
 	// let signature = "";	let ossAccessKeyId="";let securityToken = "";let policy = "";
 	
-	
-	onLoad((option)=>{
-		// console.log("wxInfo",wxRest.getLoginState());
-		userId = wxRest.getLoginState()?.userId;
-		
+	const init = ()=>{
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
-		
-		uni.getLocation({
-			type: 'wgs84',
-			success: (res)=>{
-				location.lng = res.longitude;
-				location.lat = res.latitude;
-				console.log("location",location);
-			}
-		});
 		
 		(async ()=>{
 			await new Promise(resolve => {
@@ -265,8 +252,41 @@
 			});
 			
 		})(); 
+	};
+	
+	const refreshDevices = ()=>{
+		callBle();
+		deviceRest.qyBuyerDeviceList(userId,(data)=>{
+			if (data.status=="OK") {
+				deviceList.value = data.deviceList;
+				if (!deviceList.value) {
+					deviceList.value = [];
+				}
+				if (deviceList.value?.length > 0) {
+					for(let d of deviceList.value) {
+						d.tempMap = {};
+						d.tempMap.near = false;
+						d.tempMap.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
+					}
+				}
+			}
+		});
+	};
+	
+	onLoad((option)=>{
+		// console.log("wxInfo",wxRest.getLoginState());
+		userId = wxRest.getLoginState()?.userId;
 		
-		
+		uni.getLocation({
+			type: 'wgs84',
+			success: (res)=>{
+				location.lng = res.longitude;
+				location.lat = res.latitude;
+				console.log("location",location);
+			}
+		});
+
+		init();
 		// wxRest.clearLoginInfo();
 	});
 	
@@ -381,14 +401,18 @@
 	}
 	
 	function addDevice(device) {
-		dialog.openLoading("正在连接设备……");
-		// console.log("connect...",device.advertisServiceUUIDs);
-		// Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
-		// Blue.createBLEConnection(device.deviceId);
-		// 换成了dbDrivice
-		console.log("connect...",device.tempMap.deviceType.tempMap.services.serviceId);
-		Blue.setBlueServiceId(device.tempMap.deviceType.tempMap.services.serviceId.uuid);
-		Blue.createBLEConnection(device.deviceId);
+		if (device.tempMap?.near) {
+			dialog.openLoading("正在连接设备……");
+			// console.log("connect...",device.advertisServiceUUIDs);
+			// Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
+			// Blue.createBLEConnection(device.deviceId);
+			// 换成了dbDrivice
+			console.log("connect...",device.tempMap.deviceType.tempMap.services.serviceId);
+			Blue.setBlueServiceId(device.tempMap.deviceType.tempMap.services.serviceId.uuid);
+			Blue.createBLEConnection(device.deviceId);
+		} else {
+			showNotify("设备不在有效的范围，请重新刷新搜索。");
+		}
 	}
 
 	const closeConnection = ()=>{
@@ -453,28 +477,32 @@
 		ConnectController.addConnectStateListen((data)=>{
 			console.log("addConnectStateListen",data);
 			// this.state = data.label;
-			if(data.deviceId && data.connected) {
-				console.log("connected",data);
-				if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
-					let device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
-					if (!device.tempMap) {
-						device.tempMap = {};
-					}
-					device.tempMap.connected = true;
-					device.tempMap.isDB = false;
-					// deviceList.value.push(device);
-					theDevice.value = device;
-				} else {
-					let device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
-					if (!device.tempMap) {
-						device.tempMap = {};
-					}
-					device.tempMap.connected = true;
-					device.tempMap.isDB = true;
-					theDevice.value = device;
+			if (!data.deviceId) {
+				return;
+			}
+			
+			let device = null;
+			if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
+				device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
+				if (!device.tempMap) {
+					device.tempMap = {};
 				}
-				
-				console.log("theDevice",theDevice.value);
+				device.tempMap.isDB = false;
+				// deviceList.value.push(device);
+			} else {
+				device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
+				if (!device.tempMap) {
+					device.tempMap = {};
+				}
+				device.tempMap.isDB = true;
+			}
+			theDevice.value = device;
+			console.log("theDevice",theDevice.value);
+			
+			if(data.connected) {
+				console.log("connected",data);
+				theDevice.value.tempMap.connecting = true;
+				theDevice.value.tempMap.connected = true;
 				
 				Blue.setBleConnectDeviceID(theDevice.value.deviceId);
 
@@ -502,8 +530,12 @@
 			else if (data.code==BLUE_STATE.CONNECTFAILED) {
 				// Blue.createBLEConnection(data.deviceId);
 				// viewStatus.value = 0;
+				theDevice.value.tempMap.connecting = false;
+				theDevice.value.tempMap.connected = false;
 			}
 			else if (data.code==BLUE_STATE.DISCONNECT.code) {
+				theDevice.value.tempMap.connecting = false;
+				theDevice.value.tempMap.connected = false;
 				viewStatus.value = 1;
 			}
 			if (data.label) {
@@ -524,13 +556,17 @@
 			dbDevice.buyer = buyer;
 			dbDevice.tempMap = {};
 			dbDevice.tempMap.connected = false;
+			dbDevice.tempMap.connecting = false;
+			dbDevice.tempMap.near = true;
 			dbDevice.tempMap.deviceType = dbDevice.deviceType;
 			
+			//该设备是否保存到了数据库
 			let index = lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId});
 			if (index < 0) {
 				preDeviceList.value.push(dbDevice);
 			} else {
 				deviceList.value[index].tempMap.near = true;
+				deviceList.value[index].tempMap.connecting = false;
 			}
 			
 			viewStatus.value = 1;
