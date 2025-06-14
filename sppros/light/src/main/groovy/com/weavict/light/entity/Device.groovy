@@ -90,6 +90,9 @@ class DeviceScript extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String name;
 
+    @Column(length=500)
+    String script;
+
     @ManyToOne(fetch=FetchType.EAGER)
     Device device;
 

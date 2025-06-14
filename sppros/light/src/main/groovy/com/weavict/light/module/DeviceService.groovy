@@ -14,14 +14,22 @@ class DeviceService extends ModuleBean
                 .where("DeviceType.id = :typeId",["typeId":typeId],"and",{return !(typeId in [null,""])})
                 .where("DeviceType.serviceId = :serviceId",["serviceId":serviceId],"and",{return !(serviceId in [null,""])})
                 .where("DeviceType.name like :name",["name":"%${name}%"],"and",{return !(name in [null,""])})
-                .where("DeviceType.appId = :appId",["appId":appId],"and",{return !(appId in [null,""])})
+                .where("DeviceType.appId = :appId",["appId":appId],"and",null)
                 .buildSql().run().content;
     }
 
-    List<Device> qyBuyerDeviceList(String buyerId)
+    List<Device> qyBuyerDeviceList(String buyerId,String appId)
     {
         return this.newQueryUtils(false).masterTable("Device",null,null)
             .where("Device.buyer.phone = :buyerId",["buyerId":buyerId],null,null)
+            .where("Device.deviceType.appId = :appId",["appId":appId],"and",null)
             .buildSql().run().content;
+    }
+
+    List<Device> qyDeviceScriptList(String deviceId)
+    {
+        return this.newQueryUtils(false).masterTable("DeviceScript",null,null)
+                .where("device.deviceId = :deviceId",["deviceId":deviceId],null,null)
+                .buildSql().run().content;
     }
 }

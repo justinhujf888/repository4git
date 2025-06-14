@@ -43,5 +43,15 @@ export const Beans = {
 			characteristicsWriteIds: "",
 			deviceList: []
 		}
+	},
+	
+	deviceScript() {
+		return {
+			id: "",
+			name: "",
+			script: "",
+			device: this.device(),
+			createDate: null
+		}
 	}
 }

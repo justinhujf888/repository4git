@@ -59,9 +59,34 @@ class DeviceRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "deviceList":({
-                        return deviceService.qyBuyerDeviceList(query.userId)?.each {
+                        return deviceService.qyBuyerDeviceList(query.userId,query.appId)?.each {
                             it.cancelLazyEr();
                         };
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyDeviceScriptList")
+    String qyDeviceScriptList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "deviceScriptList":({
+                         return deviceService.qyDeviceScriptList(query.deviceId)?.each {
+                             it.cancelLazyEr();
+                         };
                      }).call()
                     ]);
         }

@@ -15,6 +15,13 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/scriptList",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
 		    "path" : "pages/device/kgtime",
 		    "style" :                                                                                    
 		    {

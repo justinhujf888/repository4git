@@ -26,6 +26,17 @@ export default {
 			},
 			null, true);
 	},
+	qyDeviceScriptList(deviceId,onfun) {
+		Http.httpclient_json('/r/device/qyDeviceScriptList', 'post',{"deviceId":deviceId}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
 	addBuyerDevice(device,onfun) {
 		Http.httpclient_json('/r/device/addBuyerDevice', 'post',{"device":device}, "json",
 			(res)=>{
@@ -50,6 +61,28 @@ export default {
 	},
 	renameBuyerDevice(userId,deviceId,name,onfun) {
 		Http.httpclient_json('/r/device/renameBuyerDevice', 'post',{"userId":userId,"deviceId":deviceId,"name":name}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
+	genAliOssAccessInfo(onfun) {
+		Http.httpclient_json('/r/other/genAliOssAccessInfo', 'post',{}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
+	genSignature(onfun) {
+		Http.httpclient_json('/r/other/genSignature', 'post',{}, "json",
 			(res)=>{
 				if (res.data.status == "FA_ER") {
 					dialog.showApiErrorMsg();

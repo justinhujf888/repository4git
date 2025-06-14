@@ -35,7 +35,7 @@
 									<text class="text-sm font-semibold">{{device.name}}</text>
 								</view>
 								<view v-if="true || device.tempMap.near">
-									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" @click="addDevice(device)" click="scaned()">连接</wd-button>
+									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" click="addDevice(device)" @click="page.navigateTo('../device/scriptList',{deviceId:'7815DD45-293D-76A2-5F45-79425575F1A2'})">连接</wd-button>
 								</view>
 								<view v-else>
 									<text class="text-gray-400 text-xs">设备不可连接</text>
@@ -75,7 +75,7 @@
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
 				<view class="bg-white rounded-xl px-2 py-5 mt-4">
-					<view class="mx-10 center" @tap="page.navigateTo('../device/setup',{})">
+					<view class="mx-10 center" @tap="page.navigateTo('../device/scriptList',{deviceId:theDevice.deviceId})">
 						<img src="../../static/device.png" mode="widthFix"></img>
 					</view>
 					<wd-divider></wd-divider>
@@ -423,6 +423,9 @@
 	};
 	
 	function preCallBle() {
+		// 0000fff0-0000-1000-8000-00805f9b34fb 0000fff0-0000-1000-8000-00805f9b34fb 0000fff1-0000-1000-8000-00805f9b34fb
+		// {"serviceId":{"scan":"00007365-0000-1000-8000-00805F9B34FB","uuid":"76617365-6570-6c61-6e74-776f726c6473"}} ["7661fff1-6570-6c61-6e74-776f726c6473"] ["7661fff2-6570-6c61-6e74-776f726c6473"]
+		// {"serviceId":{"scan":"0000fff0-0000-1000-8000-00805f9b34fb","uuid":"0000fff0-0000-1000-8000-00805f9b34fb"}} ["0000fff0-0000-1000-8000-00805f9b34fb"] ["0000fff1-0000-1000-8000-00805f9b34fb"]
 		preDeviceList.value = [];
 		let serviceFilter = [];
 		for(let d of deviceTypeList) {
@@ -525,9 +528,9 @@
 						viewStatus.value = 2;
 					}
 					
-				},5000);
+				},1000);
 			} 
-			else if (data.code==BLUE_STATE.CONNECTFAILED) {
+			else if (data.code==BLUE_STATE.CONNECTFAILED.code) {
 				// Blue.createBLEConnection(data.deviceId);
 				// viewStatus.value = 0;
 				theDevice.value.tempMap.connecting = false;
