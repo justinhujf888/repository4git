@@ -15,6 +15,8 @@
 			</button>
 		</view>
 		<view class="mx-2">
+<!-- 			<wd-upload ref="uploader" :auto-upload="false" :file-list="fileList" image-mode="aspectFill" :action="host" :build-form-data="buildFormData" @change="handleChange" @fail="ossFail" @success="ossSuccess"></wd-upload>
+			<wd-button size="small" custom-class="py-2 text-xs text-white" @click="uploadClick()">开始上传</wd-button> -->
 			<!-- <wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button> -->
 			<view v-if="viewStatus == 0" class="hwcenter mt-8">
 				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">添加设备</wd-button>
@@ -147,7 +149,64 @@
 	let userId = null;
 	let deviceTypeList = null;
 	let location = {};
+	
+	
+	// const uploader = ref();
+	// let host = "https://pets-oss.oss-cn-zhangjiakou.aliyuncs.com";
+	// const fileList = ref([]);
+	// const handleChange = (files)=>{
+	// 	fileList.value = files;
+	// }
+	// const buildFormData = ({ file, formData, resolve }) => {
+	//   let imageName = file.url.substring(file.url.lastIndexOf('/') + 1) // 从图片路径中截取图片名称
+	//   // #ifdef H5
+	//   // h5端url中不包含扩展名，可以拼接一下name
+	//   imageName = imageName + file.name
+	//   // #endif
+	  
+	//   const key = `${imageName}` // 图片上传到oss的路径(拼接你的文件夹和文件名)
+	//   const success_action_status = '200' // 将上传成功状态码设置为200，默认状态码为204
+	  
+	//   // deviceRest.genAliOssAccessInfo((data)=>{
+	//   // 	console.log(data);
+	//   // 	// signature = data.signatureInfo.accessKey;
+	//   // 	ossAccessKeyId = data.signatureInfo.accessId // 你的AccessKey ID
+	//   // 	securityToken = data.signatureInfo.securityToken;
+	//   // });
+	//   deviceRest.genSignature((data)=>{
+	//   	// console.log(data);
+	//   	ossAccessKeyId = data.signatureInfo.accessId;
+	//   	policy = data.signatureInfo.policy;
+	//   	signature = data.signatureInfo.signature;
+	//   	securityToken = data.signatureInfo.securityToken;
+	//   	host = data.signatureInfo.bucketUrl;
 		
+	// 	formData = {
+	// 	  ...formData,
+	// 	  key: key,
+	// 	  OSSAccessKeyId: ossAccessKeyId,
+	// 	  policy: policy,
+	// 	  signature: signature,
+	// 			'x-oss-security-token': securityToken,
+	// 	  success_action_status: success_action_status
+	// 	}
+	// 	console.log(formData);
+	// 	resolve(formData) // 组装成功后返回 formData，必须返回
+	//   });
+	// }
+	// const uploadClick = ()=>{
+	// 	uploader.value?.submit();
+	// };
+	// const ossSuccess = (e)=>{
+	// 	console.log(e);
+	// };
+	// const ossFail = (e)=>{
+	// 	console.log(e);
+	// };
+	
+	// let signature = "";	let ossAccessKeyId="";let securityToken = "";let policy = "";
+	
+	
 	onLoad((option)=>{
 		// console.log("wxInfo",wxRest.getLoginState());
 		userId = wxRest.getLoginState()?.userId;
@@ -165,40 +224,49 @@
 			}
 		});
 		
-		deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
-			if (data.status=="OK") {
-				deviceTypeList = data.deviceTypeList;
-				if (!userId) {
-					return;
-				} else {
-					lodash.forEach(deviceTypeList,(v,i)=>{
-						// {serviceId:{scan:"00007365-0000-1000-8000-00805F9B34FB",uuid:"76617365-6570-6c61-6e74-776f726c6473"}}
-						v.tempMap = {};
-						v.tempMap.services = JSON.parse(v.serviceId);
-					});
-					callBle();
-				}
-			}
-		});
-		
-		if (userId) {
-			deviceRest.qyBuyerDeviceList(userId,(data)=>{
-				if (data.status=="OK") {
-					deviceList.value = data.deviceList;
-					if (!deviceList.value) {
-						deviceList.value = [];
+		(async ()=>{
+			await new Promise(resolve => {
+				deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
+					if (data.status=="OK") {
+						deviceTypeList = data.deviceTypeList;
+						lodash.forEach(deviceTypeList,(v,i)=>{
+							// {serviceId:{scan:"00007365-0000-1000-8000-00805F9B34FB",uuid:"76617365-6570-6c61-6e74-776f726c6473"}}
+							v.tempMap = {};
+							v.tempMap.services = JSON.parse(v.serviceId);
+						});
+						callBle();
+						resolve();
 					}
-					if (deviceList.value?.length > 0) {
-						for(let d of deviceList.value) {
-							d.tempMap = {};
-							d.tempMap.near = false;
-							d.tempMap.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
-						}
-						viewStatus.value = 1;
-					}
-				}
+				});
 			});
-		};
+			
+			await new Promise(resolve => {
+				if (userId) {
+					deviceRest.qyBuyerDeviceList(userId,(data)=>{
+						if (data.status=="OK") {
+							deviceList.value = data.deviceList;
+							if (!deviceList.value) {
+								deviceList.value = [];
+							}
+							if (deviceList.value?.length > 0) {
+								for(let d of deviceList.value) {
+									d.tempMap = {};
+									d.tempMap.near = false;
+									d.tempMap.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
+								}
+								viewStatus.value = 1;
+							}
+							resolve();
+						}
+					});
+				} else {
+					resolve();
+				};
+			});
+			
+		})(); 
+		
+		
 		// wxRest.clearLoginInfo();
 	});
 	
