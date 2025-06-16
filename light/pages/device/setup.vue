@@ -2,7 +2,7 @@
 	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
 		<template #title>
 			<view class="justify-center items-center">
-				<text class="text-base"></text>
+				<text class="text-sm">{{device?.name}}-{{deviceScript?.name}}</text>
 				<text class="gui-icons text-gray-400 ml-2">&#xe69e;</text>
 			</view>
 		</template>
@@ -40,7 +40,7 @@
 			</view>
 		</view>
 		<view class="mt-2">
-			<view v-for="(group,i) in pgElmList" :key="group.id" class="mt-4 bg-white rounded-xl p-4 text-gray-500">
+			<view v-for="(group,i) in pgElmList" :key="group.id" class="mt-2 mb-2 bg-white rounded-xl p-4 text-gray-500">
 				<view v-for="(item,i) in group.els" :key="group.id" class="mt-6 mb-6">
 					<view class="">
 						<view v-if="item.type=='slider'" class="col text-xl" :class="item.ly==0 && i>0 ? 'mt-10' : 'mt-5'">
@@ -82,6 +82,19 @@
 			<wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="save">保存</wd-button>
 		</view> -->
 	</view>
+	
+	<view v-if="isWriteCmd && deviceScript">
+		<wd-tabbar fixed bordered safeAreaInsetBottom placeholder>
+			<wd-tabbar-item title="">
+				<template #icon>
+					<view>
+						<wd-button custom-class="py-1 px-2 text-white" custom-style="#6AAE36" @click="saveScript">保存到方案</wd-button>
+					</view>
+				</template>
+			</wd-tabbar-item>
+		</wd-tabbar>
+	</view>
+	
 </template>
 
 <script setup>
@@ -91,6 +104,8 @@
 	import { Blue } from '@/api/bluebooth/index.js';
 	import { ConnectController } from '@/api/bluebooth/controller.js';
 	import hexTools from "@/api/hexTools.js";
+	import { Beans } from '@/api/dbs/beans';
+	import deviceRest from "@/api/dbs/device.js";
 	
 	import lodash from "lodash";
 	import isBetween from 'dayjs/plugin/isBetween';
@@ -102,6 +117,7 @@
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	const { showNotify, closeNotify } = useNotify();
 	
+	const device = ref({});
 	const isWriteCmd = ref(false);
 	const currentTime = ref("");
 	const times = ref({onTime:"8:00",offTime:"18:00"});
@@ -117,6 +133,8 @@
 	let cday = null;
 	let intervalId = null;
 	let loadingTime = null;
+	let deviceScript = null;
+	// 这里的areScript;0：直接进入控制台；1：从已经有的方案进入控制台
 	
 	
 	// let csTestdata = ["0xA6", "0x11", "0x00", "0x01", "0xE1", "0xA6", "0x12", "0x00", "0x01", "0xE1", "0xA6", "0x13", "0x00", "0x01", "0xE1", "0xA6", "0x14", "0x00", "0x01", "0xE1", "0xA6", "0x15", "0x00", "0x01", "0xE1", "0xA6", "0x16", "0x00", "0x01", "0xE1", "0xA6", "0x17", "0x00", "0x01", "0xE1", "0xA6", "0x18", "0x00", "0x01", "0xE1", "0xA6", "0x19", "0x00", "0x01", "0xE1", "0xA6", "0x1A", "0x00", "0x01", "0xE1", "0xA6", "0x1B", "0x00", "0x01", "0xE1", "0xA6", "0x1C", "0x00", "0x01", "0xE1", "0xA6", "0x1D", "0x00", "0x01", "0xE1", "0xA6", "0x1E", "0x00", "0x01", "0xE1", "0xA6", "0x1F", "0x00", "0x01", "0xE1", "0xA6", "0x20", "0x00", "0x01", "0xE1"];
@@ -221,6 +239,10 @@
 	};
 	
 	onLoad((option)=>{
+		let param = JSON.parse(decodeURIComponent(option.param));
+		device.value = param.device;
+		deviceScript = param.deviceScript;
+		// console.log("device",device.value);
 		pgElmList.value = [
 			{id:0,name:"light",els:[
 				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
@@ -479,40 +501,21 @@
 		},9000);
 	}
 	
-	const save = ()=>{
-		dialog.openLoading("与设备交互中……");
-		cday = uni.dayjs();
-		loopLoading();
-		
-		let onTimeAy = times.value.onTime.split(":");
-		let offTimeAy  = times.value.offTime.split(":");
-		Blue.writeBLEValue(hexTools.bleBuffer("0x02",parseInt(onTimeAy[0]),parseInt(onTimeAy[1])).buffer);
-		setTimeout(()=>{
-			Blue.writeBLEValue(hexTools.bleBuffer("0x03",parseInt(offTimeAy[0]),parseInt(offTimeAy[1])).buffer);
-		},3000);
-		
-		setTimeout(()=>{
-			Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday)).buffer);
-		},3000);
-		
-		
-		for(let g of pgElmList.value) {
-			for(let v of g.els) {
-				if (v.type=="switch") {
-					findArray(v.dId,v.value);
-				}
-			}
-		}
+	const saveScript = ()=>{
 		// console.log(pgElmList.value);return;
 		
+		let scriptArray = [];
 		for(let g of pgElmList.value) {
 			for(let v of g.els) {
 				if (v.cmd!="") {
 					if (v.isRun) {
 						if (v.type=="slider") {
-							setTimeout(()=>{
-								Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,parseInt(v.value)).buffer);
-							},3000);
+							// setTimeout(()=>{
+							// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,parseInt(v.value)).buffer);
+							// },3000);
+							let value = {};
+							value[v.cmd] = {"v0":0,"v1":v.value};
+							scriptArray.push(value);
 						}
 						if (v.type=="textGroup") {
 							let d1 = 0;
@@ -524,18 +527,27 @@
 								d1 = 0;
 								d2 = v.info[0].value;
 							}
-							setTimeout(()=>{
-								Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,parseInt(d1),parseInt(d2)).buffer);
-							},3000);
+							// setTimeout(()=>{
+							// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,parseInt(d1),parseInt(d2)).buffer);
+							// },3000);
+							let value = {};
+							value[v.cmd] = {"v0":d1,"v1":d2};
+							scriptArray.push(value);
 						}
 					} else {
-						setTimeout(()=>{
-							Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,0).buffer);
-						},3000);
+						// setTimeout(()=>{
+						// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,0).buffer);
+						// },3000);
+						let value = {};
+						value[v.cmd] = {"v0":0,"v1":0};
+						scriptArray.push(value);
 					}
 				}
 			}
 		}
+		// console.log(scriptArray);
+		proxy.$prePage().backScriptStr(deviceScript.id,JSON.stringify(scriptArray),device.value.deviceId);
+		page.navBack();
 	}
 	
 	defineExpose({

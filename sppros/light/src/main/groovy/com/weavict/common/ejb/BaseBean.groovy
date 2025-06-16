@@ -2,7 +2,11 @@ package com.weavict.common.ejb
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import jakarta.persistence.Query;
+import jakarta.persistence.Query
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionStatus
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource
 import java.sql.Connection
@@ -15,6 +19,9 @@ class BaseBean implements BaseService
     protected EntityManager em;
 
     protected DataSource dataSource;
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     BaseBean()
     {
@@ -427,5 +434,23 @@ class BaseBean implements BaseService
     void setEm(EntityManager em)
     {
         this.em = em;
+    }
+
+    @Override
+    void transactionCall(int propagationBehavior, Closure closure) throws Exception
+    {
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        definition.setPropagationBehavior(propagationBehavior);
+        TransactionStatus transactionStatus = transactionManager.getTransaction(definition);
+        try
+        {
+            closure.call();
+            transactionManager.commit(transactionStatus);
+        }
+        catch(Exception e)
+        {
+            transactionManager.rollback(transactionStatus);
+            throw e;
+        }
     }
 }

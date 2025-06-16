@@ -35,7 +35,7 @@
 									<text class="text-sm font-semibold">{{device.name}}</text>
 								</view>
 								<view v-if="true || device.tempMap.near">
-									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" click="addDevice(device)" @click="page.navigateTo('../device/scriptList',{deviceId:'7815DD45-293D-76A2-5F45-79425575F1A2'})">连接</wd-button>
+									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" :disabled="device.tempMap.connecting" @click="addDevice(device)" click="page.navigateTo('../device/scriptList',{device:device})">连接</wd-button>
 								</view>
 								<view v-else>
 									<text class="text-gray-400 text-xs">设备不可连接</text>
@@ -75,7 +75,7 @@
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
 				<view class="bg-white rounded-xl px-2 py-5 mt-4">
-					<view class="mx-10 center" @tap="page.navigateTo('../device/scriptList',{deviceId:theDevice.deviceId})">
+					<view class="mx-10 center" @tap="page.navigateTo('../device/scriptList',{device:theDevice})">
 						<img src="../../static/device.png" mode="widthFix"></img>
 					</view>
 					<wd-divider></wd-divider>
@@ -135,7 +135,7 @@
 	import cmdjson from "@/api/datas/cmd.json";
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
-	import { Beans } from '../../api/dbs/beans';
+	import { Beans } from '@/api/dbs/beans';
 	const { showNotify, closeNotify } = useNotify();
 	const { proxy } = getCurrentInstance();
 	const viewStatus = ref(-1);
@@ -219,7 +219,11 @@
 						lodash.forEach(deviceTypeList,(v,i)=>{
 							// {serviceId:{scan:"00007365-0000-1000-8000-00805F9B34FB",uuid:"76617365-6570-6c61-6e74-776f726c6473"}}
 							v.tempMap = {};
-							v.tempMap.services = JSON.parse(v.serviceId);
+							v.tempMap.services = {};
+							v.tempMap.services.serviceId = JSON.parse(v.serviceId).serviceId;
+							v.tempMap.services.rcy = JSON.parse(v.characteristicsReadIds);
+							v.tempMap.services.wcy = JSON.parse(v.characteristicsWriteIds);
+							console.log("qyDeviceTypeList",v);
 						});
 						callBle();
 						resolve();
@@ -239,7 +243,10 @@
 								for(let d of deviceList.value) {
 									d.tempMap = {};
 									d.tempMap.near = false;
-									d.tempMap.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
+									d.tempMap.connected = false;
+									d.tempMap.connecting = false;
+									d.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
+									console.log("qyBuyerDeviceList",d);
 								}
 								viewStatus.value = 1;
 							}
@@ -256,21 +263,13 @@
 	
 	const refreshDevices = ()=>{
 		callBle();
-		deviceRest.qyBuyerDeviceList(userId,(data)=>{
-			if (data.status=="OK") {
-				deviceList.value = data.deviceList;
-				if (!deviceList.value) {
-					deviceList.value = [];
-				}
-				if (deviceList.value?.length > 0) {
-					for(let d of deviceList.value) {
-						d.tempMap = {};
-						d.tempMap.near = false;
-						d.tempMap.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
-					}
-				}
-			}
-		});
+		for(let d of deviceList.value) {
+			d.tempMap = {};
+			d.tempMap.near = false;
+			d.tempMap.connected = false;
+			d.tempMap.connecting = false;
+		}
+		viewStatus.value = 1;
 	};
 	
 	onLoad((option)=>{
@@ -407,8 +406,9 @@
 			// Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
 			// Blue.createBLEConnection(device.deviceId);
 			// 换成了dbDrivice
-			console.log("connect...",device.tempMap.deviceType.tempMap.services.serviceId);
-			Blue.setBlueServiceId(device.tempMap.deviceType.tempMap.services.serviceId.uuid);
+			console.log("connect...",device.deviceType.tempMap.services);
+			device.tempMap.connecting = true;
+			Blue.setBlueServiceId(device.deviceType.tempMap.services.serviceId.uuid);
 			Blue.createBLEConnection(device.deviceId);
 		} else {
 			showNotify("设备不在有效的范围，请重新刷新搜索。");
@@ -425,7 +425,7 @@
 	function preCallBle() {
 		// 0000fff0-0000-1000-8000-00805f9b34fb 0000fff0-0000-1000-8000-00805f9b34fb 0000fff1-0000-1000-8000-00805f9b34fb
 		// {"serviceId":{"scan":"00007365-0000-1000-8000-00805F9B34FB","uuid":"76617365-6570-6c61-6e74-776f726c6473"}} ["7661fff1-6570-6c61-6e74-776f726c6473"] ["7661fff2-6570-6c61-6e74-776f726c6473"]
-		// {"serviceId":{"scan":"0000fff0-0000-1000-8000-00805f9b34fb","uuid":"0000fff0-0000-1000-8000-00805f9b34fb"}} ["0000fff0-0000-1000-8000-00805f9b34fb"] ["0000fff1-0000-1000-8000-00805f9b34fb"]
+		// {"serviceId":{"scan":"0000fff0-0000-1000-8000-00805f9b34fb","uuid":"0000fff0-0000-1000-8000-00805f9b34fb"}} ["0000fff1-0000-1000-8000-00805f9b34fb"] ["0000fff2-0000-1000-8000-00805f9b34fb"]
 		preDeviceList.value = [];
 		let serviceFilter = [];
 		for(let d of deviceTypeList) {
@@ -487,16 +487,10 @@
 			let device = null;
 			if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
 				device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
-				if (!device.tempMap) {
-					device.tempMap = {};
-				}
 				device.tempMap.isDB = false;
 				// deviceList.value.push(device);
 			} else {
 				device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
-				if (!device.tempMap) {
-					device.tempMap = {};
-				}
 				device.tempMap.isDB = true;
 			}
 			theDevice.value = device;
@@ -509,7 +503,8 @@
 				
 				Blue.setBleConnectDeviceID(theDevice.value.deviceId);
 
-				Blue.getBleCharacteristicsInfo(JSON.parse(theDevice.value.deviceType.characteristicsReadIds)[0].toUpperCase(),JSON.parse(theDevice.value.deviceType.characteristicsWriteIds)[0].toUpperCase());	
+				console.log("read",theDevice.value.deviceType.tempMap.services.rcy,"write",theDevice.value.deviceType.tempMap.services.wcy);
+				Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toUpperCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toUpperCase());	
 				// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
 				
 				// let cday = uni.dayjs();
@@ -535,6 +530,7 @@
 				// viewStatus.value = 0;
 				theDevice.value.tempMap.connecting = false;
 				theDevice.value.tempMap.connected = false;
+				viewStatus.value = 1;
 			}
 			else if (data.code==BLUE_STATE.DISCONNECT.code) {
 				theDevice.value.tempMap.connecting = false;
@@ -561,7 +557,6 @@
 			dbDevice.tempMap.connected = false;
 			dbDevice.tempMap.connecting = false;
 			dbDevice.tempMap.near = true;
-			dbDevice.tempMap.deviceType = dbDevice.deviceType;
 			
 			//该设备是否保存到了数据库
 			let index = lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId});

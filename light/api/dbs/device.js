@@ -37,6 +37,17 @@ export default {
 			},
 			null, true);
 	},
+	updateTheDeviceScript(deviceScript,onfun) {
+		Http.httpclient_json('/r/device/updateTheDeviceScript', 'post',{"deviceScript":deviceScript}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
 	addBuyerDevice(device,onfun) {
 		Http.httpclient_json('/r/device/addBuyerDevice', 'post',{"device":device}, "json",
 			(res)=>{
@@ -70,6 +81,41 @@ export default {
 			},
 			null, true);
 	},
+	delTheDeviceScript(scriptId,onfun) {
+		Http.httpclient_json('/r/device/delTheDeviceScript', 'post',{"id":scriptId}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
+	renameDeviceScript(id,name,onfun) {
+		Http.httpclient_json('/r/device/renameDeviceScript', 'post',{"id":id,"name":name}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
+	reScriptDeviceScript(scriptId,script,deviceId,onfun) {
+		Http.httpclient_json('/r/device/reScriptDeviceScript', 'post',{"scriptId":scriptId,"script":script,"deviceId":deviceId}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
+	
+	
 	genAliOssAccessInfo(onfun) {
 		Http.httpclient_json('/r/other/genAliOssAccessInfo', 'post',{}, "json",
 			(res)=>{

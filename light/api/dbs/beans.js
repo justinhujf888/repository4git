@@ -1,4 +1,9 @@
+import util from "@/api/util.js"
 export const Beans = {
+	buildPId(pid) {
+		return pid + new Date().getTime() + util.random_string(5);
+	},
+	
 	buyer() {
 		return {
 			phone: "",
@@ -50,6 +55,7 @@ export const Beans = {
 			id: "",
 			name: "",
 			script: "",
+			areUse: 0,
 			device: this.device(),
 			createDate: null
 		}

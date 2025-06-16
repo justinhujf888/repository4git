@@ -2,6 +2,7 @@ package com.weavict.light.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.light.entity.Device
+import com.weavict.light.entity.DeviceScript
 import com.weavict.light.module.DeviceService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
@@ -144,6 +145,79 @@ class DeviceRest extends BaseRest
         try
         {
             deviceService.updateTheObjectFilds("Device","buyer.phone = :userId and deviceId = :deviceId",["name":query.name],["userId":query.userId,"deviceId":query.deviceId],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/delTheDeviceScript")
+    String delTheDeviceScript(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            deviceService.deleteTheObject8Fields("DeviceScript","id = :id",["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateTheDeviceScript")
+    String updateTheDeviceScript(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            DeviceScript deviceScript = objToBean(query.deviceScript,DeviceScript.class,buildObjectMapper());
+            deviceService.updateTheObject(deviceScript);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/renameDeviceScript")
+    String renameDeviceScript(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            deviceService.updateTheObjectFilds("DeviceScript","id = :id",["name":query.name],["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/reScriptDeviceScript")
+    String reScriptDeviceScript(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            deviceService.reScriptDeviceScript(query.appId,query.deviceId,query.scriptId,query.script);
             return """{"status":"OK"}""";
         }
         catch (Exception e)

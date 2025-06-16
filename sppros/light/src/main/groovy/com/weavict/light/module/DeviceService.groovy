@@ -1,8 +1,10 @@
 package com.weavict.light.module
 
 import com.weavict.light.entity.Device
+import com.weavict.light.entity.DeviceScript
 import com.weavict.light.entity.DeviceType
 import org.springframework.stereotype.Service
+import org.springframework.transaction.TransactionDefinition
 
 @Service("deviceService")
 class DeviceService extends ModuleBean
@@ -31,5 +33,13 @@ class DeviceService extends ModuleBean
         return this.newQueryUtils(false).masterTable("DeviceScript",null,null)
                 .where("device.deviceId = :deviceId",["deviceId":deviceId],null,null)
                 .buildSql().run().content;
+    }
+
+    void reScriptDeviceScript(String appId,String deviceId,String scriptId,String scriptStr)
+    {
+        this.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+            this.executeEQL("update DeviceScript set areUse = :areUse where device.deviceType.appId = :appId and device.deviceId = :deviceId",["areUse":0 as byte,"appId":appId,"deviceId":deviceId]);
+            this.updateTheObjectFilds("DeviceScript","id = :id",["script":scriptStr,"areUse":1 as byte],["id":scriptId],false);
+        });
     }
 }
