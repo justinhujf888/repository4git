@@ -12,6 +12,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.web.bind.annotation.RequestBody
 
 @Path("/device")
@@ -199,7 +200,17 @@ class DeviceRest extends BaseRest
     {
         try
         {
-            deviceService.updateTheObjectFilds("DeviceScript","id = :id",["name":query.name],["id":query.id],false);
+            if (!(query.name in [null,""]))
+            {
+                deviceService.updateTheObjectFilds("DeviceScript","id = :id",["name":query.name],["id":query.id],false);
+            }
+            if ((query.areUse as byte)>-1)
+            {
+                deviceService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                    deviceService.executeEQL("update DeviceScript set areUse = :areUse where device.deviceType.appId = :appId and device.deviceId = :deviceId",["areUse":0 as byte,"appId":query.appId,"deviceId":query.deviceId]);
+                    deviceService.updateTheObjectFilds("DeviceScript","id = :id",["areUse":query.areUse as byte],["id":query.id],false);
+                });
+            }
             return """{"status":"OK"}""";
         }
         catch (Exception e)

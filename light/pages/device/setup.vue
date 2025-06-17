@@ -513,9 +513,7 @@
 							// setTimeout(()=>{
 							// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,parseInt(v.value)).buffer);
 							// },3000);
-							let value = {};
-							value[v.cmd] = {"v0":0,"v1":v.value};
-							scriptArray.push(value);
+							scriptArray.push({"cmd":v.cmd,"v0":0,"v1":v.value});
 						}
 						if (v.type=="textGroup") {
 							let d1 = 0;
@@ -530,17 +528,13 @@
 							// setTimeout(()=>{
 							// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,parseInt(d1),parseInt(d2)).buffer);
 							// },3000);
-							let value = {};
-							value[v.cmd] = {"v0":d1,"v1":d2};
-							scriptArray.push(value);
+							scriptArray.push({"cmd":v.cmd,"v0":d1,"v1":d2});
 						}
 					} else {
 						// setTimeout(()=>{
 						// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,0).buffer);
 						// },3000);
-						let value = {};
-						value[v.cmd] = {"v0":0,"v1":0};
-						scriptArray.push(value);
+						scriptArray.push({"cmd":v.cmd,"v0":0,"v1":0});
 					}
 				}
 			}

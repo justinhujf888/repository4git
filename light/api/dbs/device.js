@@ -92,8 +92,8 @@ export default {
 			},
 			null, true);
 	},
-	renameDeviceScript(id,name,onfun) {
-		Http.httpclient_json('/r/device/renameDeviceScript', 'post',{"id":id,"name":name}, "json",
+	renameDeviceScript(id,name,areUse,deviceId,onfun) {
+		Http.httpclient_json('/r/device/renameDeviceScript', 'post',{"id":id,"name":name,"areUse":areUse,"deviceId":deviceId}, "json",
 			(res)=>{
 				if (res.data.status == "FA_ER") {
 					dialog.showApiErrorMsg();
