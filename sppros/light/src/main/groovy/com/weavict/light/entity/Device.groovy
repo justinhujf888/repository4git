@@ -90,7 +90,7 @@ class DeviceScript extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String name;
 
-    @Column(length=300)
+    @Column(length=350)
     String script;
 
     @Column(length=1)

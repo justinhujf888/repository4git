@@ -1,5 +1,5 @@
 <template>
-	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
+	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="leftClick()">
 		<template #title>
 			<view class="justify-center items-center">
 				<text class="text-sm">{{device?.name}}-{{deviceScript?.name}}</text>
@@ -10,9 +10,9 @@
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
 	<view v-if="isWriteCmd" class="relative px-4">
-<!-- 		<view class="absolute left-2 top-1">
+		<view class="absolute left-2 top-1">
 			<wd-button @click="test">0x11</wd-button>
-		</view> -->
+		</view>
 		<view class="mt-5 col justify-center items-center text-gray-400">
 			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
 			<view class="row justify-center items-center mt-2 text-sm">
@@ -248,7 +248,7 @@
 				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
 				{id:"02",cmd:"0x07",rcmd:"0x17",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"03",cmd:"0x06",rcmd:"0x16",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:0,min:0,max:120,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
+				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:30,min:30,max:31,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
 				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
@@ -494,16 +494,17 @@
 	};
 	
 	const test = ()=>{
-		isWriteCmd.value = false;
-		Blue.writeBLEValue(hexTools.bleBuffer("0x11",0,0).buffer);
-		setTimeout(()=>{
-			isWriteCmd.value = true;
-		},9000);
+		// isWriteCmd.value = false;
+		// Blue.writeBLEValue(hexTools.bleBuffer("0x11",0,0).buffer);
+		// setTimeout(()=>{
+		// 	isWriteCmd.value = true;
+		// },9000);
+		let a = lodash.find(pgElmList.value[0].els,(o)=>{return o.id=="04"});
+		a.min = 30;a.max = 31;
+		console.log(a);
 	}
 	
-	const saveScript = ()=>{
-		// console.log(pgElmList.value);return;
-		
+	const readAfterScript = ()=>{
 		let scriptArray = [];
 		for(let g of pgElmList.value) {
 			for(let v of g.els) {
@@ -514,6 +515,11 @@
 							// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,parseInt(v.value)).buffer);
 							// },3000);
 							scriptArray.push({"cmd":v.cmd,"v0":0,"v1":v.value});
+							if (v.exCmd) {
+								for(let cmd of v.exCmd) {
+									scriptArray.push({"cmd":cmd,"v0":0,"v1":v.value});
+								}
+							}
 						}
 						if (v.type=="textGroup") {
 							let d1 = 0;
@@ -540,9 +546,19 @@
 			}
 		}
 		// console.log(scriptArray);
-		proxy.$prePage().backScriptStr(deviceScript.id,JSON.stringify(scriptArray),device.value.deviceId);
+		return scriptArray;
+	};
+	
+	const saveScript = ()=>{
+		// console.log(pgElmList.value);return;
+		proxy.$prePage().backScriptStr(deviceScript.id,JSON.stringify(readAfterScript()),device.value.deviceId);
 		page.navBack();
 	}
+	
+	const leftClick = ()=>{
+		proxy.$prePage().backScriptStr(null,JSON.stringify(readAfterScript()),device.value.deviceId);
+		page.navBack();
+	};
 	
 	defineExpose({
 		setTimes
