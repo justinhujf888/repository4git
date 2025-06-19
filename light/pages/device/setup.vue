@@ -27,7 +27,7 @@
 					<text class="text-base text-green-500 font-semibold">日光</text>
 				</view>
 				<view class="col justify-center items-center flex-1 mt-2">
-					<view class="row justify-center items-center" @tap="page.navigateTo('./kgtime',{times:{onTime:times.onTime,offTime:times.offTime}})">
+					<view class="row justify-center items-center" @tap="goKgtime">
 						<text>开灯 {{times.onTime}}</text>
 						<text class="ml-2">关灯 {{times.offTime}}</text>
 						<text class="gui-icons ml-2">&#xe69e;</text>
@@ -60,7 +60,7 @@
 							<view v-for="(txt,txti) in item.info" :key="txt.id" class="row my-2">
 								<text class="mr-2 -mt-1">{{txt.prx}}</text>
 								<!-- <input :id="item.id + '_' + txt.id" class="ml-2 minput w-6" v-model="txt.value" type="number" :min="txt.min" :max="txt.max" input="checkInput"/> -->
-								<view class="flex-1" :class="item.isRun ? '' : 'bg-gray-200'">
+								<view v-if="txt.type=='slider'" class="flex-1" :class="item.isRun ? '' : 'bg-gray-200'">
 									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id,cmd:item.cmd}" :max="txt.max" :min="txt.min" :canSlide="item.isRun" :barWidth="50" :barHeight="50" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change="infoChange"></sliderc>
 								</view>
 								<view class="row justify-start items-center pl-2 w-16 -mt-1">
@@ -68,6 +68,12 @@
 									<text class="ml-1 flex-1">{{txt.afe}}</text>
 								</view>
 							</view>
+						</view>
+						<view v-else-if="item.type=='radioGroup'" :sstyle="item.isRun ? 'pointer-events:' : 'pointer-events:none'" class="col text-base between" :class="item.ly==0 ? 'mt-8' : 'mt-5'">
+							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
+							<wd-radio-group v-model="item.value" size="small" inline shape="button" @change="radioChange">
+								<wd-radio v-for="(txt,txti) in item.info" :key="txt.id" :value="txt.value">{{txt.value}}</wd-radio>
+							</wd-radio-group>
 						</view>
 						<view v-else-if="item.type=='switch'" class="row text-xl between" :class="item.ly==0  && i>0 ? 'mt-10' : 'mt-5'">
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
@@ -130,6 +136,7 @@
 	
 	const rday = ref(1);
 	
+	let oldValue = null;
 	let cday = null;
 	let intervalId = null;
 	let loadingTime = null;
@@ -223,6 +230,7 @@
 					});
 				});
 				
+				oldValue = lodash.find(pgElmList.value[0].els,(o)=>{return o.cmd=="0x10"}).value;
 				dialog.closeLoading();
 				clearInterval(intervalId);
 				//判断灯光状态与定时设定
@@ -248,30 +256,37 @@
 				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
 				{id:"02",cmd:"0x07",rcmd:"0x17",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"03",cmd:"0x06",rcmd:"0x16",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:30,min:30,max:31,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
+				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,type:"radioGroup",name:"开灯关灯渐变时长（日出日落）",value:30,isRun:true,info:[
+					{id:"050",prx:"",value:0,afe:"",type:"radio"},
+					{id:"051",prx:"",value:30,afe:"",type:"radio"},
+					{id:"052",prx:"",value:60,afe:"",type:"radio"},
+					{id:"053",prx:"",value:90,afe:"",type:"radio"},
+					{id:"054",prx:"",value:120,afe:"",type:"radio"}
+				]}
+				// {id:"06",cmd:"0x10",rcmd:"0x20",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:30,min:30,max:31,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
 				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"11",dId:"12",cmd:"",ly:1,type:"switch",name:"定时循环",value:false,style:{}},
-				{id:"12",cmd:"0x0B",rcmd:"0x1B",isRun:false,ly:1,type:"textGroup",isRun:false,info:[
-					{id:"120",prx:"运转时长",value:0,afe:"分钟",min: 0, max: 15},
-					{id:"121",prx:"停歇时长",value:0,afe:"分钟",min: 0, max: 15}
+				{id:"12",cmd:"0x0B",rcmd:"0x1B",ly:1,type:"textGroup",isRun:false,info:[
+					{id:"120",prx:"运转时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15},
+					{id:"121",prx:"停歇时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15}
 				]},
 				{id:"13",cmd:"0x09",rcmd:"0x19",isRun:true,ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:25,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
 				{id:"14",dId:"15",cmd:"",ly:1,type:"switch",name:"定时循环",value:true,style:{}},
-				{id:"15",cmd:"0x0C",rcmd:"0x1C",isRun:true,ly:1,type:"textGroup",isRun:true,info:[
-					{id:"150",prx:"运转时长",value:0,afe:"分钟",min: 0, max: 15},
-					{id:"151",prx:"停歇时长",value:0,afe:"分钟",min: 0, max: 15}
+				{id:"15",cmd:"0x0C",rcmd:"0x1C",ly:1,type:"textGroup",isRun:true,info:[
+					{id:"150",prx:"运转时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15},
+					{id:"151",prx:"停歇时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15}
 				]}
 			]},
 			{id:2,name:"cw",els:[
 				{id:"20",dId:"21",cmd:"",ly:0,type:"switch",name:"开灯除雾",value:true,style:{}},
-				{id:"21",cmd:"0x0D",rcmd:"0x1D",isRun:true,ly:1,type:"textGroup",isRun:true,info:[
-					{id:"210",prx:"除雾时长",value:4,afe:"分钟",min: 0, max: 60},
+				{id:"21",cmd:"0x0D",rcmd:"0x1D",ly:1,type:"textGroup",isRun:true,info:[
+					{id:"210",prx:"除雾时长",value:4,afe:"分钟",type:"slider",min: 0, max: 60},
 				]},
 				{id:"22",dId:"23",cmd:"",ly:0,type:"switch",name:"月光模式",value:false,style:{}},
 				{id:"23",cmd:"0x0F",rcmd:"0x1F",isRun:false,ly:1,type:"textGroup",name:"亮度",value:0,min:0,max:100,style:{},info:[
-					{id:"230",prx:"亮度",value:0,afe:"%",min: 0, max: 100}
+					{id:"230",prx:"亮度",value:0,afe:"%",type:"slider",min: 0, max: 100}
 				]}
 			]}
 		];
@@ -448,15 +463,61 @@
 		// }
 	};
 	
-	const setTimes = (v)=>{
-		times.value = v;
-		
+	const radioChange = (e)=>{
+		let c = lodash.find(pgElmList.value[0].els,(o)=>{return o.cmd=="0x10"});
 		let onTimeAy = times.value.onTime.split(":");
 		let offTimeAy  = times.value.offTime.split(":");
-		Blue.writeBLEValue(hexTools.bleBuffer("0x02",parseInt(onTimeAy[0]),parseInt(onTimeAy[1])).buffer);
+		let onTime_h = parseInt(onTimeAy[0]);
+		let onTime_s = parseInt(onTimeAy[1]);
+		let offTime_h = parseInt(offTimeAy[0]);
+		let offTime_s = parseInt(offTimeAy[1]);
+		// console.log(oldValue,c);
+		if (checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,c.value)) {
+			oldValue = c.value;
+			Blue.writeBLEValue(hexTools.bleBuffer(c.cmd,0,parseInt(c.value)).buffer);
+		} else {
+			c.value = oldValue;
+			showNotify("设定错误请重新确认。");
+		}
+	};
+	
+	const goKgtime = ()=>{
+		// let onTimeAy = times.value.onTime.split(":");
+		// let offTimeAy  = times.value.offTime.split(":");
+		// let onTime_h = parseInt(onTimeAy[0]);
+		// let onTime_s = parseInt(onTimeAy[1]);
+		// let offTime_h = parseInt(offTimeAy[0]);
+		// let offTime_s = parseInt(offTimeAy[1]);
+		// page.navigateTo('./kgtime',{times:{onTime:times.onTime,offTime:times.offTime,values:{onTime:{v0:onTime_h,v1:onTime_s},offTime:{v0:offTime_h,v1:offTime_s}}}});
+		
+		let c = lodash.find(pgElmList.value[0].els,(o)=>{return o.cmd=="0x10"});
+		page.navigateTo('./kgtime',{times:{onTime:times.value.onTime,offTime:times.value.offTime},cvalue:c.value});
+	};
+	
+	const setTimes = (v)=>{
+		times.value = v;
+		Blue.writeBLEValue(hexTools.bleBuffer("0x02",times.value.values.onTime.v0,times.value.values.onTime.v1).buffer);
 		setTimeout(()=>{
-			Blue.writeBLEValue(hexTools.bleBuffer("0x03",parseInt(offTimeAy[0]),parseInt(offTimeAy[1])).buffer);
+			Blue.writeBLEValue(hexTools.bleBuffer("0x03",times.value.values.offTime.v0,times.value.values.offTime.v1).buffer);
 		},3000);
+	};
+	
+	const checkKgTimeAndC = (onTime_h,onTime_s,offTime_h,offTime_s,cvalue)=>{
+		let onFen = onTime_h*60 + onTime_s;
+		let offFen = offTime_h*60 + offTime_s;
+		if (onFen>offFen) {
+			if (offFen+1440-onFen >= 2*cvalue) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			if (offFen-onFen >= 2*cvalue) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 	};
 	
 	const setRDay = ()=>{
@@ -561,7 +622,7 @@
 	};
 	
 	defineExpose({
-		setTimes
+		setTimes,checkKgTimeAndC
 	});
 </script>
 

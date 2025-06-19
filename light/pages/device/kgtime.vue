@@ -6,6 +6,7 @@
 			</view>
 		</template>
 	</wd-navbar>
+	<wd-notify></wd-notify>
 	<view class="relative">
 		<view class="px-2 mx-2">
 			<view class="mt-4 bg-white rounded-xl p-4 text-gray-400">
@@ -49,13 +50,19 @@
 	import page from "@/api/uniapp/page.js";
 	import { ref,getCurrentInstance } from 'vue';
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
+	import { useNotify } from '@/uni_modules/wot-design-uni';
+	
+	const { showNotify, closeNotify } = useNotify();
 	
 	const times = ref({onTime:"",offTime:""});
 	
+	let cvalue = null;
+	
 	onLoad((option)=>{
 		let param = JSON.parse(decodeURIComponent(option.param));
-		times.value.onTime = param.times.onTime;
-		times.value.offTime = param.times.offTime;
+		times.value = param.times;
+		cvalue = param.cvalue;
+		// console.log(times.value,cvalue);
 	});
 	
 	const onTime = (v)=>{
@@ -65,8 +72,20 @@
 		times.value.offTime = v.value;
 	};
 	const save = ()=>{
-		uni.prePage().setTimes(times.value);
-		page.navBack();
+		let onTimeAy = times.value.onTime.split(":");
+		let offTimeAy  = times.value.offTime.split(":");
+		let onTime_h = parseInt(onTimeAy[0]);
+		let onTime_s = parseInt(onTimeAy[1]);
+		let offTime_h = parseInt(offTimeAy[0]);
+		let offTime_s = parseInt(offTimeAy[1]);
+		
+		if (uni.prePage().checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,cvalue)) {
+			times.value = {onTime:times.value.onTime,offTime:times.value.offTime,values:{onTime:{v0:onTime_h,v1:onTime_s},offTime:{v0:offTime_h,v1:offTime_s}}};
+			uni.prePage().setTimes(times.value);
+			page.navBack();
+		} else {
+			showNotify("设定错误请重新确认。");
+		}
 	}
 </script>
 
