@@ -127,6 +127,7 @@
 	const isWriteCmd = ref(false);
 	const currentTime = ref("");
 	const times = ref({onTime:"8:00",offTime:"18:00",values:{onTime:{v0:parseInt(8),v1:parseInt(0)},offTime:{v0:parseInt(18),v1:parseInt(0)}}});
+	const fengsanZuanSu = ref(0);
 	const pgElmList = ref([]);
 	
 	const sdsArray = ref([]);
@@ -192,6 +193,8 @@
 								td2 = td2.hour(parseInt(ay[2],16));
 								td2 = td2.minute(parseInt(ay[3],16));
 								times.value.offTime = td2.format("HH:mm");
+							} else if (ay[1]=="0x1A") {
+								fengsanZuanSu.value = parseInt(ay[3],16);
 							} else if (ay[1]=="0x1E") {
 								rday.value = parseInt(ay[3],16);
 							} else {
@@ -570,11 +573,13 @@
 		scriptArray.push({"cmd":"0x02","v0":times.value.values.onTime.v0,"v1":times.value.values.onTime.v1});
 		scriptArray.push({"cmd":"0x03","v0":times.value.values.offTime.v0,"v1":times.value.values.offTime.v1});
 		scriptArray.push({"cmd":"0x0E","v0":0,"v1":parseInt(rday.value)});
+		// scriptArray.push({"cmd":"0x0A","v0":0,"v1":parseInt(fengsanZuanSu.value.value)});
+		
 		for(let g of pgElmList.value) {
 			for(let v of g.els) {
 				if (v.cmd!="") {
 					if (v.isRun) {
-						if (v.type=="slider") {
+						if (v.type=="slider" || v.type=="radioGroup") {
 							// setTimeout(()=>{
 							// 	Blue.writeBLEValue(hexTools.bleBuffer(v.cmd,0,parseInt(v.value)).buffer);
 							// },3000);
