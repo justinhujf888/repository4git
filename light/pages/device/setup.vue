@@ -3,7 +3,7 @@
 		<template #title>
 			<view class="justify-center items-center">
 				<text class="text-sm">{{device?.name}}-{{deviceScript?.name}}</text>
-				<text class="gui-icons text-gray-400 ml-2">&#xe69e;</text>
+				<!-- <text class="gui-icons text-gray-400 ml-2">&#xe69e;</text> -->
 			</view>
 		</template>
 	</wd-navbar>
