@@ -1,6 +1,6 @@
 <template>
-	<wd-notify></wd-notify>
 	<view class="relative h-screen px-3">
+		<wd-notify></wd-notify>
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">VASEE 生态智能</text>
@@ -223,7 +223,7 @@
 							v.tempMap.services.serviceId = JSON.parse(v.serviceId).serviceId;
 							v.tempMap.services.rcy = JSON.parse(v.characteristicsReadIds);
 							v.tempMap.services.wcy = JSON.parse(v.characteristicsWriteIds);
-							console.log("qyDeviceTypeList",v);
+							// console.log("qyDeviceTypeList",v);
 						});
 						callBle();
 						resolve();
@@ -246,11 +246,13 @@
 									d.tempMap.connected = false;
 									d.tempMap.connecting = false;
 									d.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
-									console.log("qyBuyerDeviceList",d);
+									// console.log("qyBuyerDeviceList",d);
 								}
-								viewStatus.value = 1;
 							}
-							resolve();
+							setTimeout(()=>{
+								viewStatus.value = 1;
+								resolve();
+							},1500);
 						}
 					});
 				} else {
@@ -262,13 +264,13 @@
 	};
 	
 	const refreshDevices = ()=>{
-		callBle();
 		for(let d of deviceList.value) {
 			d.tempMap = {};
 			d.tempMap.near = false;
 			d.tempMap.connected = false;
 			d.tempMap.connecting = false;
 		}
+		callBle();
 		viewStatus.value = 1;
 	};
 	
@@ -479,6 +481,9 @@
 	    Blue.callBle();
 		ConnectController.addConnectStateListen((data)=>{
 			console.log("addConnectStateListen",data);
+			if (data.label) {
+				showNotify(data.label);
+			}
 			// this.state = data.label;
 			if (!data.deviceId) {
 				return;
@@ -536,9 +541,6 @@
 				theDevice.value.tempMap.connecting = false;
 				theDevice.value.tempMap.connected = false;
 				viewStatus.value = 1;
-			}
-			if (data.label) {
-				showNotify(data.label);
 			}
 			dialog.closeLoading();
 		});

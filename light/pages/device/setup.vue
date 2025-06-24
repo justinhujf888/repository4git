@@ -10,9 +10,9 @@
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
 	<view v-if="isWriteCmd" class="relative px-4">
-		<view class="absolute left-2 top-1">
+<!-- 		<view class="absolute left-2 top-1">
 			<wd-button @click="test">0x11</wd-button>
-		</view>
+		</view> -->
 		<view class="mt-5 col justify-center items-center text-gray-400">
 			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
 			<view class="row justify-center items-center mt-2 text-sm">
@@ -126,7 +126,7 @@
 	const device = ref({});
 	const isWriteCmd = ref(false);
 	const currentTime = ref("");
-	const times = ref({onTime:"8:00",offTime:"18:00"});
+	const times = ref({onTime:"8:00",offTime:"18:00",values:{onTime:{v0:parseInt(8),v1:parseInt(0)},offTime:{v0:parseInt(18),v1:parseInt(0)}}});
 	const pgElmList = ref([]);
 	
 	const sdsArray = ref([]);
@@ -567,6 +567,9 @@
 	
 	const readAfterScript = ()=>{
 		let scriptArray = [];
+		scriptArray.push({"cmd":"0x02","v0":times.value.values.onTime.v0,"v1":times.value.values.onTime.v1});
+		scriptArray.push({"cmd":"0x03","v0":times.value.values.offTime.v0,"v1":times.value.values.offTime.v1});
+		scriptArray.push({"cmd":"0x0E","v0":0,"v1":parseInt(rday.value)});
 		for(let g of pgElmList.value) {
 			for(let v of g.els) {
 				if (v.cmd!="") {
