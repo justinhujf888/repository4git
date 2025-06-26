@@ -166,7 +166,7 @@ class OtherUtils
 				.credentialsProvider(credentialsProvider)
 				.clientConfiguration(clientBuilderConfiguration)
 		// 请设置为目标Bucket所处region  例如杭州地域：cn-hangzhou
-				.region("cn-zhangjiakou")
+				.region(givePropsValue("ali_oss_region"))
 				.build();
 	}
 
