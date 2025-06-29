@@ -9,7 +9,7 @@
 					<wd-button size="small" custom-style="background: #6AAE36" open-type="getPhoneNumber" @getphonenumber="getphonenumber">手机快捷登录</wd-button>
 				</view>
 				<view class="ml-6">
-					<wd-button size="small" @click="cancel">暂不登录</wd-button>
+					<wd-button size="small" @click="cancel" custom-style="background: #6AAE36">暂不登录</wd-button>
 				</view>
 			</view>
 		</view>

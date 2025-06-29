@@ -17,7 +17,7 @@
 						</view>
 					</view>
 					<view class="ml-8 mr-2">
-						<wd-button custom-class="mx-2" type="icon" icon="setting" @tap.stop="setupScript(script)"></wd-button>
+						<wd-button custom-class="mx-2" type="icon" icon="tools" @tap.stop="setupScript(script)"></wd-button>
 						<wd-button custom-class="mx-2" type="icon" icon="edit" @tap.stop="theDeviceScript=script;renameShow=true"></wd-button>
 						<wd-button custom-class="mx-2" type="icon" icon="delete" @tap.stop="delTheDeviceScript(script.id,index)"></wd-button>
 					</view>
@@ -27,7 +27,7 @@
 				<text class="text-gray-500 text-xs">没有添加方案</text>
 			</view>
 			<view class="mt-5 row center">
-				<wd-button size="small" custom-class="py-1 px-2 text-white" custom-style="#6AAE36" @click="theDeviceScript=Beans.deviceScript();renameShow=true">新增方案</wd-button>
+				<wd-button size="small" custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="theDeviceScript=Beans.deviceScript();renameShow=true">新增方案</wd-button>
 			</view>
 			
 <!-- 			<wd-divider></wd-divider>
@@ -49,7 +49,7 @@
 				<input class="minput ml-2" v-model="theDeviceScript.name"/>
 			</view>
 			<view class="mt-10">
-				<wd-button size="medium" @click="saveScript()">确定</wd-button>
+				<wd-button size="medium" @click="saveScript()" custom-style="background: #6AAE36">确定</wd-button>
 			</view>
 		</view>
 	</wd-popup>
