@@ -34,11 +34,11 @@
 									<!-- <text class="text-sm font-bold text-green-500 mr-1">·</text> -->
 									<text class="text-sm font-semibold">{{device.name}}</text>
 								</view>
-								<view v-if="true || device.tempMap.near">
+								<view v-if="device.tempMap.near">
 									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" :disabled="device.tempMap.connecting" @click="addDevice(device)" click="page.navigateTo('../device/scriptList',{device:device})">连接</wd-button>
 								</view>
 								<view v-else>
-									<text class="text-gray-400 text-xs">设备不可连接</text>
+									<text class="text-gray-400 text-xs"></text>
 								</view>
 							</view>
 <!-- 							<view class="row top-2 right-4">
