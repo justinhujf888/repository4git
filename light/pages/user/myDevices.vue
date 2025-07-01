@@ -39,7 +39,7 @@
 				<input class="minput ml-2" v-model="theDevice.name"/>
 			</view>
 			<view class="mt-10">
-				<wd-button size="medium" @click="rename()">确定</wd-button>
+				<wd-button size="medium" @click="rename()" custom-style="background: #6AAE36">确定</wd-button>
 			</view>
 		</view>
 	</wd-popup>

@@ -5,7 +5,7 @@
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">VASEE 生态智能</text>
 			</view>
-		</view>
+		</view>				
 		<view class="between mt-10 w-full">
 			<view class="flex-1">
 				<text v-if="false" class="text-gray-400 text-base gui-icons">上午 10:30 &#xe69e;</text>

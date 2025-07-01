@@ -26,10 +26,10 @@
 		</view>
 		
 		<view v-if="userId" class="mt-14">
-			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="logout()">退出登录</wd-button>
+			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="logout()" custom-style="background: #6AAE36">退出登录</wd-button>
 		</view>
 		<view v-else class="mt-14">
-			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="login()">登    录</wd-button>
+			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="login()" custom-style="background: #6AAE36">登    录</wd-button>
 		</view>
 	</view>
 	<my-wxLogin :isShow="loginShow" @close="loginClose" @runAgain="loginRunAgain"></my-wxLogin>
