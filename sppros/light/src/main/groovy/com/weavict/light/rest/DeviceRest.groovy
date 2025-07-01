@@ -127,7 +127,10 @@ class DeviceRest extends BaseRest
     {
         try
         {
-            deviceService.deleteTheObject8Fields("Device","buyer.phone = :userId and deviceId = :deviceId",["userId":query.userId,"deviceId":query.deviceId],false);
+            deviceService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                deviceService.deleteTheObject8Fields("DeviceScript","device.deviceId = :deviceId",["deviceId":query.deviceId],false);
+                deviceService.deleteTheObject8Fields("Device","buyer.phone = :userId and deviceId = :deviceId",["userId":query.userId,"deviceId":query.deviceId],false);
+            });
             return """{"status":"OK"}""";
         }
         catch (Exception e)

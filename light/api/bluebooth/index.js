@@ -297,52 +297,57 @@ export const Blue = {
 	},
 		
 	createBLEConnection(deviceId) {
-		if (bleConnectDeviceID == null) {
-			bleConnectDeviceID = deviceId;
-			(async ()=>{
-				
-				await new Promise(resolve => {
-					uni.createBLEConnection({
-						deviceId: deviceId,
-						timeout: 3000,
-						success: (res)=> {
-							console.log("connedres",res);
-
-							uni.stopBluetoothDevicesDiscovery();
-							resolve();
-						},
-						fail: (er)=> {
-							ConnectController.connectStateListen({
-								...BLUE_STATE.CONNECTFAILED,
-								...er
-							});
-						},
-					});
-				});
-				
-				await new Promise(resolve => {
-					this.onBLEConnectionStateChange();
-					setTimeout(()=>{
-						resolve();
-					}, 2000);
-				});
-				
-				await new Promise(resolve => {
-					this.onNotifyBLECharacteristicValueChange();
-					setTimeout(()=>{
-						resolve();
-					}, 2000);
-				});
-				
-				await new Promise(resolve => {
-					this.onBLECharacteristicValueChange();
-					setTimeout(()=>{
-						resolve();
-					}, 2000);
-				});
-				
-			})();
+		
+		if (bleConnectDeviceID != null) {
+			if (bleConnectDeviceID != deviceId) {
+				closeBLEConnection();
+			}
 		}
+		
+		bleConnectDeviceID = deviceId;
+		(async ()=>{
+			
+			await new Promise(resolve => {
+				this.onBLEConnectionStateChange();
+				setTimeout(()=>{
+					resolve();
+				}, 2000);
+			});
+			
+			await new Promise(resolve => {
+				uni.createBLEConnection({
+					deviceId: bleConnectDeviceID,
+					timeout: 3000,
+					success: (res)=> {
+						console.log("connedres",res);
+		
+						uni.stopBluetoothDevicesDiscovery();
+						resolve();
+					},
+					fail: (er)=> {
+						ConnectController.connectStateListen({
+							...BLUE_STATE.CONNECTFAILED,
+							...er
+						});
+					},
+				});
+			});
+			
+			await new Promise(resolve => {
+				this.onNotifyBLECharacteristicValueChange();
+				setTimeout(()=>{
+					resolve();
+				}, 2000);
+			});
+			
+			await new Promise(resolve => {
+				this.onBLECharacteristicValueChange();
+				setTimeout(()=>{
+					resolve();
+				}, 2000);
+			});
+			
+		})();
 	},
 		
 	onBLEConnectionStateChange() {

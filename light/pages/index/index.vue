@@ -501,7 +501,7 @@
 			theDevice.value = device;
 			console.log("theDevice",theDevice.value);
 			
-			if(data.connected) {
+			if(data.code==BLUE_STATE.CONNECTSUCCESS.code || data.connected) {
 				console.log("connected",data);
 				theDevice.value.tempMap.connecting = true;
 				theDevice.value.tempMap.connected = true;
