@@ -174,24 +174,26 @@
 	};
 	
 	const appScript = (script,fun)=>{
-		if (!script.script) {
-			dialog.toastNone("还未设置设备参数，您可以点击设置图标进行设备参数设定。");
-			return;
-		}
-		writeScript(script,()=>{
-			deviceRest.renameDeviceScript(script.id,null,1,device.value.deviceId,(data)=>{
-				if (data.status=="OK") {
-					lodash.forEach(scriptList.value,(v,i)=>{
-						if (v.id==script.id) {
-							v.areUse = 1;
-						} else {
-							v.areUse = 0;
-						}
-					});
-					showNotify(`已应用${script.name}的方案配置`);
-				}
+		dialog.confirm("是否应用此方案？",()=>{
+			if (!script.script) {
+				dialog.toastNone("还未设置设备参数，您可以点击设置图标进行设备参数设定。");
+				return;
+			}
+			writeScript(script,()=>{
+				deviceRest.renameDeviceScript(script.id,null,1,device.value.deviceId,(data)=>{
+					if (data.status=="OK") {
+						lodash.forEach(scriptList.value,(v,i)=>{
+							if (v.id==script.id) {
+								v.areUse = 1;
+							} else {
+								v.areUse = 0;
+							}
+						});
+						showNotify(`已应用${script.name}的方案配置`);
+					}
+				});
 			});
-		});
+		},null);
 	};
 	
 	const setupScript = (script)=>{
