@@ -83,6 +83,8 @@
 		
 	
 	onLoad((option)=>{
+		// let pages = getCurrentPages();
+		// console.log("route",pages[pages.length-1].route);
 		let param = JSON.parse(decodeURIComponent(option.param));
 		device.value = param.device;
 		userId = wxRest.getLoginState().userId;
@@ -168,7 +170,7 @@
 	};
 	
 	const writeScript = (script,fun)=>{
-		dialog.openLoading("正在应用方案");
+		dialog.openLoading("");
 		cmdList = JSON.parse(script.script);
 		write2DeviceStep(0,fun);
 	};

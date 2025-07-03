@@ -18,9 +18,9 @@
 			// #endif
 			setNotifyDefaultOptions({
 				safeHeight: 90,
-				onClick: (event) => console.log('onClick', event),
-				onClosed: () => console.log('onClosed'),
-				onOpened: () => console.log('onOpened')
+				// onClick: (event) => console.log('onClick', event),
+				// onClosed: () => console.log('onClosed'),
+				// onOpened: () => console.log('onOpened')
 			})
 			// 隐藏原生tabBar
 			uni.hideTabBar()

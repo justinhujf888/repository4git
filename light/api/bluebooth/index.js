@@ -176,6 +176,7 @@ export const Blue = {
 		}
 		this._discoveryStarted = true
 		console.log(serviceFilter);
+		this.onBluetoothDeviceFound()
 		wx.startBluetoothDevicesDiscovery({
 			allowDuplicatesKey: false,
 			interval: 1000,
@@ -188,7 +189,7 @@ export const Blue = {
 				// })
 				
 				console.log("startblueDiscovery",res);
-				this.onBluetoothDeviceFound()
+				// this.onBluetoothDeviceFound()
 				console.log('扫描中.....')
 			},
 			fail: (res)=> {
@@ -311,6 +312,7 @@ export const Blue = {
 			await new Promise(resolve => {
 				this.onBLEConnectionStateChange();
 				setTimeout(()=>{
+					console.log("bjs-onBLEConnectionStateChange_0");
 					resolve();
 				}, 2000);
 			});
@@ -320,7 +322,7 @@ export const Blue = {
 					deviceId: bleConnectDeviceID,
 					timeout: 3000,
 					success: (res)=> {
-						console.log("connedres",res);
+						console.log("bjs-createBLEConnection",res);
 		
 						uni.stopBluetoothDevicesDiscovery();
 						resolve();
@@ -335,8 +337,18 @@ export const Blue = {
 			});
 			
 			await new Promise(resolve => {
+				this.onBLEConnectionStateChange();
+				setTimeout(()=>{
+					console.log("bjs-onBLEConnectionStateChange");
+					resolve();
+				}, 2000);
+			});
+			
+		
+			await new Promise(resolve => {
 				this.onNotifyBLECharacteristicValueChange();
 				setTimeout(()=>{
+					console.log("bjs-onNotifyBLECharacteristicValueChange");
 					resolve();
 				}, 2000);
 			});
@@ -344,6 +356,7 @@ export const Blue = {
 			await new Promise(resolve => {
 				this.onBLECharacteristicValueChange();
 				setTimeout(()=>{
+					console.log("bjs-onBLECharacteristicValueChange");
 					resolve();
 				}, 2000);
 			});

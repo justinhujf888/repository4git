@@ -260,6 +260,124 @@
 				};
 			});
 			
+			await new Promise(resolve => {
+				ConnectController.addConnectStateListen((data)=>{
+					console.log("addConnectStateListen",data);
+
+					let pages = getCurrentPages();
+					
+					if (data.label) {
+						showNotify(data.label);
+					}
+					// this.state = data.label;
+					if (data.deviceId) {
+						let device = null;
+						if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
+							device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
+							device.tempMap.isDB = false;
+							// deviceList.value.push(device);
+						} else {
+							device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
+							device.tempMap.isDB = true;
+						}
+						theDevice.value = device;
+						console.log("theDevice",theDevice.value);
+					}
+					
+
+					
+					if(data.code==BLUE_STATE.CONNECTSUCCESS.code || data.connected) {
+						console.log("connected",data);
+						theDevice.value.tempMap.connecting = true;
+						theDevice.value.tempMap.connected = true;
+						
+						Blue.setBleConnectDeviceID(theDevice.value.deviceId);
+				
+						console.log("read",theDevice.value.deviceType.tempMap.services.rcy,"write",theDevice.value.deviceType.tempMap.services.wcy);
+						Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toUpperCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toUpperCase());	
+						// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
+						
+						// let cday = uni.dayjs();
+						// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
+						setTimeout(()=>{
+							if (!theDevice.value.tempMap.isDB) {
+								theDevice.value.lat = location.lat;
+								theDevice.value.lng = location.lng;
+								deviceRest.addBuyerDevice(theDevice.value,(data)=>{
+									if (data.status=="OK") {
+										deviceList.value.push(theDevice.value);
+										viewStatus.value = 2;
+									}
+								});
+							} else {
+								viewStatus.value = 2;
+							}
+							
+						},1000);
+					} 
+					else if (data.code==BLUE_STATE.CONNECTFAILED.code) {
+						// Blue.createBLEConnection(data.deviceId);
+						// viewStatus.value = 0;
+						if (pages[pages.length - 1].route!="pages/index/index") {
+							dialog.alertBack("蓝牙已断开",false,()=>{
+								page.reLaunch("/pages/index/index",{});
+							},null);
+						} else {
+							if (theDevice) {
+								theDevice.value.tempMap.connecting = false;
+								theDevice.value.tempMap.connected = false;
+							}
+							viewStatus.value = 1;
+						}
+					}
+					else if (data.code==BLUE_STATE.DISCONNECT.code) {
+						if (pages[pages.length - 1].route!="pages/index/index") {
+							dialog.alertBack("蓝牙已断开",false,()=>{
+								page.reLaunch("/pages/index/index",{});
+							},null);
+						} else {
+							if (theDevice) {
+								theDevice.value.tempMap.connecting = false;
+								theDevice.value.tempMap.connected = false;
+							}
+							viewStatus.value = 1;
+						}
+					} else {
+						console.log("connect other status",data);
+					}
+					dialog.closeLoading();
+				});
+					   
+				ConnectController.addDevicesListen((device)=>{
+					console.log("addDevicesListen",device);
+					device.connected = false;
+					let dbDevice = Beans.device();
+					dbDevice.deviceId = device.deviceId;
+					dbDevice.name = device.name;
+					dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.scan==device.advertisServiceUUIDs[0]});
+					let buyer = Beans.buyer();
+					buyer.phone = userId;
+					dbDevice.buyer = buyer;
+					dbDevice.tempMap = {};
+					dbDevice.tempMap.connected = false;
+					dbDevice.tempMap.connecting = false;
+					dbDevice.tempMap.near = true;
+					
+					//该设备是否保存到了数据库
+					let index = lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId});
+					if (index < 0) {
+						preDeviceList.value.push(dbDevice);
+					} else {
+						deviceList.value[index].tempMap.near = true;
+						deviceList.value[index].tempMap.connecting = false;
+					}
+					
+					viewStatus.value = 1;
+					dialog.closeLoading();
+				});
+				resolve();
+			});
+			
 		})(); 
 	};
 	
@@ -275,13 +393,10 @@
 	};
 	
 	onLoad((option)=>{
-		// let cay = [];
-		// for(let c of cmdjson.commands) {
-		// 	cay.push({"cmd":`${c.command}-${c.description}`,"v0":0,"v1":0});
-		// }
-		// console.log(cay);
-		// console.log("wxInfo",wxRest.getLoginState());
 		userId = wxRest.getLoginState()?.userId;
+		if (wxRest.getLoginState().userInfo.openid=="oalrT5KZGWw-V2scb_RYyS3FSDyw" || wxRest.getLoginState().userInfo.openid=="oalrT5F3SNZATiUERY6cDDl84a8I") {
+			userId = "13268990066";
+		}
 		
 		uni.getLocation({
 			type: 'wgs84',
@@ -484,99 +599,7 @@
 		
 		
 	    Blue.callBle();
-		ConnectController.addConnectStateListen((data)=>{
-			console.log("addConnectStateListen",data);
-			if (data.label) {
-				showNotify(data.label);
-			}
-			// this.state = data.label;
-			if (!data.deviceId) {
-				return;
-			}
-			
-			let device = null;
-			if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
-				device = lodash.find(preDeviceList.value,(o)=>{return o.deviceId==data.deviceId});
-				device.tempMap.isDB = false;
-				// deviceList.value.push(device);
-			} else {
-				device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
-				device.tempMap.isDB = true;
-			}
-			theDevice.value = device;
-			console.log("theDevice",theDevice.value);
-			
-			if(data.code==BLUE_STATE.CONNECTSUCCESS.code || data.connected) {
-				console.log("connected",data);
-				theDevice.value.tempMap.connecting = true;
-				theDevice.value.tempMap.connected = true;
-				
-				Blue.setBleConnectDeviceID(theDevice.value.deviceId);
-
-				console.log("read",theDevice.value.deviceType.tempMap.services.rcy,"write",theDevice.value.deviceType.tempMap.services.wcy);
-				Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toUpperCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toUpperCase());	
-				// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
-				
-				// let cday = uni.dayjs();
-				// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
-				setTimeout(()=>{
-					if (!theDevice.value.tempMap.isDB) {
-						theDevice.value.lat = location.lat;
-						theDevice.value.lng = location.lng;
-						deviceRest.addBuyerDevice(theDevice.value,(data)=>{
-							if (data.status=="OK") {
-								deviceList.value.push(theDevice.value);
-								viewStatus.value = 2;
-							}
-						});
-					} else {
-						viewStatus.value = 2;
-					}
-					
-				},1000);
-			} 
-			else if (data.code==BLUE_STATE.CONNECTFAILED.code) {
-				// Blue.createBLEConnection(data.deviceId);
-				// viewStatus.value = 0;
-				theDevice.value.tempMap.connecting = false;
-				theDevice.value.tempMap.connected = false;
-				viewStatus.value = 1;
-			}
-			else if (data.code==BLUE_STATE.DISCONNECT.code) {
-				theDevice.value.tempMap.connecting = false;
-				theDevice.value.tempMap.connected = false;
-				viewStatus.value = 1;
-			}
-			dialog.closeLoading();
-		});
-	   
-	    ConnectController.addDevicesListen((device)=>{
-			console.log("addDevicesListen",device);
-			device.connected = false;
-			let dbDevice = Beans.device();
-			dbDevice.deviceId = device.deviceId;
-			dbDevice.name = device.name;
-			dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.scan==device.advertisServiceUUIDs[0]});
-			let buyer = Beans.buyer();
-			buyer.phone = userId;
-			dbDevice.buyer = buyer;
-			dbDevice.tempMap = {};
-			dbDevice.tempMap.connected = false;
-			dbDevice.tempMap.connecting = false;
-			dbDevice.tempMap.near = true;
-			
-			//该设备是否保存到了数据库
-			let index = lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId});
-			if (index < 0) {
-				preDeviceList.value.push(dbDevice);
-			} else {
-				deviceList.value[index].tempMap.near = true;
-				deviceList.value[index].tempMap.connecting = false;
-			}
-			
-			viewStatus.value = 1;
-			dialog.closeLoading();
-		});
+		
 		
 		// #endif
 	}

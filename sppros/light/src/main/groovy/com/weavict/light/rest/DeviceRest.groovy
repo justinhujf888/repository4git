@@ -1,9 +1,12 @@
 package com.weavict.light.rest
 
+import cn.hutool.core.date.DateUtil
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.common.util.MathUtil
 import com.weavict.light.entity.Device
 import com.weavict.light.entity.DeviceScript
 import com.weavict.light.module.DeviceService
+import com.weavict.website.common.client.WebUtil
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -109,7 +112,14 @@ class DeviceRest extends BaseRest
         {
             Device device = objToBean(query.device,Device.class,buildObjectMapper());
             device.createDate = new Date();
-            deviceService.updateTheObject(device);
+            List<DeviceScript> scriptList = deviceService.qyDeviceScriptList("all");
+            deviceService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                deviceService.createNativeQuery4Params("insert into device (buyer_phone,createDate,deviceType_id,lat,lng,name,deviceId) values (:userid,:createdate,:typeid,:lat,:lng,:name,:deviceid)",["userid":device.buyer.phone,"name":device.name,"deviceid":device.deviceId,"typeid":device.deviceType.id,"lat":device.lat,"lng":device.lng,"createdate": new Date()]).executeUpdate();
+                for (DeviceScript script in scriptList)
+                {
+                    deviceService.createNativeQuery4Params("insert into devicescript (id,name,script,areuse,device_deviceid,createdate) values (:id,:name,:script,:areuse,:deviceid,:createdate)",["id":MathUtil.getPNewId(),"name":script.name,"script":script.script,"areuse":script.areUse,"deviceid":device.deviceId,"createdate": new Date()]).executeUpdate();
+                }
+            });
             return """{"status":"OK"}""";
         }
         catch (Exception e)
