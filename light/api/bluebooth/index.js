@@ -241,6 +241,7 @@ export const Blue = {
 								csValue.readId = o.uuid;
 							}
 						});
+						console.log("Characteristics-----:",csValue);
 						resolve();
 					},
 					fail: (er)=> {

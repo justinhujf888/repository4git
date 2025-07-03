@@ -275,6 +275,11 @@
 	};
 	
 	onLoad((option)=>{
+		// let cay = [];
+		// for(let c of cmdjson.commands) {
+		// 	cay.push({"cmd":`${c.command}-${c.description}`,"v0":0,"v1":0});
+		// }
+		// console.log(cay);
 		// console.log("wxInfo",wxRest.getLoginState());
 		userId = wxRest.getLoginState()?.userId;
 		

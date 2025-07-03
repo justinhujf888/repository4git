@@ -10,16 +10,16 @@
 	<view class="my-2 mx-3">
 		<view>
 			<view v-if="scriptList?.length > 0">
-				<view v-for="(script,index) in scriptList" :key="script.id" class="bg-white rounded-xl px-4 py-4 mt-4 row relative" :class="script.areUse==1 ? 'border-solid border-4 border-indigo-600 rounded-md' : ''" @tap="appScript(script,null)">
+				<view v-for="(script,index) in scriptList" :key="script.id" class="bg-white rounded-xl px-4 py-4 mt-4 row relative" :class="script.areUse==1 ? 'border-solid border-4 border-green-600 rounded-md' : ''" @tap="appScript(script,null)">
 					<view class="flex-1 col justify-center items-start">
 						<view class="row mb-2">
 							<text class="text-sm font-semibold">{{script.name}}</text>
 						</view>
 					</view>
-					<view class="ml-8 mr-2">
-						<wd-button custom-class="mx-2" type="icon" icon="tools" @tap.stop="setupScript(script)"></wd-button>
-						<wd-button custom-class="mx-2" type="icon" icon="edit" @tap.stop="theDeviceScript=script;renameShow=true"></wd-button>
-						<wd-button custom-class="mx-2" type="icon" icon="delete" @tap.stop="delTheDeviceScript(script.id,index)"></wd-button>
+					<view class="ml-8 row">
+						<view class="mx-1"><text style="background: #6AAE36" class="text-sm rounded-md py-1 px-2 text-white" @tap.stop="setupScript(script)">设置</text></view>
+						<view class="mx-1"><text style="background: #6AAE36" class="text-sm rounded-md py-1 px-2 text-white" @tap.stop="theDeviceScript=script;renameShow=true">更名</text></view>
+						<view class="mx-1"><text style="background: #6AAE36" class="text-sm rounded-md py-1 px-2 text-white" @tap.stop="delTheDeviceScript(script.id,index)">删除</text></view>
 					</view>
 				</view>
 			</view>
@@ -27,7 +27,7 @@
 				<text class="text-gray-500 text-xs">没有添加方案</text>
 			</view>
 			<view class="mt-5 row center">
-				<wd-button size="small" custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="theDeviceScript=Beans.deviceScript();renameShow=true">新增方案</wd-button>
+				<wd-button size="large" custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="theDeviceScript=Beans.deviceScript();renameShow=true">新增方案</wd-button>
 			</view>
 			
 <!-- 			<wd-divider></wd-divider>

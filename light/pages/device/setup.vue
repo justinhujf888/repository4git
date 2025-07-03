@@ -309,6 +309,7 @@
 				
 				let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
 				console.log("characteristic array",cday.format("HH:mm:ss"),data);
+				console.log("cmd----",data);
 
 				if (isWriteCmd.value) {
 					say.push(...data);
