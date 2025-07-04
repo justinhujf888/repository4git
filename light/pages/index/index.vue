@@ -540,7 +540,8 @@
 	const closeConnection = ()=>{
 		dialog.confirm("是否断开设备连接",()=>{
 			Blue.closeBLEConnection();
-			callBle();
+			// callBle();
+			init();
 		},null);
 	};
 	

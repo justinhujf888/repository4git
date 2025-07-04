@@ -111,15 +111,19 @@ class DeviceRest extends BaseRest
         try
         {
             Device device = objToBean(query.device,Device.class,buildObjectMapper());
-            device.createDate = new Date();
-            List<DeviceScript> scriptList = deviceService.qyDeviceScriptList("all");
-            deviceService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
-                deviceService.createNativeQuery4Params("insert into device (buyer_phone,createDate,deviceType_id,lat,lng,name,deviceId) values (:userid,:createdate,:typeid,:lat,:lng,:name,:deviceid)",["userid":device.buyer.phone,"name":device.name,"deviceid":device.deviceId,"typeid":device.deviceType.id,"lat":device.lat,"lng":device.lng,"createdate": new Date()]).executeUpdate();
-                for (DeviceScript script in scriptList)
-                {
-                    deviceService.createNativeQuery4Params("insert into devicescript (id,name,script,areuse,device_deviceid,createdate) values (:id,:name,:script,:areuse,:deviceid,:createdate)",["id":MathUtil.getPNewId(),"name":script.name,"script":script.script,"areuse":script.areUse,"deviceid":device.deviceId,"createdate": new Date()]).executeUpdate();
-                }
-            });
+            if (deviceService.findObjectById(Device.class,device.deviceId)==null)
+            {
+                device.createDate = new Date();
+                List<DeviceScript> scriptList = deviceService.qyDeviceScriptList("all");
+                deviceService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                    deviceService.createNativeQuery4Params("insert into device (buyer_phone,createDate,deviceType_id,lat,lng,name,deviceId) values (:userid,:createdate,:typeid,:lat,:lng,:name,:deviceid)",["userid":device.buyer.phone,"name":device.name,"deviceid":device.deviceId,"typeid":device.deviceType.id,"lat":device.lat,"lng":device.lng,"createdate": new Date()]).executeUpdate();
+                    for (DeviceScript script in scriptList)
+                    {
+                        deviceService.createNativeQuery4Params("insert into devicescript (id,name,script,areuse,device_deviceid,createdate) values (:id,:name,:script,:areuse,:deviceid,:createdate)",["id":MathUtil.getPNewId(),"name":script.name,"script":script.script,"areuse":script.areUse,"deviceid":device.deviceId,"createdate": new Date()]).executeUpdate();
+                    }
+                });
+            }
+
             return """{"status":"OK"}""";
         }
         catch (Exception e)

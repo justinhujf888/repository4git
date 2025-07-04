@@ -312,7 +312,7 @@ export const Blue = {
 			await new Promise(resolve => {
 				this.onBLEConnectionStateChange();
 				setTimeout(()=>{
-					console.log("bjs-onBLEConnectionStateChange_0");
+					console.log("bjs-onBLEConnectionStateChange");
 					resolve();
 				}, 2000);
 			});
@@ -337,13 +337,14 @@ export const Blue = {
 			});
 			
 			await new Promise(resolve => {
-				this.onBLEConnectionStateChange();
+				uni.onBLEConnectionStateChange(res=> {
+			
+				});
 				setTimeout(()=>{
-					console.log("bjs-onBLEConnectionStateChange");
+					console.log("bjs-onBLEConnectionStateChange_0");
 					resolve();
 				}, 2000);
 			});
-			
 		
 			await new Promise(resolve => {
 				this.onNotifyBLECharacteristicValueChange();
