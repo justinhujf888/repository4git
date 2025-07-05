@@ -337,11 +337,16 @@ export const Blue = {
 			});
 			
 			await new Promise(resolve => {
-				uni.onBLEConnectionStateChange(res=> {
+			// 	uni.onBLEConnectionStateChange(res=> {
 			
-				});
+			// 	});
+			// 	setTimeout(()=>{
+			// 		console.log("bjs-onBLEConnectionStateChange_0");
+			// 		resolve();
+			// 	}, 2000);
+				this.onBLEConnectionStateChange();
 				setTimeout(()=>{
-					console.log("bjs-onBLEConnectionStateChange_0");
+					console.log("bjs-onBLEConnectionStateChange01");
 					resolve();
 				}, 2000);
 			});

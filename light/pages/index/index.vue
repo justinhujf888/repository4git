@@ -75,7 +75,7 @@
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
 				<view class="bg-white rounded-xl px-2 py-5 mt-4">
-					<view class="mx-10 center" @tap="page.navigateTo('../device/scriptList',{device:theDevice})">
+					<view class="mx-10 center" @tap="connedToScriptPage()">
 						<img src="../../static/device.png" mode="widthFix"></img>
 					</view>
 					<wd-divider></wd-divider>
@@ -294,25 +294,14 @@
 						Blue.setBleConnectDeviceID(theDevice.value.deviceId);
 				
 						console.log("read",theDevice.value.deviceType.tempMap.services.rcy,"write",theDevice.value.deviceType.tempMap.services.wcy);
-						Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toUpperCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toUpperCase());	
+						Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toUpperCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toUpperCase());
+							
 						// Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473".toUpperCase(),"7661fff2-6570-6c61-6e74-776f726c6473".toUpperCase());
 						
 						// let cday = uni.dayjs();
 						// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 						setTimeout(()=>{
-							if (!theDevice.value.tempMap.isDB) {
-								theDevice.value.lat = location.lat;
-								theDevice.value.lng = location.lng;
-								deviceRest.addBuyerDevice(theDevice.value,(data)=>{
-									if (data.status=="OK") {
-										deviceList.value.push(theDevice.value);
-										viewStatus.value = 2;
-									}
-								});
-							} else {
-								viewStatus.value = 2;
-							}
-							
+							viewStatus.value = 2;
 						},1000);
 					} 
 					else if (data.code==BLUE_STATE.CONNECTFAILED.code) {
@@ -449,6 +438,21 @@
 				}
 			});
 		},null);
+	};
+	
+	const connedToScriptPage = ()=>{
+		if (!theDevice.value.tempMap.isDB) {
+			theDevice.value.lat = location.lat;
+			theDevice.value.lng = location.lng;
+			deviceRest.addBuyerDevice(theDevice.value,(data)=>{
+				if (data.status=="OK") {
+					deviceList.value.push(theDevice.value);
+					page.navigateTo('../device/scriptList',{device:theDevice.value});
+				}
+			});
+		} else {
+			page.navigateTo('../device/scriptList',{device:theDevice.value});
+		}
 	};
 	
 	function aaa() {

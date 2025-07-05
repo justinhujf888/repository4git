@@ -176,6 +176,24 @@
 				isWriteCmd.value = true;
 				let array = lodash.chunk(readInfoArray,5);
 				console.log("group2",now.format("HH:mm:ss"),array);
+				
+				if (array?.length < 1) {
+					dialog.alertBack("没有读取到设备数据，请重试",false,()=>{
+						page.navBack();
+					},null);
+				}
+				let checkf = true;
+				lodash.forEach(array,(v,i)=>{
+					if (v[0]!="0xA6") {
+						checkf = false;
+					}
+				});
+				if (!checkf) {
+					dialog.alertBack("设备数据错误，请重试或联系客服",false,()=>{
+						page.navBack();
+					},null);
+				}
+				
 				for(let ay of array) {
 					if (ay[0]=="0xA6") {
 						if (lodash.findIndex(cmdjson.query_commands,(o)=>{return o.command==ay[1]}) > -1) {
