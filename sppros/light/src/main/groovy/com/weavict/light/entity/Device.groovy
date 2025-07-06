@@ -15,11 +15,17 @@ class Device extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String name;
 
+    @Column(length=30)
+    String uniId;
+
     @Column(length=20)
     String lat;
 
     @Column(length=20)
     String lng;
+
+    @Column(length=200)
+    String remark;
 
     @ManyToOne(fetch=FetchType.EAGER)
     Buyer buyer;

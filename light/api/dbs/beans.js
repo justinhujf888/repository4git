@@ -29,10 +29,12 @@ export const Beans = {
 	device() {
 		return {
 			deviceId: "",
+			uniId: "",
 			name: "",
 			lat: "",
 			lng: "",
 			createDate: null,
+			remark: "",
 			buyer: this.buyer(),
 			deviceType: this.deviceType()
 		}

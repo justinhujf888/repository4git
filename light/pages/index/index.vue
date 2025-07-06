@@ -353,6 +353,7 @@
 					device.connected = false;
 					let dbDevice = Beans.device();
 					dbDevice.deviceId = device.deviceId;
+					dbDevice.remark = JSON.stringify({os:uni.getSystemInfoSync().osName});
 					dbDevice.name = device.name;
 					dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.scan==device.advertisServiceUUIDs[0]});
 					let buyer = Beans.buyer();
@@ -409,10 +410,6 @@
 				console.log("location",location);
 			}
 		});
-		
-		console.log("getUniqueId",getUniqueId("F5EC528A-B043-C625-C50D-2498E0F4C871"));
-		
-		
 		init();
 		// wxRest.clearLoginInfo();
 	});
