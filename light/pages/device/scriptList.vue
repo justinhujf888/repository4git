@@ -165,7 +165,7 @@
 			Blue.writeBLEValue(hexTools.bleBuffer(cmdList[step].cmd,parseInt(cmdList[step].v0),parseInt(cmdList[step].v1)).buffer);
 			setTimeout(()=>{
 				write2DeviceStep(step+1,fun);
-			},1000);
+			},500);
 		}
 	};
 	

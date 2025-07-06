@@ -41,10 +41,10 @@
 									<text class="text-gray-400 text-xs"></text>
 								</view>
 							</view>
-<!-- 							<view class="row top-2 right-4">
+							<view class="top-3 right-4 absolute">
 								<text class="text-sm gui-icons ml-4" @tap="openRenameModel(device)">&#xe69e;</text>
-								<text class="text-sm gui-icons ml-4" @tap="delBuyerDevice(device.deviceId,index)">&#xe794;</text>
-							</view> -->
+								<!-- <text class="text-sm gui-icons ml-4" @tap="delBuyerDevice(device.deviceId,index)">&#xe794;</text> -->
+							</view>
 						</view>
 					</view>
 					<view v-else class="center mt-10">
@@ -79,9 +79,12 @@
 						<img src="../../static/device.png" mode="widthFix"></img>
 					</view>
 					<wd-divider></wd-divider>
-					<view class="between mx-5 mt-5">
-						<text class="text-sm font-semibold">{{theDevice.name}}</text>
-						<view class="row items-center" v-if="theDevice.tempMap.connected">
+					<view class="between mx-3 mt-5">
+						<view class="row items-center gap-1 flex-1">
+							<text class="text-sm font-semibold">{{theDevice.name}}</text>
+							<text class="text-sm gui-icons ml-4" @tap="openRenameModel(theDevice)">&#xe69e;</text>
+						</view>
+						<view class="row items-center w-32" v-if="theDevice.tempMap.connected">
 							<text class="text-sm font-bold mr-1">·</text>
 							<text class="text-sm font-semibold mr-2">已连接</text>
 							<view class="row" @click.stop="closeConnection()">
@@ -99,15 +102,15 @@
 		</view>
 	</view>
 	
-	<wd-popup v-model="renameShow" position="top" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
-		<view class="col center text-gray-500 mt-40">
+	<wd-popup v-model="renameShow" position="bottom" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
+		<view class="col center text-gray-500 mt-10">
 			<text class="mt-2 row center">修改设备名称</text>
 			<view class="row mt-10">
 				<text class="text-xs">设备名称</text>
-				<input class="minput ml-2" v-model="theDevice.name"/>
+				<input class="minput ml-2" v-model="deviceName"/>
 			</view>
-			<view class="mt-10">
-				<wd-button size="small" @click="rename()">确定</wd-button>
+			<view class="mt-10 mb-20">
+				<wd-button custom-style="background: #6AAE36" size="small" @click="rename()"><text class="mx-4">确定</text></wd-button>
 			</view>
 		</view>
 	</wd-popup>
@@ -145,6 +148,7 @@
 	
 	const renameShow = ref(false);
 	const loginShow = ref(false);
+	const deviceName = ref("");
 	
 	let userId = null;
 	let deviceTypeList = null;
@@ -206,6 +210,12 @@
 	
 	// let signature = "";	let ossAccessKeyId="";let securityToken = "";let policy = "";
 	
+	function getUniqueId(bf) {
+	    let buffer = bf.slice(4, 10);
+	    let mac = Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+	    return mac.toUpperCase()
+	}
+	
 	const init = ()=>{
 		viewStatus.value = 0;
 		preDeviceList.value = [];
@@ -245,6 +255,7 @@
 									d.tempMap.near = false;
 									d.tempMap.connected = false;
 									d.tempMap.connecting = false;
+									d.tempMap.isDB = true;
 									d.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
 									// console.log("qyBuyerDeviceList",d);
 								}
@@ -355,8 +366,10 @@
 					//该设备是否保存到了数据库
 					let index = lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==dbDevice.deviceId});
 					if (index < 0) {
+						dbDevice.tempMap.isDB = false;
 						preDeviceList.value.push(dbDevice);
 					} else {
+						deviceList.value[index].tempMap.isDB = true;
 						deviceList.value[index].tempMap.near = true;
 						deviceList.value[index].tempMap.connecting = false;
 					}
@@ -373,6 +386,7 @@
 	const refreshDevices = ()=>{
 		for(let d of deviceList.value) {
 			d.tempMap = {};
+			d.tempMap.isDB = true;
 			d.tempMap.near = false;
 			d.tempMap.connected = false;
 			d.tempMap.connecting = false;
@@ -395,7 +409,10 @@
 				console.log("location",location);
 			}
 		});
-
+		
+		console.log("getUniqueId",getUniqueId("F5EC528A-B043-C625-C50D-2498E0F4C871"));
+		
+		
 		init();
 		// wxRest.clearLoginInfo();
 	});
@@ -415,19 +432,49 @@
 	const openRenameModel = (device)=>{
 		renameShow.value = true;
 		theDevice.value = device;
+		deviceName.value = theDevice.value.name;
 	};
 	
 	const rename = ()=>{
-		deviceRest.renameBuyerDevice(userId,theDevice.value.deviceId,theDevice.value.name,(data)=>{
-			if (data.status=="OK") {
-				let de = lodash.find(deviceList.value,(o)=>{return o.deviceId==theDevice.value.deviceId});
-				if (de) {
-					de.name = theDevice.value.name;
-					theDevice.value = {};
-					renameShow.value = false;
+		theDevice.value.name = deviceName.value;
+		if (!theDevice.value.tempMap.isDB) {
+			theDevice.value.lat = location.lat;
+			theDevice.value.lng = location.lng;
+			deviceRest.addBuyerDevice(theDevice.value,(data)=>{
+				if (data.status=="OK") {
+					theDevice.value.tempMap.isDB = true;
+					deviceList.value.push(theDevice.value);
+					deviceRest.renameBuyerDevice(userId,theDevice.value.deviceId,theDevice.value.name,(data)=>{
+						if (data.status=="OK") {
+							let de = lodash.find(deviceList.value,(o)=>{return o.deviceId==theDevice.value.deviceId});
+							if (de) {
+								de.name = theDevice.value.name;
+								renameShow.value = false;
+								if (viewStatus.value!=2) {
+									theDevice.value = {};
+								}
+								showNotify("设备名称已修改");
+							}
+						}
+					});
 				}
-			}
-		});
+			});
+		} else {
+			deviceRest.renameBuyerDevice(userId,theDevice.value.deviceId,theDevice.value.name,(data)=>{
+				if (data.status=="OK") {
+					let de = lodash.find(deviceList.value,(o)=>{return o.deviceId==theDevice.value.deviceId});
+					if (de) {
+						de.name = theDevice.value.name;
+						renameShow.value = false;
+						if (viewStatus.value!=2) {
+							theDevice.value = {};
+						}
+						showNotify("设备名称已修改");
+					}
+				}
+			});
+		}
+		
 	};
 	
 	const delBuyerDevice = (deviceId,index)=>{

@@ -162,6 +162,7 @@ class DeviceRest extends BaseRest
     {
         try
         {
+//            println query.userId;println query.deviceId;println query.name;
             deviceService.updateTheObjectFilds("Device","buyer.phone = :userId and deviceId = :deviceId",["name":query.name],["userId":query.userId,"deviceId":query.deviceId],false);
             return """{"status":"OK"}""";
         }

@@ -257,10 +257,24 @@
 				//判断灯光状态与定时设定
 				proxy.dayjs.extend(isBetween);
 				if (proxy.dayjs().isBetween(td1,td2,null,"[]")!=(rday.value==1)) {
-					dialog.confirm("当前灯光状态与定时设定不符，是否仍保持当前状态？",()=>{},()=>{
-						rday.value = (rday.value==0 ? 1 : 0);
-						Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+					uni.showModal({
+						content: '按照您当前的设定方案，现在应是关灯状态，您可以保持开灯状态或按程序设定进入关灯状态',
+						showCancel: true,
+						confirmText: '保持开灯',
+						cancelText: '我要关灯',
+						success: function (res) {
+							if (res.confirm) {
+								
+							} else if (res.cancel) {
+								rday.value = (rday.value==0 ? 1 : 0);
+								Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+							}
+						}
 					});
+					// dialog.confirm("当前灯光状态与定时设定不符，是否仍保持当前状态？",()=>{},()=>{
+					// 	rday.value = (rday.value==0 ? 1 : 0);
+					// 	Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+					// });
 				}
 				//end
 			}
