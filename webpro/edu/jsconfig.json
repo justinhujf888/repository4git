@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        },
+        "typeRoots": ["./node_modules/@types", "./types"]
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

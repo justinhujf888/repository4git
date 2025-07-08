@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .start {
+        @apply flex justify-start items-start;
+    }
+    .center {
+        @apply flex items-center justify-center;
+    }
+    .end {
+        @apply flex items-end justify-end;
+    }
+    .between {
+        @apply flex justify-between;
+    }
+    .row {
+        @apply flex flex-row;
+    }
+    .col {
+        @apply flex flex-col;
+    }
+    .hwcenter {
+        @apply absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%];
+    }
+    .wcenter {
+        @apply absolute left-1/2 translate-x-[-50%];
+    }
+}
