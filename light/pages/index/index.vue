@@ -398,9 +398,9 @@
 	
 	onLoad((option)=>{
 		userId = wxRest.getLoginState()?.userId;
-		// if (wxRest.getLoginState().userInfo.openid=="oalrT5KZGWw-V2scb_RYyS3FSDyw" || wxRest.getLoginState().userInfo.openid=="oalrT5F3SNZATiUERY6cDDl84a8I") {
-		// 	userId = "13268990066";
-		// }
+		if (wxRest.getLoginState().userInfo.openid=="oalrT5KZGWw-V2scb_RYyS3FSDyw" || wxRest.getLoginState().userInfo.openid=="oalrT5F3SNZATiUERY6cDDl84a8I") {
+			userId = "13268990066";
+		}
 		
 		uni.getLocation({
 			type: 'wgs84',

@@ -251,6 +251,22 @@ export const Blue = {
 				});
 			});
 			
+			await new Promise(resolve => {
+				this.onNotifyBLECharacteristicValueChange();
+				setTimeout(()=>{
+					console.log("bjs-onNotifyBLECharacteristicValueChange");
+					resolve();
+				}, 2000);
+			});
+			
+			await new Promise(resolve => {
+				this.onBLECharacteristicValueChange();
+				setTimeout(()=>{
+					console.log("bjs-onBLECharacteristicValueChange");
+					resolve();
+				}, 2000);
+			});
+			
 		})();
 	},
 	
@@ -336,36 +352,36 @@ export const Blue = {
 				});
 			});
 			
-			await new Promise(resolve => {
-			// 	uni.onBLEConnectionStateChange(res=> {
+			// await new Promise(resolve => {
+			// // 	uni.onBLEConnectionStateChange(res=> {
 			
-			// 	});
+			// // 	});
+			// // 	setTimeout(()=>{
+			// // 		console.log("bjs-onBLEConnectionStateChange_0");
+			// // 		resolve();
+			// // 	}, 2000);
+			// 	this.onBLEConnectionStateChange();
 			// 	setTimeout(()=>{
-			// 		console.log("bjs-onBLEConnectionStateChange_0");
+			// 		console.log("bjs-onBLEConnectionStateChange01");
 			// 		resolve();
 			// 	}, 2000);
-				this.onBLEConnectionStateChange();
-				setTimeout(()=>{
-					console.log("bjs-onBLEConnectionStateChange01");
-					resolve();
-				}, 2000);
-			});
+			// });
 		
-			await new Promise(resolve => {
-				this.onNotifyBLECharacteristicValueChange();
-				setTimeout(()=>{
-					console.log("bjs-onNotifyBLECharacteristicValueChange");
-					resolve();
-				}, 2000);
-			});
+			// await new Promise(resolve => {
+			// 	this.onNotifyBLECharacteristicValueChange();
+			// 	setTimeout(()=>{
+			// 		console.log("bjs-onNotifyBLECharacteristicValueChange");
+			// 		resolve();
+			// 	}, 2000);
+			// });
 			
-			await new Promise(resolve => {
-				this.onBLECharacteristicValueChange();
-				setTimeout(()=>{
-					console.log("bjs-onBLECharacteristicValueChange");
-					resolve();
-				}, 2000);
-			});
+			// await new Promise(resolve => {
+			// 	this.onBLECharacteristicValueChange();
+			// 	setTimeout(()=>{
+			// 		console.log("bjs-onBLECharacteristicValueChange");
+			// 		resolve();
+			// 	}, 2000);
+			// });
 			
 		})();
 	},

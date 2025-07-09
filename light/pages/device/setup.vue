@@ -171,7 +171,7 @@
 			let td1 = proxy.dayjs(now);
 			let td2 = proxy.dayjs(now);
 			
-			if (cday && now.isAfter(cday.add(8,"second"))) {
+			if (cday && now.isAfter(cday.add(3,"second"))) {
 				console.log("group",now.format("HH:mm:ss"),readInfoArray);
 				isWriteCmd.value = true;
 				let array = lodash.chunk(readInfoArray,5);
@@ -605,7 +605,7 @@
 		let scriptArray = [];
 		scriptArray.push({"cmd":"0x02","v0":times.value.values.onTime.v0,"v1":times.value.values.onTime.v1});
 		scriptArray.push({"cmd":"0x03","v0":times.value.values.offTime.v0,"v1":times.value.values.offTime.v1});
-		scriptArray.push({"cmd":"0x0E","v0":0,"v1":parseInt(rday.value)});
+		// scriptArray.push({"cmd":"0x0E","v0":0,"v1":parseInt(rday.value)}); 
 		// scriptArray.push({"cmd":"0x0A","v0":0,"v1":parseInt(fengsanZuanSu.value.value)});
 		
 		for(let g of pgElmList.value) {

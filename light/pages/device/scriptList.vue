@@ -89,6 +89,7 @@
 		device.value = param.device;
 		userId = wxRest.getLoginState().userId;
 		// console.log("device",device.value);
+		
 		deviceRest.qyDeviceScriptList(device.value.deviceId,(data)=>{
 			if (data.status=="OK") {
 				scriptList.value = data.deviceScriptList;
@@ -165,7 +166,7 @@
 			Blue.writeBLEValue(hexTools.bleBuffer(cmdList[step].cmd,parseInt(cmdList[step].v0),parseInt(cmdList[step].v1)).buffer);
 			setTimeout(()=>{
 				write2DeviceStep(step+1,fun);
-			},500);
+			},200);
 		}
 	};
 	
