@@ -1,4 +1,4 @@
-import { fileURLToPath, URL } from 'node:url';
+ import { fileURLToPath, URL } from 'node:url';
 
 import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import vue from '@vitejs/plugin-vue';
@@ -9,12 +9,12 @@ import requireTransform from 'vite-plugin-require-transform';
 // https://vitejs.dev/config/
 export default defineConfig({
     base:"/",
-    optimizeDeps: {
-        noDiscovery: true,
-        optimizeDeps: {
-            include: ['lodash']
-        }
-    },
+    // optimizeDeps: {
+    //     noDiscovery: true,
+    //     optimizeDeps: {
+    //         include: ['lodash']
+    //     }
+    // },
     plugins: [
         vue(),
         Components({
@@ -26,7 +26,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            'ali-oss': 'ali-oss/dist/aliyun-oss-sdk.js'
         }
     }
 });

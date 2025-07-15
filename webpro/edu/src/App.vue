@@ -1,16 +1,27 @@
 <script setup>
+import oss from "@/api/oss";
 import dialog from '@/api/uniapp/dialog';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
 import { useDialog } from 'primevue/usedialog';
 import myDialog from '@/components/my/alertDialog.vue';
-import { useTemplateRef } from 'vue';
+import { useTemplateRef,onMounted,onUnmounted } from 'vue';
 
 const toast = useToast();
 const confirmPopup = useConfirm();
 const dynDialog = useDialog();
 const mydRef = useTemplateRef('mydRef');
-dialog.setup(confirmPopup, toast, dynDialog, mydRef);
+
+onMounted(() => {
+    oss.genClient(null);
+    dialog.setup(confirmPopup, toast, dynDialog, mydRef);
+    console.log("app onMounted runed");
+});
+
+onUnmounted(() => {
+    console.log("app onUnmounted runed");
+});
+
 </script>
 
 <template>
