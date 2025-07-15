@@ -207,10 +207,14 @@
 								td1 = td1.hour(parseInt(ay[2],16));
 								td1 = td1.minute(parseInt(ay[3],16));
 								times.value.onTime = td1.format("HH:mm");
+								times.value.values.onTime.v0 = parseInt(ay[2],16);
+								times.value.values.onTime.v1 = parseInt(ay[3],16);
 							} else if (ay[1]=="0x13") {
 								td2 = td2.hour(parseInt(ay[2],16));
 								td2 = td2.minute(parseInt(ay[3],16));
 								times.value.offTime = td2.format("HH:mm");
+								times.value.values.offTime.v0 = parseInt(ay[2],16);
+								times.value.values.offTime.v1 = parseInt(ay[3],16);
 							} else if (ay[1]=="0x1A") {
 								fengsanZuanSu.value = parseInt(ay[3],16);
 							} else if (ay[1]=="0x1E") {
@@ -256,7 +260,7 @@
 				clearInterval(intervalId);
 				//判断灯光状态与定时设定
 				proxy.dayjs.extend(isBetween);
-				if (proxy.dayjs().isBetween(td1,td2,null,"[]")!=(rday.value==1)) {
+				if (proxy.dayjs().isBetween(td1,td2,null,"[]")!=(rday.value==1) && false) {
 					uni.showModal({
 						content: '按照您当前的设定方案，现在应是关灯状态，您可以保持开灯状态或按程序设定进入关灯状态',
 						showCancel: true,

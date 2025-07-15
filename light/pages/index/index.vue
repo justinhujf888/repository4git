@@ -1,6 +1,7 @@
 <template>
 	<view class="relative h-screen px-3">
 		<wd-notify></wd-notify>
+		<!-- <button @tap="tempProcess" class="mt-10">test</button> -->
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">VASEE 生态智能</text>
@@ -210,6 +211,12 @@
 	
 	// let signature = "";	let ossAccessKeyId="";let securityToken = "";let policy = "";
 	
+	function tempProcess() {
+		deviceRest.testProcess((data)=>{
+			console.log(data);
+		});
+	}
+	
 	function getUniqueId(bf) {
 	    let buffer = bf.slice(4, 10);
 	    let mac = Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
@@ -400,6 +407,33 @@
 		userId = wxRest.getLoginState()?.userId;
 		if (wxRest.getLoginState().userInfo.openid=="oalrT5KZGWw-V2scb_RYyS3FSDyw" || wxRest.getLoginState().userInfo.openid=="oalrT5F3SNZATiUERY6cDDl84a8I") {
 			userId = "13268990066";
+			let userInfo = {
+				"errcode": null,
+				"openid": wxRest.getLoginState().userInfo.openid,
+				
+				"errmsg": null,
+				"subscribe": null,
+				"nickname": null,
+				"sex": null,
+				"language": null,
+				"city": null,
+				"province": null,
+				"country": null,
+				"headimgurl": null,
+				"subscribe_time": null,
+				
+				"nickname_emoji": null,
+				"privilege": [],
+				"unionid": "",
+				"groupid": null,
+				"remark": {userId: userId},
+				"tagid_list": null,
+				"subscribe_scene": null,
+				"qr_scene": null,
+				"qr_scene_str": null,
+				"success": true
+			};
+			wxRest.setUserInfo(userInfo);
 		}
 		
 		uni.getLocation({

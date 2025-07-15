@@ -10,7 +10,7 @@
 	<view class="my-2 mx-3">
 		<view>
 			<view v-if="scriptList?.length > 0">
-				<view v-for="(script,index) in scriptList" :key="script.id" class="bg-white rounded-xl px-4 py-4 mt-4 row relative" :class="script.areUse==1 ? 'border-solid border-4 border-green-600 rounded-md' : ''" @tap="appScript(script,null)">
+				<view v-for="(script,index) in scriptList" :key="script.id" class="bg-white rounded-xl px-4 py-4 mt-4 row relative" :class="script.tempMap.areUse==1 ? 'border-solid border-4 border-green-600 rounded-md' : ''" @tap="appScript(script,null)">
 					<view class="flex-1 col justify-center items-start">
 						<view class="row mb-2">
 							<text class="text-sm font-semibold">{{script.name}}</text>
@@ -88,10 +88,12 @@
 		let param = JSON.parse(decodeURIComponent(option.param));
 		device.value = param.device;
 		userId = wxRest.getLoginState().userId;
+
 		// console.log("device",device.value);
 		
-		deviceRest.qyDeviceScriptList(device.value.deviceId,(data)=>{
+		deviceRest.qyDeviceScriptList(userId,device.value.deviceId,device.value.deviceType.id,(data)=>{
 			if (data.status=="OK") {
+				// console.log(data.deviceScriptList);
 				scriptList.value = data.deviceScriptList;
 				if (!scriptList.value) {
 					scriptList.value = [];
@@ -109,21 +111,25 @@
 		if (!theDeviceScript.value.id) {
 			areNew = true;
 			theDeviceScript.value.id = Beans.buildPId("");
+			theDeviceScript.value.deviceTypeId = device.value.deviceType.id;
 			theDeviceScript.value.createDate = proxy.dayjs().valueOf();//.format("YYYY-MM-DD HH:mm:ss");
-			theDeviceScript.value.areUse = 0;
+			theDeviceScript.value.buyer = Beans.buyer();
+			theDeviceScript.value.buyer.phone = userId;
+			theDeviceScript.value.tempMap = {};
+			theDeviceScript.value.tempMap.areUse = false;
 		}
-		theDeviceScript.value.device = device.value;
+
 		// console.log(theDeviceScript.value);
 		if (areNew) {
 			deviceRest.updateTheDeviceScript(theDeviceScript.value,(data)=>{
 				if (data.status=="OK") {
 					scriptList.value.push(theDeviceScript.value);
 					dialog.confirm("您还未设置设备参数，现在是否进行设备参数设定？",()=>{
+						renameShow.value = false;
 						page.navigateTo('./setup',{device:device.value,deviceScript:theDeviceScript.value})
 					},()=>{
-						
+						renameShow.value = false;
 					});
-					renameShow.value = false;
 				}
 			});
 		} else {
@@ -187,9 +193,9 @@
 					if (data.status=="OK") {
 						lodash.forEach(scriptList.value,(v,i)=>{
 							if (v.id==script.id) {
-								v.areUse = 1;
+								v.tempMap.areUse = 1;
 							} else {
-								v.areUse = 0;
+								v.tempMap.areUse = 0;
 							}
 						});
 						showNotify(`已应用${script.name}的方案配置`);
@@ -217,9 +223,9 @@
 					lodash.forEach(scriptList.value,(v,i)=>{
 						if (v.id==scriptId) {
 							v.script = scriptStr;
-							v.areUse = 1;
+							v.tempMap.areUse = 1;
 						} else {
-							v.areUse = 0;
+							v.tempMap.areUse = 0;
 						}
 					});
 				}
