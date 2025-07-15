@@ -22,7 +22,8 @@ export const Beans = {
 			sex: 0,
 			description: "",
 			createDate: null,
-			deviceList: []
+			deviceList: [],
+			deviceScriptList: []
 		}
 	},
 	
@@ -57,9 +58,22 @@ export const Beans = {
 			id: "",
 			name: "",
 			script: "",
-			areUse: 0,
-			device: this.device(),
+			deviceTypeId: "",
+			buyer: this.buyer(),
 			createDate: null
+		}
+	},
+	
+	buyerDeviceScriptPK() {
+		return {
+			deviceId: "",
+			scriptId: ""
+		}
+	},
+	
+	buyerDeviceScript() {
+		return {
+			buyerDeviceScriptPK: this.buyerDeviceScriptPK()
 		}
 	}
 }

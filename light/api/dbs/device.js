@@ -26,8 +26,8 @@ export default {
 			},
 			null, true);
 	},
-	qyDeviceScriptList(deviceId,onfun) {
-		Http.httpclient_json('/r/device/qyDeviceScriptList', 'post',{"deviceId":deviceId}, "json",
+	qyDeviceScriptList(userId,deviceId,deviceTypeId,onfun) {
+		Http.httpclient_json('/r/device/qyDeviceScriptList', 'post',{"userId":userId,"deviceId":deviceId,"deviceTypeId":deviceTypeId}, "json",
 			(res)=>{
 				if (res.data.status == "FA_ER") {
 					dialog.showApiErrorMsg();
@@ -105,6 +105,18 @@ export default {
 	},
 	reScriptDeviceScript(scriptId,script,deviceId,onfun) {
 		Http.httpclient_json('/r/device/reScriptDeviceScript', 'post',{"scriptId":scriptId,"script":script,"deviceId":deviceId}, "json",
+			(res)=>{
+				if (res.data.status == "FA_ER") {
+					dialog.showApiErrorMsg();
+				} else {
+					onfun(res.data);
+				}
+			},
+			null, true);
+	},
+	
+	testProcess(onfun) {
+		Http.httpclient_json('/r/device/tempProcess', 'post',{}, "json",
 			(res)=>{
 				if (res.data.status == "FA_ER") {
 					dialog.showApiErrorMsg();
