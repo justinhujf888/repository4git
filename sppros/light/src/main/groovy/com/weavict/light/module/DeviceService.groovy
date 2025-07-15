@@ -1,5 +1,7 @@
 package com.weavict.light.module
 
+import com.weavict.light.entity.BuyerDeviceScript
+import com.weavict.light.entity.BuyerDeviceScriptPK
 import com.weavict.light.entity.Device
 import com.weavict.light.entity.DeviceScript
 import com.weavict.light.entity.DeviceType
@@ -28,18 +30,45 @@ class DeviceService extends ModuleBean
             .buildSql().run().content;
     }
 
-    List<Device> qyDeviceScriptList(String deviceId)
+    List<DeviceScript> qyDeviceScriptList(String userId,String deviceId,String deviceTypeId)
     {
-        return this.newQueryUtils(false).masterTable("DeviceScript",null,null)
-                .where("device.deviceId = :deviceId",["deviceId":deviceId],null,null)
+        List<DeviceScript> deviceScriptList = this.newQueryUtils(false).masterTable("DeviceScript",null,null)
+                .where("buyer.phone = :phone and deviceTypeId = :deviceTypeId",["phone":userId,"deviceTypeId":deviceTypeId],null,null)
                 .buildSql().run().content;
+        if (deviceId!=null)
+        {
+            BuyerDeviceScript buyerDeviceScript = this.queryObject("select bds from BuyerDeviceScript as bds where bds.buyerDeviceScriptPK.deviceId = :deviceId",["deviceId":deviceId])?.get(0);
+            for(DeviceScript script in deviceScriptList)
+            {
+                script.tempMap = [:];
+                if (buyerDeviceScript!=null)
+                {
+                    if (script.id == buyerDeviceScript.buyerDeviceScriptPK.scriptId)
+                    {
+                        script.tempMap.areUse = 1 as byte;
+                    }
+                    else
+                    {
+                        script.tempMap.areUse = 0 as byte;
+                    }
+                }
+                else
+                {
+                    script.tempMap.areUse = 0 as byte;
+                }
+            }
+        }
+        return deviceScriptList;
     }
 
     void reScriptDeviceScript(String appId,String deviceId,String scriptId,String scriptStr)
     {
         this.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
-            this.executeEQL("update DeviceScript set areUse = :areUse where device.deviceType.appId = :appId and device.deviceId = :deviceId",["areUse":0 as byte,"appId":appId,"deviceId":deviceId]);
-            this.updateTheObjectFilds("DeviceScript","id = :id",["script":scriptStr,"areUse":1 as byte],["id":scriptId],false);
+            this.updateTheObjectFilds("DeviceScript","id = :id",["script":scriptStr],["id":scriptId],false);
+            this.deleteTheObject8Fields("BuyerDeviceScript","buyerDeviceScriptPK.deviceId = :deviceId",["deviceId":deviceId],false);
+            BuyerDeviceScript buyerDeviceScript = new BuyerDeviceScript();
+            buyerDeviceScript.buyerDeviceScriptPK = new BuyerDeviceScriptPK(deviceId,scriptId);
+            this.updateObject(buyerDeviceScript);
         });
     }
 }

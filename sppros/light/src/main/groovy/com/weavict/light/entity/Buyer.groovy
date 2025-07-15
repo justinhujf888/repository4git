@@ -60,9 +60,13 @@ class Buyer extends BEntity implements Serializable, IEntity
     @OneToMany(mappedBy="buyer",fetch = FetchType.LAZY)
     List<Device> deviceList;
 
+    @OneToMany(mappedBy="buyer",fetch = FetchType.LAZY)
+    List<DeviceScript> deviceScriptList;
+
     void cancelLazyEr()
     {
         deviceList = null;
+        deviceScriptList = null;
     }
 }
 

@@ -33,9 +33,6 @@ class Device extends BEntity implements Serializable, IEntity
     @ManyToOne(fetch=FetchType.EAGER)
     DeviceType deviceType;
 
-    @OneToMany(mappedBy="device",fetch = FetchType.LAZY)
-    List<DeviceScript> deviceScriptList;
-
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
@@ -43,7 +40,6 @@ class Device extends BEntity implements Serializable, IEntity
     {
         this.buyer?.cancelLazyEr();
         this.deviceType?.cancelLazyEr();
-        this.deviceScriptList = null;
     }
 
 }
@@ -99,17 +95,52 @@ class DeviceScript extends BEntity implements Serializable, IEntity
     @Column(length=500)
     String script;
 
-    @Column(length=1)
-    byte areUse;
+    @Column(length=20)
+    String deviceTypeId;
 
     @ManyToOne(fetch=FetchType.EAGER)
-    Device device;
+    Buyer buyer;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
     void cancelLazyEr()
     {
-        device = null;
+        buyer.cancelLazyEr();
+    }
+}
+
+@Table
+@Entity
+class BuyerDeviceScript extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    BuyerDeviceScriptPK buyerDeviceScriptPK;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Embeddable
+class BuyerDeviceScriptPK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 80)
+    String deviceId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String scriptId;
+
+    BuyerDeviceScriptPK() {}
+
+    BuyerDeviceScriptPK(String deviceId,String scriptId)
+    {
+        this.deviceId = deviceId;
+        this.scriptId = scriptId;
     }
 }
