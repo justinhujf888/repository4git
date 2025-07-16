@@ -5,6 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 import lodash from 'lodash-es';
 import dialog from '@/api/uniapp/dialog';
+import { useLocalStorage,useMouse,useDark } from '@vueuse/core';
 
 import deviceRest from '@/api/dbs/device.js';
 
@@ -22,6 +23,10 @@ const popup = ref(null);
 
 const toast = useToast();
 const confirmPopup = useConfirm();
+
+const mouse = useMouse();
+const mykey = useLocalStorage("mykey",{time:"2025-07-16 13:25:09"});
+const isDark = useDark();
 
 onMounted(() => {
     ProductService.getProductsSmall().then((data) => (products.value = data));
@@ -92,7 +97,8 @@ const openDialog = () => {
     // dialog.confirm("您是否想要继续处理?",()=>{dialog.toastNone("asdfasdfasdfasdf");},null);
     // dialog.alert("abcd");
     // dialog.alertBack("Lorem ipsum dolor sit amet, consectetur adipiscing elit",()=>{console.log("abc");});
-    dialog.showApiErrorMsg();
+    dialog.toastNone(mouse.x.value);
+    console.log(mykey.value,isDark.value);
     // console.log(document.documentElement.classList);
 };
 </script>
