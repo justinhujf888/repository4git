@@ -43,7 +43,6 @@ class ScheduledBean extends ModuleBean// implements Job
 		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
 	}
 
-	@PostConstruct
 	@Scheduled(fixedDelay = 880000L)
 	void aliYunSts()
 	{

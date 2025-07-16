@@ -35,7 +35,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "workList":({
-                        return workService.qyBuyerCompetitionWorkList(query.userId)?.each {
+                        return workService.qyBuyerCompetitionWorkInfo(query.userId,query.competitionId)?.each {
                             it.cancelLazyEr();
                         };
                      }).call()

@@ -132,6 +132,7 @@ class RedisApi
         redisUtil.hPut("aliyun_sts","accessKey",stsMap["accessKey"]);
         redisUtil.hPut("aliyun_sts","securityToken",stsMap["securityToken"]);
         redisUtil.hPut("aliyun_sts","requestId",stsMap["requestId"]);
+        redisUtil.hPut("aliyun_sts","bucketUrl","https://${OtherUtils.givePropsValue( "ali_oss_bucketName")}.${OtherUtils.givePropsValue("ali_oss_endPoint")}");
     }
 
     String ganAliYunStsValue(String field)
