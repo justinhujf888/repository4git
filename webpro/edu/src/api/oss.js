@@ -7,14 +7,6 @@ let client = null;
 let signatureInfo = {};
 let aliOssAccessInfo = {};
 
-function accessSignatureInfo() {
-    return new Promise(resolve => {
-        this.buildAliOssAccessInfo((data) => {
-            resolve(data);
-        });
-    });
-}
-
 export default {
     access() {
         return new Promise(resolve => {
@@ -69,7 +61,7 @@ export default {
                             stsToken: info.securityToken
                         }
                     },
-                    refreshSTSTokenInterval: 880000
+                    refreshSTSTokenInterval: 400000
                 });
                 if (fun) {
                     fun(client);
