@@ -404,6 +404,24 @@
 	};
 	
 	onLoad((option)=>{
+		
+		// let ch = 23 * 60 + 0;
+		// let onh = 22 * 60 + 0;
+		// let offh = 6 * 60 + 0;
+		// console.log(ch,onh,offh);//1380 540 1200     1380 1320 360
+		// if (offh > onh) {
+		// 	if (ch<onh || ch>offh) {
+				
+		// 	}
+		// } else if (onh > offh) {
+		// 	if (ch>onh || ch<offh) {
+				
+		// 	}
+		// }
+		
+		// return;
+		
+		
 		userId = wxRest.getLoginState()?.userId;
 		if (wxRest.getLoginState().userInfo.openid=="oalrT5KZGWw-V2scb_RYyS3FSDyw" || wxRest.getLoginState().userInfo.openid=="oalrT5F3SNZATiUERY6cDDl84a8I") {
 			userId = "13268990066";

@@ -17,7 +17,7 @@
 			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
 			<view class="row justify-center items-center mt-2 text-sm">
 				<text>当前时钟</text>
-				<text class="ml-1">{{currentTime}}</text>
+				<text class="ml-1">{{currentTime.txt}}</text>
 				<text class="rounded-2xl py-1 px-4 btn1 text-white ml-1" @tap="syncTime">手动同步时钟</text>
 			</view>
 			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-4" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
@@ -125,7 +125,7 @@
 	
 	const device = ref({});
 	const isWriteCmd = ref(false);
-	const currentTime = ref("");
+	const currentTime = ref({h:0,m:0,txt:""});
 	const times = ref({onTime:"8:00",offTime:"18:00",values:{onTime:{v0:parseInt(8),v1:parseInt(0)},offTime:{v0:parseInt(18),v1:parseInt(0)}}});
 	const fengsanZuanSu = ref(0);
 	const pgElmList = ref([]);
@@ -202,7 +202,7 @@
 								let td = proxy.dayjs();
 								td = td.hour(parseInt(ay[2],16));
 								td = td.minute(parseInt(ay[3],16));
-								currentTime.value = td.format("HH:mm");
+								currentTime.value = {h:td.hour(),m:td.minute(),txt:td.format("HH:mm")};
 							} else if (ay[1]=="0x12") {
 								td1 = td1.hour(parseInt(ay[2],16));
 								td1 = td1.minute(parseInt(ay[3],16));
@@ -239,6 +239,9 @@
 					}
 				}
 				
+				console.log("v currentTime.value",currentTime.value);
+				console.log("v times.value",times.value);
+				
 				lodash.forEach(pgElmList.value,(g,i)=>{
 					lodash.forEach(g.els,(o,j)=>{
 						if (o.type=="switch") {
@@ -259,27 +262,59 @@
 				dialog.closeLoading();
 				clearInterval(intervalId);
 				//判断灯光状态与定时设定
-				proxy.dayjs.extend(isBetween);
-				if (proxy.dayjs().isBetween(td1,td2,null,"[]")!=(rday.value==1) && false) {
-					uni.showModal({
-						content: '按照您当前的设定方案，现在应是关灯状态，您可以保持开灯状态或按程序设定进入关灯状态',
-						showCancel: true,
-						confirmText: '保持开灯',
-						cancelText: '我要关灯',
-						success: function (res) {
-							if (res.confirm) {
-								
-							} else if (res.cancel) {
-								rday.value = (rday.value==0 ? 1 : 0);
-								Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
-							}
+				if (rday.value==1) {
+					let tishi = false;
+					let ch = currentTime.value.h * 60 + currentTime.value.m;
+					let onh = times.value.values.onTime.v0 * 60 + times.value.values.onTime.v1;
+					let offh = times.value.values.offTime.v0 * 60 + times.value.values.offTime.v1;
+					if (offh > onh) {
+						if (ch<onh || ch>offh) {
+							// tishi = true;
 						}
-					});
-					// dialog.confirm("当前灯光状态与定时设定不符，是否仍保持当前状态？",()=>{},()=>{
-					// 	rday.value = (rday.value==0 ? 1 : 0);
-					// 	Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
-					// });
+					} else if (onh > offh) {
+						if (ch>onh || ch<offh) {
+							// tishi = true;
+						}
+					}
+					if (tishi) {
+						uni.showModal({
+							content: '按照您当前的设定方案，现在应是关灯状态，您可以保持开灯状态或按程序设定进入关灯状态',
+							showCancel: true,
+							confirmText: '保持开灯',
+							cancelText: '我要关灯',
+							success: function (res) {
+								if (res.confirm) {
+									
+								} else if (res.cancel) {
+									rday.value = (rday.value==0 ? 1 : 0);
+									Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+								}
+							}
+						});
+					}
 				}
+				
+				// proxy.dayjs.extend(isBetween);
+				// if (proxy.dayjs().isBetween(td1,td2,null,"[]")!=(rday.value==1) && false) {
+				// 	uni.showModal({
+				// 		content: '按照您当前的设定方案，现在应是关灯状态，您可以保持开灯状态或按程序设定进入关灯状态',
+				// 		showCancel: true,
+				// 		confirmText: '保持开灯',
+				// 		cancelText: '我要关灯',
+				// 		success: function (res) {
+				// 			if (res.confirm) {
+								
+				// 			} else if (res.cancel) {
+				// 				rday.value = (rday.value==0 ? 1 : 0);
+				// 				Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+				// 			}
+				// 		}
+				// 	});
+				// 	// dialog.confirm("当前灯光状态与定时设定不符，是否仍保持当前状态？",()=>{},()=>{
+				// 	// 	rday.value = (rday.value==0 ? 1 : 0);
+				// 	// 	Blue.writeBLEValue(hexTools.bleBuffer("0x0E",0,parseInt(rday.value)).buffer);
+				// 	// });
+				// }
 				//end
 			}
 		},1000);
@@ -571,7 +606,7 @@
 		// console.log(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))));
 		cday = uni.dayjs();
 		Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
-		currentTime.value = cday.format("HH:mm");
+		currentTime.value = {h:cday.hour(),m:cday.minute(),txt:cday.format("HH:mm")};
 	};
 	
 	let findPgElmList = (field,value,fun,firstOnly)=>{
