@@ -20,7 +20,7 @@
                             />
                         </g>
                     </svg>
-                    <h4 class="font-medium text-3xl text-surface-900 dark:text-surface-0">SAKAI</h4>
+                    <h4 class="font-medium text-xl text-surface-900 dark:text-surface-0">{{Config.appName}}</h4>
                 </a>
             </div>
 
@@ -61,3 +61,7 @@
         </div>
     </div>
 </template>
+
+<script setup>
+import {Config} from "@/api/config";
+</script>
