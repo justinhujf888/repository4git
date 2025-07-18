@@ -263,19 +263,31 @@
 				clearInterval(intervalId);
 				//判断灯光状态与定时设定
 				if (rday.value==1) {
+					proxy.dayjs.extend(isBetween);
 					let tishi = false;
 					let ch = currentTime.value.h * 60 + currentTime.value.m;
 					let onh = times.value.values.onTime.v0 * 60 + times.value.values.onTime.v1;
 					let offh = times.value.values.offTime.v0 * 60 + times.value.values.offTime.v1;
+					
+					let _td0 = proxy.dayjs();
+					let _td1 = proxy.dayjs();
+					_td0 = _td0.hour(times.value.values.onTime.v0);
+					_td0 = _td0.minute(times.value.values.onTime.v1);
+					_td1 = _td1.hour(times.value.values.offTime.v0);
+					_td1 = _td1.minute(times.value.values.offTime.v1);
+					
 					if (offh > onh) {
-						if (ch<onh || ch>offh) {
-							// tishi = true;
+						if (!proxy.dayjs().isBetween(_td0,_td1,null,"[]")) {
+							tishi = true;
 						}
 					} else if (onh > offh) {
-						if (ch>onh || ch<offh) {
-							// tishi = true;
+						_td1 = _td1.add(1,"day");
+						if (!proxy.dayjs().isBetween(_td0,_td1,null,"[]")) {
+							tishi = true;
 						}
 					}
+					console.log(_td0.format("YYYY-MM-DD HH:mm"),_td1.format("YYYY-MM-DD HH:mm"));
+					console.log(proxy.dayjs().isBetween(_td0,_td1,null,"[]"));
 					if (tishi) {
 						uni.showModal({
 							content: '按照您当前的设定方案，现在应是关灯状态，您可以保持开灯状态或按程序设定进入关灯状态',
