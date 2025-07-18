@@ -9,12 +9,10 @@ import requireTransform from 'vite-plugin-require-transform';
 // https://vitejs.dev/config/
 export default defineConfig({
     base:"/",
-    // optimizeDeps: {
-    //     noDiscovery: true,
-    //     optimizeDeps: {
-    //         include: ['lodash']
-    //     }
-    // },
+    noDiscovery: true,
+    optimizeDeps: {
+        include: ['lodash','./node_modules/primevue']
+    },
     plugins: [
         vue(),
         Components({
