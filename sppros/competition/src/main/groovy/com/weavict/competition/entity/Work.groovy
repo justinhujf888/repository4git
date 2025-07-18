@@ -31,7 +31,7 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String appId;
 
-    @OneToMany(mappedBy="competition",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy="masterCompetition",fetch = FetchType.LAZY)
     List<Competition> competitionList;
 
     void cancelLazyEr()
