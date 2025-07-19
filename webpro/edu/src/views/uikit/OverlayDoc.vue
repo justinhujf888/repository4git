@@ -5,6 +5,7 @@ import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 import lodash from 'lodash-es';
 import dialog from '@/api/uniapp/dialog';
+import {Config} from "@/api/config";
 import { useLocalStorage,useMouse,useDark } from '@vueuse/core';
 
 import deviceRest from '@/api/dbs/device.js';
@@ -28,22 +29,53 @@ const mouse = useMouse();
 const mykey = useLocalStorage("mykey",{time:"2025-07-16 13:25:09"});
 const isDark = useDark();
 
+const txt = ref("");
+
 onMounted(() => {
     ProductService.getProductsSmall().then((data) => (products.value = data));
-    deviceRest.qyDeviceTypeList(null, null, null, (data) => {
-        if (data.status == 'OK') {
-            console.log(data);
-            lodash.forEach(data.deviceTypeList, (v, i) => {
-                // {serviceId:{scan:"00007365-0000-1000-8000-00805F9B34FB",uuid:"76617365-6570-6c61-6e74-776f726c6473"}}
-                v.tempMap = {};
-                v.tempMap.services = {};
-                v.tempMap.services.serviceId = JSON.parse(v.serviceId).serviceId;
-                v.tempMap.services.rcy = JSON.parse(v.characteristicsReadIds);
-                v.tempMap.services.wcy = JSON.parse(v.characteristicsWriteIds);
-                console.log('qyDeviceTypeList', v);
-            });
-        }
-    });
+    // deviceRest.qyDeviceTypeList(null, null, null, (data) => {
+    //     if (data.status == 'OK') {
+    //         console.log(data);
+    //         lodash.forEach(data.deviceTypeList, (v, i) => {
+    //             // {serviceId:{scan:"00007365-0000-1000-8000-00805F9B34FB",uuid:"76617365-6570-6c61-6e74-776f726c6473"}}
+    //             v.tempMap = {};
+    //             v.tempMap.services = {};
+    //             v.tempMap.services.serviceId = JSON.parse(v.serviceId).serviceId;
+    //             v.tempMap.services.rcy = JSON.parse(v.characteristicsReadIds);
+    //             v.tempMap.services.wcy = JSON.parse(v.characteristicsWriteIds);
+    //             console.log('qyDeviceTypeList', v);
+    //         });
+    //     }
+    // });
+
+    if (typeof (EventSource) !== "undefined") {
+        var source = new EventSource(Config.apiBaseURL + "/r/see-events");
+        // 当通往服务器的连接被打开
+        source.onopen = function(event) {
+            console.log("连接开启！");
+        };
+        // 当接收到消息。只能是事件名称是 message
+        // source.onmessage = function(event) {
+        //     console.log(event.data);
+        //     var data = event.data;
+        //     var lastEventId = event.lastEventId;
+        //     txt.value += "\n" + 'lastEventId:'+lastEventId+';data:'+data;
+        // };
+        //可以是任意命名的事件名称
+        source.addEventListener('message', function(event) {
+            console.log(event.data);
+            var data = event.data;
+            var lastEventId = event.lastEventId;
+            txt.value += "\n" + 'lastEventId:'+lastEventId+';data:'+data;
+        });
+        // 当错误发生
+        source.onerror = function(event) {
+            // console.log("连接错误！",event);
+            // source.close();
+        };
+    } else {
+        dialog.toastError("Sorry, your browser does not support server-sent events...");
+    }
 });
 
 function open() {
@@ -216,6 +248,7 @@ const openDialog = () => {
 
             <div class="card">
                 <Button @click="openDialog()" label="myConfirm"></Button>
+                {{txt}}
             </div>
         </div>
     </div>
