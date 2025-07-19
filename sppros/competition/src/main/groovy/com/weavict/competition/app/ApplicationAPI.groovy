@@ -3,6 +3,7 @@ package com.weavict.competition.app
 import com.weavict.competition.rest.OtherRest
 import com.weavict.competition.rest.RequestClientWriterInterceptor
 import com.weavict.competition.rest.RequestServerReaderInterceptor
+import com.weavict.competition.rest.SseSource
 import com.weavict.competition.rest.WorkRest
 import com.weavict.competition.rest.WxRest
 import jakarta.ws.rs.ApplicationPath
@@ -41,6 +42,7 @@ class ApplicationAPI extends ResourceConfig
         register(WorkRest.class);
 //        register(WxRest.class);
         register(OtherRest.class);
+        register(SseSource.class);
 
 //        register(JerseyFeature.class);
 

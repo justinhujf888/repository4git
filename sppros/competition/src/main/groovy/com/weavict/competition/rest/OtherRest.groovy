@@ -22,6 +22,7 @@ import com.aliyuncs.http.MethodType
 import com.aliyuncs.profile.DefaultProfile
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.util.DateUtil
+import com.weavict.common.util.MathUtil
 import com.weavict.competition.module.RedisApi
 
 //import com.weavict.website.common.ImgCompress
@@ -30,8 +31,14 @@ import com.yicker.utility.DES
 import groovy.json.JsonSlurper
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET
+import jakarta.ws.rs.sse.OutboundSseEvent
+import jakarta.ws.rs.sse.Sse
+import jakarta.ws.rs.sse.SseEventSink
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
+import org.glassfish.jersey.media.sse.EventOutput
+import org.glassfish.jersey.media.sse.OutboundEvent
+import org.glassfish.jersey.media.sse.SseFeature
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 
@@ -352,4 +359,54 @@ class OtherRest extends BaseRest
         }
     }
 
+}
+
+@Path("/see-events")
+class SseSource
+{
+    EventOutput eventOutput = new EventOutput();
+    OutboundEvent.Builder eventBuilder;
+    OutboundEvent event;
+
+    /**
+     * 提供 SSE 事件输出通道的资源方法
+     * @return eventOutput
+     */
+    @GET
+    @Produces(SseFeature.SERVER_SENT_EVENTS)
+    EventOutput getServerSentEvents()
+    {
+        while (true)
+        {
+            eventBuilder = new OutboundEvent.Builder();
+            eventBuilder.id(MathUtil.getPNewId());
+            eventBuilder.name("message");
+            eventBuilder.data(String.class,"""current time:${MathUtil.getPNewId()}""".toString());
+            event = eventBuilder.build();
+            try
+            {
+                eventOutput.write(event);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+            finally
+            {
+                eventOutput.close();
+                return eventOutput;
+            }
+        }
+
+//        new Thread(() -> {
+//            for (int i = 0; i < 10; i++) {
+//                // ... code that waits 1 second
+//                final OutboundSseEvent event = sse.newEventBuilder()
+//                        .name("message")
+//                        .data(String.class, "Hello world " + i + "!")
+//                        .build();
+//                eventSink.send(event);
+//            }
+//        }).start();
+    }
 }
