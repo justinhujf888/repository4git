@@ -376,26 +376,23 @@ class SseSource
     @Produces(SseFeature.SERVER_SENT_EVENTS)
     EventOutput getServerSentEvents()
     {
-        while (true)
+        eventBuilder = new OutboundEvent.Builder();
+        eventBuilder.id(MathUtil.getPNewId());
+        eventBuilder.name("message");
+        eventBuilder.data(String.class,"""current time:${MathUtil.getPNewId()}""".toString());
+        event = eventBuilder.build();
+        try
         {
-            eventBuilder = new OutboundEvent.Builder();
-            eventBuilder.id(MathUtil.getPNewId());
-            eventBuilder.name("message");
-            eventBuilder.data(String.class,"""current time:${MathUtil.getPNewId()}""".toString());
-            event = eventBuilder.build();
-            try
-            {
-                eventOutput.write(event);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-            finally
-            {
-                eventOutput.close();
-                return eventOutput;
-            }
+            eventOutput.write(event);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            eventOutput.close();
+            return eventOutput;
         }
 
 //        new Thread(() -> {
