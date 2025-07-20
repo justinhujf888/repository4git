@@ -8,7 +8,7 @@ import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
 import { useLocalStorage,useMouse,useDark } from '@vueuse/core';
 
-import deviceRest from '@/api/dbs/device.js';
+import {ConnectController} from "@/api/controller";
 
 const display = ref(false);
 const displayConfirmation = ref(false);
@@ -47,35 +47,10 @@ onMounted(() => {
     //         });
     //     }
     // });
-
-    if (typeof (EventSource) !== "undefined") {
-        var source = new EventSource(Config.apiBaseURL + "/r/see-events");
-        // 当通往服务器的连接被打开
-        source.onopen = function(event) {
-            console.log("连接开启！");
-        };
-        // 当接收到消息。只能是事件名称是 message
-        // source.onmessage = function(event) {
-        //     console.log(event.data);
-        //     var data = event.data;
-        //     var lastEventId = event.lastEventId;
-        //     txt.value += "\n" + 'lastEventId:'+lastEventId+';data:'+data;
-        // };
-        //可以是任意命名的事件名称
-        source.addEventListener('message', function(event) {
-            console.log(event.data);
-            var data = event.data;
-            var lastEventId = event.lastEventId;
-            txt.value += "\n" + 'lastEventId:'+lastEventId+';data:'+data;
-        });
-        // 当错误发生
-        source.onerror = function(event) {
-            // console.log("连接错误！",event);
-            // source.close();
-        };
-    } else {
-        dialog.toastError("Sorry, your browser does not support server-sent events...");
-    }
+    ConnectController.addNotificationListen((data)=>{
+        console.log("ssedata",data);
+        txt.value += data;
+    });
 });
 
 function open() {
