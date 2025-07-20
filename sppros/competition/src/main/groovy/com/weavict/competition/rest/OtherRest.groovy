@@ -1,12 +1,6 @@
 package com.weavict.competition.rest
 
-import com.aliyun.oss.ClientBuilderConfiguration
 import com.aliyun.oss.OSS
-import com.aliyun.oss.OSSClient
-import com.aliyun.oss.OSSClientBuilder
-import com.aliyun.oss.common.auth.CredentialsProvider
-import com.aliyun.oss.common.auth.DefaultCredentialProvider
-import com.aliyun.oss.common.comm.SignVersion
 import com.aliyun.oss.common.utils.BinaryUtil
 import com.aliyun.oss.internal.OSSHeaders
 import com.aliyun.oss.model.CannedAccessControlList
@@ -29,16 +23,9 @@ import com.weavict.competition.module.RedisApi
 import com.weavict.website.common.OtherUtils
 import com.yicker.utility.DES
 import groovy.json.JsonSlurper
-import jakarta.inject.Inject
 import jakarta.ws.rs.GET
-import jakarta.ws.rs.sse.OutboundSseEvent
-import jakarta.ws.rs.sse.Sse
-import jakarta.ws.rs.sse.SseEventSink
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
-import org.glassfish.jersey.media.sse.EventOutput
-import org.glassfish.jersey.media.sse.OutboundEvent
-import org.glassfish.jersey.media.sse.SseFeature
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 
@@ -327,83 +314,38 @@ class OtherRest extends BaseRest
     @Path("/test")
     String test(@RequestBody Map<String,Object> query)
     {
-        try
-        {
-            ObjectMapper objectMapper = new ObjectMapper();
-            // oss
-            OSS ossClient = OtherUtils.genOSSClient();
-
-
-//            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
-
-            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
-                    """abcde adas"""
-            ).getBytes("UTF-8")));
-
-            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
-            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
-            putObjectRequest.setMetadata(metadata);
-
-            ossClient.putObject(putObjectRequest);
-//            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
-            ossClient.shutdown();
-            //oss end
-            return """{"status":"OK"}""";
-        }
-        catch (Exception e)
-        {
-            processExcetion(e);
-            return """{"status":"FA_ER"}""";
-        }
+        NotificationResource.broadcast("""{"a":"111","b":"${MathUtil.getPNewId()}"}""".toString());
+        return """{"status":"OK"}""";
+//        try
+//        {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            // oss
+//            OSS ossClient = OtherUtils.genOSSClient();
+//
+//
+////            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
+//
+//            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
+//                    """abcde adas"""
+//            ).getBytes("UTF-8")));
+//
+//            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+//            ObjectMetadata metadata = new ObjectMetadata();
+//            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+//            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+//            putObjectRequest.setMetadata(metadata);
+//
+//            ossClient.putObject(putObjectRequest);
+////            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
+//            ossClient.shutdown();
+//            //oss end
+//            return """{"status":"OK"}""";
+//        }
+//        catch (Exception e)
+//        {
+//            processExcetion(e);
+//            return """{"status":"FA_ER"}""";
+//        }
     }
 
-}
-
-@Path("/see-events")
-class SseSource
-{
-    EventOutput eventOutput = new EventOutput();
-    OutboundEvent.Builder eventBuilder;
-    OutboundEvent event;
-
-    /**
-     * 提供 SSE 事件输出通道的资源方法
-     * @return eventOutput
-     */
-    @GET
-    @Produces(SseFeature.SERVER_SENT_EVENTS)
-    EventOutput getServerSentEvents()
-    {
-        eventBuilder = new OutboundEvent.Builder();
-        eventBuilder.id(MathUtil.getPNewId());
-        eventBuilder.name("message");
-        eventBuilder.data(String.class,"""current time:${MathUtil.getPNewId()}""".toString());
-        event = eventBuilder.build();
-        try
-        {
-            eventOutput.write(event);
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            eventOutput.close();
-            return eventOutput;
-        }
-
-//        new Thread(() -> {
-//            for (int i = 0; i < 10; i++) {
-//                // ... code that waits 1 second
-//                final OutboundSseEvent event = sse.newEventBuilder()
-//                        .name("message")
-//                        .data(String.class, "Hello world " + i + "!")
-//                        .build();
-//                eventSink.send(event);
-//            }
-//        }).start();
-    }
 }

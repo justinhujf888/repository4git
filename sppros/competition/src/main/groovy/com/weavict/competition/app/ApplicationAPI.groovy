@@ -1,5 +1,6 @@
 package com.weavict.competition.app
 
+import com.weavict.competition.rest.NotificationResource
 import com.weavict.competition.rest.OtherRest
 import com.weavict.competition.rest.RequestClientWriterInterceptor
 import com.weavict.competition.rest.RequestServerReaderInterceptor
@@ -43,6 +44,7 @@ class ApplicationAPI extends ResourceConfig
 //        register(WxRest.class);
         register(OtherRest.class);
         register(SseSource.class);
+        register(NotificationResource.class);
 
 //        register(JerseyFeature.class);
 
