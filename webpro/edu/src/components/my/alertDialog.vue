@@ -1,9 +1,10 @@
 <template>
     <Dialog v-model:visible="app_alertDialogShow" :closable="false" :style="{ width: '25rem' }" modal :header="app_dialogHead" ___pt:mask:class="backdrop-blur-sm">
-        <div class="flex flex-row justify-center items-center">
+        <div class="row center">
+            <i class="pi pi-exclamation-triangle mr-4" style="font-size: 2rem" />
             <text>{{ app_msg }}</text>
         </div>
-        <div class="flex justify-end">
+        <div class="flex center mt-10">
             <Button type="button" label="确定" @click="close"></Button>
         </div>
     </Dialog>

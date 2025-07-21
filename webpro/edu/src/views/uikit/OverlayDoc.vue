@@ -49,7 +49,7 @@ onMounted(() => {
     // });
     ConnectController.addNotificationListen((data)=>{
         console.log("ssedata",data);
-        txt.value += data;
+        txt.value += JSON.stringify(data);
     });
 });
 

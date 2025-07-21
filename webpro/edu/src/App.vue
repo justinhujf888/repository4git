@@ -24,18 +24,28 @@ onMounted(() => {
             console.log("连接开启！");
         };
         // 当接收到消息。只能是事件名称是 message
-        source.onmessage = function(event) {
-            // console.log(event);
-            // console.log("\n" + 'lastEventId:'+event.lastEventId+';data:'+event.data);
-            ConnectController.notificationListen(event.data);
-        };
+        // source.onmessage = function(event) {
+        //     // console.log(event);
+        //     // console.log("\n" + 'lastEventId:'+event.lastEventId+';data:'+event.data);
+        //     ConnectController.notificationListen(event.data);
+        // };
         //可以是任意命名的事件名称
-        // source.addEventListener('message', function(event) {
-        //     console.log(event.data);
-        //     var data = event.data;
-        //     var lastEventId = event.lastEventId;
-        //     txt.value += "\n" + 'lastEventId:'+lastEventId+';data:'+data;
-        // });
+        source.addEventListener('notifications', function(event) {
+            console.log(event.data);
+            if (event.data) {
+                let jdata = JSON.parse(event.data);
+                if (jdata.type=="publcMsg") {
+                    if (jdata.mode) {
+                        dialog.alert(jdata.data);
+                    } else {
+                        dialog.toastNone(jdata.data);
+                    }
+                } else {
+                    ConnectController.notificationListen(jdata);
+                }
+
+            }
+        });
         // 当错误发生
         source.onerror = function(event) {
             // console.log("连接错误！",event);
