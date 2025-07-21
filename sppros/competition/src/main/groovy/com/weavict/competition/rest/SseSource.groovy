@@ -76,7 +76,7 @@ class NotificationResource
     static void broadcast(String json)
     {
         OutboundEvent.Builder builder = new OutboundEvent.Builder();
-        OutboundEvent event = builder
+        OutboundEvent event = builder.name("notifications")
                 .mediaType(MediaType.APPLICATION_JSON_TYPE)
                 .data(String.class, json)
                 .build();

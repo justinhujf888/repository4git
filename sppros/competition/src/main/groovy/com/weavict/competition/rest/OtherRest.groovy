@@ -308,13 +308,13 @@ class OtherRest extends BaseRest
     }
 
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/test")
     String test(@RequestBody Map<String,Object> query)
     {
-        NotificationResource.broadcast("""{"a":"111","b":"${MathUtil.getPNewId()}"}""".toString());
+        NotificationResource.broadcast("""{"id":"111","type":"publcMsg","mode":true,"data":"${MathUtil.getPNewId()}"}""".toString());
         return """{"status":"OK"}""";
 //        try
 //        {
