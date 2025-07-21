@@ -2,11 +2,13 @@ package com.weavict.edu.app
 
 import com.weavict.edu.rest.DemoClassRest
 import com.weavict.edu.rest.JiaoHuRest
+import com.weavict.edu.rest.NotificationResource
 import com.weavict.edu.rest.OrderRest
 import com.weavict.edu.rest.OtherRest
 import com.weavict.edu.rest.PayRest
 import com.weavict.edu.rest.RequestServerReaderInterceptor
 import com.weavict.edu.rest.SchoolRest
+import com.weavict.edu.rest.SseSource
 import com.weavict.edu.rest.StudyRest
 import com.weavict.edu.rest.TeachRest
 import com.weavict.edu.rest.TransactionRest
@@ -60,6 +62,9 @@ class ApplicationAPI extends ResourceConfig
         register(TransactionRest.class);
         register(DemoClassRest.class);
         register(UserRest.class);
+
+        register(SseSource.class);
+        register(NotificationResource.class);
 
 // 注册数据转换器
 //        register(JacksonJsonProvider.class);

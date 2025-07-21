@@ -1,6 +1,7 @@
 package com.weavict.edu.rest
 
 import cn.hutool.core.date.DateField
+import com.aliyun.oss.OSS
 import com.aliyun.oss.OSSClient
 import com.aliyun.oss.common.utils.BinaryUtil
 import com.aliyun.oss.model.CannedAccessControlList
@@ -12,15 +13,19 @@ import com.aliyuncs.IAcsClient
 import com.aliyuncs.http.MethodType
 import com.aliyuncs.profile.DefaultProfile
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.common.util.MathUtil
 import com.weavict.edu.entity.BuyerBook
 import com.weavict.edu.entity.BuyerBookPK
+import com.weavict.edu.module.RedisApi
 import com.weavict.edu.module.SourcesService
 import com.weavict.common.util.DateUtil
 import com.weavict.website.common.OtherUtils
+import com.weavict.weichat.notifies.WxNotifiesFun
 import com.yicker.utility.DES
 import groovy.json.JsonSlurper
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 
 import jakarta.inject.Inject
@@ -43,6 +48,9 @@ class OtherRest extends BaseRest
 
     @Inject
     SourcesService sourceService;
+
+    @Autowired
+    RedisApi redisApi;
 
     /**
      * 图片上传
@@ -88,8 +96,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         def ossKey = OtherUtils.genOssAccessKey(query.ramUser);
-                         OSSClient client = new OSSClient(OtherUtils.genOosHostUrl(), ossKey.accessId, ossKey.accessKey);
+                         OSS client = OtherUtils.genOSSClient();
                          long expireTime = 30;
                          long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
                          PolicyConditions policyConds = new PolicyConditions();
@@ -97,7 +104,8 @@ class OtherRest extends BaseRest
                          String postPolicy = client.generatePostPolicy(new Date(expireEndTime), policyConds);
                          String encodedPolicy = BinaryUtil.toBase64String(postPolicy.getBytes("utf-8"));
                          String postSignature = client.calculatePostSignature(postPolicy);
-                         return ["accessId":ossKey.accessId,"policy":encodedPolicy,"signature":postSignature,"expire":String.valueOf(expireEndTime / 1000)];
+                         client.shutdown();
+                         return ["accessId":redisApi.ganAliYunStsValue("accessId"),"accessKey":redisApi.ganAliYunStsValue("accessKey"),"policy":encodedPolicy,"signature":postSignature,"securityToken":redisApi.ganAliYunStsValue("securityToken"),"bucketUrl":redisApi.ganAliYunStsValue("bucketUrl"),"expire":String.valueOf(expireEndTime / 1000),"region":OtherUtils.givePropsValue("ali_oss_region"),"bucketName":OtherUtils.givePropsValue("ali_oss_bucketName")];
                      }).call()
                     ]);
         }
@@ -380,4 +388,68 @@ class OtherRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/genAliOssAccessInfo")
+    String genAliOssAccessInfo(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "signatureInfo":({
+                         return ["expiration":redisApi.ganAliYunStsValue("expiration"),"accessId":redisApi.ganAliYunStsValue("accessId"),"accessKey":redisApi.ganAliYunStsValue("accessKey"),"securityToken":redisApi.ganAliYunStsValue("securityToken"),"requestId":redisApi.ganAliYunStsValue("requestId"),"endPoint":OtherUtils.givePropsValue("ali_oss_endPoint"),"region":OtherUtils.givePropsValue("ali_oss_region"),"bucketName":OtherUtils.givePropsValue("ali_oss_bucketName"),"bucketUrl":redisApi.ganAliYunStsValue("bucketUrl")];
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/test")
+    String test(@RequestBody Map<String,Object> query)
+    {
+        WxNotifiesFun.send_publicMsg(true,MathUtil.getPNewId());
+        return """{"status":"OK"}""";
+//        try
+//        {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            // oss
+//            OSS ossClient = OtherUtils.genOSSClient();
+//
+//
+////            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
+//
+//            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
+//                    """abcde adas"""
+//            ).getBytes("UTF-8")));
+//
+//            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+//            ObjectMetadata metadata = new ObjectMetadata();
+//            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+//            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+//            putObjectRequest.setMetadata(metadata);
+//
+//            ossClient.putObject(putObjectRequest);
+////            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
+//            ossClient.shutdown();
+//            //oss end
+//            return """{"status":"OK"}""";
+//        }
+//        catch (Exception e)
+//        {
+//            processExcetion(e);
+//            return """{"status":"FA_ER"}""";
+//        }
+    }
+
 }

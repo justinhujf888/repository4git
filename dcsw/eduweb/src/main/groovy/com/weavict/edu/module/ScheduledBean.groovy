@@ -58,12 +58,20 @@ class ScheduledBean extends ModuleBean// implements Job
 		};
 	}
 
-	@Scheduled(cron = "0 05 00 * * ?")//0 0 24 * * ?
-	@Transactional
-	void dianZanFromRedis()
+	@Scheduled(fixedDelay = 880000L)
+	void aliYunSts()
 	{
-
+		println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} begin---------------------------------";
+		redisApi.buildAliYunSts2Redis();
+		println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
 	}
+
+//	@Scheduled(cron = "0 05 00 * * ?")//0 0 24 * * ?
+//	@Transactional
+//	void dianZanFromRedis()
+//	{
+//
+//	}
 	
 //	@Override
 //	void execute(JobExecutionContext context) throws JobExecutionException

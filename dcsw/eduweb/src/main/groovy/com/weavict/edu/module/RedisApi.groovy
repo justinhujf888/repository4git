@@ -675,6 +675,22 @@ class RedisApi
         //redis end
     }
 
+    void buildAliYunSts2Redis()
+    {
+        Map stsMap = OtherUtils.genOssAccessKey();
+        redisUtil.hPut("aliyun_sts","expiration",stsMap["expiration"]);
+        redisUtil.hPut("aliyun_sts","accessId",stsMap["accessId"]);
+        redisUtil.hPut("aliyun_sts","accessKey",stsMap["accessKey"]);
+        redisUtil.hPut("aliyun_sts","securityToken",stsMap["securityToken"]);
+        redisUtil.hPut("aliyun_sts","requestId",stsMap["requestId"]);
+        redisUtil.hPut("aliyun_sts","bucketUrl","https://${OtherUtils.givePropsValue( "ali_oss_bucketName")}.${OtherUtils.givePropsValue("ali_oss_endPoint")}");
+    }
+
+    String ganAliYunStsValue(String field)
+    {
+        return redisUtil.hGet("aliyun_sts",field) as String;
+    }
+
     @Transactional
     void test()
     {
