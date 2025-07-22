@@ -17,10 +17,10 @@ export default defineConfig({
         vue(),
         Components({
             resolvers: [PrimeVueResolver()]
-        }),
-        requireTransform({
-            fileRegex: /\.ts$|\.tsx$|\.vue$|\.js$/
         })
+        // requireTransform({
+        //     fileRegex: /\.ts$|\.tsx$|\.vue$|\.js$/
+        // })
     ],
     resolve: {
         alias: {
