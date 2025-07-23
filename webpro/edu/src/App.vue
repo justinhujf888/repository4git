@@ -14,11 +14,12 @@ const confirmPopup = useConfirm();
 const dynDialog = useDialog();
 const mydRef = useTemplateRef('mydRef');
 
+var source = null;
 onMounted(() => {
     oss.genClient(null);
     dialog.setup(confirmPopup, toast, dynDialog, mydRef);
     if (typeof (EventSource) !== "undefined") {
-        var source = new EventSource(Config.apiBaseURL + "/r/notifications");
+        source = new EventSource(Config.apiBaseURL + "/r/notifications");
         // 当通往服务器的连接被打开
         source.onopen = function(event) {
             console.log("连接开启！");
@@ -59,6 +60,9 @@ onMounted(() => {
 
 onUnmounted(() => {
     console.log("app onUnmounted runed");
+    if (source!=null) {
+        source.close();
+    }
 });
 
 </script>
