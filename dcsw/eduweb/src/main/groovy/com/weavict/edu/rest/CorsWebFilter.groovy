@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletResponse
 /**
  * Created by Justin on 2018/6/10.
  */
-@WebFilter(filterName = "corswebfilter", urlPatterns = "/r/*")
+//@WebFilter(filterName = "corswebfilter", urlPatterns = "/r/*")
 class CorsWebFilter implements Filter
 {
     CorsWebFilter() {
@@ -45,7 +45,8 @@ class CorsWebFilter implements Filter
 //            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
 //            println URLDecoder.decode(crypt.decrypt(request.getHeader("token")),"utf-8");
 //        }
-        if (request.getHeader("origin") in ["http://127.0.0.1:35594","http://localhost:9999","http://localhost:8081","http://s.hui2life.com","http://m.hui2life.com","https://s.hui2life.com","https://m.hui2life.com"])
+        println "========================filter===================";
+        if (request.getHeader("origin") in ["http://localhost:5173"])
         {
             httpServletResponse.setHeader("Access-Control-Allow-Origin", request.getHeader("origin"));
         }

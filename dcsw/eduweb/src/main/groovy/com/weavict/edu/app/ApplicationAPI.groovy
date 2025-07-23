@@ -1,5 +1,6 @@
 package com.weavict.edu.app
 
+import com.weavict.edu.rest.CorsFilter
 import com.weavict.edu.rest.DemoClassRest
 import com.weavict.edu.rest.JiaoHuRest
 import com.weavict.edu.rest.NotificationResource
@@ -86,33 +87,5 @@ class ApplicationAPI extends ResourceConfig
 //        return registrationBean;
 //    }
 //}
-
-class CorsFilter implements ContainerResponseFilter {
-    void filter(ContainerRequestContext request, ContainerResponseContext c) throws IOException {
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            //浏览器会先通过options请求来确认服务器是否可以正常访问，此时应放行
-            c.setStatus(HttpServletResponse.SC_OK);
-        }
-        c.getHeaders().add("Access-Control-Allow-Origin", "*");
-
-        c.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        c.getHeaders().add("Access-Control-Allow-Credentials", "true");
-
-        c.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-
-        // CORS策略的缓存时间
-        c.getHeaders().add("Access-Control-Max-Age", "1209600");
-        println "\u001B[31m=====================begin==========================\u001B[37m";
-        println "\u001B[31m${request.requestUri}\u001B[37m";
-        println "\u001B[31m${request.httpMethod}\u001B[37m";
-        for(def h in request.headers)
-        {
-            println "\u001B[31m${h.key}: ${h.value}\u001B[37m";
-        }
-        println "\u001B[31m=====================end==========================\u001B[37m";
-        println "\u001B[33m";
-    }
-
-}
 
 

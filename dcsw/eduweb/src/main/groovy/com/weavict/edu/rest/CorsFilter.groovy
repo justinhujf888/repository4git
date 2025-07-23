@@ -4,6 +4,7 @@ import cn.hutool.core.io.IoUtil
 import cn.hutool.core.util.URLUtil
 import cn.hutool.crypto.SecureUtil
 import com.weavict.website.common.OtherUtils
+import jakarta.servlet.http.HttpServletResponse
 import org.glassfish.jersey.server.ContainerRequest
 import org.glassfish.jersey.server.ContainerResponse
 
@@ -18,7 +19,37 @@ import jakarta.ws.rs.ext.ReaderInterceptorContext
 import jakarta.ws.rs.ext.WriterInterceptor
 import jakarta.ws.rs.ext.WriterInterceptorContext
 
+class CorsFilter implements ContainerResponseFilter
+{
+    void filter(ContainerRequestContext request, ContainerResponseContext c) throws IOException {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            //浏览器会先通过options请求来确认服务器是否可以正常访问，此时应放行
+            c.setStatus(HttpServletResponse.SC_OK);
+        }
 
+        if (request.getHeaderString("origin") in ["http://localhost:5173"])
+        {
+            c.getHeaders().add("Access-Control-Allow-Origin", request.getHeaderString("origin"));
+        }
+//        c.getHeaders().add("Access-Control-Allow-Origin", "*");
+
+        c.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, self");
+        c.getHeaders().add("Access-Control-Allow-Credentials", "true");
+        c.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+        // CORS策略的缓存时间
+        c.getHeaders().add("Access-Control-Max-Age", "1209600");
+        println "\u001B[31m=====================begin==========================\u001B[37m";
+        println "\u001B[31m${request.requestUri}\u001B[37m";
+        println "\u001B[31m${request.httpMethod}\u001B[37m";
+        for(def h in request.headers)
+        {
+            println "\u001B[31m${h.key}: ${h.value}\u001B[37m";
+        }
+        println "\u001B[31m=====================end==========================\u001B[37m";
+        println "\u001B[33m";
+    }
+}
 /**
  * Created by Justin on 2018/6/10.
  */
@@ -52,7 +83,7 @@ class RequestServerReaderInterceptor implements ReaderInterceptor
     {
         try
         {
-            if ("true" in context.headers.self || true)
+            if (true || "true" in context.headers.self)
             {
                 String ss = IoUtil.read(context.getInputStream());
                 if (!(ss in [null,"","{}"]))
@@ -80,52 +111,5 @@ class RequestClientWriterInterceptor implements WriterInterceptor
             throws IOException, WebApplicationException
     {
         println "WriterInterceptorContext";
-    }
-}
-
-
-
-
-class CorsFilter implements ContainerResponseFilter
-{
-    ContainerResponse filter(ContainerRequest creq, ContainerResponse cres) {
-        cres.getHeaders().add("Access-Control-Allow-Origin", "*");
-        /**
-         * 允许的Header值，不支持通配符
-         */
-        cres.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        cres.getHeaders().add("Access-Control-Allow-Credentials", "true");
-
-        /**
-         * 即使只用其中几种，header和options是不能删除的，因为浏览器通过options请求来获取服务的跨域策略
-         */
-        cres.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
-
-        /**
-         * CORS策略的缓存时间
-         */
-        cres.getHeaders().add("Access-Control-Max-Age", "1209600");
-
-        //可以通过 throw new WebApplicationException(Status.UNAUTHORIZED); 来中断请求
-
-        return cres;
-    }
-
-    void filter(ContainerRequestContext request, ContainerResponseContext cres) throws IOException {
-        if("OPTIONS".equalsIgnoreCase(request.getMethod())) {//浏览器会先通过options请求来确认服务器是否可以正常访问，此时应放行
-            cres.setStatus(HttpServletResponse.SC_OK);
-        }
-        cres.getHeaders().add("Access-Control-Allow-Origin", "*");
-
-        cres.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
-        cres.getHeaders().add("Access-Control-Allow-Credentials", "true");
-
-        cres.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
-
-        /**
-         * CORS策略的缓存时间
-         */
-        cres.getHeaders().add("Access-Control-Max-Age", "1209600");
-
     }
 }

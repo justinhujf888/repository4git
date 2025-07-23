@@ -12,7 +12,7 @@ const dropdownItem = ref(null);
 const sliderValue = ref(30);
 
 onMounted(() => {
-    console.log("aaaaaaaaaaabbbbbcccccccccccccccccccccc");
+
 })
 </script>
 
