@@ -1,0 +1,230 @@
+{
+  "commands": [
+    {
+      "command": "0x01",
+      "description": "设置内部时钟",
+      "parameters": [
+        { "name": "小时", "min": 0, "max": 23 },
+        { "name": "分钟", "min": 0, "max": 59 }
+      ],
+      "success_response": "0xA6 0x01 0xFE 0x00 0x00"
+    },
+    {
+      "command": "0x02",
+      "description": "设置定时的开灯时间点（白天模式）",
+      "parameters": [
+        { "name": "小时", "min": 0, "max": 23 },
+        { "name": "分钟", "min": 0, "max": 59 }
+      ],
+      "success_response": "0xA6 0x02 0xFE 0x00 0xFF"
+    },
+    {
+      "command": "0x03",
+      "description": "设置定时的关灯时间点（夜晚模式）",
+      "parameters": [
+        { "name": "小时", "min": 0, "max": 23 },
+        { "name": "分钟", "min": 0, "max": 59 }
+      ],
+      "success_response": "0xA6 0x03 0xFE 0x00 0xFE"
+    },
+    {
+      "command": "0x04",
+      "description": "设置主灯的光亮强度",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "强度值", "min": 0, "max": 100 }
+      ],
+      "success_response": "0xA6 0x04 0xFE 0x00 0xFD"
+    },
+    {
+      "command": "0x05",
+      "description": "设置月光灯的光亮强度",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "强度值", "min": 0, "max": 100 }
+      ],
+      "success_response": "0xA6 0x05 0xFE 0x00 0xFC"
+    },
+    {
+      "command": "0x06",
+      "description": "设置UVB灯的光亮强度",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "强度值", "min": 0, "max": 100 }
+      ],
+      "success_response": "0xA6 0x06 0xFE 0x00 0xFB"
+    },
+    {
+      "command": "0x07",
+      "description": "设置UVA灯的光亮强度",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "强度值", "min": 0, "max": 100 }
+      ],
+      "success_response": "0xA6 0x07 0xFE 0x00 0xFA"
+    },
+    {
+      "command": "0x08",
+      "description": "设置主风扇的白天模式转速",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "转速值", "min": 0, "max": 100 }
+      ],
+      "success_response": "0xA6 0x08 0xFE 0x00 0xF9"
+    },
+    {
+      "command": "0x09",
+      "description": "设置主风扇的夜晚模式转速",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "转速值", "min": 0, "max": 100 }
+      ],
+      "success_response": "0xA6 0x09 0xFE 0x00 0xF8"
+    },
+    {
+      "command": "0x0A",
+      "description": "设置散热风扇转速",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "转速值", "min": 0, "max": 100 }
+      ],
+      "success_response": "0xA6 0x0A 0xFE 0x00 0xF7"
+    },
+    {
+      "command": "0x0B",
+      "description": "设置主风扇白天间歇运行",
+      "parameters": [
+        { "name": "开启分钟数", "min": 0, "max": 15 },
+        { "name": "关闭分钟数", "min": 0, "max": 15 }
+      ],
+      "success_response": "0xA6 0x0B 0xFE 0x00 0xF6"
+    },
+    {
+      "command": "0x0C",
+      "description": "设置主风扇夜晚间歇运行",
+      "parameters": [
+        { "name": "开启分钟数", "min": 0, "max": 15 },
+        { "name": "关闭分钟数", "min": 0, "max": 15 }
+      ],
+      "success_response": "0xA6 0x0C 0xFE 0x00 0xF5"
+    },
+    {
+      "command": "0x0D",
+      "description": "设置主风扇除雾时间",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "除雾分钟数", "min": 0, "max": 60 }
+      ],
+      "success_response": "0xA6 0x0D 0xFE 0x00 0xF4"
+    },
+    {
+      "command": "0x0E",
+      "description": "切换开灯/关灯模式",
+      "parameters": [
+        { "name": "未使用", "fixed_value": "0x00" },
+        { "name": "模式", "options": { "0": "关灯模式（夜晚）", "1": "开灯模式（白天）" } }
+      ],
+      "success_response": "0xA6 0x0E 0xFE 0x00 0xF3"
+    },
+	{
+	  "command": "0x0F",
+	  "description": "月光模式时月光灯的亮度",
+	  "parameters": [
+	    { "name": "未使用", "fixed_value": "0x00" },
+	    { "name": "模式", "min": 0, "max": 100}
+	  ],
+	  "success_response": "0xA6 0x0F 0xFE 0x00 0xF3"
+	},
+	{
+	  "command": "0x10",
+	  "description": "开关灯渐变时长（设置开关节点上的自然光模式）",
+	  "parameters": [
+	    { "name": "未使用", "fixed_value": "0x00" },
+	    { "name": "除雾分钟数", "min": 0, "max": 120 }
+	  ],
+	  "success_response": "0xA6 0x0D 0xFE 0x00 0xF4"
+	}
+  ],
+  "query_commands": [
+    {
+      "command": "0x11",
+      "description": "查询内部时间",
+      "response_format": "0xA6 [命令码] [数据高位] [数据低位] [校验]"
+    },
+    {
+      "command": "0x12",
+      "description": "查询开灯时间点",
+      "response_format": "0xA6 [命令码] [数据高位] [数据低位] [校验]"
+    },
+    {
+      "command": "0x13",
+      "description": "查询关灯时间点",
+      "response_format": "0xA6 [命令码] [数据高位] [数据低位] [校验]"
+    },
+    {
+      "command": "0x14",
+      "description": "查询主灯强度",
+      "response_format": "0xA6 [命令码] [未使用] [强度值] [校验]"
+    },
+    {
+      "command": "0x15",
+      "description": "查询月光灯强度",
+      "response_format": "0xA6 [命令码] [未使用] [强度值] [校验]"
+    },
+    {
+      "command": "0x16",
+      "description": "查询UVB灯强度",
+      "response_format": "0xA6 [命令码] [未使用] [强度值] [校验]"
+    },
+    {
+      "command": "0x17",
+      "description": "查询UVA灯强度",
+      "response_format": "0xA6 [命令码] [未使用] [强度值] [校验]"
+    },
+    {
+      "command": "0x18",
+      "description": "查询主风扇白天转速",
+      "response_format": "0xA6 [命令码] [未使用] [转速值] [校验]"
+    },
+    {
+      "command": "0x19",
+      "description": "查询主风扇夜晚转速",
+      "response_format": "0xA6 [命令码] [未使用] [转速值] [校验]"
+    },
+    {
+      "command": "0x1A",
+      "description": "查询散热风扇转速",
+      "response_format": "0xA6 [命令码] [未使用] [转速值] [校验]"
+    },
+    {
+      "command": "0x1B",
+      "description": "查询主风扇白天间歇模式",
+      "response_format": "0xA6 [命令码] [开启分钟数] [关闭分钟数] [校验]"
+    },
+    {
+      "command": "0x1C",
+      "description": "查询主风扇夜晚间歇模式",
+      "response_format": "0xA6 [命令码] [开启分钟数] [关闭分钟数] [校验]"
+    },
+    {
+      "command": "0x1D",
+      "description": "查询主风扇除雾时间",
+      "response_format": "0xA6 [命令码] [未使用] [除雾分钟数] [校验]"
+    },
+    {
+      "command": "0x1E",
+      "description": "查询当前模式（开灯/关灯）",
+      "response_format": "0xA6 [命令码] [未使用] [模式值] [校验]"
+    },
+	{
+	  "command": "0x1F",
+	  "description": "查询月光模式下月光灯强度值（%）",
+	  "response_format": "0xA6 [命令码] [未使用] [模式值] [校验]"
+	},
+	{
+	  "command": "0x20",
+	  "description": "查询目前开关灯渐变时长（分钟）-自然光",
+	  "response_format": "0xA6 [命令码] [未使用] [模式值] [校验]"
+	}
+  ]
+}

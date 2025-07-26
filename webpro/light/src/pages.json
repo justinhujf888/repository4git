@@ -1,0 +1,87 @@
+{
+	"pages": [
+		{
+		    "path" : "pages/index/index",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/device/setup",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/device/scriptList",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/device/kgtime",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/device/setupList",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/user/index",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		},
+		{
+		    "path" : "pages/user/myDevices",
+		    "style" :                                                                                    
+		    {
+		        "navigationStyle" : "custom"
+		    }
+		}
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "Grace",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#FFFFFF"
+	},
+	"tabBar": {
+		"color": "#B6C3D2",
+		"selectedColor": "#2B2E3D",
+		"borderStyle": "black",
+		"backgroundColor": "#F8F8F8",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				// "iconPath": "static/menu_imgs/menu_1.png",
+				// "selectedIconPath": "static/menu_imgs/menu_1a.png",
+				"text": ""
+			},
+			{
+				"pagePath": "pages/user/index",
+				// "iconPath": "static/menu_imgs/menu_2.png",
+				// "selectedIconPath": "static/menu_imgs/menu_2a.png",
+				"text": ""
+			}
+		]
+	},
+	"easycom": {
+		"autoscan" : true,
+		"custom": {
+			"gui-(.*)" : "@/Grace6/components/gui-$1.vue",
+			"^wd-(.*)": "@/uni_modules/wot-design-uni/components/wd-$1/wd-$1.vue",
+			"my-(.*)" : "@/components/my/my-$1.vue"
+		}
+	}
+}
