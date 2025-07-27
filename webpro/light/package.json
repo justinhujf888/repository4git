@@ -58,7 +58,8 @@
     "lodash": "^4.17.21",
     "sass": "^1.77.8",
     "less": "^4.2.0",
-    "less-loader": "^12.2.0"
+    "less-loader": "^12.2.0",
+    "@vueuse/core": "^13.5.0"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.8",
