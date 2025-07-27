@@ -11,9 +11,11 @@
 			<view class="flex-1">
 				<text v-if="false" class="text-gray-400 text-base gui-icons">上午 10:30 &#xe69e;</text>
 			</view>
+<!--            #ifdef MP-->
 			<button v-if="viewStatus != 0" class="btnbg rounded-full w-7 h-7 text-white center" @tap="refreshDevices()">
 				<text class="text-xl gui-icons">&#xe635;</text>
 			</button>
+<!--            #endif-->
 		</view>
 		<view class="mx-2">
 <!-- 			<wd-upload ref="uploader" :auto-upload="false" :file-list="fileList" image-mode="aspectFill" :action="host" :build-form-data="buildFormData" @change="handleChange" @fail="ossFail" @success="ossSuccess"></wd-upload>
@@ -77,7 +79,7 @@
 			<view v-else-if="viewStatus == 2" class="px-2">
 				<view class="bg-white rounded-xl px-2 py-5 mt-4">
 					<view class="mx-10 center" @tap="connedToScriptPage()">
-						<img src="../../static/device.png" mode="widthFix"></img>
+						<img src="../../static/device.png" mode="widthFix" class="w-40"></img>
 					</view>
 					<wd-divider></wd-divider>
 					<view class="between mx-3 mt-5">
@@ -129,7 +131,13 @@
 	import wxRest from "@/api/uniapp/wx.js";
 	import deviceRest from "@/api/dbs/device.js";
 	
-	import { Blue } from '@/api/bluebooth/index.js';
+	// #ifdef MP
+    import { Blue } from '@/api/bluebooth/index.js';
+    // #endif
+    // #ifdef H5
+    import { useBluetooth } from '@vueuse/core';
+    import { Blue } from '@/api/bluebooth/web.js';
+    // #endif
 	import { ConnectController } from '@/api/bluebooth/controller.js';
 	import {BLUE_STATE} from "@/api/bluebooth/blueState.js";
 	import hexTools from "@/api/hexTools.js";
@@ -224,14 +232,12 @@
 	}
 	
 	const init = ()=>{
-        uni.hideTabBar();
 		viewStatus.value = 0;
 		preDeviceList.value = [];
 		deviceList.value = [];
 		(async ()=>{
 			await new Promise(resolve => {
 				deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
-                    console.log("0");
 					if (data.status=="OK") {
 						deviceTypeList = data.deviceTypeList;
 						lodash.forEach(deviceTypeList,(v,i)=>{
@@ -243,7 +249,6 @@
 							v.tempMap.services.wcy = JSON.parse(v.characteristicsWriteIds);
 							// console.log("qyDeviceTypeList",v);
 						});
-						callBle();
 						resolve();
 					}
 				});
@@ -269,7 +274,9 @@
 								}
 							}
 							setTimeout(()=>{
+                                // #ifdef MP
 								viewStatus.value = 1;
+                                // #endif
 								resolve();
 							},1500);
 						}
@@ -282,7 +289,7 @@
 			await new Promise(resolve => {
 				ConnectController.addConnectStateListen((data)=>{
 					console.log("addConnectStateListen",data);
-
+                    // #ifdef MP
 					let pages = getCurrentPages();
 					
 					if (data.label) {
@@ -354,6 +361,36 @@
 						console.log("connect other status",data);
 					}
 					dialog.closeLoading();
+                //     #endif
+                //     #ifdef H5
+                    let device = null;
+                    if (lodash.findIndex(deviceList.value,(o)=>{return o.deviceId==data.deviceId})<0) {
+                        console.log("ok");
+                        device = Beans.device();
+                        device.deviceId = data.deviceId;
+                        device.name = data.name;
+                        device.remark = JSON.stringify({os:uni.getSystemInfoSync().osName});
+                        device.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.uuid==data.serviceId});
+                        let buyer = Beans.buyer();
+                        buyer.phone = userId;
+                        device.buyer = buyer;
+                        device.tempMap = {};
+                        device.tempMap.isDB = false;
+                        device.tempMap.connected = true;
+                        device.tempMap.connecting = true;
+                        device.tempMap.near = true;
+                        // deviceList.value.push(device);
+                    } else {
+                        device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
+                        device.tempMap.isDB = true;
+                        device.tempMap.connected = true;
+                        device.tempMap.connecting = true;
+                        device.tempMap.near = true;
+                    }
+                    theDevice.value = device;
+                    console.log("theDevice",theDevice.value);
+                    viewStatus.value = 2;
+                //     #endif
 				});
 					   
 				ConnectController.addDevicesListen((device)=>{
@@ -386,6 +423,8 @@
 					viewStatus.value = 1;
 					dialog.closeLoading();
 				});
+
+                callBle();
 				resolve();
 			});
 			
@@ -405,6 +444,7 @@
 	};
 	
 	onLoad((option)=>{
+        uni.hideTabBar();
         // #ifdef MP
 		userId = wxRest.getLoginState()?.userId;
 		if (wxRest.getLoginState().userInfo.openid=="oalrT5KZGWw-V2scb_RYyS3FSDyw" || wxRest.getLoginState().userInfo.openid=="oalrT5F3SNZATiUERY6cDDl84a8I") {
@@ -667,18 +707,35 @@
 		// {"serviceId":{"scan":"0000fff0-0000-1000-8000-00805f9b34fb","uuid":"0000fff0-0000-1000-8000-00805f9b34fb"}} ["0000fff1-0000-1000-8000-00805f9b34fb"] ["0000fff2-0000-1000-8000-00805f9b34fb"]
 		preDeviceList.value = [];
 		let serviceFilter = [];
+        // #ifdef MP
 		for(let d of deviceTypeList) {
 			serviceFilter.push(d.tempMap.services.serviceId.scan.toUpperCase());
 		}
 		Blue.setServiceFilter(serviceFilter);
+    //     #endif
+    //     #ifdef H5
+        let serviceList = [];
+        for(let d of deviceTypeList) {
+            serviceFilter.push(d.tempMap.services.serviceId.scan.toLowerCase());
+            serviceList.push(d.tempMap.services.serviceId.uuid.toLowerCase());
+        }
+        Blue.setServiceFilter(serviceFilter);
+        Blue.setBlueService(useBluetooth({
+            // acceptAllDevices: true,
+            filters: [{ services: serviceFilter }],
+            optionalServices:serviceList
+        }));
+    //     #endif
 	}
 		
 	async function callBle() {
 		
 		// #ifdef H5
-		const device = await navigator.bluetooth.requestDevice({
-			filters: [{ services: [Blue.getBlueServiceId().toLowerCase()] }],
-		});
+        preCallBle();
+        Blue.callBle();
+		// const device = await navigator.bluetooth.requestDevice({
+		// 	filters: [{ services: [Blue.getBlueServiceId().toLowerCase()] }],
+		// });
 		// navigator.bluetooth.requestDevice({
 			// filters: [{ services: [Blue.getBlueServiceId()] }],
 			// acceptAllDevices: true,
