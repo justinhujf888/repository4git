@@ -78,10 +78,22 @@
 		let onTime_s = parseInt(onTimeAy[1]);
 		let offTime_h = parseInt(offTimeAy[0]);
 		let offTime_s = parseInt(offTimeAy[1]);
-		
-		if (uni.prePage().checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,cvalue)) {
+
+        console.log(uni.prePage());
+        // #ifdef MP
+        let check = uni.prePage().checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,cvalue);
+        // #endif
+        // #ifdef H5
+        let check = uni.prePage()._.exposed.checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,cvalue);
+        // #endif
+		if (check) {
 			times.value = {onTime:times.value.onTime,offTime:times.value.offTime,values:{onTime:{v0:onTime_h,v1:onTime_s},offTime:{v0:offTime_h,v1:offTime_s}}};
-			uni.prePage().setTimes(times.value);
+            // #ifdef MP
+            uni.prePage().setTimes(times.value);
+            // #endif
+            // #ifdef H5
+            uni.prePage()._.exposed.setTimes(times.value);
+            // #endif
 			page.navBack();
 		} else {
 			showNotify("设定错误请重新确认。");

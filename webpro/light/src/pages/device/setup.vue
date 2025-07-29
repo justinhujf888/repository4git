@@ -1,5 +1,5 @@
 <template>
-	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="leftClick()">
+	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="leftClick">
 		<template #title>
 			<view class="justify-center items-center">
 				<text class="text-sm">{{device?.name}}-{{deviceScript?.name}}</text>
@@ -107,7 +107,13 @@
 	import page from "@/api/uniapp/page.js";
 	import { ref,getCurrentInstance } from 'vue';
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
-	import { Blue } from '@/api/bluebooth/index.js';
+    // #ifdef MP
+    import { Blue } from '@/api/bluebooth/index.js';
+    // #endif
+    // #ifdef H5
+    import { useBluetooth } from '@vueuse/core';
+    import { Blue } from '@/api/bluebooth/web.js';
+    // #endif
 	import { ConnectController } from '@/api/bluebooth/controller.js';
 	import hexTools from "@/api/hexTools.js";
 	import { Beans } from '@/api/dbs/beans';
@@ -389,8 +395,14 @@
 				
 				// for test
 				// let data = characteristic.value.map(str => "0x"+str.toUpperCase());
-				
+
+                // #ifdef MP
 				let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
+                // #endif
+                // #ifdef H5
+                console.log("characteristic--",characteristic);
+                let data = hexTools.arrayBuffer2hexArray(characteristic.value).map(str => "0x"+str.toUpperCase());
+                // #endif
 				console.log("characteristic array",cday.format("HH:mm:ss"),data);
 				console.log("cmd----",data);
 
@@ -704,12 +716,22 @@
 	
 	const saveScript = ()=>{
 		// console.log(pgElmList.value);return;
-		proxy.$prePage().backScriptStr(deviceScript.id,JSON.stringify(readAfterScript()),device.value.deviceId);
+        // #ifdef MP
+        proxy.$prePage().backScriptStr(deviceScript.id,JSON.stringify(readAfterScript()),device.value.deviceId);
+        // #endif
+        // #ifdef H5
+        proxy.$prePage()._.exposed.backScriptStr(deviceScript.id,JSON.stringify(readAfterScript()),device.value.deviceId);
+        // #endif
 		page.navBack();
 	}
 	
 	const leftClick = ()=>{
-		proxy.$prePage().backScriptStr(null,JSON.stringify(readAfterScript()),device.value.deviceId);
+        // #ifdef MP
+        proxy.$prePage().backScriptStr(null,JSON.stringify(readAfterScript()),device.value.deviceId);
+        // #endif
+        // #ifdef H5
+        proxy.$prePage()._.exposed.backScriptStr(null,JSON.stringify(readAfterScript()),device.value.deviceId);
+        // #endif
 		page.navBack();
 	};
 	

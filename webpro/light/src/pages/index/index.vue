@@ -389,7 +389,7 @@
                     }
                     theDevice.value = device;
                     console.log("theDevice",theDevice.value);
-                    Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toUpperCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toUpperCase());
+                    Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toLowerCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toLowerCase());
                     viewStatus.value = 2;
                 //     #endif
 				});

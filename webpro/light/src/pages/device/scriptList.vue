@@ -68,7 +68,13 @@
 	import wxRest from "@/api/uniapp/wx.js";
 	import deviceRest from "@/api/dbs/device.js";
 	import { Beans } from '@/api/dbs/beans';
-	import { Blue } from '@/api/bluebooth/index.js';
+    // #ifdef MP
+    import { Blue } from '@/api/bluebooth/index.js';
+    // #endif
+    // #ifdef H5
+    import { useBluetooth } from '@vueuse/core';
+    import { Blue } from '@/api/bluebooth/web.js';
+    // #endif
 	import hexTools from "@/api/hexTools.js";
 	
 	const scriptList = ref([]);

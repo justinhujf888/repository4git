@@ -1,6 +1,7 @@
 import { BLUE_STATE } from './blueState.js';
 import { ConnectController } from './controller.js';
 import lodash from "lodash";
+// import hexTools from "@/api/hexTools.js";
 
 let pserviceId = "";//"0000FFF0-0000-1000-8000-00805F9B34FB" "76617365-6570-6c61-6e74-776f726c6473";
 let serviceFilter = null;
@@ -8,6 +9,8 @@ let bleConnectDeviceID = null;
 let opened = false;
 let csValue = {serviceId:null,readId:null,writeId:null};
 let primaryService = null;
+let readCharacteristic = null;
+let writeCharacteristic = null;
 if (uni.getStorageSync("blueOpened")) {
 	opened = uni.getStorageSync("blueOpened");
 } else {
@@ -164,81 +167,62 @@ export const Blue = {
 		})
 	},
 	
-	getBleCharacteristicsInfo(readId,writeId) {
-		(async ()=>{
-			console.log(await primaryService.getCharacteristics());
-			await new Promise(resolve => {
-
-				resolve();
-			// 	uni.getBLEDeviceCharacteristics({
-			// 		deviceId: bleConnectDeviceID,
-			// 		serviceId: csValue.serviceId,
-			// 		success: (res)=> {
-			// 			console.log(res);
-			// 			lodash.forEach(res.characteristics,(o,i)=>{
-			// 				if (o.uuid.toUpperCase() == writeId) {
-			// 					csValue.writeId = o.uuid;
-			// 				}
-			// 				if (o.uuid.toUpperCase() == readId) {
-			// 					csValue.readId = o.uuid;
-			// 				}
-			// 			});
-			// 			console.log("Characteristics-----:",csValue);
-			// 			resolve();
-			// 		},
-			// 		fail: (er)=> {
-			// 			console.log(er);
-			// 		},
-			// 	});
-			});
-			
-			await new Promise(resolve => {
-				// this.onNotifyBLECharacteristicValueChange();
-				setTimeout(()=>{
-					console.log("bjs-onNotifyBLECharacteristicValueChange");
-					resolve();
-				}, 2000);
-			});
-			
-			await new Promise(resolve => {
-				// this.onBLECharacteristicValueChange();
-				setTimeout(()=>{
-					console.log("bjs-onBLECharacteristicValueChange");
-					resolve();
-				}, 2000);
-			});
-			
-		})();
+	async getBleCharacteristicsInfo(readId,writeId) {
+		lodash.forEach(await primaryService.getCharacteristics(),(o,i)=>{
+			if (o.uuid.toLowerCase() == writeId) {
+				writeCharacteristic = o;
+				csValue.writeId = o.uuid;
+			}
+			if (o.uuid.toLowerCase() == readId) {
+				readCharacteristic = o;
+				csValue.readId = o.uuid;
+			}
+		});
+		console.log("Characteristics-----:",csValue);
+		this.onBLECharacteristicValueChange(readCharacteristic);
 	},
 	
 	writeBLEValue(value) {
-		uni.writeBLECharacteristicValue({
-			deviceId: bleConnectDeviceID,
-			serviceId: csValue.serviceId,
-			characteristicId: csValue.writeId,
-			value: value,
-			writeType: "write",
-			success:(res)=> {
-				console.log(res);
-			},
-			fail: (er)=> {
-				console.log(er);
-			},
+		writeCharacteristic.writeValue(value).then(() => {
+			// 写入成功
+		})
+		.catch(error => {
+			// 写入特征时出错
 		});
+		// uni.writeBLECharacteristicValue({
+		// 	deviceId: bleConnectDeviceID,
+		// 	serviceId: csValue.serviceId,
+		// 	characteristicId: csValue.writeId,
+		// 	value: value,
+		// 	writeType: "write",
+		// 	success:(res)=> {
+		// 		console.log(res);
+		// 	},
+		// 	fail: (er)=> {
+		// 		console.log(er);
+		// 	},
+		// });
 	},
 	
 	readBLEValue() {
-		uni.readBLECharacteristicValue({
-			deviceId: bleConnectDeviceID,
-			serviceId: csValue.serviceId,
-			characteristicId: csValue.readId,
-			success:(res)=> {
-				console.log(res);
-			},
-			fail: (er)=> {
-				console.log(er);
-			},
-		});
+		readCharacteristic.readValue()
+			.then(value => {
+				// 读取到的值
+			})
+			.catch(error => {
+				// 读取特征时出错
+			});
+		// uni.readBLECharacteristicValue({
+		// 	deviceId: bleConnectDeviceID,
+		// 	serviceId: csValue.serviceId,
+		// 	characteristicId: csValue.readId,
+		// 	success:(res)=> {
+		// 		console.log(res);
+		// 	},
+		// 	fail: (er)=> {
+		// 		console.log(er);
+		// 	},
+		// });
 	},
 		
 	onBluetoothDeviceFound() {
@@ -358,13 +342,32 @@ export const Blue = {
 		});
 	},
 	
-	onBLECharacteristicValueChange() {
-		uni.onBLECharacteristicValueChange((characteristic) => {
-		  console.log('characteristic value comed:', characteristic.value);
-		  ConnectController.characteristicValueChangeListen({
-			  ...BLUE_STATE.READSUSSES,
-			  ...characteristic
-		  });
-		});
+	onBLECharacteristicValueChange(characteristic) {
+		if (characteristic.properties.notify) {
+			return characteristic.startNotifications() // 开始监听通知
+				.then(_ => {
+					characteristic.addEventListener('characteristicvaluechanged', (event)=>{
+						// let data = hexTools.arrayBuffer2hexArray(event.target.value.buffer).map(str => "0x"+str.toUpperCase());
+						console.log('characteristic value comed:', event);
+						ConnectController.characteristicValueChangeListen({
+							...BLUE_STATE.READSUSSES,
+							value:event.target.value.buffer
+						});
+					});
+					console.log('Notifications started');
+				})
+				.catch(error => {
+					console.log('Argh! ' + error);
+				});
+		} else {
+			console.log('Notifications not supported');
+		}
+		// uni.onBLECharacteristicValueChange((characteristic) => {
+		//   console.log('characteristic value comed:', characteristic.value);
+		//   ConnectController.characteristicValueChangeListen({
+		// 	  ...BLUE_STATE.READSUSSES,
+		// 	  ...characteristic
+		//   });
+		// });
 	}
 }
