@@ -7,6 +7,7 @@ let serviceFilter = null;
 let bleConnectDeviceID = null;
 let opened = false;
 let csValue = {serviceId:null,readId:null,writeId:null};
+let primaryService = null;
 if (uni.getStorageSync("blueOpened")) {
 	opened = uni.getStorageSync("blueOpened");
 } else {
@@ -51,12 +52,12 @@ export const Blue = {
 		return csValue;
 	},
 	
-	callBle() {
+	callBle(dtList) {
 		if (!opened) {
-			Blue.start();
+			Blue.start(dtList);
 		} else {
 			Blue.closeBlue();
-			Blue.start();
+			Blue.start(dtList);
 		}
 	},
 		
@@ -65,22 +66,22 @@ export const Blue = {
 	 * @param onlyBind 是否单独绑定操作，默认false
 	 * @param module 设备模块，区分设备
 	 */
-	async start() {
+	async start(dtList) {
 		try {
 			opened = true;
 			uni.setStorageSync("blueOpened",opened);
 			await blueService.requestDevice();
 			await blueService.device.value?.gatt.connect();
 			// console.log(blueService.device.value,await blueService.server.value?.getPrimaryServices());
-			let serviceId = "";
 			lodash.forEach(await blueService.server.value?.getPrimaryServices(),(v,i)=>{
-				if (v.isPrimary) {
-					serviceId = v.uuid;
+				if (v.isPrimary && lodash.findIndex(dtList,(o)=>{return o==v.uuid})>-1) {
+					primaryService = v;
+					csValue.serviceId = primaryService.uuid;
 				}
 			});
 			ConnectController.connectStateListen({
 				...BLUE_STATE.CONNECTSUCCESS,
-				...{deviceId:blueService.device.value.id,name:blueService.device.value.name,serviceId:serviceId}
+				...{deviceId:blueService.device.value.id,name:blueService.device.value.name,serviceId:csValue.serviceId}
 			});
 			this.connectState = 200;
 		} catch (e) {
@@ -165,51 +166,34 @@ export const Blue = {
 	
 	getBleCharacteristicsInfo(readId,writeId) {
 		(async ()=>{
-			
+			console.log(await primaryService.getCharacteristics());
 			await new Promise(resolve => {
-				uni.getBLEDeviceServices({
-					deviceId: bleConnectDeviceID,
-					success: (res)=> {
-						console.log(res);
-						lodash.forEach(res.services,(o,i)=>{
-							if (o.isPrimary && o.uuid.toUpperCase()==pserviceId.toUpperCase()) {
-								csValue.serviceId = o.uuid;
-							}
-						});
-						console.log("service uuid aa:"+csValue.serviceId);
-						if (csValue.serviceId) resolve();
-					},
-					fail: (er)=> {
-						console.log(er);
-					},
-				});
+
+				resolve();
+			// 	uni.getBLEDeviceCharacteristics({
+			// 		deviceId: bleConnectDeviceID,
+			// 		serviceId: csValue.serviceId,
+			// 		success: (res)=> {
+			// 			console.log(res);
+			// 			lodash.forEach(res.characteristics,(o,i)=>{
+			// 				if (o.uuid.toUpperCase() == writeId) {
+			// 					csValue.writeId = o.uuid;
+			// 				}
+			// 				if (o.uuid.toUpperCase() == readId) {
+			// 					csValue.readId = o.uuid;
+			// 				}
+			// 			});
+			// 			console.log("Characteristics-----:",csValue);
+			// 			resolve();
+			// 		},
+			// 		fail: (er)=> {
+			// 			console.log(er);
+			// 		},
+			// 	});
 			});
 			
 			await new Promise(resolve => {
-				uni.getBLEDeviceCharacteristics({
-					deviceId: bleConnectDeviceID,
-					serviceId: csValue.serviceId,
-					success: (res)=> {
-						console.log(res);
-						lodash.forEach(res.characteristics,(o,i)=>{
-							if (o.uuid.toUpperCase() == writeId) {
-								csValue.writeId = o.uuid;
-							}
-							if (o.uuid.toUpperCase() == readId) {
-								csValue.readId = o.uuid;
-							}
-						});
-						console.log("Characteristics-----:",csValue);
-						resolve();
-					},
-					fail: (er)=> {
-						console.log(er);
-					},
-				});
-			});
-			
-			await new Promise(resolve => {
-				this.onNotifyBLECharacteristicValueChange();
+				// this.onNotifyBLECharacteristicValueChange();
 				setTimeout(()=>{
 					console.log("bjs-onNotifyBLECharacteristicValueChange");
 					resolve();
@@ -217,7 +201,7 @@ export const Blue = {
 			});
 			
 			await new Promise(resolve => {
-				this.onBLECharacteristicValueChange();
+				// this.onBLECharacteristicValueChange();
 				setTimeout(()=>{
 					console.log("bjs-onBLECharacteristicValueChange");
 					resolve();

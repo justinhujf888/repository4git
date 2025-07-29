@@ -389,6 +389,7 @@
                     }
                     theDevice.value = device;
                     console.log("theDevice",theDevice.value);
+                    Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toUpperCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toUpperCase());
                     viewStatus.value = 2;
                 //     #endif
 				});
@@ -732,7 +733,11 @@
 		
 		// #ifdef H5
         preCallBle();
-        Blue.callBle();
+        let dtList = [];
+        lodash.forEach(deviceTypeList,(v,i)=>{
+            dtList.push(v.tempMap.services.serviceId.uuid);
+        });
+        Blue.callBle(dtList);
 		// const device = await navigator.bluetooth.requestDevice({
 		// 	filters: [{ services: [Blue.getBlueServiceId().toLowerCase()] }],
 		// });

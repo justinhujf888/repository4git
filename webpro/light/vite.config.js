@@ -8,21 +8,22 @@ export default async () => {
   return defineConfig({
     plugins: [uni(), UnoCSS()],
     server: {
+      // port: 3000,
+      strictPort: true,
+      open: true,
       https: {
         key: fs.readFileSync('./ssl/localhost-key.pem'),
         cert: fs.readFileSync('./ssl/localhost.pem'),
-        strictPort: true,
-        port: 3000,
-        open: true
-      }
+      },
+      // proxy: {
+      //   '/light': {
+      //     target: 'http://192.168.1.46:8090/light',
+      //     changeOrigin: true,
+      //     secure: false, // https接口需要配置
+      //      rewrite: (path) => path.replace(/^\/api/, '')  // 重写路径
+      //   }
+      // }
     },
-    // proxy: {
-    //   '/light': {
-    //     target: 'http://192.168.1.46:8090/light',
-    //     changeOrigin: true,
-    //     secure: false // https接口需要配置
-    //   }
-    // }
   });
 };
 
