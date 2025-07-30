@@ -1,5 +1,5 @@
 <template>
-	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="leftClick">
+    <wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="leftClick()">
 		<template #title>
 			<view class="justify-center items-center">
 				<text class="text-sm">{{device?.name}}-{{deviceScript?.name}}</text>
@@ -9,13 +9,13 @@
 	</wd-navbar>
 	<!-- &#xe858; &#xe655;-->
 	<wd-notify></wd-notify>
-	<view v-if="isWriteCmd" class="relative px-4">
-<!-- 		<view class="absolute left-2 top-1">
-			<wd-button @click="test">0x11</wd-button>
-		</view> -->
-		<view class="mt-5 col justify-center items-center text-gray-400">
+	<view v-if="isWriteCmd" class="relative px-4 mt-10">
+<!-- 		<view class="absolute left-2 top-1">-->
+<!--			<wd-button @click="leftClick">0x11</wd-button>-->
+<!--		</view>-->
+		<view class="col justify-center items-center text-gray-400 mt-5">
 			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
-			<view class="row justify-center items-center mt-2 text-sm">
+			<view class="row justify-center items-center text-sm">
 				<text>当前时钟</text>
 				<text class="ml-1">{{currentTime.txt}}</text>
 				<text class="rounded-2xl py-1 px-4 btn1 text-white ml-1" @tap="syncTime">手动同步时钟</text>

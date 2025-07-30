@@ -17,11 +17,12 @@
 			})
 			// #endif
 			setNotifyDefaultOptions({
-				safeHeight: 90,
+				safeHeight: 50,
 				// onClick: (event) => console.log('onClick', event),
 				// onClosed: () => console.log('onClosed'),
 				// onOpened: () => console.log('onOpened')
 			})
+
 			// 隐藏原生tabBar
             // #ifdef MP || H5
 			uni.hideTabBar();
@@ -44,7 +45,7 @@
 @import "./Grace6/css/graceDark.scss";
 /* 加载自定义样式 */
 @import "./custom/custom.scss";
-page{background:#F8F8F8;}
+page{background:#F8F8F8; }
 </style>
 <!-- #endif -->
 <!-- #ifdef APP-NVUE -->
