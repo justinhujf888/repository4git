@@ -17,7 +17,7 @@
 			})
 			// #endif
 			setNotifyDefaultOptions({
-				safeHeight: 50,
+				safeHeight: 55,
 				// onClick: (event) => console.log('onClick', event),
 				// onClosed: () => console.log('onClosed'),
 				// onOpened: () => console.log('onOpened')

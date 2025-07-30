@@ -104,6 +104,7 @@
 			</button>
 		</view>
 	</view>
+    <view class="h-50"></view>
 	
 	<wd-popup v-model="renameShow" position="bottom" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
 		<view class="col center text-gray-500 mt-10">

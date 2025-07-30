@@ -8,8 +8,8 @@
 		</template>
 	</wd-navbar>
 	<!-- &#xe858; &#xe655;-->
-	<wd-notify></wd-notify>
-	<view v-if="isWriteCmd" class="relative px-4 mt-10">
+	<view v-if="isWriteCmd" class="relative px-4 mt-6">
+        <wd-notify></wd-notify>
 <!-- 		<view class="absolute left-2 top-1">-->
 <!--			<wd-button @click="leftClick">0x11</wd-button>-->
 <!--		</view>-->
@@ -42,7 +42,7 @@
 		<view class="mt-2">
 			<view v-for="(group,i) in pgElmList" :key="group.id" class="mt-2 mb-2 bg-white rounded-xl p-4 text-gray-500">
 				<view v-for="(item,i) in group.els" :key="group.id" class="mt-6 mb-6">
-					<view class="">
+					<view class="" v-if="checkType(item)">
 						<view v-if="item.type=='slider'" class="col text-xl" :class="item.ly==0 && i>0 ? 'mt-10' : 'mt-5'">
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
 							<view class="row mt-5">
@@ -94,7 +94,7 @@
 			<wd-tabbar-item title="">
 				<template #icon>
 					<view>
-						<wd-button custom-class="py-1 px-2 text-white" custom-style="#6AAE36" @click="saveScript">保存到方案</wd-button>
+						<wd-button custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="saveScript">保存到方案</wd-button>
 					</view>
 				</template>
 			</wd-tabbar-item>
@@ -461,6 +461,17 @@
 			loopLoading();
 		},2000);
 	});
+
+    const checkType = (item)=>{
+        // console.log("checkType---",device.value);
+        let cmd =lodash.find(cmdjson.commands,(o)=>{return o.command==item.cmd || o.command==item.exCmd});
+        if (cmd?.deviceType) {
+            // console.log("checkType---",cmd,device.value.deviceType.id);
+            return lodash.findIndex(cmd.deviceType,(o)=>{return o==device.value.deviceType.id})>-1;
+        } else {
+            return true;
+        }
+    };
 	
 	const checkInput = (e)=>{
 		// if(value>max) value=max;

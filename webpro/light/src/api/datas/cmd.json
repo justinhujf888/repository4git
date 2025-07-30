@@ -47,6 +47,7 @@
     },
     {
       "command": "0x06",
+      "deviceType": ["0"],
       "description": "设置UVB灯的光亮强度",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },

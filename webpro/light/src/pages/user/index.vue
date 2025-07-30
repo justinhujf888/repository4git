@@ -10,7 +10,7 @@
 		<view class="row center bg-white rounded-xl text-base text-gray-600 mb-2">
 			<view m-2>
 <!--				<wd-img :width="100" :height="100" round src="../../../../static/logo.png" />-->
-				 <img src="@/static/logo.png" class="w-20 rounded-full"/>
+				 <img src="@/static/logo.png" class="w-20 h-20 rounded-full"/>
 			</view>
 			<view class="flex-1">
 				<text v-if="userId">{{userId}}</text>
