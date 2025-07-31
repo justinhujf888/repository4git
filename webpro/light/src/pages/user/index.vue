@@ -6,9 +6,9 @@
 			</view>
 		</template>
 	</wd-navbar>
-	<view class="my-2 mx-3 mt-10">
+	<view class="my-2 mx-3 mt-5">
 		<view class="row center bg-white rounded-xl text-base text-gray-600 mb-2">
-			<view m-2>
+			<view class="m-2">
 <!--				<wd-img :width="100" :height="100" round src="../../../../static/logo.png" />-->
 				 <img src="@/static/logo.png" class="w-20 h-20 rounded-full"/>
 			</view>

@@ -7,9 +7,9 @@
 			</view>
 		</template>
 	</wd-navbar>
+    <wd-notify></wd-notify>
 	<!-- &#xe858; &#xe655;-->
-	<view v-if="isWriteCmd" class="relative px-4 mt-6">
-        <wd-notify></wd-notify>
+	<view v-if="isWriteCmd" class="relative px-4 mt-8">
 <!-- 		<view class="absolute left-2 top-1">-->
 <!--			<wd-button @click="leftClick">0x11</wd-button>-->
 <!--		</view>-->

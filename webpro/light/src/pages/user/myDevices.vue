@@ -6,8 +6,8 @@
 			</view>
 		</template>
 	</wd-navbar>
-	<wd-notify></wd-notify>
 	<view class="my-2 mx-3">
+        <wd-notify></wd-notify>
 		<view>
 			<text class="text-gray-600 text-sm">我的设备</text>
 			<view v-if="deviceList?.length > 0">
@@ -16,8 +16,9 @@
 						<img src="../../static/device.png" mode="widthFix" class="w-20 h-20"></img>
 					</view>
 					<view class="flex-1 col justify-center items-start">
-						<view class="row mb-2">
+						<view class="col mb-2">
 							<text class="text-sm font-semibold">{{device.name}}</text>
+<!--                            <text class="text-xs">{{device.deviceId}}</text>-->
 						</view>
 					</view>
 					<view class="row top-2 right-4">

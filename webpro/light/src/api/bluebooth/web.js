@@ -75,7 +75,7 @@ export const Blue = {
 			uni.setStorageSync("blueOpened",opened);
 			await blueService.requestDevice();
 			await blueService.device.value?.gatt.connect();
-			// console.log(blueService.device.value,await blueService.server.value?.getPrimaryServices());
+			console.log(blueService.device.value,await blueService.server.value?.getPrimaryServices());
 			lodash.forEach(await blueService.server.value?.getPrimaryServices(),(v,i)=>{
 				if (v.isPrimary && lodash.findIndex(dtList,(o)=>{return o==v.uuid})>-1) {
 					primaryService = v;

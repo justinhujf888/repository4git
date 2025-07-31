@@ -6,8 +6,8 @@
 			</view>
 		</template>
 	</wd-navbar>
+    <wd-notify></wd-notify>
 	<view class="my-2 mx-3 mt-8">
-        <wd-notify></wd-notify>
 		<view>
 			<view v-if="scriptList?.length > 0">
 				<view v-for="(script,index) in scriptList" :key="script.id" class="bg-white rounded-xl px-4 py-4 mt-4 row relative" :class="script.tempMap.areUse==1 ? 'border-solid border-4 border-green-600 rounded-md' : ''" @tap="appScript(script,null)">
