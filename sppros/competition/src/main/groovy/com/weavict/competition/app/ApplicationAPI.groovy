@@ -6,6 +6,7 @@ import com.weavict.competition.rest.OtherRest
 import com.weavict.competition.rest.RequestClientWriterInterceptor
 import com.weavict.competition.rest.RequestServerReaderInterceptor
 import com.weavict.competition.rest.SseSource
+import com.weavict.competition.rest.UserRest
 import com.weavict.competition.rest.WorkRest
 import com.weavict.competition.rest.WxRest
 import jakarta.ws.rs.ApplicationPath
@@ -41,6 +42,7 @@ class ApplicationAPI extends ResourceConfig
         register(RequestClientWriterInterceptor.class);
         register(RequestServerReaderInterceptor.class);
 
+        register(UserRest.class);
         register(WorkRest.class);
 //        register(WxRest.class);
         register(OtherRest.class);
