@@ -71,6 +71,7 @@ onUnmounted(() => {
     <DynamicDialog />
     <ConfirmDialog />
     <myDialog ref="mydRef"></myDialog>
+    <Toast />
     <router-view />
 </template>
 

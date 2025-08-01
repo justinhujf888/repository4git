@@ -9,12 +9,12 @@
                         <span class="text-muted-color font-medium">Sign in to continue</span>
                     </div>
 
-                    <div>
+                    <Form v-slot="$form" :resolver @submit="onFormSubmit">
                         <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">手机号码</label>
-                        <InputMask id="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-4" v-model="buyer.phone" />
+                        <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-4" v-model="buyer.phone" />
                         <label for="vcord" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">验证码</label>
                         <InputGroup>
-                            <InputNumber id="vcord" v-model="vcord" placeholder="请输入验证码" />
+                            <InputText name="vcord" v-model="vcord" placeholder="请输入验证码" />
                             <div :class="btnDisabled ? '' : 'hidden'">
                                 <InputGroupAddon>{{remaining}}s</InputGroupAddon>
                             </div>
@@ -22,15 +22,15 @@
                         </InputGroup>
 
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2 mt-8">密码</label>
-                        <Password id="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
-
+                        <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
                         <label for="password2" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2">再次输入密码</label>
-                        <Password id="password2" v-model="password" placeholder="请再次输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
+                        <Password name="password2" v-model="password" placeholder="请再次输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
+                        <Message v-if="$form.password1?.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.password1.error.message }}</Message>
 
                         <div class="row mt-12">
-                            <Button label="Sign In" class="w-full" as="router-link" to="/"></Button>
+                            <Button type="submit" label="注册" class="w-full" _as="router-link" _to="/"></Button>
                         </div>
-                    </div>
+                    </Form>
                 </div>
             </div>
         </div>
@@ -40,11 +40,13 @@
 <script setup>
 import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
-import {Beans} from "@/api/dbs/beans"
+import {Beans} from "@/api/dbs/beans";
+import primeUtil from "@/api/prime/util";
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref,shallowRef  } from 'vue';
 import { useCountdown } from '@vueuse/core';
 
+let errors = [];
 const countdownSeconds = shallowRef(180);
 const { remaining, start, stop, pause, resume } = useCountdown(countdownSeconds, {
     onComplete() {
@@ -67,6 +69,28 @@ const startCountdown = ()=>{
     }
     btnDisabled.value = true;
     start(countdownSeconds);
+};
+
+const resolver = ({ values }) => {
+    errors = primeUtil.checkFormRequiredValid([
+        {val:buyer.value.phone,name:"phone"},
+        {val:vcord.value,name:"vcord"},
+        {val:buyer.value.password,name:"password1"},
+        {val:password.value,name:"password2"}
+    ]);
+
+    primeUtil.buildFormValidError(errors.password1,"error","两次密码输入不一致",()=>{return buyer.value.password!=password.value},(error)=>{errors.password1 = error});
+
+    return {
+        values, // (Optional) Used to pass current form values to submit event.
+        errors
+    };
+};
+
+const onFormSubmit = ({ valid }) => {
+    if (valid) {
+        dialog.toastNone("Form is submitted.");
+    }
 };
 </script>
 

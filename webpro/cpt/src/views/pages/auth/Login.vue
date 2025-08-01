@@ -5,6 +5,7 @@ import { ref } from 'vue';
 const email = ref('');
 const password = ref('');
 const checked = ref(false);
+
 </script>
 
 <template>
@@ -50,7 +51,7 @@ const checked = ref(false);
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
                         <Button label="Sign In" class="w-full" as="router-link" to="/"></Button>
-                    </div>
+                     </div>
                 </div>
             </div>
         </div>
