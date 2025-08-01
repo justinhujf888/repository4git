@@ -8,6 +8,7 @@ import myDialog from '@/components/my/alertDialog.vue';
 import { useTemplateRef,onMounted,onUnmounted } from 'vue';
 import { Config } from '@/api/config';
 import {ConnectController} from "@/api/controller";
+import router from '@/router';
 
 const toast = useToast();
 const confirmPopup = useConfirm();

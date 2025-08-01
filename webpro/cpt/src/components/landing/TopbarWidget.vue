@@ -1,5 +1,8 @@
 <script setup>
 import {Config} from "@/api/config";
+import { useStorage } from '@vueuse/core';
+
+const userId = useStorage("userId");
 function smoothScroll(id) {
     document.body.click();
     const element = document.getElementById(id);
@@ -65,7 +68,7 @@ function smoothScroll(id) {
                 </a>
             </li>
         </ul>
-        <div class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
+        <div v-if="!userId" class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
             <Button label="登录" text as="router-link" to="/auth/login" rounded></Button>
             <Button label="注册" to="/auth/login" rounded></Button>
         </div>

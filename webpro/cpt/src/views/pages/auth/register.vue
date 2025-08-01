@@ -1,5 +1,6 @@
 <template>
 <!--    <FloatingConfigurator />-->
+<!--    <Button label="test" @click="test"/>-->
     <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
@@ -41,10 +42,12 @@
 import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
 import {Beans} from "@/api/dbs/beans";
+import userRest from "@/api/dbs/userRest";
 import primeUtil from "@/api/prime/util";
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref,shallowRef  } from 'vue';
-import { useCountdown } from '@vueuse/core';
+import { useCountdown,useStorage } from '@vueuse/core';
+import Page from "@/api/uniapp/page";
 
 let errors = [];
 const countdownSeconds = shallowRef(180);
@@ -64,7 +67,7 @@ const btnDisabled = ref(false);
 
 const startCountdown = ()=>{
     if (!buyer.value.phone || buyer.value.phone=="") {
-        dialog.toastNone("请输入手机号码");
+        dialog.toastError("请输入手机号码");
         return;
     }
     btnDisabled.value = true;
@@ -89,9 +92,20 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
     if (valid) {
-        dialog.toastNone("Form is submitted.");
+        userRest.registBuyer(buyer.value,(data)=>{
+            if (data.status=="OK") {
+                useStorage("userId",buyer.value.phone);
+                dialog.alertBack("您已成功注册",()=>{
+                    Page.redirectTo("landing",null);
+                });
+            }
+        });
     }
 };
+
+function test() {
+    Page.navigateTo("table",{});
+}
 </script>
 
 <style scoped>

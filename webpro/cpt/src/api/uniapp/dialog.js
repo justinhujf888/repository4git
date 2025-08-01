@@ -51,11 +51,11 @@ export default class Dialog {
     }
 
     static toastError(msg) {
-        Dialog.toast.add({ severity: 'error', summary: 'Error', detail: msg, life: 5000 });
+        Dialog.toast.add({ severity: 'error', summary: '错误', detail: msg, life: 5000 });
     }
 
     static toastNone(msg) {
-        Dialog.toast.add({ severity: 'info', summary: 'Info', detail: msg, life: 5000 });
+        Dialog.toast.add({ severity: 'info', summary: '信息', detail: msg, life: 5000 });
     }
 
     static showApiErrorMsg() {

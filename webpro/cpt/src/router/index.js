@@ -30,7 +30,7 @@ const router = createRouter({
                     component: () => import('@/views/uikit/ButtonDoc.vue')
                 },
                 {
-                    path: '/uikit/table',
+                    path: '/uikit/table/:param',
                     name: 'table',
                     component: () => import('@/views/uikit/TableDoc.vue')
                 },

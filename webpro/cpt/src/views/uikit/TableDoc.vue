@@ -2,7 +2,8 @@
 import { CustomerService } from '@/service/CustomerService';
 import { ProductService } from '@/service/ProductService';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
-import { onBeforeMount, reactive, ref } from 'vue';
+import { onBeforeMount, reactive, ref, onMounted,getCurrentInstance } from 'vue';
+import router from '@/router';
 
 const customers1 = ref(null);
 const customers2 = ref(null);
@@ -25,6 +26,12 @@ const representatives = reactive([
     { name: 'Stephen Shaw', image: 'stephenshaw.png' },
     { name: 'XuXue Feng', image: 'xuxuefeng.png' }
 ]);
+
+onMounted(() => {
+    let param = getCurrentInstance().proxy.$routerParams();//JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));
+    console.log(param);
+    // console.log(decodeURIComponent(router.currentRoute.value.params.param));
+});
 
 function getOrderSeverity(order) {
     switch (order.status) {

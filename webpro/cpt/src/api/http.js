@@ -1,7 +1,6 @@
 import { Config } from '@/api/config.js';
 import util from '@/api/util.js';
 import axios from 'axios';
-import deviceRest from '@/api/dbs/device';
 
 export const Http = {
     httpclient_json(url, method, ds, ptype, returnfun, errorfun, loading) {

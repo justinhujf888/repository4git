@@ -13,6 +13,10 @@ import zhCN from 'primelocale/zh-CN.json';
 
 const app = createApp(App);
 
+const routerParams = ()=>{
+    return JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));
+};
+app.config.globalProperties.$routerParams = routerParams;
 app.use(router);
 app.use(PrimeVue, {
     locale: zhCN['zh-CN'],
