@@ -1,5 +1,8 @@
 package com.weavict.competition.rest
 
+import com.aliyun.dysmsapi20170525.Client
+import com.aliyun.dysmsapi20170525.models.SendSmsRequest
+import com.aliyun.dysmsapi20170525.models.SendSmsResponse
 import com.aliyun.oss.OSS
 import com.aliyun.oss.common.utils.BinaryUtil
 import com.aliyun.oss.internal.OSSHeaders
@@ -8,12 +11,8 @@ import com.aliyun.oss.model.ObjectMetadata
 import com.aliyun.oss.model.PolicyConditions
 import com.aliyun.oss.model.PutObjectRequest
 import com.aliyun.oss.model.StorageClass
-import com.aliyuncs.CommonRequest
-import com.aliyuncs.CommonResponse
-import com.aliyuncs.DefaultAcsClient
-import com.aliyuncs.IAcsClient
-import com.aliyuncs.http.MethodType
-import com.aliyuncs.profile.DefaultProfile
+import com.aliyun.teaopenapi.models.Config
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.util.DateUtil
 import com.weavict.common.util.MathUtil
@@ -251,29 +250,36 @@ class OtherRest extends BaseRest
         try
         {
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
+//            println OtherUtils.givePropsValue("ali_sms_SignName");
             ObjectMapper objectMapper = new ObjectMapper();
-            DefaultProfile profile = DefaultProfile.getProfile("default", OtherUtils.givePropsValue("ali_sms_AccessKeyId"), OtherUtils.givePropsValue("ali_sms_AccessKeySecret"));
-            IAcsClient client = new DefaultAcsClient(profile);
-            CommonRequest request = new CommonRequest();
-            request.setMethod(MethodType.POST);
-            request.setDomain("dysmsapi.aliyuncs.com");
-            request.setVersion("2017-05-25");
-            request.setAction("SendSms");
-            request.putQueryParameter("PhoneNumbers", query.phone);
-            request.putQueryParameter("SignName", query.signName);
-            request.putQueryParameter("TemplateCode", "${query.templateCode}");
-            request.putQueryParameter("TemplateParam", "${query.templateParam}");
-            request.putQueryParameter("SendDate", DateUtil.format(new Date(),"yyyy-MM-dd"));
+            Config config = new Config().setAccessKeyId(OtherUtils.givePropsValue("ali_sms_AccessKeyId")).setAccessKeySecret(OtherUtils.givePropsValue("ali_sms_AccessKeySecret"));
+            config.endpoint = "dysmsapi.aliyuncs.com";
+            Client client = new Client(config);
+
+            String templateCode = "";
+            String templateParam = "";
+            if (query.accessCode.equals("regist"))
+            {
+                templateCode = "SMS_169175064";
+                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
+            }
+            else if (query.accessCode.equals("editPassword"))
+            {
+                templateCode = "SMS_169175063";
+                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
+            }
+
+            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(OtherUtils.givePropsValue("ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
+            SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
+
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "smsInfo":["returnInfo":({
-                         CommonResponse response = client.getCommonResponse(request);
-                         println response.getData();
-                         return response;
+                         return "";
                      }).call(),
                                 "templateParam":({
                                     DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-                                    return crypt.encrypt(query.templateParam);
+                                    return crypt.encrypt(templateParam);
                                 }).call()]
                     ]);
         }
