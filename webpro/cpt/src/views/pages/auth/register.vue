@@ -47,35 +47,95 @@ import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
 import {Beans} from "@/api/dbs/beans";
 import userRest from "@/api/dbs/userRest";
+import otherRest from "@/api/dbs/other";
 import primeUtil from "@/api/prime/util";
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import { ref,shallowRef  } from 'vue';
+import { ref,shallowRef,onMounted  } from 'vue';
 import { useCountdown,useStorage } from '@vueuse/core';
 import Page from "@/api/uniapp/page";
+import util from "@/api/util";
 
-let errors = [];
-const countdownSeconds = shallowRef(180);
-const { remaining, start, stop, pause, resume } = useCountdown(countdownSeconds, {
-    onComplete() {
-        btnDisabled.value = false;
-    },
-    onTick() {
-
-    },
-})
-
+const remaining = ref(0);
 const buyer = ref(Beans.buyer());
 const password = ref('');
 const vcord = ref('');
 const btnDisabled = ref(false);
+
+let errors = [];
+let totalSeconds = 180;
+let countdownSeconds = 180;
+
+let countDown = null;
+// let { remaining, start, stop, pause, resume } = useCountdown(countdownSeconds, {
+//     onComplete() {
+//         btnDisabled.value = false;
+//     },
+//     onTick() {
+//         useStorage("totalSeconds",remaining.value);
+//     },
+// });
+
+let phoneCode = "";
+
+onMounted(()=>{
+    let shiRun = false;
+    // console.log(localStorage.getItem("totalSeconds"));
+    if (localStorage.getItem("totalSeconds")) {
+        totalSeconds = parseInt(util.decryptStoreInfo(localStorage.getItem("totalSeconds")));
+        btnDisabled.value = true;
+        shiRun = true;
+    }
+    // console.log(totalSeconds);
+    countdownSeconds = shallowRef(totalSeconds);
+    countDown = useCountdown(countdownSeconds, {
+        onComplete() {
+            localStorage.removeItem("totalSeconds");
+            btnDisabled.value = false;
+        },
+        onTick() {
+            remaining.value = countDown.remaining.value;
+            localStorage.setItem("totalSeconds",util.encryptStoreInfo(`${remaining.value}`));
+        },
+    });
+    if (shiRun) {
+        countDown.start(countdownSeconds);
+    }
+});
 
 const startCountdown = ()=>{
     if (!buyer.value.phone || buyer.value.phone=="") {
         dialog.toastError("请输入手机号码");
         return;
     }
-    btnDisabled.value = true;
-    start(countdownSeconds);
+
+    (async ()=>{
+
+        await new Promise((resolve,reject) => {
+            userRest.buyerLogin(buyer.value.phone,buyer.value.password,(data)=>{
+                if (data.status=="OK") {
+                    dialog.toastError("您输入的账号已被注册");
+                } else if (data.status=="ER_NOHAS") {
+                    resolve();
+                } else if (data.status=="ER_PW") {
+                    dialog.toastError("您输入的账号已被注册");
+                }
+            });
+        });
+
+        await new Promise((resolve,reject) => {
+            otherRest.sendSmsPublic(buyer.value.phone,"regist",JSON.stringify({code:vcord.value}),(data)=>{
+                // console.log(data);
+                if (data.status=="OK") {
+                    phoneCode = data.smsInfo.templateParam;
+                    totalSeconds = 180;
+                    btnDisabled.value = true;
+                    countdownSeconds = shallowRef(totalSeconds);
+                    countDown.start(countdownSeconds);
+                    resolve();
+                }
+            });
+        });
+    })();
 };
 
 const resolver = ({ values }) => {
@@ -96,6 +156,11 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
     if (valid) {
+        let pi = JSON.parse(util.decryptStoreInfo(phoneCode));
+        if (pi.code!=vcord.value) {
+            dialog.toastError("验证码输入错误");
+            return;
+        }
         userRest.registBuyer(buyer.value,(data)=>{
             if (data.status=="OK") {
                 useStorage("userId",buyer.value.phone);
@@ -110,7 +175,8 @@ const onFormSubmit = ({ valid }) => {
 };
 
 function test() {
-    Page.navigateTo("table",{});
+    // Page.navigateTo("table",{});
+    countDown.start();
 }
 </script>
 

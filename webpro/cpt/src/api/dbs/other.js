@@ -35,5 +35,22 @@ export default {
             null,
             true
         );
+    },
+    sendSmsPublic(phone,accessCode,templateParam,onfun) {
+        Http.httpclient_json(
+            '/r/other/sendSmsPublic',
+            'post',
+            {phone:phone,accessCode:accessCode,templateParam:templateParam},
+            'json',
+            (res) => {
+                if (res.data.status == 'FA_ER') {
+                    dialog.showApiErrorMsg();
+                } else {
+                    onfun(res.data);
+                }
+            },
+            null,
+            true
+        );
     }
 }
