@@ -6,8 +6,8 @@
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                     <div class="text-center mb-8">
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Welcome to {{Config.appName}}</div>
-                        <span class="text-muted-color font-medium">Sign in to continue</span>
+                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">{{Config.appName}}</div>
+                        <span class="text-muted-color font-medium">注册</span>
                     </div>
 
                     <Form v-slot="$form" :resolver @submit="onFormSubmit">
@@ -26,10 +26,14 @@
                         <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
                         <label for="password2" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2">再次输入密码</label>
                         <Password name="password2" v-model="password" placeholder="请再次输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
-                        <Message v-if="$form.password1?.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.password1.error.message }}</Message>
+                        <Message v-if="buyer.password!=password" severity="error" size="small" variant="simple">两次密码输入不一致</Message>
 
                         <div class="row mt-12">
                             <Button type="submit" label="注册" class="w-full" _as="router-link" _to="/"></Button>
+                        </div>
+
+                        <div class="row mt-4">
+                            <Button severity="warn" label="返回" class="w-full" _as="router-link" _to="/" @click="Page.navBack()"></Button>
                         </div>
                     </Form>
                 </div>
@@ -82,7 +86,7 @@ const resolver = ({ values }) => {
         {val:password.value,name:"password2"}
     ]);
 
-    primeUtil.buildFormValidError(errors.password1,"error","两次密码输入不一致",()=>{return buyer.value.password!=password.value},(error)=>{errors.password1 = error});
+    primeUtil.buildFormValidError(errors.password2,"error","两次密码输入不一致",()=>{return buyer.value.password!=password.value},(error)=>{errors.password2 = error});
 
     return {
         values, // (Optional) Used to pass current form values to submit event.
@@ -98,6 +102,8 @@ const onFormSubmit = ({ valid }) => {
                 dialog.alertBack("您已成功注册",()=>{
                     Page.redirectTo("landing",null);
                 });
+            } else if (data.status=="ER_HAS") {
+                dialog.toastError("此账号已被注册");
             }
         });
     }

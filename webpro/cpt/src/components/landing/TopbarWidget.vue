@@ -1,6 +1,7 @@
 <script setup>
 import {Config} from "@/api/config";
 import { useStorage } from '@vueuse/core';
+import Page from '@/api/uniapp/page';
 
 const userId = useStorage("userId");
 function smoothScroll(id) {
@@ -12,6 +13,11 @@ function smoothScroll(id) {
             block: 'start'
         });
     }
+}
+
+function logout() {
+    localStorage.removeItem("userId");
+    userId.value = null;
 }
 </script>
 
@@ -70,7 +76,23 @@ function smoothScroll(id) {
         </ul>
         <div v-if="!userId" class="flex border-t lg:border-t-0 border-surface py-4 lg:py-0 mt-4 lg:mt-0 gap-2">
             <Button label="登录" text as="router-link" to="/auth/login" rounded></Button>
-            <Button label="注册" to="/auth/login" rounded></Button>
+            <Button label="注册" as="router-link" to="/auth/register" rounded></Button>
+        </div>
+        <div v-else class="layout-topbar-actions">
+            <div class="layout-topbar-menu hidden lg:block">
+                <div class="layout-topbar-menu-content">
+<!--                    <button type="button" class="layout-topbar-action">-->
+<!--                        <i class="pi pi-calendar"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="layout-topbar-action">-->
+<!--                        <i class="pi pi-inbox"></i>-->
+<!--                    </button>-->
+                    <button type="button" class="layout-topbar-action rounded-full text-xl w-10 h-10 border border-gray-800 border-solid border-2" @click="logout">
+                        <i class="pi pi-user font-semibold"></i>
+<!--                        <span>{{userId}}</span>-->
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </template>
