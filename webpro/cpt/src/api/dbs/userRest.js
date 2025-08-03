@@ -42,4 +42,23 @@ export default {
             true
         );
     },
+    resetBuyerPassword(userId,password, onfun) {
+        Http.httpclient_json(
+            '/r/user/resetBuyerPassword',
+            'post',
+            {
+                userId: userId,password:password
+            },
+            'json',
+            (res) => {
+                if (res.data.status == 'FA_ER') {
+                    dialog.showApiErrorMsg();
+                } else {
+                    onfun(res.data);
+                }
+            },
+            null,
+            true
+        );
+    },
 };

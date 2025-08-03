@@ -1,5 +1,5 @@
 import OSS from 'ali-oss';
-import otherRest from '@/api/dbs/other.js';
+import otherRest from '@/api/dbs/otherRest.js';
 import { Http } from '@/api/http';
 import dayjs from "dayjs";
 
