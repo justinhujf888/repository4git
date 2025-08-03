@@ -1,5 +1,7 @@
 package com.weavict.weichat.notifies
 
+import com.weavict.common.util.MathUtil
+import com.weavict.competition.rest.NotificationResource
 import com.weavict.website.common.OtherUtils
 import com.weavict.weichat.TokenManager
 import com.weavict.weichat.Tokens
@@ -82,5 +84,10 @@ class WxNotifiesFun
 "date2":{"value":"${mp["date"]}"},
 "thing3":{"value":"${mp["remark"]}"}
 }}""","json","utf-8").send().body();
+	}
+
+	static void send_publicMsg(boolean shiMode,String data)
+	{
+		NotificationResource.broadcast("""{"id":"${MathUtil.getPNewId()}","type":"publcMsg","mode":${shiMode},"data":"${data}"}""".toString());
 	}
 }

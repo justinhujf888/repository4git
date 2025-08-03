@@ -48,14 +48,10 @@ class RequestServerReaderInterceptor implements ReaderInterceptor
     {
         try
         {
-            if ("true" in context.headers.self || true)
+            String ss = IoUtil.read(context.getInputStream());
+            if (!(ss in [null,"","{}"]))
             {
-                String ss = IoUtil.read(context.getInputStream());
-                if (!(ss in [null,"","{}"]))
-                {
-                    context.setInputStream(IoUtil.toUtf8Stream(URLUtil.decode(SecureUtil.des(OtherUtils.givePropsValue("publickey").getBytes()).decryptStr(ss))));
-                }
-                return context.proceed();
+                context.setInputStream(IoUtil.toUtf8Stream(URLUtil.decode(SecureUtil.des(OtherUtils.givePropsValue("publickey").getBytes()).decryptStr(ss))));
             }
             return context.proceed();
         }

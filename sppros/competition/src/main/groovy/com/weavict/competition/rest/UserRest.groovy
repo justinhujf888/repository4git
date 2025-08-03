@@ -1,5 +1,6 @@
 package com.weavict.competition.rest
 
+import cn.hutool.core.util.IdUtil
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.BuyerAppInfo
@@ -41,12 +42,13 @@ class UserRest extends BaseRest
                      "buyerInfo":({
                          return buyer;
                      }).call(),
-//                     "loginToken":({
-                         //redis
+                     "loginToken":({
+//                         redis
 //                         redisUtil.hPut("buyer_${buyer.phone}","token",MathUtil.getPNewId());
 //                         return redisUtil.hGet("buyer_${buyer.phone}","token");
-                         //redis end
-//                     }).call()
+//                         redis end
+                         return IdUtil.randomUUID();
+                     }).call()
                     ]);
         }
         catch (Exception e)
@@ -79,12 +81,13 @@ class UserRest extends BaseRest
                      "buyerAppInfo":({
                          return buyerAppInfo;
                      }).call(),
-//                     "loginToken":({
+                     "loginToken":({
                      //redis
 //                         redisUtil.hPut("buyer_${buyer.phone}","token",MathUtil.getPNewId());
 //                         return redisUtil.hGet("buyer_${buyer.phone}","token");
                      //redis end
-//                     }).call()
+                         return IdUtil.randomUUID();
+                     }).call()
                     ]);
         }
         catch (Exception e)
