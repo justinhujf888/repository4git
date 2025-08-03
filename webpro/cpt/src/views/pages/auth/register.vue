@@ -47,7 +47,7 @@ import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
 import {Beans} from "@/api/dbs/beans";
 import userRest from "@/api/dbs/userRest";
-import otherRest from "@/api/dbs/other";
+import otherRest from "@/api/dbs/otherRest";
 import primeUtil from "@/api/prime/util";
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref,shallowRef,onMounted  } from 'vue';
