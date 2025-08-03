@@ -23,8 +23,17 @@ export default class Dialog {
         // const confirmPopup = useConfirm();
         Dialog.confirmPopup.require({
             model: true,
+            header: "    ",
             message: msgtxt,
-            icon: 'pi pi-exclamation-circle',
+            icon: 'pi pi-exclamation-triangle',
+            acceptProps: {
+                label: '确定'
+            },
+            rejectProps: {
+                label: '取消',
+                severity: 'secondary',
+                outlined: true
+            },
             accept: () => {
                 okfun();
             },

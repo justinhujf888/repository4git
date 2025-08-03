@@ -1,26 +1,3 @@
-<script setup>
-import {Config} from "@/api/config";
-import { useStorage } from '@vueuse/core';
-import Page from '@/api/uniapp/page';
-
-const userId = useStorage("userId");
-function smoothScroll(id) {
-    document.body.click();
-    const element = document.getElementById(id);
-    if (element) {
-        element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    }
-}
-
-function logout() {
-    localStorage.removeItem("userId");
-    userId.value = null;
-}
-</script>
-
 <template>
     <a class="row items-center" href="#">
         <span class="text-surface-900 dark:text-surface-0 font-medium sm:text-2xl text-xl leading-normal mr-10">{{Config.appName}}</span>
@@ -51,8 +28,8 @@ function logout() {
         </ul>
     </div>
 
-    <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 absolute right-0 top-20 px-12 py-4 z-20 rounded-border hidden">
-        <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base lg:text-xl">
+    <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 absolute right-10 top-20 px-12 py-4 z-20 rounded-border hidden">
+        <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base">
             <li>
                 <a @click="Page.navigateTo('forgotpw',null)" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                     <span>修改密码</span>
@@ -95,3 +72,29 @@ function logout() {
         </Button>
     </div>
 </template>
+
+<script setup>
+import {Config} from "@/api/config";
+import { useStorage } from '@vueuse/core';
+import Page from '@/api/uniapp/page';
+import dialog from "@/api/uniapp/dialog";
+
+const userId = useStorage("userId");
+function smoothScroll(id) {
+    document.body.click();
+    const element = document.getElementById(id);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+function logout() {
+    dialog.confirm("是否退出当前登录？",()=>{
+        localStorage.removeItem("userId");
+        userId.value = null;
+    },null);
+}
+</script>

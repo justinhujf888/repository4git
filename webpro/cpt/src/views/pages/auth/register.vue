@@ -164,6 +164,7 @@ const onFormSubmit = ({ valid }) => {
         userRest.registBuyer(buyer.value,(data)=>{
             if (data.status=="OK") {
                 useStorage("userId",buyer.value.phone);
+                useStorage("loginToken",data.loginToken);
                 dialog.alertBack("您已成功注册",()=>{
                     Page.redirectTo("landing",null);
                 });

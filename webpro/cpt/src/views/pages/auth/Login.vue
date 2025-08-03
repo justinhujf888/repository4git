@@ -15,7 +15,9 @@
                          <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2 mt-4">密码</label>
                         <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
                         <div class="flex items-center justify-end mt-2 mb-8 gap-8">
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">忘记密码</span>
+                            <router-link :to="{name:'forgotpw'}">
+                                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">忘记密码</span>
+                            </router-link>
                         </div>
 
                         <div class="row mt-12">
@@ -64,6 +66,7 @@ const onFormSubmit = ({ valid }) => {
         userRest.buyerLogin(buyer.value.phone,buyer.value.password,(data)=>{
             if (data.status=="OK") {
                 useStorage("userId",buyer.value.phone);
+                useStorage("loginToken",data.loginToken);
                 dialog.alertBack("您已成功登录",()=>{
                     Page.redirectTo("landing",null);
                 });
