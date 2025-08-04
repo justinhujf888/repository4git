@@ -57,7 +57,7 @@ class Competition extends BEntity implements Serializable, IEntity
     @Column(length=350)
     String description;
 
-    @Column(length=1)
+    @Column(length=2)
     //	0:竞赛开始；1:初审；2：复审第一轮；3：复审第二轮；9：竞赛结束；
     byte status;
 
@@ -96,6 +96,9 @@ class Work extends BEntity implements Serializable, IEntity
 
     @ManyToOne(fetch=FetchType.EAGER)
     Buyer buyer;
+
+    @Column(length=30)
+    String appId;
 
     @ManyToOne(fetch=FetchType.EAGER)
     Competition competition;
@@ -141,5 +144,77 @@ class WorkItem extends BEntity implements Serializable, IEntity
     {
         this.work?.cancelLazyEr();
     }
+}
 
+@Table
+@Entity
+class Judge extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String id;
+
+    @Column(length=30)
+    String name;
+
+    @Column(length=30)
+    String engName;
+
+    @Column(length=350)
+    String description;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
+
+    @Column(length=150)
+    String headImgUrl;
+
+    @Column(length=30)
+    String appId;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Embeddable
+class CompetitionJudgePK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String competitionId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String judgeId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 2)
+    byte competitionStatus;
+
+    CompetitionJudgePK() {}
+
+    CompetitionJudgePK(String competitionId,String judgeId,byte competitionStatus)
+    {
+        this.competitionId = competitionId;
+        this.judgeId = judgeId;
+        this.competitionStatus = competitionStatus;
+    }
+}
+
+@Table
+@Entity
+class CompetitionJudge extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    CompetitionJudgePK competitionJudgePK;
+
+    void cancelLazyEr()
+    {
+
+    }
 }
