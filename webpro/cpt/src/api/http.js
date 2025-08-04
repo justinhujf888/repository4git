@@ -1,12 +1,13 @@
 import { Config } from '@/api/config.js';
 import util from '@/api/util.js';
 import axios from 'axios';
+import dialog from '@/api/uniapp/dialog';
 
 export const Http = {
     httpclient_json(url, method, ds, ptype, returnfun, errorfun, loading) {
         // console.log(ds);
         if (loading) {
-            // dialog.openLoading("处理中");
+            dialog?.openLoading("处理中");
         }
         let str = new Date(+new Date() + 8 * 3600 * 1000)
             .toISOString()
@@ -26,10 +27,10 @@ export const Http = {
         })
             .then((res) => {
                 returnfun(res);
-                // dialog.closeLoading();
+                dialog?.closeLoading();
             })
             .catch((error) => {
-                // dialog.closeLoading();
+                dialog?.closeLoading();
                 if (errorfun) {
                     errorfun(error);
                 }

@@ -105,6 +105,7 @@ const openDialog = () => {
     // dialog.alert("abcd");
     // dialog.alertBack("Lorem ipsum dolor sit amet, consectetur adipiscing elit",()=>{console.log("abc");});
     dialog.toastNone(mouse.x.value);
+    dialog.openLoading("");
     console.log(mykey.value,isDark.value);
     // console.log(document.documentElement.classList);
 };

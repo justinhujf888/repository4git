@@ -3,20 +3,22 @@ export default class Dialog {
     static toast = null;
     static dynDialog = null;
     static mydRef = null;
+    static myLoading = null;
 
-    static setup(confirmPopup, toast, dynDialog, mydRef) {
+    static setup(confirmPopup, toast, dynDialog, mydRef, myLoading) {
         Dialog.confirmPopup = confirmPopup;
         Dialog.toast = toast;
         Dialog.dynDialog = dynDialog;
         Dialog.mydRef = mydRef;
+        Dialog.myLoading = myLoading;
     }
 
     static alert(msg) {
-        Dialog.mydRef.value.alert(msg);
+        Dialog.mydRef?.value?.alert(msg);
     }
 
     static alertBack(msg, okfun) {
-        Dialog.mydRef.value.alertBack(msg, okfun);
+        Dialog.mydRef?.value?.alertBack(msg, okfun);
     }
 
     static confirm(msgtxt, okfun, cancelfun) {
@@ -45,11 +47,17 @@ export default class Dialog {
         });
     }
 
-    static openLoading(msg) {}
+    static openLoading(msg) {
+        Dialog.myLoading?.value?.openLoading();
+    }
 
-    static closeLoading() {}
+    static closeLoading() {
+        Dialog.myLoading?.value?.closeLoading();
+    }
 
-    static hideLoading() {}
+    static hideLoading() {
+        Dialog.myLoading?.value?.closeLoading();
+    }
 
     static openNotify(msg) {
         Dialog.toast.add({ severity: 'info', summary: 'Info', detail: msg, life: 5000 });

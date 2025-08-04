@@ -8,17 +8,18 @@ import myDialog from '@/components/my/alertDialog.vue';
 import { useTemplateRef,onMounted,onUnmounted } from 'vue';
 import { Config } from '@/api/config';
 import {ConnectController} from "@/api/controller";
-import router from '@/router';
+import loading from "@/components/my/loading.vue";
 
 const toast = useToast();
 const confirmPopup = useConfirm();
 const dynDialog = useDialog();
 const mydRef = useTemplateRef('mydRef');
+const myLoading = useTemplateRef("myLoading");
 
 var source = null;
 onMounted(() => {
     oss.genClient(null);
-    dialog.setup(confirmPopup, toast, dynDialog, mydRef);
+    dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
     if (typeof (EventSource) !== "undefined") {
         source = new EventSource(Config.apiBaseURL + "/r/notifications");
         // 当通往服务器的连接被打开
@@ -74,6 +75,7 @@ onUnmounted(() => {
     <myDialog ref="mydRef"></myDialog>
     <Toast />
     <router-view />
+    <loading ref="myLoading"></loading>
 </template>
 
 <style>
