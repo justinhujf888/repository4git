@@ -24,7 +24,7 @@
                             <Button type="submit" label="登录" class="w-full" _as="router-link" _to="/"></Button>
                         </div>
                         <div class="row mt-4">
-                            <Button severity="warn" label="返回" class="w-full" _as="router-link" _to="/" @click="Page.navBack()"></Button>
+                            <Button severity="warn" label="返回" class="w-full !bg-orange-400 !border-0" _as="router-link" _to="/" @click="Page.navBack()"></Button>
                         </div>
                     </Form>
                 </div>

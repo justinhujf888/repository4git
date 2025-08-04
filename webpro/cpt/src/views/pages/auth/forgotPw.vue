@@ -33,7 +33,7 @@
                         </div>
 
                         <div class="row mt-4">
-                            <Button severity="warn" label="返回" class="w-full" _as="router-link" _to="/" @click="Page.navBack()"></Button>
+                            <Button label="返回" class="w-full !bg-orange-400 !border-0" @click="Page.navBack()"></Button>
                         </div>
                     </Form>
                 </div>
@@ -81,7 +81,7 @@ let phoneCode = "";
 
 onMounted(()=>{
     shiLogin.value = userId.value ? true : false;
-    console.log(userId.value,shiLogin.value);
+    // console.log(userId.value,shiLogin.value);
     if (!shiLogin.value) {
         let shiRun = false;
         // console.log(localStorage.getItem("totalSeconds"));

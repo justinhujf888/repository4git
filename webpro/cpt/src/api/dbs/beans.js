@@ -1,7 +1,7 @@
 import util from "@/api/util.js"
 export const Beans = {
 	buildPId(pid) {
-		return pid + new Date().getTime() + util.random_string(5);
+		return pid + new Date().getTime() + util.random_string(8);
 	},
 
 	buyer() {
@@ -35,6 +35,7 @@ export const Beans = {
             buyer: this.buyer(),
             competition: this.competition(),
             createDate: null,
+            appId: "",
             workItemList: []
 		}
 	},
@@ -71,5 +72,51 @@ export const Beans = {
             appId: "",
             competitionList: []
         }
-	}
+	},
+
+    rule() {
+        return {
+            id: "",
+            name: ""
+        }
+    },
+
+    rulePermissionPK() {
+        return {
+            ruleId: "",
+            permissionId: ""
+        }
+    },
+
+    rulePermission() {
+        return {
+            rulePermissionPK: this.rulePermissionPK()
+        }
+    },
+
+    judge() {
+        return {
+            id: "",
+            name: "",
+            engName: "",
+            description: "",
+            createDate: null,
+            appId: "",
+            headImgUrl: ""
+        }
+    },
+
+    competitionJudgePK() {
+        return {
+            competitionId: "",
+            judgeId: "",
+            competitionStatus: -1
+        }
+    },
+
+    competitionJudge() {
+        return {
+            competitionJudgePK: this.competitionJudgePK()
+        }
+    }
 }

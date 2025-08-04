@@ -3,7 +3,7 @@ import { CustomerService } from '@/service/CustomerService';
 import { ProductService } from '@/service/ProductService';
 import { FilterMatchMode, FilterOperator } from '@primevue/core/api';
 import { onBeforeMount, reactive, ref, onMounted,getCurrentInstance } from 'vue';
-import router from '@/router';
+import {Beans} from "@/api/dbs/beans";
 
 const customers1 = ref(null);
 const customers2 = ref(null);
@@ -28,9 +28,10 @@ const representatives = reactive([
 ]);
 
 onMounted(() => {
-    let param = getCurrentInstance().proxy.$routerParams();//JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));
-    console.log(param);
+    // let param = getCurrentInstance().proxy.$routerParams();//JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));
+    // console.log(param);
     // console.log(decodeURIComponent(router.currentRoute.value.params.param));
+    // console.log(Beans.buildPId(""));
 });
 
 function getOrderSeverity(order) {
