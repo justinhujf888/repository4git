@@ -56,7 +56,7 @@ export default class Dialog {
     }
 
     static hideLoading() {
-        Dialog.myLoading?.value?.closeLoading();
+        this.closeLoading();
     }
 
     static openNotify(msg) {

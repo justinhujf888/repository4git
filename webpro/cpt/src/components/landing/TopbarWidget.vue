@@ -1,6 +1,6 @@
 <template>
     <a class="row items-center" href="#">
-        <span class="text-surface-900 dark:text-surface-0 font-medium sm:text-2xl text-xl leading-normal mr-10">{{Config.appName}}</span>
+        <span class="text-surface-900 dark:text-surface-0 font-medium sm:text-2xl text-xl leading-normal mr-20">{{Config.appName}}</span>
     </a>
 
     <div id="mis" class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static right-0 top-full px-12 lg:px-0 py-4 z-20 rounded-border">
@@ -55,11 +55,11 @@
             <!--            <button type="button" class="text-xl w-10 h-10">-->
             <!--                <i class="pi pi-inbox"></i>-->
             <!--            </button>-->
-            <button type="button" class="rounded-full text-xl w-10 h-10 border border-gray-800 border-solid border-2" rounded
+            <Button type="button" class="rounded-full text-xl w-10 h-10 border border-gray-800 border-solid border-2" rounded
                     v-styleclass="{ selector: '#usermenu', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }">
                 <i class="pi pi-user font-semibold"></i>
                 <!--                        <span>{{userId}}</span>-->
-            </button>
+            </Button>
         </div>
         <Button
             class="lg:!hidden"

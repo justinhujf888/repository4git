@@ -12,8 +12,9 @@
 
                     <Form v-slot="$form" :resolver @submit="onFormSubmit">
                         <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">手机号码</label>
-                        <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-4" v-model="buyer.phone" />
-                        <label for="vcord" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">验证码</label>
+                        <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-2" v-model="buyer.phone" />
+                        <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
+                        <label for="vcord" class="block text-surface-900 dark:text-surface-0 text-base font-medium mt-4 mb-2">验证码</label>
                         <InputGroup>
                             <InputText name="vcord" v-model="vcord" placeholder="请输入验证码" />
                             <div :class="btnDisabled ? '' : 'hidden'">
@@ -54,6 +55,7 @@ import { ref,shallowRef,onMounted  } from 'vue';
 import { useCountdown,useStorage } from '@vueuse/core';
 import Page from "@/api/uniapp/page";
 import util from "@/api/util";
+import checker from "@/api/check/checker";
 
 const remaining = ref(0);
 const buyer = ref(Beans.buyer());
@@ -146,6 +148,9 @@ const resolver = ({ values }) => {
         {val:password.value,name:"password2"}
     ]);
 
+    primeUtil.buildFormValidError(errors.phone,"error","手机格式错误",()=>{
+        return !checker.check({"phone":buyer.value.phone},[{name:"phone",checkType:"phone",checkRule:"",errorMsg:"手机格式错误"}]);
+    },(error)=>{errors.phone = error});
     primeUtil.buildFormValidError(errors.password2,"error","两次密码输入不一致",()=>{return buyer.value.password!=password.value},(error)=>{errors.password2 = error});
 
     return {

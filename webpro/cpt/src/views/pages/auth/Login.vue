@@ -12,6 +12,8 @@
                     <Form v-slot="$form" :resolver @submit="onFormSubmit">
                         <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">手机号码</label>
                         <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-4" v-model="buyer.phone" />
+                        <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
+
                          <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2 mt-4">密码</label>
                         <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
                         <div class="flex items-center justify-end mt-2 mb-8 gap-8">
@@ -42,6 +44,7 @@ import userRest from "@/api/dbs/userRest";
 import primeUtil from "@/api/prime/util";
 import Page from "@/api/uniapp/page";
 import dialog from '@/api/uniapp/dialog';
+import checker from "@/api/check/checker";
 import { useStorage } from '@vueuse/core';
 
 const buyer = ref(Beans.buyer());
@@ -54,6 +57,14 @@ const resolver = ({ values }) => {
         {val:buyer.value.phone,name:"phone"},
         {val:buyer.value.password,name:"password1"}
     ]);
+
+    primeUtil.buildFormValidError(errors.phone,"error","手机格式错误",()=>{
+        return !checker.check({"phone":buyer.value.phone},[{name:"phone",checkType:"phone",checkRule:"",errorMsg:"手机格式错误"}]);
+        },(error)=>{errors.phone = error});
+
+    // let rule = [{name:"phone",checkType:"phone",checkRule:"",errorMsg:"手机格式错误"}];
+    // let res = checker.check({"phone":buyer.value.phone},rule);
+    // console.log("res",res,checker.error);
 
     return {
         values, // (Optional) Used to pass current form values to submit event.
