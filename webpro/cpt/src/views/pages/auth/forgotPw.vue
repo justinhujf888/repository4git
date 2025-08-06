@@ -13,7 +13,7 @@
                     <Form v-slot="$form" :resolver @submit="onFormSubmit">
                         <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">手机号码</label>
                         <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-2" v-model="buyer.phone" />
-                        <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
+                        <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error"  size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
                         <label v-if="!shiLogin" for="vcord" class="block text-surface-900 dark:text-surface-0 text-base font-medium mt-4 mb-2">验证码</label>
                         <InputGroup v-if="!shiLogin">
                             <InputText name="vcord" v-model="vcord" placeholder="请输入验证码" />
