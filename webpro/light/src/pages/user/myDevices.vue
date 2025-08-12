@@ -1,5 +1,5 @@
 <template>
-	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
+	<wd-navbar placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
 		<template #title>
 			<view class="flex center mt-1">
 				<text class="text-base">个人中心</text>
@@ -13,7 +13,7 @@
 			<view v-if="deviceList?.length > 0">
 				<view v-for="(device,index) in deviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row relative">
 					<view class="mx-2">
-						<img src="../../static/device.png" mode="widthFix" class="w-20 h-20"></img>
+						<img :src="'../../static/' + device.tempMap.img" mode="widthFix" class="w-20 h-20"></img>
 					</view>
 					<view class="flex-1 col justify-center items-start">
 						<view class="col mb-2">
@@ -57,6 +57,7 @@
 	import dialog from "@/api/uniapp/dialog.js";
 	import wxRest from "@/api/uniapp/wx.js";
 	import deviceRest from "@/api/dbs/device.js";
+    import cmdjson from "@/api/datas/cmd.json";
 	
 	const deviceList = ref([]);
 	const theDevice = ref({});
@@ -76,6 +77,13 @@
 				if (!deviceList.value) {
 					deviceList.value = [];
 				}
+                for(let d of deviceList.value) {
+                    d.tempMap = {};
+                    d.tempMap.remark = d.remark ? JSON.parse(d.remark) : {};
+                    d.tempMap.deviceName = d.tempMap.remark.deviceName;
+                    d.tempMap.img = getDeviceImg(d.tempMap.remark.deviceName);
+                    console.log("qyBuyerDeviceList",d.tempMap.img);
+                }
 			}
 		});
 	});
@@ -112,6 +120,17 @@
 			});
 		},null);
 	};
+
+    const getDeviceImg = (deviceName)=>{
+        let imgElt = lodash.find(cmdjson.deviceImage,(o)=>{
+            return lodash.trim(o.name)==lodash.trim(deviceName);
+        });
+        if (imgElt) {
+            return imgElt.path;
+        } else {
+            return null;
+        }
+    };
 </script>
 
 <style>

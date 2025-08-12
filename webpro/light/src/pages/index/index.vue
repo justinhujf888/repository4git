@@ -30,7 +30,7 @@
 					<view v-if="deviceList?.length > 0">
 						<view v-for="(device,index) in deviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row relative">
 							<view class="mx-2">
-								<img src="../../static/device.png" mode="widthFix" class="w-25 h-25"></img>
+								<img :src="'../../static/'+device.tempMap.img" mode="widthFix" class="w-25 h-25"></img>
 							</view>
 							<view class="flex-1 col">
 								<view class="row mb-2">
@@ -60,7 +60,7 @@
 					<view v-if="preDeviceList?.length > 0">
 						<view v-for="device in preDeviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row">
 							<view class="mx-2">
-								<img src="../../static/device.png" mode="widthFix" class="w-25 h-25"></img>
+								<img :src="'../../static/'+device.tempMap.img" mode="widthFix" class="w-25 h-25"></img>
 							</view>
 							<view class="flex-1 col">
 								<view class="row mb-2">
@@ -79,7 +79,7 @@
 			<view v-else-if="viewStatus == 2" class="px-2">
 				<view class="bg-white rounded-xl px-2 py-5 mt-4">
 					<view class="mx-10 center" @tap="connedToScriptPage()">
-						<img src="../../static/device.png" mode="widthFix" class="w-40"></img>
+						<img :src="'../../static/'+theDevice.tempMap.img" mode="widthFix" class="w-40"></img>
 					</view>
 					<wd-divider></wd-divider>
 					<view class="between mx-3 mt-5">
@@ -270,6 +270,9 @@
 									d.tempMap.connected = false;
 									d.tempMap.connecting = false;
 									d.tempMap.isDB = true;
+                                    d.tempMap.remark = d.remark ? JSON.parse(d.remark) : {};
+                                    d.tempMap.deviceName = d.tempMap.remark.deviceName;
+                                    d.tempMap.img = getDeviceImg(d.tempMap.remark.deviceName);
 									d.deviceType = lodash.find(deviceTypeList,(o)=>{return o.id==d.deviceType.id});
 									// console.log("qyBuyerDeviceList",d);
 								}
@@ -400,13 +403,15 @@
 					device.connected = false;
 					let dbDevice = Beans.device();
 					dbDevice.deviceId = device.deviceId;
-					dbDevice.remark = JSON.stringify({os:uni.getSystemInfoSync().osName});
-					dbDevice.name = device.name;
+                    dbDevice.name = device.name;
+					dbDevice.remark = JSON.stringify({os:uni.getSystemInfoSync().osName,deviceName:dbDevice.name});
 					dbDevice.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.scan==device.advertisServiceUUIDs[0]});
 					let buyer = Beans.buyer();
 					buyer.phone = userId;
 					dbDevice.buyer = buyer;
 					dbDevice.tempMap = {};
+                    dbDevice.tempMap.deviceName = dbDevice.name;
+                    dbDevice.tempMap.img = getDeviceImg(dbDevice.name);
 					dbDevice.tempMap.connected = false;
 					dbDevice.tempMap.connecting = false;
 					dbDevice.tempMap.near = true;
@@ -417,6 +422,7 @@
 						dbDevice.tempMap.isDB = false;
 						preDeviceList.value.push(dbDevice);
 					} else {
+                        deviceList.value[index].tempMap.img = dbDevice.tempMap.img;
 						deviceList.value[index].tempMap.isDB = true;
 						deviceList.value[index].tempMap.near = true;
 						deviceList.value[index].tempMap.connecting = false;
@@ -440,6 +446,9 @@
 			d.tempMap.near = false;
 			d.tempMap.connected = false;
 			d.tempMap.connecting = false;
+            d.tempMap.remark = d.remark ? JSON.parse(d.remark) : {};
+            d.tempMap.deviceName = d.tempMap.remark.deviceName;
+            d.tempMap.img = getDeviceImg(d.tempMap.remark.deviceName);
 		}
 		callBle();
 		viewStatus.value = 1;
@@ -802,7 +811,18 @@
 		ff = ff==30 ? 80 : 30;
 		Blue.writeBLEValue(hexTools.bleBuffer(cd[i].cmd,cd[i].d1,cd[i].d2).buffer);
 		i++;
-	}
+	};
+
+    const getDeviceImg = (deviceName)=>{
+        let imgElt = lodash.find(cmdjson.deviceImage,(o)=>{
+            return lodash.trim(o.name)==lodash.trim(deviceName);
+        });
+        if (imgElt) {
+            return imgElt.path;
+        } else {
+            return null;
+        }
+    };
 	
 	defineExpose({
 		

@@ -3,6 +3,7 @@ import 'uno.css';
 /* 全局挂载请求库 */
 import lodash from "lodash";
 import dayjs from "dayjs";
+import cmdjson from "@/api/datas/cmd.json";
 
 import wx from "@/api/uniapp/wx.js";
 // wx.getUserOpenId();
@@ -18,7 +19,16 @@ const prePage = ()=>{
 	// #endif
 	return prevPage.$vm;
 };
+const getDeviceImg = (deviceName)=>{
+    let imgElt = lodash.find(cmdjson.deviceImage,(o)=>{return o.name==deviceName});
+    if (imgElt) {
+        return imgElt.path;
+    } else {
+        return null;
+    }
+};
 uni.prePage = prePage;
+// uni.getDeviceImg = getDeviceImg;
 
 // #ifndef VUE3
 import Vue from 'vue'
@@ -37,6 +47,7 @@ export function createApp() {
   app.config.globalProperties.lodash= lodash;
   app.config.globalProperties.$prePage = prePage;
   app.config.globalProperties.dayjs = dayjs;
+  // app.config.globalProperties.getDeviceImg = getDeviceImg;
   return {
     app
   }

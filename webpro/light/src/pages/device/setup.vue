@@ -465,9 +465,9 @@
     const checkType = (item)=>{
         // console.log("checkType---",device.value);
         let cmd =lodash.find(cmdjson.commands,(o)=>{return o.command==item.cmd || o.command==item.exCmd});
-        if (cmd?.deviceType) {
+        if (cmd?.deviceName) {
             // console.log("checkType---",cmd,device.value.deviceType.id);
-            return lodash.findIndex(cmd.deviceType,(o)=>{return o==device.value.deviceType.id})>-1;
+            return lodash.findIndex(cmd.deviceName,(o)=>{return o==device.value.tempMap.deviceName})>-1;
         } else {
             return true;
         }
