@@ -1,7 +1,7 @@
 <template>
 	<view class="relative h-screen px-3">
 		<wd-notify></wd-notify>
-		<!-- <button @tap="tempProcess" class="mt-10">test</button> -->
+<!--		 <button @tap="tempProcess" class="mt-10">test</button>-->
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">VASEE 生态智能</text>
@@ -219,11 +219,12 @@
 	// };
 	
 	// let signature = "";	let ossAccessKeyId="";let securityToken = "";let policy = "";
-	
+
 	function tempProcess() {
-		deviceRest.testProcess((data)=>{
-			console.log(data);
-		});
+		// deviceRest.testProcess((data)=>{
+		// 	console.log(data);
+		// });
+        page.navigateTo("../device/setup",{});
 	}
 	
 	function getUniqueId(bf) {

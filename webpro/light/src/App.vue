@@ -36,6 +36,9 @@
 	// @import "@/wxcomponents/weui/index.wxss";
 	@import '@/static/icons/iconfont.css';
 	.minput{border-bottom: #000101 solid 1px;color: #000101;}
+
+    .sliderbg {background-color: #40484b}
+    .silderborder {border-color: #40484b}
 </style>
 <!-- #ifndef APP-NVUE -->
 <style lang="scss">

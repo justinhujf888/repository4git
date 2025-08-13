@@ -56,12 +56,12 @@
 								</view>
 							</view>
 						</view>
-						<view v-else-if="item.type=='textGroup'" :sstyle="item.isRun ? 'pointer-events:' : 'pointer-events:none'" class="col text-base between" :class="item.ly==0 ? 'mt-8' : 'mt-5'">
+						<view v-else-if="item.type=='textGroup'" :sstyle="item.isRun ? 'pointer-events:' : 'pointer-events:none'" class="col text-base between" :class="[item.ly==0 ? 'mt-8' : 'mt-5',item.isRun ? '' : 'opacity-25']">
 							<view v-for="(txt,txti) in item.info" :key="txt.id" class="row my-2">
 								<text class="mr-2 -mt-1">{{txt.prx}}</text>
 								<!-- <input :id="item.id + '_' + txt.id" class="ml-2 minput w-6" v-model="txt.value" type="number" :min="txt.min" :max="txt.max" input="checkInput"/> -->
-								<view v-if="txt.type=='slider'" class="flex-1" :class="item.isRun ? '' : 'bg-gray-200'">
-									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id,cmd:item.cmd}" :max="txt.max" :min="txt.min" :canSlide="item.isRun" :barWidth="50" :barHeight="50" :barClass="['border-gray-300','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['border-gray-300','border-4','border-solid']" :bglineAClass="['bg-gray-300','border-gray-400','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change="infoChange"></sliderc>
+								<view v-if="txt.type=='slider'" class="flex-1">
+									<sliderc :id="txt.id" :obj="{groupId:group.id,id:item.id,infoId:txt.id,cmd:item.cmd}" :max="txt.max" :min="txt.min" :canSlide="item.isRun" :barWidth="50" :barHeight="50" :barClass="['sliderborder','border-4','border-solid','bg-white','rounded-full']" :bglineClass="['sliderborder','border-4','border-solid']" :bglineAClass="['sliderbg','sliderborder','border-4','border-solid']" :bglineSize="12" :borderHeight="8" :borderWidth="4" barText="" :num="txt.value" @changing="infoChanging" @change="infoChange"></sliderc>
 								</view>
 								<view class="row justify-start items-center pl-2 w-16 -mt-1">
 									<text class="w-6 text-right">{{txt.value}}</text>
@@ -345,9 +345,9 @@
 		// console.log("device",device.value);
 		pgElmList.value = [
 			{id:0,name:"light",els:[
-				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['border-green-500','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-green-500','border-green-500','border-4','border-solid']}},
-				{id:"02",cmd:"0x07",rcmd:"0x17",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
-				{id:"03",cmd:"0x06",rcmd:"0x16",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
+				{id:"02",cmd:"0x07",rcmd:"0x17",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
+				{id:"03",cmd:"0x06",rcmd:"0x16",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
 				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,type:"radioGroup",name:"开灯关灯渐变时长（日出日落）",value:30,isRun:true,info:[
 					{id:"050",prx:"",value:0,afe:"",type:"radio"},
 					{id:"051",prx:"",value:30,afe:"",type:"radio"},
@@ -358,13 +358,13 @@
 				// {id:"06",cmd:"0x10",rcmd:"0x20",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:30,min:30,max:31,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
-				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['sliderborder0','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
 				{id:"11",dId:"12",cmd:"",ly:1,type:"switch",name:"定时循环",value:false,style:{}},
 				{id:"12",cmd:"0x0B",rcmd:"0x1B",ly:1,type:"textGroup",isRun:false,info:[
 					{id:"120",prx:"运转时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15},
 					{id:"121",prx:"停歇时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15}
 				]},
-				{id:"13",cmd:"0x09",rcmd:"0x19",isRun:true,ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:25,min:0,max:100,style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}},
+				{id:"13",cmd:"0x09",rcmd:"0x19",isRun:true,ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:25,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
 				{id:"14",dId:"15",cmd:"",ly:1,type:"switch",name:"定时循环",value:true,style:{}},
 				{id:"15",cmd:"0x0C",rcmd:"0x1C",ly:1,type:"textGroup",isRun:true,info:[
 					{id:"150",prx:"运转时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15},
@@ -381,7 +381,7 @@
 					{id:"230",prx:"亮度",value:0,afe:"%",type:"slider",min: 0, max: 100}
 				]}
 			]}
-		];
+		];return;
 		
 		// 按照逻辑应该执行下面语句，但考虑到没有读取设备数据之前，不让页面显示，所以取消。
 		// isWriteCmd.value = true;
