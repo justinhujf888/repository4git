@@ -71,9 +71,14 @@
 						</view>
 						<view v-else-if="item.type=='radioGroup'" :sstyle="item.isRun ? 'pointer-events:' : 'pointer-events:none'" class="col text-base between" :class="item.ly==0 ? 'mt-8' : 'mt-5'">
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
-							<wd-radio-group v-model="item.value" size="small" inline shape="button" @change="radioChange">
-								<wd-radio v-for="(txt,txti) in item.info" :key="txt.id" :value="txt.value">{{txt.value}}</wd-radio>
-							</wd-radio-group>
+<!--							<wd-radio-group v-model="item.value" size="small" inline shape="button" @change="radioChange">-->
+<!--								<wd-radio v-for="(txt,txti) in item.info" :key="txt.id" :value="txt.value">{{txt.value}}</wd-radio>-->
+<!--							</wd-radio-group>-->
+                            <div class="grid grid-cols-5 gap-4 mt-5">
+                                <div v-for="(txt,txti) in item.info" :key="txt.id">
+                                    <span class="p-1 border-4 border-solid sliderborder rounded-2xl text-xs center" :class="[txt.value==item.value ? 'sliderbg text-white' : '']" @tap="radioChange(item,txt)">{{txt.value}}</span>
+                                </div>
+                            </div>
 						</view>
 						<view v-else-if="item.type=='switch'" class="row text-xl between" :class="item.ly==0  && i>0 ? 'mt-10' : 'mt-5'">
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
@@ -381,7 +386,7 @@
 					{id:"230",prx:"亮度",value:0,afe:"%",type:"slider",min: 0, max: 100}
 				]}
 			]}
-		];return;
+		];
 		
 		// 按照逻辑应该执行下面语句，但考虑到没有读取设备数据之前，不让页面显示，所以取消。
 		// isWriteCmd.value = true;
@@ -572,21 +577,26 @@
 			
 		// }
 	};
-	
-	const radioChange = (e)=>{
-		let c = lodash.find(pgElmList.value[0].els,(o)=>{return o.cmd=="0x10"});
+
+	const radioChange = (item,txt)=>{
+		// let c = lodash.find(pgElmList.value[0].els,(o)=>{return o.cmd=="0x10"});
 		let onTimeAy = times.value.onTime.split(":");
 		let offTimeAy  = times.value.offTime.split(":");
 		let onTime_h = parseInt(onTimeAy[0]);
 		let onTime_s = parseInt(onTimeAy[1]);
 		let offTime_h = parseInt(offTimeAy[0]);
 		let offTime_s = parseInt(offTimeAy[1]);
-		// console.log(oldValue,c);
-		if (checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,c.value)) {
-			oldValue = c.value;
-			Blue.writeBLEValue(hexTools.bleBuffer(c.cmd,0,parseInt(c.value)).buffer);
+		// console.log(times.value,oldValue,c.value,txt.value);
+        // if (checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,c.value))
+		if (checkKgTimeAndC(onTime_h,onTime_s,offTime_h,offTime_s,txt.value)) {
+			// oldValue = c.value;
+            item.value = txt.value;
+            oldValue = item.value;
+			// Blue.writeBLEValue(hexTools.bleBuffer(c.cmd,0,parseInt(c.value)).buffer);
+            Blue.writeBLEValue(hexTools.bleBuffer(item.cmd,0,parseInt(item.value)).buffer);
 		} else {
-			c.value = oldValue;
+			// c.value = oldValue;
+            item.value = oldValue;
 			showNotify("设定错误请重新确认。");
 		}
 	};

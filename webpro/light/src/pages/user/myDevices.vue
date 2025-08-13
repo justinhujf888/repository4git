@@ -1,5 +1,5 @@
 <template>
-	<wd-navbar placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
+	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
 		<template #title>
 			<view class="flex center mt-1">
 				<text class="text-base">个人中心</text>
