@@ -52,14 +52,15 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-4070520250711001",
     "@dcloudio/uni-mp-xhs": "3.0.0-4070520250711001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-4070520250711001",
-    "vue": "^3.4.21",
-    "vue-i18n": "^9.1.9",
+    "@vueuse/core": "^13.5.0",
     "crypto-js": "^4.2.0",
-    "lodash": "^4.17.21",
-    "sass": "^1.77.8",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",
-    "@vueuse/core": "^13.5.0"
+    "lodash": "^4.17.21",
+    "miniprogram-ci": "^2.1.14",
+    "sass": "^1.77.8",
+    "vue": "^3.4.21",
+    "vue-i18n": "^9.1.9"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.8",
@@ -67,12 +68,12 @@
     "@dcloudio/uni-cli-shared": "3.0.0-4070520250711001",
     "@dcloudio/uni-stacktracey": "3.0.0-4070520250711001",
     "@dcloudio/vite-plugin-uni": "3.0.0-4070520250711001",
-    "@vue/runtime-core": "^3.4.21",
-    "vite": "5.2.8",
     "@unocss/preset-legacy-compat": "^65.4.3",
     "@unocss/transformer-directives": "^66.1.0-beta.5",
+    "@vue/runtime-core": "^3.4.21",
     "dayjs": "^1.11.13",
     "unocss": "^65.4.3",
-    "unocss-preset-weapp": "^65.4.1"
+    "unocss-preset-weapp": "^65.4.1",
+    "vite": "5.2.8"
   }
 }
