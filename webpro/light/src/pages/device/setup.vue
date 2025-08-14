@@ -751,7 +751,7 @@
         proxy.$prePage().backScriptStr(null,JSON.stringify(readAfterScript()),device.value.deviceId);
         // #endif
         // #ifdef H5
-        proxy.$prePage()._.exposed.backScriptStr(null,JSON.stringify(readAfterScript()),device.value.deviceId);
+        // proxy.$prePage()._.exposed.backScriptStr(null,JSON.stringify(readAfterScript()),device.value.deviceId);
         // #endif
 		page.navBack();
 	};

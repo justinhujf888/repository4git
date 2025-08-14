@@ -105,7 +105,7 @@
 		</view>
 	</view>
     <view class="h-50"></view>
-	
+<!-- #ifdef MP	-->
 	<wd-popup v-model="renameShow" position="bottom" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
 		<view class="col center text-gray-500 mt-10">
 			<text class="mt-2 row center">修改设备名称</text>
@@ -120,8 +120,9 @@
 	</wd-popup>
 	
 	<my-wxLogin :isShow="loginShow" @close="loginClose" @runAgain="loginRunAgain"></my-wxLogin>
-	
+
 	<tabbar :tabIndex="0"></tabbar>
+<!--  #endif  -->
 </template>
 
 <script setup>
@@ -239,6 +240,7 @@
 		deviceList.value = [];
 		(async ()=>{
 			await new Promise(resolve => {
+                // #ifdef MP
 				deviceRest.qyDeviceTypeList(null,null,null,(data)=>{
 					if (data.status=="OK") {
 						deviceTypeList = data.deviceTypeList;
@@ -254,9 +256,15 @@
 						resolve();
 					}
 				});
+            //     #endif
+            //     #ifdef H5
+                deviceTypeList = JSON.parse(`[{"temp":null,"tempMap":{"services":{"serviceId":{"scan":"00007365-0000-1000-8000-00805F9B34FB","uuid":"76617365-6570-6c61-6e74-776f726c6473"},"rcy":["7661fff1-6570-6c61-6e74-776f726c6473"],"wcy":["7661fff2-6570-6c61-6e74-776f726c6473"]}},"id":"0","name":"Breath neo","appId":"wxab8fc59cb9d4f7cb","serviceId":"{\\"serviceId\\":{\\"scan\\":\\"00007365-0000-1000-8000-00805F9B34FB\\",\\"uuid\\":\\"76617365-6570-6c61-6e74-776f726c6473\\"}}","characteristicsReadIds":"[\\"7661fff1-6570-6c61-6e74-776f726c6473\\"]","characteristicsWriteIds":"[\\"7661fff2-6570-6c61-6e74-776f726c6473\\"]","deviceList":null}]`);
+                resolve();
+            //     #endif
 			});
 			
 			await new Promise(resolve => {
+                // #ifdef MP
 				if (userId) {
 					deviceRest.qyBuyerDeviceList(userId,(data)=>{
 						if (data.status=="OK") {
@@ -279,9 +287,7 @@
 								}
 							}
 							setTimeout(()=>{
-                                // #ifdef MP
 								viewStatus.value = 1;
-                                // #endif
 								resolve();
 							},1500);
 						}
@@ -289,6 +295,11 @@
 				} else {
 					resolve();
 				};
+            //     #endif
+            //     #ifdef H5
+                deviceList.value = [];
+                resolve();
+            //     #endif
 			});
 			
 			await new Promise(resolve => {
@@ -384,6 +395,7 @@
                         device.tempMap.connected = true;
                         device.tempMap.connecting = true;
                         device.tempMap.near = true;
+                        device.tempMap.img = getDeviceImg(device.name);
                         // deviceList.value.push(device);
                     } else {
                         device = lodash.find(deviceList.value,(o)=>{return o.deviceId==data.deviceId});
@@ -391,6 +403,7 @@
                         device.tempMap.connected = true;
                         device.tempMap.connecting = true;
                         device.tempMap.near = true;
+                        device.tempMap.img = getDeviceImg(device.name);
                     }
                     theDevice.value = device;
                     console.log("theDevice",theDevice.value);
@@ -605,6 +618,7 @@
 	};
 	
 	const connedToScriptPage = ()=>{
+        // #ifdef MP
 		if (!theDevice.value.tempMap.isDB) {
 			theDevice.value.lat = location.lat;
 			theDevice.value.lng = location.lng;
@@ -617,6 +631,11 @@
 		} else {
 			page.navigateTo('../device/scriptList',{device:theDevice.value});
 		}
+    //     #endif
+
+    //     #ifdef H5
+            page.navigateTo('../device/setup',{device:theDevice.value});
+    //     #endif
 	};
 	
 	function aaa() {
@@ -749,6 +768,7 @@
             dtList.push(v.tempMap.services.serviceId.uuid);
         });
         Blue.callBle(dtList);
+
 		// const device = await navigator.bluetooth.requestDevice({
 		// 	filters: [{ services: [Blue.getBlueServiceId().toLowerCase()] }],
 		// });
