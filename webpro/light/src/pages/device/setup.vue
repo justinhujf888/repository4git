@@ -74,11 +74,11 @@
 <!--							<wd-radio-group v-model="item.value" size="small" inline shape="button" @change="radioChange">-->
 <!--								<wd-radio v-for="(txt,txti) in item.info" :key="txt.id" :value="txt.value">{{txt.value}}</wd-radio>-->
 <!--							</wd-radio-group>-->
-                            <div class="grid grid-cols-5 gap-4 mt-5">
-                                <div v-for="(txt,txti) in item.info" :key="txt.id">
-                                    <span class="p-1 border-4 border-solid sliderborder rounded-2xl text-xs center" :class="[txt.value==item.value ? 'sliderbg text-white' : '']" @tap="radioChange(item,txt)">{{txt.value}}</span>
-                                </div>
-                            </div>
+                            <view class="grid grid-cols-5 gap-4 mt-5">
+                                <view v-for="(txt,txti) in item.info" :key="txt.id">
+                                    <text class="p-1 border-4 border-solid sliderborder rounded-2xl text-xs center" :class="txt.value==item.value ? 'border-gray-700 sliderbg text-white' : ''" @tap="radioChange(item,txt)">{{txt.value}}</text>
+                                </view>
+                            </view>
 						</view>
 						<view v-else-if="item.type=='switch'" class="row text-xl between" :class="item.ly==0  && i>0 ? 'mt-10' : 'mt-5'">
 							<text class="text-xl" :class="item.ly==0 ? 'text-gray-900' : ''">{{item.name}}</text>
