@@ -82,7 +82,7 @@ class CorsFilter implements ContainerResponseFilter {
             //浏览器会先通过options请求来确认服务器是否可以正常访问，此时应放行
             c.setStatus(HttpServletResponse.SC_OK);
         }
-        if (request.getHeaderString("origin") in ["http://localhost:5173","https://localhost:5173","https://192.168.1.46:5173"])
+        if (request.getHeaderString("origin") in ["http://localhost:5173","https://localhost:5173","https://192.168.1.49:5173"])
         {
             c.getHeaders().add("Access-Control-Allow-Origin", request.getHeaderString("origin"));
         }
@@ -93,7 +93,7 @@ class CorsFilter implements ContainerResponseFilter {
 
         c.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
-        // CORS策略的缓存时间
+        // CORS策略的缓存时间 
         c.getHeaders().add("Access-Control-Max-Age", "1209600");
         println "=====================begin==========================";
         println request.requestUri;
