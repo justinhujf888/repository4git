@@ -20,6 +20,10 @@ if (uni.getStorageSync("blueOpened")) {
 
 let blueService = null;
 
+function delay(time) {
+	return new Promise(resolve => setTimeout(resolve, time));
+}
+
 export const Blue = {
 	/**
 	 * 蓝牙连接状态：200-> 已连接；-1 ->未连接
@@ -74,7 +78,9 @@ export const Blue = {
 			opened = true;
 			uni.setStorageSync("blueOpened",opened);
 			await blueService.requestDevice();
+			await delay(2000);
 			await blueService.device.value?.gatt.connect();
+			await delay(2000);
 			console.log(blueService.device.value,await blueService.server.value?.getPrimaryServices());
 			lodash.forEach(await blueService.server.value?.getPrimaryServices(),(v,i)=>{
 				if (v.isPrimary && lodash.findIndex(dtList,(o)=>{return o==v.uuid})>-1) {
@@ -82,6 +88,7 @@ export const Blue = {
 					csValue.serviceId = primaryService.uuid;
 				}
 			});
+
 			ConnectController.connectStateListen({
 				...BLUE_STATE.CONNECTSUCCESS,
 				...{deviceId:blueService.device.value.id,name:blueService.device.value.name,serviceId:csValue.serviceId}

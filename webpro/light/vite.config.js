@@ -12,8 +12,8 @@ export default async () => {
       strictPort: true,
       open: true,
       https: {
-        key: fs.readFileSync('./ssl/localhost-key.pem'),
-        cert: fs.readFileSync('./ssl/localhost.pem'),
+        key: fs.readFileSync('./ssl/localhost+2-key.pem'),
+        cert: fs.readFileSync('./ssl/localhost+2.pem'),
       },
       // proxy: {
       //   '/light': {

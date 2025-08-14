@@ -407,7 +407,9 @@
                     }
                     theDevice.value = device;
                     console.log("theDevice",theDevice.value);
+                    // 7661fff1-6570-6c61-6e74-776f726c6473   7661fff2-6570-6c61-6e74-776f726c6473
                     Blue.getBleCharacteristicsInfo(theDevice.value.deviceType.tempMap.services.rcy[0].toLowerCase(),theDevice.value.deviceType.tempMap.services.wcy[0].toLowerCase());
+                    // Blue.getBleCharacteristicsInfo("7661fff1-6570-6c61-6e74-776f726c6473","7661fff2-6570-6c61-6e74-776f726c6473");
                     viewStatus.value = 2;
                 //     #endif
 				});
