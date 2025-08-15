@@ -1,10 +1,10 @@
 <template>
 	<view class="relative h-screen px-3">
 		<wd-notify></wd-notify>
-<!--		 <button @tap="tempProcess" class="mt-10">testtttttttttttttttt</button>-->
+		 <button @tap="tempProcess" class="mt-10">testtttttttttttttttt</button>
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
-				<text class="text-base font-semibold">VASEE 生态智能</text>
+				<text class="text-base font-semibold">{{$t('index.title')}}</text>
 			</view>
 		</view>				
 		<view class="between mt-10 w-full">
@@ -22,7 +22,7 @@
 			<wd-button size="small" custom-class="py-2 text-xs text-white" @click="uploadClick()">开始上传</wd-button> -->
 			<!-- <wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button> -->
 			<view v-if="viewStatus == 0" class="hwcenter mt-8">
-				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">添加设备</wd-button>
+				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">{{$t('index.page.addDevice')}}</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
 				<view>
@@ -150,6 +150,7 @@
 	
 	import { useNotify } from '@/uni_modules/wot-design-uni';
 	import { Beans } from '@/api/dbs/beans';
+
 	const { showNotify, closeNotify } = useNotify();
 	const { proxy } = getCurrentInstance();
 	const viewStatus = ref(-1);
@@ -225,7 +226,15 @@
 		// deviceRest.testProcess((data)=>{
 		// 	console.log(data);
 		// });
-        page.navigateTo("../device/setup",{});
+        // page.navigateTo("../device/setup",{});
+
+        // uni.setLocale("zh-Hans");
+        proxy.$i18n.locale = uni.getLocale()=="en" ? "zh-Hans" : "en";
+        uni.setLocale(proxy.$i18n.locale);
+        // console.log(uni.getLocale());
+
+        // proxy.$changeLang(uni.getLocale()=="en" ? "zh-Hans" : "en");
+        // console.log(uni.getLocale());
 	}
 	
 	function getUniqueId(bf) {
