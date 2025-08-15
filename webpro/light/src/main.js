@@ -4,11 +4,15 @@ import 'uno.css';
 import lodash from "lodash";
 import dayjs from "dayjs";
 import cmdjson from "@/api/datas/cmd.json";
+import vconsole from "vconsole";
 
 import wx from "@/api/uniapp/wx.js";
 // wx.getUserOpenId();
 // import GraceRequest from '@/Grace6/js/request.js'
 // uni.gRequest = GraceRequest;
+
+// new vconsole();
+
 uni.dayjs = dayjs;
 const prePage = ()=>{
 	let pages = getCurrentPages();

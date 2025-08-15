@@ -78,12 +78,12 @@ export const Blue = {
 			opened = true;
 			uni.setStorageSync("blueOpened",opened);
 			await blueService.requestDevice();
-			await delay(2000);
+			await delay(3000);
 			await blueService.device.value?.gatt.connect();
 			await delay(2000);
-			console.log(blueService.device.value,await blueService.server.value?.getPrimaryServices());
+			// console.log(blueService.device.value,await blueService.server.value?.getPrimaryServices());
 			lodash.forEach(await blueService.server.value?.getPrimaryServices(),(v,i)=>{
-				if (v.isPrimary && lodash.findIndex(dtList,(o)=>{return o==v.uuid})>-1) {
+				if (v.isPrimary && lodash.findIndex(dtList,(o)=>{return o.toLowerCase()==v.uuid.toLowerCase()})>-1) {
 					primaryService = v;
 					csValue.serviceId = primaryService.uuid;
 				}

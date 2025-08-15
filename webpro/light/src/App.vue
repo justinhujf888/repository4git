@@ -16,12 +16,22 @@
 				console.log(e);
 			})
 			// #endif
+            // #ifdef MP-WEIXIN
 			setNotifyDefaultOptions({
 				safeHeight: 90,
 				// onClick: (event) => console.log('onClick', event),
 				// onClosed: () => console.log('onClosed'),
 				// onOpened: () => console.log('onOpened')
 			})
+            // #endif
+            // #ifdef H5
+            setNotifyDefaultOptions({
+                safeHeight: 50,
+                // onClick: (event) => console.log('onClick', event),
+                // onClosed: () => console.log('onClosed'),
+                // onOpened: () => console.log('onOpened')
+            })
+            // #endif
 
 			// 隐藏原生tabBar
             // #ifdef MP || H5
@@ -48,7 +58,7 @@
 @import "./Grace6/css/graceDark.scss";
 /* 加载自定义样式 */
 @import "./custom/custom.scss";
-page{background:#F8F8F8; }
+page{background-color:#F8F8F8; }
 </style>
 <!-- #endif -->
 <!-- #ifdef APP-NVUE -->

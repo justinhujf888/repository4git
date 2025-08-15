@@ -386,7 +386,7 @@
                         device.deviceId = data.deviceId;
                         device.name = data.name;
                         device.remark = JSON.stringify({os:uni.getSystemInfoSync().osName});
-                        device.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.uuid==data.serviceId});
+                        device.deviceType = lodash.find(deviceTypeList,(o)=>{return o.tempMap.services.serviceId.uuid.toLowerCase()==data.serviceId.toLowerCase()});
                         let buyer = Beans.buyer();
                         buyer.phone = userId;
                         device.buyer = buyer;
