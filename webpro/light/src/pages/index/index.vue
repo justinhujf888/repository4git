@@ -1,10 +1,13 @@
 <template>
 	<view class="relative h-screen px-3">
 		<wd-notify></wd-notify>
-		 <button @tap="tempProcess" class="mt-10">testtttttttttttttttt</button>
+<!--  #ifdef H5  -->
+        <my-language></my-language>
+<!--  #endif      -->
+<!--		 <button @tap="tempProcess" class="mt-10">testtttttttttttttttt</button>-->
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
-				<text class="text-base font-semibold">{{$t('index.title')}}</text>
+				<text class="text-base font-semibold">{{$t('page.index.title')}}</text>
 			</view>
 		</view>				
 		<view class="between mt-10 w-full">
@@ -22,7 +25,7 @@
 			<wd-button size="small" custom-class="py-2 text-xs text-white" @click="uploadClick()">开始上传</wd-button> -->
 			<!-- <wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button> -->
 			<view v-if="viewStatus == 0" class="hwcenter mt-8">
-				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">{{$t('index.page.addDevice')}}</wd-button>
+				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">{{$t('page.index.addDevice')}}</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
 				<view>
@@ -85,13 +88,15 @@
 					<view class="between mx-3 mt-5">
 						<view class="row items-center gap-1 flex-1">
 							<text class="text-sm font-semibold">{{theDevice.name}}</text>
+                            <!-- #ifdef MP -->
 							<text class="text-sm gui-icons ml-4" @tap="openRenameModel(theDevice)">&#xe69e;</text>
+                            <!-- #endif -->
 						</view>
 						<view class="row items-center w-32" v-if="theDevice.tempMap.connected">
 							<text class="text-sm font-bold mr-1">·</text>
-							<text class="text-sm font-semibold mr-2">已连接</text>
+							<text class="text-sm font-semibold mr-2">{{$t("page.index.connected")}}</text>
 							<view class="row" @click.stop="closeConnection()">
-								<wd-button size="small" type="error" custom-class="py-1 px-2 text-xs text-white w-15 self-end">断开连接</wd-button>
+								<wd-button size="small" type="error" custom-class="py-1 px-2 text-xs text-white w-15 self-end">{{$t("page.index.connectClose")}}</wd-button>
 							</view>
 						</view>
 					</view>

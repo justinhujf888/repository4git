@@ -1,14 +1,14 @@
 export default class Dialog {
 	static alert(msg) {
 		uni.showModal({
-			title: '提示',
+			title: '',
 			content: msg,
 			showCancel: false
 		});
 	}
 	static alertBack(msg, hasCancel, okfun, cancelfun) {
 		uni.showModal({
-		    title: '提示',
+		    title: '',
 		    content: msg,
 			showCancel: hasCancel,
 		    success: function (res) {
@@ -24,7 +24,7 @@ export default class Dialog {
 	}
 	static confirm(msgtxt, okfun, cancelfun) {
 		uni.showModal({
-			title: '提示',
+			title: '',
 			content: msgtxt,
 			success: function(res) {
 				if (res.confirm) {

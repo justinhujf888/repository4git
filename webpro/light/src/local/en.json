@@ -1,4 +1,6 @@
 {
-    "index.title": "VASEE Smart",
-    "index.page.addDevice": "Add Device"
+    "page.index.title": "VASEE Smart",
+    "page.index.addDevice": "Add device",
+    "page.index.connected": "Connected",
+    "page.index.connectClose": "Close"
 }

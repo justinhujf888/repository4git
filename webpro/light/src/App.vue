@@ -58,7 +58,6 @@
 @import "./Grace6/css/graceDark.scss";
 /* 加载自定义样式 */
 @import "./custom/custom.scss";
-page{background-color:#F8F8F8; }
 </style>
 <!-- #endif -->
 <!-- #ifdef APP-NVUE -->
@@ -70,3 +69,8 @@ page{background-color:#F8F8F8; }
 .gui-icons{font-family:graceuiiconfont; font-style:normal;}
 </style>
 <!-- #endif -->
+<style>
+page {
+    background-color: #f8f8f8; /* 设置整个应用的背景颜色 */
+}
+</style>

@@ -4,9 +4,8 @@ import 'uno.css';
 import lodash from "lodash";
 import dayjs from "dayjs";
 import cmdjson from "@/api/datas/cmd.json";
+import messages from './local/index';
 
-import en from "@/local/en.json";
-import zhHans from "@/local/zh-Hans.json";
 
 import vconsole from "vconsole";
 
@@ -17,10 +16,18 @@ import vconsole from "vconsole";
 
 // new vconsole();
 
-const messages = {
-    en,
-    'zh-Hans': zhHans
+// #ifdef H5
+let i18nConfig = {
+    locale: uni.getLocale(),
+    messages
 }
+// #endif
+// #ifdef MP
+let i18nConfig = {
+    locale: "zh-Hans",
+    messages
+}
+// #endif
 
 
 uni.dayjs = dayjs;
@@ -58,14 +65,8 @@ app.$mount()
 // #ifdef VUE3
 import { createSSRApp } from 'vue';
 import { createI18n } from 'vue-i18n';
-let i18n = null;
-const setLocal = (app,lstr)=>{
-    i18n = createI18n({
-        locale: lstr,
-        messages
-    });
-    app.use(i18n);
-};
+const i18n = createI18n(i18nConfig)
+
 const changeLang = (lang)=>{
     // console.log(lang);
     i18n.locale = lang;
@@ -76,10 +77,10 @@ export function createApp() {
   const app = createSSRApp(App);
 
     // #ifdef H5
-    setLocal(app,uni.getLocale());
+    app.use(i18n);
 // #endif
 // #ifdef MP
-    setLocal(app,"zh-Hans");
+    app.use(i18n);
 // #endif
 
   app.config.globalProperties.lodash= lodash;
