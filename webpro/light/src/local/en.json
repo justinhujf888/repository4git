@@ -2,5 +2,6 @@
     "page.index.title": "VASEE Smart",
     "page.index.addDevice": "Add device",
     "page.index.connected": "Connected",
-    "page.index.connectClose": "Close"
+    "page.index.connectClose": "Close",
+    "page.setup.currentClock": "Current clock"
 }

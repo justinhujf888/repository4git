@@ -2,5 +2,6 @@
     "page.index.title": "VASEE 生态智能",
     "page.index.addDevice": "添加设备",
     "page.index.connected": "已连接",
-    "page.index.connectClose": "断开连接"
+    "page.index.connectClose": "断开连接",
+    "page.setup.currentClock": "当前时钟"
 }

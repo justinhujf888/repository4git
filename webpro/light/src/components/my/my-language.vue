@@ -1,5 +1,5 @@
 <template>
-    <view class="absolute right-5 top-14 text-xs grid grid-cols-2 gap-2">
+    <view class="absolute right-2 top-5 text-xs grid grid-cols-2 gap-2">
         <text v-for="(lang,index) in [{id:'en',name:'EN'},{id:'zh-Hans',name:'中文'}]" class="border-4 border-solid silderborder center p-1 rounded-xl" :class="lang.id==locale ? 'border-gray-700 sliderbg text-white' : ''" @tap="changeLocale(lang.id)">{{lang.name}}</text>
     </view>
 </template>

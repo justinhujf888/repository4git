@@ -16,7 +16,7 @@
 		<view class="col justify-center items-center text-gray-400 mt-5">
 			<!-- <text class="text-base">{{rday==1 ? '照明开启中' : '照明关闭'}}</text> -->
 			<view class="row justify-center items-center text-sm">
-				<text>当前时钟</text>
+				<text>{{$t("page.setup.currentClock")}}</text>
 				<text class="ml-1">{{currentTime.txt}}</text>
 				<text class="rounded-2xl py-1 px-4 btn1 text-white ml-1" @tap="syncTime">手动同步时钟</text>
 			</view>
