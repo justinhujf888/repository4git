@@ -114,7 +114,11 @@ function searchCountry(event) {
             <div class="card flex flex-col gap-4">
                 <div class="font-semibold text-xl">Slider</div>
                 <InputText v-model.number="sliderValue" />
-                <Slider v-model="sliderValue" />
+                <Slider v-model="sliderValue" :ppt="{
+                    root:{class: 'border-4 border-gray-600 border-solid'},
+                    handle:{class:'border-2 border-gray-600 border-solid'},
+                    range:{class:'border-2 border-green-600 border-solid'}
+                }" class=""/>
 
                 <div class="flex flex-row mt-6">
                     <div class="flex flex-col gap-4 w-1/2">
@@ -246,3 +250,6 @@ function searchCountry(event) {
         </div>
     </Fluid>
 </template>
+<style scoped>
+
+</style>

@@ -58,7 +58,7 @@ class Competition extends BEntity implements Serializable, IEntity
     String description;
 
     @Column(length=2)
-    //	0:竞赛开始；1:初审；2：复审第一轮；3：复审第二轮；9：竞赛结束；
+    //	0:竞赛开始；1:初审；2：复审第一轮；3：复审第二轮；...9：竞赛结束；
     byte status;
 
     @ManyToOne(fetch=FetchType.EAGER)
