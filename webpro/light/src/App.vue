@@ -71,6 +71,6 @@
 <!-- #endif -->
 <style>
 page {
-    background-color: #bfbfbf; /* 设置整个应用的背景颜色 */
+    background-color: #F8F8F8; /* 设置整个应用的背景颜色 */
 }
 </style>
