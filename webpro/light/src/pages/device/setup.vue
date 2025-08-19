@@ -21,13 +21,17 @@
 			<view class="row justify-center items-center text-sm">
 				<text>{{$t("page.setup.currentClock")}}</text>
 				<text class="ml-1">{{currentTime.txt}}</text>
-				<text class="rounded-2xl py-1 px-4 btn1 text-white ml-1" @tap="syncTime">手动同步时钟</text>
+				<text class="rounded-2xl py-1 px-4 btn1 text-white ml-1" @tap="syncTime">{{$t("page.setup.timesync")}}</text>
 			</view>
-			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-4" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">{{rday==1 ? '关闭照明' : '打开照明'}}</wd-button>
+			<wd-button size="large" custom-class="py-1 px-2 text-6xl text-white mt-4" :custom-style="rday==1 ? 'background: #7993AF' : 'background: #6AAE36'" @click="setRDay">
+                <text v-if="rday==1">{{$t("page.setup.offlight")}}</text>
+                <text v-else>{{$t("page.setup.onlight")}}</text>
+<!--                {{rday==1 ? "$t('page.setup.offlight')" : "$t('page.setup.onlight')"}}-->
+            </wd-button>
 			<view class="row justify-center items-center w-full text-base">
 				<view class="col justify-center items-center" :class="rday==1 ? '' : 'opacity-15'">
 					<text class="iconfont text-3xl text-green-500">&#xe61f;</text>
-					<text class="text-base text-green-500 font-semibold">日光</text>
+					<text class="text-base text-green-500 font-semibold">{{$t("page.setup.daylight")}}</text>
 				</view>
 				<view class="col justify-center items-center flex-1 mt-2">
 					<view class="row justify-center items-center" @tap="goKgtime">
@@ -38,7 +42,7 @@
 				</view>
 				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-15'">
 					<text class="iconfont text-3xl">&#xe655;</text>
-					<text class="text-base font-semibold">月光</text>
+					<text class="text-base font-semibold">{{$t("page.setup.nightlight")}}</text>
 				</view>
 			</view>
 		</view>
@@ -192,7 +196,7 @@
 				console.log("group2",now.format("HH:mm:ss"),array);
 				
 				if (array?.length < 1) {
-					dialog.alertBack("没有读取到设备数据，请重试",false,()=>{
+					dialog.alertBack(proxy.$t("page.setup.ctx.nodatamsg"),false,()=>{
 						page.navBack();
 					},null);
 				}
@@ -203,7 +207,7 @@
 					}
 				});
 				if (!checkf) {
-					dialog.alertBack("设备数据错误，请重试或联系客服",false,()=>{
+					dialog.alertBack(proxy.$t("page.setup.ctx.dataerrormsg"),false,()=>{
 						page.navBack();
 					},null);
 				}
@@ -304,10 +308,10 @@
 					console.log(proxy.dayjs().isBetween(_td0,_td1,null,"[]"));
 					if (tishi) {
 						uni.showModal({
-							content: '按照您当前的设定方案，现在应是关灯状态，您可以保持开灯状态或按程序设定进入关灯状态',
+							content: proxy.$t("page.setup.ctx.checklightmsg"),
 							showCancel: true,
-							confirmText: '保持开灯',
-							cancelText: '我要关灯',
+							confirmText: proxy.$t("page.setup.ctx.kpon"),
+							cancelText: proxy.$t("page.setup.ctx.kpoff"),
 							success: function (res) {
 								if (res.confirm) {
 									
@@ -353,10 +357,10 @@
 		// console.log("device",device.value);
 		pgElmList.value = [
 			{id:0,name:"light",els:[
-				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:"全光谱",value:40,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
+				{id:"01",cmd:"0x04",exCmd:["0x05"],rcmd:"0x14",isRun:true,ly:0,type:"slider",name:proxy.$t("page.setup.els.001"),value:40,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
 				{id:"02",cmd:"0x07",rcmd:"0x17",isRun:true,ly:0,type:"slider",name:"UVA",value:40,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
 				{id:"03",cmd:"0x06",rcmd:"0x16",isRun:true,ly:0,type:"slider",name:"UVB",value:40,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
-				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,type:"radioGroup",name:"开灯关灯渐变时长（日出日落）",value:30,isRun:true,info:[
+				{id:"04",cmd:"0x10",rcmd:"0x20",ly:0,type:"radioGroup",name:proxy.$t("page.setup.els.004"),value:30,isRun:true,info:[
 					{id:"050",prx:"",value:0,afe:"",type:"radio"},
 					{id:"051",prx:"",value:30,afe:"",type:"radio"},
 					{id:"052",prx:"",value:60,afe:"",type:"radio"},
@@ -366,27 +370,27 @@
 				// {id:"06",cmd:"0x10",rcmd:"0x20",ly:0,isRun:false,type:"slider",name:"开灯关灯渐变时长（日出日落）",value:30,min:30,max:31,afe:"分",style:{barClass:['border-gray-900','border-4','border-solid','bg-white','rounded-full'],bglineClass:['border-gray-300','border-4','border-solid'],bglineAClass:['bg-gray-900','border-gray-900','border-4','border-solid']}}
 			]},
 			{id:1,name:"fs",els:[
-				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:"日间风扇（开灯时风扇）",value:35,min:0,max:100,style:{barClass:['sliderborder0','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
-				{id:"11",dId:"12",cmd:"",ly:1,type:"switch",name:"定时循环",value:false,style:{}},
+				{id:"10",cmd:"0x08",rcmd:"0x18",isRun:true,ly:0,type:"slider",name:proxy.$t("page.setup.els.110"),value:35,min:0,max:100,style:{barClass:['sliderborder0','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
+				{id:"11",dId:"12",cmd:"",ly:1,type:"switch",name:proxy.$t("page.setup.els.111"),value:false,style:{}},
 				{id:"12",cmd:"0x0B",rcmd:"0x1B",ly:1,type:"textGroup",isRun:false,info:[
-					{id:"120",prx:"运转时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15},
-					{id:"121",prx:"停歇时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15}
+					{id:"120",prx:proxy.$t("page.setup.els.1120"),value:0,afe:proxy.$t("page.setup.els.minutes"),type:"slider",min: 0, max: 15},
+					{id:"121",prx:proxy.$t("page.setup.els.1121"),value:0,afe:proxy.$t("page.setup.els.minutes"),type:"slider",min: 0, max: 15}
 				]},
-				{id:"13",cmd:"0x09",rcmd:"0x19",isRun:true,ly:0,type:"slider",name:"夜间风扇（关灯时风扇）",value:25,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
-				{id:"14",dId:"15",cmd:"",ly:1,type:"switch",name:"定时循环",value:true,style:{}},
+				{id:"13",cmd:"0x09",rcmd:"0x19",isRun:true,ly:0,type:"slider",name:proxy.$t("page.setup.els.113"),value:25,min:0,max:100,style:{barClass:['sliderborder','border-4','border-solid','bg-white','rounded-full'],bglineClass:['sliderborder','border-4','border-solid'],bglineAClass:['sliderbg','sliderborder','border-4','border-solid']}},
+				{id:"14",dId:"15",cmd:"",ly:1,type:"switch",name:proxy.$t("page.setup.els.111"),value:true,style:{}},
 				{id:"15",cmd:"0x0C",rcmd:"0x1C",ly:1,type:"textGroup",isRun:true,info:[
-					{id:"150",prx:"运转时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15},
-					{id:"151",prx:"停歇时长",value:0,afe:"分钟",type:"slider",min: 0, max: 15}
+					{id:"150",prx:proxy.$t("page.setup.els.1120"),value:0,afe:proxy.$t("page.setup.els.minutes"),type:"slider",min: 0, max: 15},
+					{id:"151",prx:proxy.$t("page.setup.els.1121"),value:0,afe:proxy.$t("page.setup.els.minutes"),type:"slider",min: 0, max: 15}
 				]}
 			]},
 			{id:2,name:"cw",els:[
-				{id:"20",dId:"21",cmd:"",ly:0,type:"switch",name:"开灯除雾",value:true,style:{}},
+				{id:"20",dId:"21",cmd:"",ly:0,type:"switch",name:proxy.$t("page.setup.els.220"),value:true,style:{}},
 				{id:"21",cmd:"0x0D",rcmd:"0x1D",ly:1,type:"textGroup",isRun:true,info:[
-					{id:"210",prx:"除雾时长",value:4,afe:"分钟",type:"slider",min: 0, max: 60},
+					{id:"210",prx:proxy.$t("page.setup.els.2210"),value:4,afe:proxy.$t("page.setup.els.minutes"),type:"slider",min: 0, max: 60},
 				]},
-				{id:"22",dId:"23",cmd:"",ly:0,type:"switch",name:"月光模式",value:false,style:{}},
-				{id:"23",cmd:"0x0F",rcmd:"0x1F",isRun:false,ly:1,type:"textGroup",name:"亮度",value:0,min:0,max:100,style:{},info:[
-					{id:"230",prx:"亮度",value:0,afe:"%",type:"slider",min: 0, max: 100}
+				{id:"22",dId:"23",cmd:"",ly:0,type:"switch",name:proxy.$t("page.setup.els.222"),value:false,style:{}},
+				{id:"23",cmd:"0x0F",rcmd:"0x1F",isRun:false,ly:1,type:"textGroup",name:proxy.$t("page.setup.els.223"),value:0,min:0,max:100,style:{},info:[
+					{id:"230",prx:proxy.$t("page.setup.els.223"),value:0,afe:"%",type:"slider",min: 0, max: 100}
 				]}
 			]}
 		];
@@ -395,7 +399,7 @@
 		// isWriteCmd.value = true;
 		syncTime();
 		
-		dialog.openLoading("读取设备信息……");
+		dialog.openLoading(proxy.$t("page.setup.ctx.loading"));
 		setTimeout(()=>{
 			ConnectController.addCharacteristicValueChangeListen((characteristic)=>{
 				cday = uni.dayjs();
@@ -421,9 +425,9 @@
 						//write command
 						if (cmd) {
 							if (say[2]=="0xFE" && say[3]=="0x00") {
-								showNotify(cmd.description+":成功设置");
+								showNotify(proxy.$t(cmd.langvar)+":" + proxy.$t("page.setup.ctx.setupsucc"));
 							} else {
-								showNotify(cmd.description+":设置失败");
+								showNotify(proxy.$t(cmd.langvar)+":" + proxy.$t("page.setup.ctx.setupfaild"));
 							}
 						}
 						say = [];
@@ -600,7 +604,7 @@
 		} else {
 			// c.value = oldValue;
             item.value = oldValue;
-			showNotify("设定错误请重新确认。");
+			showNotify(proxy.$t("page.setup.ctx.seterrormsg"));
 		}
 	};
 	

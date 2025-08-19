@@ -8,6 +8,7 @@
     {
       "command": "0x01",
       "description": "设置内部时钟",
+      "langvar": "cmsjson.w.0x01",
       "parameters": [
         { "name": "小时", "min": 0, "max": 23 },
         { "name": "分钟", "min": 0, "max": 59 }
@@ -17,6 +18,7 @@
     {
       "command": "0x02",
       "description": "设置定时的开灯时间点（白天模式）",
+      "langvar": "cmsjson.w.0x02",
       "parameters": [
         { "name": "小时", "min": 0, "max": 23 },
         { "name": "分钟", "min": 0, "max": 59 }
@@ -26,6 +28,7 @@
     {
       "command": "0x03",
       "description": "设置定时的关灯时间点（夜晚模式）",
+      "langvar": "cmsjson.w.0x03",
       "parameters": [
         { "name": "小时", "min": 0, "max": 23 },
         { "name": "分钟", "min": 0, "max": 59 }
@@ -35,6 +38,7 @@
     {
       "command": "0x04",
       "description": "设置主灯的光亮强度",
+      "langvar": "cmsjson.w.0x04",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "强度值", "min": 0, "max": 100 }
@@ -44,6 +48,7 @@
     {
       "command": "0x05",
       "description": "设置月光灯的光亮强度",
+      "langvar": "cmsjson.w.0x05",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "强度值", "min": 0, "max": 100 }
@@ -54,6 +59,7 @@
       "command": "0x06",
       "deviceName": ["Breath NEO Pro","Breath NEO Elite"],
       "description": "设置UVB灯的光亮强度",
+      "langvar": "cmsjson.w.0x06",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "强度值", "min": 0, "max": 100 }
@@ -63,6 +69,7 @@
     {
       "command": "0x07",
       "description": "设置UVA灯的光亮强度",
+      "langvar": "cmsjson.w.0x07",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "强度值", "min": 0, "max": 100 }
@@ -72,6 +79,7 @@
     {
       "command": "0x08",
       "description": "设置主风扇的白天模式转速",
+      "langvar": "cmsjson.w.0x08",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "转速值", "min": 0, "max": 100 }
@@ -81,6 +89,7 @@
     {
       "command": "0x09",
       "description": "设置主风扇的夜晚模式转速",
+      "langvar": "cmsjson.w.0x09",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "转速值", "min": 0, "max": 100 }
@@ -90,6 +99,7 @@
     {
       "command": "0x0A",
       "description": "设置散热风扇转速",
+      "langvar": "cmsjson.w.0x0A",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "转速值", "min": 0, "max": 100 }
@@ -99,6 +109,7 @@
     {
       "command": "0x0B",
       "description": "设置主风扇白天间歇运行",
+      "langvar": "cmsjson.w.0x0B",
       "parameters": [
         { "name": "开启分钟数", "min": 0, "max": 15 },
         { "name": "关闭分钟数", "min": 0, "max": 15 }
@@ -108,6 +119,7 @@
     {
       "command": "0x0C",
       "description": "设置主风扇夜晚间歇运行",
+      "langvar": "cmsjson.w.0x0C",
       "parameters": [
         { "name": "开启分钟数", "min": 0, "max": 15 },
         { "name": "关闭分钟数", "min": 0, "max": 15 }
@@ -117,6 +129,7 @@
     {
       "command": "0x0D",
       "description": "设置主风扇除雾时间",
+      "langvar": "cmsjson.w.0x0D",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "除雾分钟数", "min": 0, "max": 60 }
@@ -126,6 +139,7 @@
     {
       "command": "0x0E",
       "description": "切换开灯/关灯模式",
+      "langvar": "cmsjson.w.0x0E",
       "parameters": [
         { "name": "未使用", "fixed_value": "0x00" },
         { "name": "模式", "options": { "0": "关灯模式（夜晚）", "1": "开灯模式（白天）" } }
@@ -135,6 +149,7 @@
 	{
 	  "command": "0x0F",
 	  "description": "月光模式时月光灯的亮度",
+      "langvar": "cmsjson.w.0x0F",
 	  "parameters": [
 	    { "name": "未使用", "fixed_value": "0x00" },
 	    { "name": "模式", "min": 0, "max": 100}
@@ -144,6 +159,7 @@
 	{
 	  "command": "0x10",
 	  "description": "开关灯渐变时长（设置开关节点上的自然光模式）",
+      "langvar": "cmsjson.w.0x10",
 	  "parameters": [
 	    { "name": "未使用", "fixed_value": "0x00" },
 	    { "name": "除雾分钟数", "min": 0, "max": 120 }
