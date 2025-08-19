@@ -11,6 +11,9 @@ const locale = ref("");
 onMounted(()=>{
     locale.value = uni.getLocale();
 });
+watch(locale,(newValue,oldValue)=>{
+    locale.value = newValue;
+});
 const changeLocale = (l)=>{
     proxy.$i18n.locale = l;
     uni.setLocale(l);

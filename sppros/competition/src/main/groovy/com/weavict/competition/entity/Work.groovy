@@ -5,6 +5,34 @@ import jakarta.persistence.*
 
 @Table
 @Entity
+class SiteCompetition extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String id;
+
+    @Column(length=50)
+    String name;
+
+    @Column(length=350)
+    String description;
+
+    @Column(length=30)
+    String appId;
+
+    @OneToMany(mappedBy="siteCompetition",fetch = FetchType.LAZY)
+    List<MasterCompetition> masterCompetitionList;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Table
+@Entity
 class MasterCompetition extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;
@@ -19,8 +47,17 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @Column(length=350)
     String description;
 
+    @Column(length=30)
+    String appId;
+
+    @Column(length=150)
+    String fields;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date beginDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date pingShenDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date endDate;
@@ -28,8 +65,8 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
-    @Column(length=30)
-    String appId;
+    @ManyToOne(fetch=FetchType.EAGER)
+    SiteCompetition siteCompetition;
 
     @OneToMany(mappedBy="masterCompetition",fetch = FetchType.LAZY)
     List<Competition> competitionList;
@@ -38,7 +75,6 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     {
         this.competitionList = null;
     }
-
 }
 
 @Table
@@ -53,6 +89,9 @@ class Competition extends BEntity implements Serializable, IEntity
 
     @Column(length=50)
     String name;
+
+    @Column(length=150)
+    String fields;
 
     @Column(length=350)
     String description;
@@ -93,6 +132,18 @@ class Work extends BEntity implements Serializable, IEntity
 
     @Column(length=20)
     String lng;
+
+    @Column(length=100)
+    String guige;
+
+    @Column(length=300)
+    String gousiDescription;
+
+    @Column(length=300)
+    String myMeanDescription;
+
+    @Column(length=2000)
+    String otherFields;
 
     @ManyToOne(fetch=FetchType.EAGER)
     Buyer buyer;
@@ -161,6 +212,9 @@ class Judge extends BEntity implements Serializable, IEntity
 
     @Column(length=30)
     String engName;
+
+    @Column(length=30)
+    String password;
 
     @Column(length=350)
     String description;

@@ -8,6 +8,9 @@
 		</template>
 	</wd-navbar>
     <wd-notify></wd-notify>
+    <!--  #ifdef H5  -->
+<!--    <my-language></my-language>-->
+    <!--  #endif      -->
 	<!-- &#xe858; &#xe655;-->
 	<view v-if="isWriteCmd" class="relative px-4 mt-8">
 <!-- 		<view class="absolute left-2 top-1">-->

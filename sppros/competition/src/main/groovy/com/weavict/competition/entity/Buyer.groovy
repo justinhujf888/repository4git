@@ -18,7 +18,7 @@ class Buyer extends BEntity implements Serializable, IEntity
     @Column(length=20)
     String loginName;
 
-    @Column(length=50)
+    @Column(length=30)
     String password;
 
     @Column(length=32)
@@ -78,7 +78,7 @@ class BuyerAppInfo extends BEntity implements Serializable,IEntity
     @Column(length=20)
     String loginName;
 
-    @Column(length=50)
+    @Column(length=30)
     String password;
 
     @Column(length=32)

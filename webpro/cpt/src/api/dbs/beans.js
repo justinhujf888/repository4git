@@ -30,6 +30,9 @@ export const Beans = {
 		return {
             id: "",
             name: "",
+            gousiDescription: "",
+            myMeanDescription: "",
+            otherFields: "",
             lat: "",
             lng: "",
             buyer: this.buyer(),
@@ -65,11 +68,12 @@ export const Beans = {
         return {
             id: "",
             name: "",
+            fields: "",
             beginDate: null,
+            pingShenDate: null,
             endDate: null,
             createDate: null,
             description: "",
-            appId: "",
             competitionList: []
         }
 	},
@@ -99,6 +103,7 @@ export const Beans = {
             id: "",
             name: "",
             engName: "",
+            password: "",
             description: "",
             createDate: null,
             appId: "",
