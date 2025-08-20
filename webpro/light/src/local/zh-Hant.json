@@ -10,6 +10,13 @@
   "page.setup.daylight": "日光",
   "page.setup.nightlight": "月光",
   "page.setup.save": "保存到方案",
+  "page.setup.daymode": "開燈",
+  "page.setup.nightmode": "關燈",
+  "page.setup.lightonofftime": "開關燈定時",
+  "page.setup.daylight": "開燈時間",
+  "page.setup.night": "關燈時間",
+  "page.setup.Hour": "小時",
+  "page.setup.Minute": "分鐘",
 
   "page.setup.els.001": "全光譜",
   "page.setup.els.004": "開燈關燈漸變時長（日出日落）",
@@ -35,6 +42,14 @@
   "page.setup.ctx.kpon": "保持開燈",
   "page.setup.ctx.kpoff": "我要關燈",
   "page.setup.ctx.onlight": "打開照明",
+  "page.setup.ctx.bluediscmsg": "藍牙已斷開",
+  "page.setup.ctx.confdisc": "是否斷開設備連接?",
+  "page.setup.ctx.checkbuleopen": "請檢查手機藍牙是否開啟",
+  "page.setup.ctx.searchdevice": "正在搜索設備",
+  "page.setup.ctx.blueconnected": "已連接藍牙",
+  "page.setup.ctx.bluedisced": "藍牙連接已斷開",
+  "page.setup.ctx.connagain": "連接失敗, 請重試",
+  "page.setup.ctx.tryagainsys": "系統異常，請稍後重試",
 
 
   "cmsjson.w.0x01": "設置內部時鐘",

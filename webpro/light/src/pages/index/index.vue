@@ -364,7 +364,7 @@
 						// Blue.createBLEConnection(data.deviceId);
 						// viewStatus.value = 0;
 						if (pages[pages.length - 1].route!="pages/index/index") {
-							dialog.alertBack("蓝牙已断开",false,()=>{
+							dialog.alertBack(proxy.$t("page.setup.ctx.bluediscmsg"),false,()=>{
 								page.reLaunch("/pages/index/index",{});
 							},null);
 						} else {
@@ -377,7 +377,7 @@
 					}
 					else if (data.code==BLUE_STATE.DISCONNECT.code) {
 						if (pages[pages.length - 1].route!="pages/index/index") {
-							dialog.alertBack("蓝牙已断开",false,()=>{
+							dialog.alertBack(proxy.$t("page.setup.ctx.bluediscmsg"),false,()=>{
 								page.reLaunch("/pages/index/index",{});
 							},null);
 						} else {
@@ -741,7 +741,7 @@
 	}
 
 	const closeConnection = ()=>{
-		dialog.confirm("是否断开设备连接",()=>{
+		dialog.confirm(proxy.$t("page.setup.ctx.confdisc"),()=>{
 			Blue.closeBLEConnection();
 			// callBle();
 			init();

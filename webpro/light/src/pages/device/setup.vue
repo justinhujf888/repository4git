@@ -33,13 +33,26 @@
 					<text class="iconfont text-3xl text-green-500">&#xe61f;</text>
 					<text class="text-base text-green-500 font-semibold">{{$t("page.setup.daylight")}}</text>
 				</view>
+<!--           #ifdef MP     -->
 				<view class="col justify-center items-center flex-1 mt-2">
 					<view class="row justify-center items-center" @tap="goKgtime">
-						<text>开灯 {{times.onTime}}</text>
-						<text class="ml-2">关灯 {{times.offTime}}</text>
+						<text>{{$t("page.setup.daymode")}} {{times.onTime}}</text>
+						<text class="ml-2">{{$t("page.setup.nightmode")}} {{times.offTime}}</text>
 						<text class="gui-icons ml-2">&#xe69e;</text>
 					</view>
 				</view>
+<!--           #endif     -->
+                <!--           #ifdef H5     -->
+                <view class="row justify-center items-center flex-1 mt-2">
+                    <view class="col justify-center items-center">
+                        <text>{{$t("page.setup.daymode")}} {{times.onTime}}</text>
+                        <text>{{$t("page.setup.nightmode")}} {{times.offTime}}</text>
+                    </view>
+                    <view class="row justify-center items-center" @tap="goKgtime">
+                        <text class="gui-icons ml-2">&#xe69e;</text>
+                    </view>
+                </view>
+                <!--           #endif     -->
 				<view class="col justify-center items-center" :class="rday==0 ? '' : 'opacity-15'">
 					<text class="iconfont text-3xl">&#xe655;</text>
 					<text class="text-base font-semibold">{{$t("page.setup.nightlight")}}</text>
