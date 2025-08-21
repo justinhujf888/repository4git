@@ -16,6 +16,8 @@ import com.aliyun.teaopenapi.models.Config
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.util.DateUtil
 import com.weavict.common.util.MathUtil
+import com.weavict.competition.entity.Buyer
+import com.weavict.competition.entity.Work
 import com.weavict.competition.module.RedisApi
 
 //import com.weavict.website.common.ImgCompress
@@ -320,7 +322,33 @@ class OtherRest extends BaseRest
     @Path("/test")
     String test(@RequestBody Map<String,Object> query)
     {
-        NotificationResource.broadcast("""{"id":"111","type":"publcMsg","mode":true,"data":"${MathUtil.getPNewId()}"}""".toString());
+//        NotificationResource.broadcast("""{"id":"111","type":"publcMsg","mode":true,"data":"${MathUtil.getPNewId()}"}""".toString());
+
+//        Work work = new Work();
+//        work.id = MathUtil.getPNewId();
+//        work.name = "Math Product";
+//        work.appId = "001";
+//        work.buyer = null;
+//        Map map = [:];
+//        map["name"] = "iuy";
+//        map["org"] = "提供香港CN2 GIA、香港CMI、日本软银、美国CN2 GIA、美国CMIN2、荷兰CUII、加拿大CN2 GIA、迪拜国际BGP系列的VPS。最低1Gbps，最高10Gbps带宽，根据VPS配置从低到高给与1Gbps~10Gbps带宽，支持一键切换IP（收费）、免费快照/备份、可在多个数据中心自由切换。2004年成立运作至今，隶属于加拿大IT7公司";
+//        map["tempMap"] = ["workName":"火山枫林","remark":"三上悠亚","ling":[1,2,3,4,5,6,7,8]]
+//        work.otherFields = map;
+//        redisApi.userBean.updateTheObject(work);
+
+        List<Work> workList = redisApi.userBean.newQueryUtils(true,true).masterTable("work","work",[
+                ["sf":"id","bf":"id"],
+                ["sf":"otherfields","bf":"otherFields"]
+        ])
+                .beanSetup(Work.class,null,null)
+                .where("otherfields->>'name' = 'iuy'",null,null,null)
+                .buildSql().run().content;
+        for(Work work in workList)
+        {
+            println work?.otherFields?.name;
+        }
+
+
         return """{"status":"OK"}""";
 //        try
 //        {
