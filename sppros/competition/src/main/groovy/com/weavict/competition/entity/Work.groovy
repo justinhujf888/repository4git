@@ -1,6 +1,9 @@
 package com.weavict.competition.entity
 
+
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 
 @Table
@@ -142,14 +145,18 @@ class Work extends BEntity implements Serializable, IEntity
     @Column(length=300)
     String myMeanDescription;
 
-    @Column(length=2000)
-    String otherFields;
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> otherFields;
 
     @ManyToOne(fetch=FetchType.EAGER)
     Buyer buyer;
 
     @Column(length=30)
     String appId;
+
+    @Column(length=1)
+    byte status;
 
     @ManyToOne(fetch=FetchType.EAGER)
     Competition competition;
@@ -188,12 +195,40 @@ class WorkItem extends BEntity implements Serializable, IEntity
     @ManyToOne(fetch=FetchType.EAGER)
     Work work;
 
+    @Column(length=200)
+    String exifInfo;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
     void cancelLazyEr()
     {
         this.work?.cancelLazyEr();
+    }
+}
+
+@Table
+@Entity
+class WorkLog extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String id;
+
+    @Column(length=30)
+    String workId;
+
+    @Column(length=200)
+    String log;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
+
+    void cancelLazyEr()
+    {
+
     }
 }
 

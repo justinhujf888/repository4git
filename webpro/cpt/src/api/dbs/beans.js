@@ -39,6 +39,7 @@ export const Beans = {
             competition: this.competition(),
             createDate: null,
             appId: "",
+            status: -1,
             workItemList: []
 		}
 	},
@@ -48,10 +49,20 @@ export const Beans = {
 			id: "",
 			path: "",
             mediaType: -1,
+            exifInfo: "",
             work: this.work(),
             createDate: null
 		}
 	},
+
+    workLog() {
+        return {
+            id: "",
+            workId: "",
+            log: "",
+            createDate: null
+        }
+    },
 
     competition() {
 		return {

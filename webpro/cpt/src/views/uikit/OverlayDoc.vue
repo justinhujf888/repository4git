@@ -9,6 +9,7 @@ import {Config} from "@/api/config";
 import { useLocalStorage,useMouse,useDark } from '@vueuse/core';
 
 import {ConnectController} from "@/api/controller";
+import otherRest from "@/api/dbs/otherRest";
 
 const display = ref(false);
 const displayConfirmation = ref(false);
@@ -108,6 +109,12 @@ const openDialog = () => {
     dialog.openLoading("");
     console.log(mykey.value,isDark.value);
     // console.log(document.documentElement.classList);
+};
+
+const test = ()=>{
+    otherRest.test((res)=>{
+        console.log(res);
+    });
 };
 </script>
 
@@ -225,6 +232,7 @@ const openDialog = () => {
             <div class="card">
                 <Button @click="openDialog()" label="myConfirm"></Button>
                 {{txt}}
+                <Button @click="test()" label="test"></Button>
             </div>
         </div>
     </div>
