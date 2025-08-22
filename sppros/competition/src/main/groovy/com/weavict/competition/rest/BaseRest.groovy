@@ -3,6 +3,7 @@ package com.weavict.competition.rest
 import com.beust.jcommander.internal.Lists
 import com.beust.jcommander.internal.Maps
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.common.ejb.StaticBean
 import net.sf.cglib.beans.BeanMap
 
 /**
@@ -11,15 +12,9 @@ import net.sf.cglib.beans.BeanMap
 
 class BaseRest
 {
-    static ObjectMapper objectMapper;
-
     ObjectMapper buildObjectMapper()
     {
-        if (objectMapper == null)
-        {
-            objectMapper = new ObjectMapper();
-        }
-        return objectMapper;
+        return StaticBean.buildObjectMapper();
     }
 
     void processExcetion(Exception e)
