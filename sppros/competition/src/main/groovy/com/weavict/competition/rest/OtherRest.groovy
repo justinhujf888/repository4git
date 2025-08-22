@@ -28,6 +28,7 @@ import jakarta.ws.rs.GET
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.web.bind.annotation.RequestBody
 
 import jakarta.servlet.http.HttpServletRequest
@@ -320,6 +321,7 @@ class OtherRest extends BaseRest
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/test")
+    @Cacheable("test")
     String test(@RequestBody Map<String,Object> query)
     {
         ObjectMapper objectMapper = buildObjectMapper();
@@ -341,8 +343,8 @@ class OtherRest extends BaseRest
                 ["status":"OK",
                  "datas":({
                      List<Work> workList = redisApi.userBean.newQueryUtils(true,true).masterTable("work","work",[
-                             ["sf":"id","bf":"id"],
-                             ["sf":"otherfields","bf":"otherFields","convertType":"json"]
+                             [sf:"id",bf:"id"],
+                             [sf:"otherfields",bf:"otherFields",convertType:"json"]
                      ])
                              .beanSetup(Work.class,null,null)
                              .where("otherfields->>'name' = 'iuy'",null,null,null)

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
+import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.scheduling.annotation.EnableScheduling
 
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @ComponentScan(basePackages = ["com.weavict"])
 @EntityScan(basePackages = ["com.weavict.competition.entity"])
 @EnableProcessApplication
+@EnableCaching
 class CompetitionApplication extends SpringBootServletInitializer {
 
 	static void main(String[] args) {
