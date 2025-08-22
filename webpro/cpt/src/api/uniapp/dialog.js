@@ -60,7 +60,7 @@ export default class Dialog {
     }
 
     static openNotify(msg) {
-        Dialog.toast.add({ severity: 'info', summary: 'Info', detail: msg, life: 5000 });
+        Dialog.toast.add({ severity: 'info', summary: 'Info', group:'center', detail: msg, life: 5000 });
     }
 
     static toastSuccess(msg) {

@@ -112,9 +112,11 @@ const openDialog = () => {
 };
 
 const test = ()=>{
-    otherRest.test((res)=>{
-        console.log(res);
-    });
+    dialog.toastNone("org");
+    // otherRest.test((res)=>{
+    //     console.log(res);
+    //     dialog.toastNone(res.datas[0].otherFields.org);
+    // });
 };
 </script>
 
