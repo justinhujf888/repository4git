@@ -1,7 +1,10 @@
 package com.weavict.competition.module
 
 import cn.hutool.core.util.StrUtil
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.ejb.BaseBean
+import com.weavict.common.ejb.StaticBean
+import com.weavict.competition.rest.BaseRest
 import jakarta.persistence.Query
 import org.springframework.transaction.annotation.Transactional
 
@@ -155,8 +158,28 @@ class QueryUtils
 
     PageUtil pageUtil;
 
+    Object convertObj(int tableFieldIndex,Object distObj)
+    {
+        if (!(map["tableFields"][tableFieldIndex]["convertType"] in [null,""]))
+        {
+            if (map["tableFields"][tableFieldIndex]["convertType"]=="json")
+            {
+                ObjectMapper objectMapper = StaticBean.buildObjectMapper();
+                return objectMapper.readValue(distObj as String,Map.class);
+            }
+        }
+        else
+        {
+            return distObj;
+        }
+    }
+
     void beanSet(Object it,Object obj,List fields,int startIndex)
     {
+//        println it;
+//        println obj;
+//        println fields;
+//        println map["tableFields"];
         fields?.eachWithIndex{f,findex->
             def sp = f.split("\\.");
             if (sp.length>0)
@@ -164,17 +187,17 @@ class QueryUtils
                 switch (sp.length)
                 {
                     case 0:
-                        obj[f] = it[findex+startIndex];
+                        obj[f] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 1:
-                        obj[f] = it[findex+startIndex];
+                        obj[f] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 2:
                         if (obj[sp[0]]==null)
                         {
                             obj[sp[0]] = [:];
                         }
-                        obj[sp[0]][sp[1]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 3:
                         if (obj[sp[0]]==null)
@@ -185,7 +208,7 @@ class QueryUtils
                         {
                             obj[sp[0]][sp[1]] = [:];
                         }
-                        obj[sp[0]][sp[1]][sp[2]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]][sp[2]] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 4:
                         if (obj[sp[0]]==null)
@@ -200,7 +223,7 @@ class QueryUtils
                         {
                             obj[sp[0]][sp[1]][sp[2]] = [:];
                         }
-                        obj[sp[0]][sp[1]][sp[2]][sp[3]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]][sp[2]][sp[3]] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 5:
                         if (obj[sp[0]]==null)
@@ -219,7 +242,7 @@ class QueryUtils
                         {
                             obj[sp[0]][sp[1]][sp[2]][sp[3]] = [:];
                         }
-                        obj[sp[0]][sp[1]][sp[2]][sp[3]][sp[4]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]][sp[2]][sp[3]][sp[4]] = convertObj(findex,it[findex+startIndex]);
                         break;
                 }
             }

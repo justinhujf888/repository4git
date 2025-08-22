@@ -19,6 +19,9 @@ class SiteCompetition extends BEntity implements Serializable, IEntity
     @Column(length=50)
     String name;
 
+    @Column(length=50)
+    String domain;
+
     @Column(length=350)
     String description;
 
@@ -30,9 +33,85 @@ class SiteCompetition extends BEntity implements Serializable, IEntity
 
     void cancelLazyEr()
     {
+        this.masterCompetitionList = null;
+    }
+}
+
+@Table
+@Entity
+class SiteWorkItem extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String id;
+
+    @Column(length=200)
+    String path;
+
+    @Column(length=1)
+    //	0:site；1:年份赛事；
+    byte sourceType;
+
+    @Column(length=30)
+    String sourceId;
+
+    @Column(length=1)
+    //	0:主题；1:历届作品；
+    byte type;
+
+    @Column(length=1)
+    //	0:image；1:video；
+    byte mediaType;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
+
+    void cancelLazyEr()
+    {
 
     }
 }
+
+@Table
+@Entity
+class OrgHuman extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String id;
+
+    @Column(length=30)
+    String name;
+
+    @Column(length=30)
+    String engName;
+
+    //	0:site；1:年份赛事；
+    byte sourceType;
+
+    @Column(length=30)
+    String sourceId;
+
+    @Column(length=350)
+    String description;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
+
+    @Column(length=150)
+    String headImgUrl;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+
 
 @Table
 @Entity
@@ -54,7 +133,7 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     String appId;
 
     @Column(length=150)
-    String fields;
+    String pxBiaozun;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date beginDate;
@@ -77,6 +156,7 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     void cancelLazyEr()
     {
         this.competitionList = null;
+        this.siteCompetition?.cancelLazyEr();
     }
 }
 
@@ -111,7 +191,7 @@ class Competition extends BEntity implements Serializable, IEntity
 
     void cancelLazyEr()
     {
-        this.masterCompetition.cancelLazyEr();
+        this.masterCompetition?.cancelLazyEr();
         this.workList = null;
     }
 }
@@ -145,7 +225,11 @@ class Work extends BEntity implements Serializable, IEntity
     @Column(length=300)
     String myMeanDescription;
 
-    @Column(columnDefinition = "jsonb")
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> hangyeFields;
+
+    @Column(length=1000,columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> otherFields;
 

@@ -112,7 +112,7 @@ class OtherRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
@@ -213,7 +213,7 @@ class OtherRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper();
             // oss
             OSS ossClient = OtherUtils.genOSSClient();
             PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
@@ -253,7 +253,7 @@ class OtherRest extends BaseRest
         {
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper();
             Config config = new Config().setAccessKeyId(OtherUtils.givePropsValue("ali_sms_AccessKeyId")).setAccessKeySecret(OtherUtils.givePropsValue("ali_sms_AccessKeySecret"));
             config.endpoint = "dysmsapi.aliyuncs.com";
             Client client = new Client(config);
@@ -300,7 +300,7 @@ class OtherRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
@@ -322,6 +322,7 @@ class OtherRest extends BaseRest
     @Path("/test")
     String test(@RequestBody Map<String,Object> query)
     {
+        ObjectMapper objectMapper = buildObjectMapper();
 //        NotificationResource.broadcast("""{"id":"111","type":"publcMsg","mode":true,"data":"${MathUtil.getPNewId()}"}""".toString());
 
 //        Work work = new Work();
@@ -336,17 +337,24 @@ class OtherRest extends BaseRest
 //        work.otherFields = map;
 //        redisApi.userBean.updateTheObject(work);
 
-        List<Work> workList = redisApi.userBean.newQueryUtils(true,true).masterTable("work","work",[
-                ["sf":"id","bf":"id"],
-                ["sf":"otherfields","bf":"otherFields"]
-        ])
-                .beanSetup(Work.class,null,null)
-                .where("otherfields->>'name' = 'iuy'",null,null,null)
-                .buildSql().run().content;
-        for(Work work in workList)
-        {
-            println work?.otherFields?.name;
-        }
+        return objectMapper.writeValueAsString(
+                ["status":"OK",
+                 "datas":({
+                     List<Work> workList = redisApi.userBean.newQueryUtils(true,true).masterTable("work","work",[
+                             ["sf":"id","bf":"id"],
+                             ["sf":"otherfields","bf":"otherFields","convertType":"json"]
+                     ])
+                             .beanSetup(Work.class,null,null)
+                             .where("otherfields->>'name' = 'iuy'",null,null,null)
+                             .buildSql().run().content;
+                     for(Work work in workList)
+                     {
+                         println work?.id;
+                         println work?.otherFields;
+                     }
+                     return workList;
+                 }).call()
+                ]);
 
 
         return """{"status":"OK"}""";

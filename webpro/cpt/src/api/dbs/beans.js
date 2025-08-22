@@ -26,15 +26,54 @@ export const Beans = {
 		}
 	},
 
-	work() {
+    siteCompetition() {
+        return {
+            id: "",
+            name: "",
+            domain: "",
+            description: "",
+            appId: "",
+            masterCompetitionList: null
+        }
+    },
+
+    siteWorkItem() {
+        return {
+            id: "",
+            path: "",
+            sourceType: -1,
+            sourceId: "",
+            type: -1,
+            mediaType: -1,
+            siteCompetition: this.siteCompetition(),
+            createDate: null
+        }
+    },
+
+    orgHuman() {
+        return {
+            id: "",
+            name: "",
+            engName: "",
+            sourceType: -1,
+            sourceId: "",
+            description: "",
+            createDate: null,
+            headImgUrl: ""
+        }
+    },
+
+    work() {
 		return {
             id: "",
             name: "",
             gousiDescription: "",
             myMeanDescription: "",
-            otherFields: "",
+            hangyeFields: null,
+            otherFields: null,
             lat: "",
             lng: "",
+            guige: "",
             buyer: this.buyer(),
             competition: this.competition(),
             createDate: null,
@@ -68,6 +107,7 @@ export const Beans = {
 		return {
 			id: "",
 			name: "",
+            fields: "",
             status: "",
             description: "",
             masterCompetition: this.masterCompetition(),
@@ -79,12 +119,14 @@ export const Beans = {
         return {
             id: "",
             name: "",
-            fields: "",
+            pxBiaozun: "",
             beginDate: null,
             pingShenDate: null,
             endDate: null,
             createDate: null,
             description: "",
+            appId: "",
+            siteCompetition: this.siteCompetition(),
             competitionList: []
         }
 	},
