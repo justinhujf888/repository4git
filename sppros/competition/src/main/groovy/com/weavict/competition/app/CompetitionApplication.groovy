@@ -1,4 +1,4 @@
-package com.weavict.competition
+package com.weavict.competition.app
 
 import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.springframework.boot.SpringApplication
@@ -16,11 +16,11 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @EntityScan(basePackages = ["com.weavict.competition.entity"])
 @EnableProcessApplication
 @EnableCaching
-class CompetitionApplication extends SpringBootServletInitializer {
-
-	static void main(String[] args) {
+class CompetitionApplication extends SpringBootServletInitializer
+{
+	static void main(String[] args)
+	{
 //		SpringApplication.run(CompetitionApplication, args);
 		new CompetitionApplication().configure(new SpringApplicationBuilder(CompetitionApplication.class)).run(args);
 	}
-
 }

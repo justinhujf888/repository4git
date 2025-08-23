@@ -31,7 +31,7 @@
     <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 absolute right-10 top-20 px-12 py-4 z-20 rounded-border hidden">
         <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base">
             <li>
-                <a @click="Page.navigateTo('forgotpw',null)" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                <a @click="page.navigateTo('forgotpw',null)" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                     <span>修改密码</span>
                 </a>
             </li>
@@ -76,7 +76,7 @@
 <script setup>
 import {Config} from "@/api/config";
 import { useStorage } from '@vueuse/core';
-import Page from '@/api/uniapp/page';
+import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
 
 const userId = useStorage("userId");
