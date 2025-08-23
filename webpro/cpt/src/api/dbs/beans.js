@@ -107,9 +107,10 @@ export const Beans = {
 		return {
 			id: "",
 			name: "",
-            fields: "",
-            status: "",
+            guigeFields: null,
+            status: -1,
             description: "",
+            appId: "",
             masterCompetition: this.masterCompetition(),
             workList: []
 		}
@@ -120,6 +121,7 @@ export const Beans = {
             id: "",
             name: "",
             pxBiaozun: "",
+            setupFields: null,
             beginDate: null,
             pingShenDate: null,
             endDate: null,

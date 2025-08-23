@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes
 
 @Table
 @Entity
+//域名赛事，赛事定义
 class SiteCompetition extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;
@@ -115,6 +116,7 @@ class OrgHuman extends BEntity implements Serializable, IEntity
 
 @Table
 @Entity
+//年度赛事
 class MasterCompetition extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;
@@ -134,6 +136,10 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
 
     @Column(length=150)
     String pxBiaozun;
+
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> setupFields;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date beginDate;
@@ -162,6 +168,7 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
 
 @Table
 @Entity
+//分组赛事
 class Competition extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;
@@ -173,8 +180,9 @@ class Competition extends BEntity implements Serializable, IEntity
     @Column(length=50)
     String name;
 
-    @Column(length=150)
-    String fields;
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> guigeFields;
 
     @Column(length=350)
     String description;
@@ -182,6 +190,9 @@ class Competition extends BEntity implements Serializable, IEntity
     @Column(length=2)
     //	0:竞赛开始；1:初审；2：复审第一轮；3：复审第二轮；...9：竞赛结束；
     byte status;
+
+    @Column(length=30)
+    String appId;
 
     @ManyToOne(fetch=FetchType.EAGER)
     MasterCompetition masterCompetition;
@@ -216,7 +227,7 @@ class Work extends BEntity implements Serializable, IEntity
     @Column(length=20)
     String lng;
 
-    @Column(length=100)
+    @Column(length=30)
     String guige;
 
     @Column(length=300)

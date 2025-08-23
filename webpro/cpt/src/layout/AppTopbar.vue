@@ -2,6 +2,7 @@
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
 import { getCurrentInstance } from 'vue';
+import page from '@/api/uniapp/page';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
@@ -47,10 +48,14 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 <!--                        <i class="pi pi-calendar"></i>-->
 <!--                        <span>Calendar</span>-->
 <!--                    </button>-->
-<!--                    <button type="button" class="layout-topbar-action">-->
-<!--                        <i class="pi pi-inbox"></i>-->
-<!--                        <span>Messages</span>-->
-<!--                    </button>-->
+                    <button type="button" class="layout-topbar-action" @click="page.redirectTo('landing',null)">
+                        <i class="pi pi-home"></i>
+                        <span>Home</span>
+                    </button>
+                    <button type="button" class="layout-topbar-action">
+                        <i class="pi pi-inbox"></i>
+                        <span>Messages</span>
+                    </button>
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
