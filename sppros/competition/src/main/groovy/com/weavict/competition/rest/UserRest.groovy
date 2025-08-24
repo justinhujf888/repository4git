@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.BuyerAppInfo
 import com.weavict.competition.entity.BuyerAppInfoPK
+import com.weavict.competition.entity.Judge
 import com.weavict.competition.module.UserBean
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -112,6 +113,35 @@ class UserRest extends BaseRest
             }
             userBean.ressetBuyerPassword(query.appId,query.userId,query.password);
             return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/queryJudgeList")
+    String queryJudgeList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = this.buildObjectMapper();
+            Map map = this.objToBean(query.queryJudge,Map.class,objectMapper);
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "judgeList":({
+                         userBean.newQueryUtils(false).masterTable("Judge",null,null)
+                                .where("name like %:name%",["name":map.name],null,{return !(map.name in [null,""])})
+                                 .where("engName like %:engName%",["engName":map.engName],null,{return !(map.engName in [null,""])})
+                                 .where("phone like %:phone%",["phone":map.phone],null,{return !(map.phone in [null,""])})
+                                .orderBy("createDate desc")
+                                .pageLimit(query.pageSize as int,query.currentPage as int,"id").buildSql().run();
+                     }).call()
+                    ]);
         }
         catch (Exception e)
         {
