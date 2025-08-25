@@ -139,7 +139,7 @@ function onProgress(e) {
 
 async function onFileSelect(e) {
     exifr.parse(e.files[0]).then(output => {
-        console.log(output);
+        console.log(JSON.stringify(output));
     })
 }
 </script>
