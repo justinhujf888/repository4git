@@ -1,16 +1,22 @@
 <template>
     <div class="p-2 card">
-        <DataTable :value="judgePageUtil.content" header="Flex Scroll" showGridlines stripedRows tableStyle="min-width: 50rem" :pt="{column:{bodyCell:{class:'text-center'}}}">
+        <DataTable :value="judgePageUtil.content" header="Flex Scroll" resizableColumns showGridlines stripedRows paginator :rows="Config.pageSize" :totalRecords="100" :first="0" :lazy="true" tableStyle="min-width: 50rem" paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink" currentPageReportTemplate="{first} to {last} of {totalRecords}" :pt="
+        {column:
+            {
+                bodyCell:{class:'!text-center'},
+                columnHeaderContent:{class:'justify-self-center'}
+            }
+        }">
             <template #header>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <span class="text-xl">评委列表</span>
-                    <Button icon="pi pi-refresh" rounded raised />
+                    <Button label="新增评委" raised @click="loadDatas"/>
                 </div>
             </template>
-            <Column field="headImgUrl" header="">
+            <Column field="headImgUrl" header="" class="w-12">
                 <template #body="{ data }">
-                    <div class="flex items-center gap-2">
-                        <img :alt="data.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.headImgUrl}`" style="width: 32px" />
+                    <div class="center w-12">
+                        <img :alt="data.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.headImgUrl}`" class="w-full" />
                     </div>
                 </template>
             </Column>
