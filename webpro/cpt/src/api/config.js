@@ -11,5 +11,7 @@ export const Config = {
     apiBaseURL: import.meta.env.MODE === "production" ?	"http://localhost:8091/cpt" : "http://localhost:8091/cpt",
 
     desKey: 'vikehoo_public_key_%&%^*&^*',
-    txMapKey: 'OWYBZ-QUQ6F-MU6J4-JYBLN-LL7E7-CNBE6'
+    txMapKey: 'OWYBZ-QUQ6F-MU6J4-JYBLN-LL7E7-CNBE6',
+
+    pageSize: 30
 };
