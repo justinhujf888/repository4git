@@ -73,7 +73,7 @@ class BaseRest
     {
         if (objectMapper==null)
         {
-            objectMapper = new ObjectMapper();
+            objectMapper = this.buildObjectMapper();
         }
         return objectMapper.convertValue(o,clazz);
     }

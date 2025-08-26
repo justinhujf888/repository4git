@@ -337,6 +337,9 @@ class Judge extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String id;
 
+    @Column(length=20)
+    String phone;
+
     @Column(length=30)
     String name;
 

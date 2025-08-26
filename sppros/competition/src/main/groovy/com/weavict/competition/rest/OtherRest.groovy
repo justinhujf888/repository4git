@@ -338,6 +338,7 @@ class OtherRest extends BaseRest
 //        map["tempMap"] = ["workName":"火山枫林","remark":"三上悠亚","ling":[1,2,3,4,5,6,7,8]]
 //        work.otherFields = map;
 //        redisApi.userBean.updateTheObject(work);
+//        return """{"status":"OK"}""";
 
         return objectMapper.writeValueAsString(
                 ["status":"OK",
@@ -359,7 +360,7 @@ class OtherRest extends BaseRest
                 ]);
 
 
-        return """{"status":"OK"}""";
+
 //        try
 //        {
 //            ObjectMapper objectMapper = new ObjectMapper();

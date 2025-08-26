@@ -156,6 +156,7 @@ export const Beans = {
     judge() {
         return {
             id: "",
+            phone: "",
             name: "",
             engName: "",
             password: "",
