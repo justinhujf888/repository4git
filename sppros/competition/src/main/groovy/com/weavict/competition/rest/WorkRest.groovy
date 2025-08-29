@@ -1,6 +1,7 @@
 package com.weavict.competition.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.Work
 import com.weavict.competition.module.WorkService
 import jakarta.servlet.http.HttpServletRequest
@@ -22,6 +23,23 @@ class WorkRest extends BaseRest
     @Autowired
     WorkService workService;
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/setupSiteCompetition")
+    String setupSiteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.siteCompetition, SiteCompetition.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

@@ -136,8 +136,8 @@ class UserRest extends BaseRest
                      "judgePageUtil":({
                          userBean.newQueryUtils(false).masterTable("Judge",null,null)
                                 .where("name like :name",["name":"%${map.name}%".toString()],null,{return !(map.name in [null,""])})
-                                 .where("engName like :engName",["engName":"%${map.engName}%".toString()],null,{return !(map.engName in [null,""])})
-                                 .where("phone like :phone",["phone":"%${map.phone}%".toString()],null,{return !(map.phone in [null,""])})
+                                 .where("engName like :engName",["engName":"%${map.engName}%".toString()],"and",{return !(map.engName in [null,""])})
+                                 .where("phone like :phone",["phone":"%${map.phone}%".toString()],"and",{return !(map.phone in [null,""])})
                                 .orderBy("createDate desc")
                                 .pageLimit(query.pageSize as int,query.currentPage as int,"id").buildSql().run();
                      }).call()

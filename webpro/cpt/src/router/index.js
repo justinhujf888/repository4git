@@ -14,6 +14,11 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
+                    path: '/manage/cpt/setup',
+                    name: 'cptsetup',
+                    component: () => import('@/views/cpt/setup/cptSetup.vue')
+                },
+                {
                     path: '/manage/judge/judgelist',
                     name: 'judgelist',
                     component: () => import('@/views/cpt/judge/judgeList.vue')

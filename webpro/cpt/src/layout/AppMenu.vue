@@ -10,7 +10,10 @@ const model = ref([
     },
     {
         label: 'CPT',
-        items: [{ label: '评委管理', icon: 'pi pi-fw pi-home', to: '/manage/judge/judgelist' }]
+        items: [
+            { label: '赛事设置', icon: 'pi pi-fw pi-home', to: '/manage/cpt/setup' },
+            { label: '评委管理', icon: 'pi pi-fw pi-home', to: '/manage/judge/judgelist' }
+        ]
     },
     {
         label: 'UI Components',

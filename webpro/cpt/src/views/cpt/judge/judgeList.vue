@@ -52,7 +52,7 @@ onMounted(() => {
 });
 
 function loadDatas() {
-    userRest.queryJudgeList({},Config.pageSize,currentPage,(data)=>{
+    userRest.queryJudgeList({name:"1",phone:"132"},Config.pageSize,currentPage,(data)=>{
         if (data.status=="OK") {
             judgePageUtil.value = data.judgePageUtil;
             if (judgePageUtil.value.content==null) {
