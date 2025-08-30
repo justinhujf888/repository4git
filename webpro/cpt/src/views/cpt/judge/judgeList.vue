@@ -48,13 +48,14 @@ const judgePageUtil = ref({});
 let currentPage = 0;
 
 onMounted(() => {
+    console.log(Config)
     loadDatas();
 });
 
 function loadDatas() {
-    userRest.queryJudgeList({name:"1",phone:"132"},Config.pageSize,currentPage,(data)=>{
-        if (data.status=="OK") {
-            judgePageUtil.value = data.judgePageUtil;
+    userRest.queryJudgeList({name:"1",phone:"132"},Config.pageSize,currentPage,(res)=>{
+        if (res.status=="OK") {
+            judgePageUtil.value = res.data;
             if (judgePageUtil.value.content==null) {
                 judgePageUtil.value.content = [];
 

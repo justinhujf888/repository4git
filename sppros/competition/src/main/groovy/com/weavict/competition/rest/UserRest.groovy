@@ -133,7 +133,7 @@ class UserRest extends BaseRest
             Map map = this.objToBean(query.queryJudge,Map.class,objectMapper);
             return objectMapper.writeValueAsString(
                     ["status":"OK",
-                     "judgePageUtil":({
+                     "data":({
                          userBean.newQueryUtils(false).masterTable("Judge",null,null)
                                 .where("name like :name",["name":"%${map.name}%".toString()],null,{return !(map.name in [null,""])})
                                  .where("engName like :engName",["engName":"%${map.engName}%".toString()],"and",{return !(map.engName in [null,""])})

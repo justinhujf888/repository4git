@@ -21,5 +21,24 @@ export default {
             null,
             true
         );
+    },
+    qySiteCompetition(id, onfun) {
+        Http.httpclient_json(
+            '/r/work/qySiteCompetition',
+            'post',
+            {
+                id: id
+            },
+            'json',
+            (res) => {
+                if (res.data.status == 'FA_ER') {
+                    dialog.showApiErrorMsg();
+                } else {
+                    onfun(res.data);
+                }
+            },
+            null,
+            true
+        );
     }
 }

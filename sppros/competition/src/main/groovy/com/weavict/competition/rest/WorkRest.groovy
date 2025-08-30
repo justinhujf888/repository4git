@@ -44,6 +44,31 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qySiteCompetition")
+    String qySiteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         SiteCompetition siteCompetition = workService.findObjectById(SiteCompetition.class,query.id);
+                         siteCompetition?.cancelLazyEr();
+                         return siteCompetition;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/qyBuyerCompetitionWorkList")
     String qyBuyerCompetitionWorkList(@RequestBody Map<String,Object> query)
     {
@@ -52,7 +77,7 @@ class WorkRest extends BaseRest
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
-                     "workList":({
+                     "data":({
                         return workService.qyBuyerCompetitionWorkInfo(query.userId,query.competitionId)?.each {
                             it.cancelLazyEr();
                         };
