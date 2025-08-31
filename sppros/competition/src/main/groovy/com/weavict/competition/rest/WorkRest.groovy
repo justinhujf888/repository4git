@@ -69,6 +69,33 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qySiteWorkItemList")
+    String qySiteWorkItemList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         workService.newQueryUtils(false).masterTable("SiteWorkItem",null,null)
+                         .where("sourceType=:sourceType",["sourceType":query.sourceType as byte],null,{return true})
+                         .where("type=:type",["type":query.type as byte],null,{return true})
+                         .orderBy("createDate desc")
+                         .buildSql().run().content;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/qyBuyerCompetitionWorkList")
     String qyBuyerCompetitionWorkList(@RequestBody Map<String,Object> query)
     {

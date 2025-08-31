@@ -11,8 +11,14 @@ const model = ref([
     {
         label: 'CPT',
         items: [
-            { label: '赛事设置', icon: 'pi pi-fw pi-home', to: '/manage/cpt/setup' },
-            { label: '评委管理', icon: 'pi pi-fw pi-home', to: '/manage/judge/judgelist' }
+            {
+                label: "赛事管理",
+                items: [
+                    { label: '赛事设置', icon: '', to: '/manage/cpt/setup' },
+                    { label: '年份赛事管理', icon: '', to: '/manage/cpt/mastercptsetup' }
+                ]
+            },
+            { label: '评委管理', icon: '', to: '/manage/judge/judgelist' }
         ]
     },
     {

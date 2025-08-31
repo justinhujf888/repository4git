@@ -41,14 +41,12 @@ import userRest from "@/api/dbs/userRest";
 import {Config} from "@/api/config";
 import lodash from "lodash";
 import { ProductService } from "@/service/ProductService";
-import {DataTable} from "primevue";
 
 const judgePageUtil = ref({});
 
 let currentPage = 0;
 
 onMounted(() => {
-    console.log(Config)
     loadDatas();
 });
 
