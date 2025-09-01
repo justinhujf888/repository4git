@@ -498,5 +498,35 @@ export default {
 	swap,
 	floatObj,
 	isJson,
-	callPhone
+	callPhone,
+    getUrlParamJson(url) {
+        if (decodeURIComponent(url ? url : window.location).split("?param=").length > 1) {
+            return JSON.parse(decodeURIComponent(url ? url : window.location).split("?param=")[1]);
+        } else {
+            return null;
+        }
+    },
+    getUrlParams(url) {
+        const urlObject = url ? new URL(url) : new URL(window.location);
+        const params = {};
+        for (const [key, value] of urlObject.searchParams.entries()) {
+            params[key] = value;
+        }
+        return params;
+
+        // const searchParams = new URLSearchParams(url.split("?")[1]);
+        // const params = {};
+        // for (const [key, value] of searchParams.entries()) {
+        //     params[key] = value;
+        // }
+        // return params;
+
+        // const regex = /[?&]([^=#]+)=([^&#]*)/g;
+        // const params = {};
+        // let match;
+        // while (match = regex.exec(url)) {
+        //     params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+        // }
+        // return params;
+    }
 }

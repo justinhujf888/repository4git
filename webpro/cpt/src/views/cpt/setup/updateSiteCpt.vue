@@ -29,7 +29,7 @@ import lodash from "lodash";
 import workRest from '@/api/dbs/workRest';
 import { Beans } from "@/api/dbs/beans";
 import checker from "@/api/check/checker";
-import { useStorage,useUrlSearchParams } from '@vueuse/core';
+// import { useStorage,useUrlSearchParams } from '@vueuse/core';
 import Page from '@/api/uniapp/page';
 import primeUtil from '@/api/prime/util';
 import util from "@/api/util";
@@ -40,13 +40,19 @@ let errors = [];
 let host = window.location.host;
 
 onMounted(() => {
-    // console.log(decodeURIComponent(useUrlSearchParams(Config.vueRouterMode).param))
-    if (useUrlSearchParams(Config.vueRouterMode)?.param) {
-        let param = JSON.parse(useUrlSearchParams(Config.vueRouterMode).param);
-        if (param?.goback) {
-            Page.redirectTo("cptSetup",null);
-            return;
-        }
+    // console.log(util.getUrlParamJson());
+    // if (useUrlSearchParams(Config.vueRouterMode)?.param) {
+    //     let param = JSON.parse(useUrlSearchParams(Config.vueRouterMode).param);
+    //     if (param?.goback) {
+    //         Page.redirectTo("cptSetup",null);
+    //         return;
+    //     }
+    // }
+
+    let param = util.getUrlParamJson();
+    if (param?.goback) {
+        Page.redirectTo("cptSetup",null);
+        return;
     }
 
     workRest.qySiteCompetition(host,(res)=>{

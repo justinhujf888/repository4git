@@ -14,11 +14,11 @@ const model = ref([
             {
                 label: "赛事管理",
                 items: [
-                    { label: '赛事设置', icon: '', to: '/manage/cpt/setup' },
-                    { label: '年份赛事管理', icon: '', to: '/manage/cpt/mastercptsetup' }
+                    { label: '赛事设置', icon: '', to: '/manage/cpt/cptSetup' },
+                    { label: '年份赛事管理', icon: '', to: '/manage/cpt/masterCptSetup' }
                 ]
             },
-            { label: '评委管理', icon: '', to: '/manage/judge/judgelist' }
+            { label: '评委管理', icon: '', to: '/manage/judge/judgeList' }
         ]
     },
     {

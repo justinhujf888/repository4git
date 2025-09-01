@@ -14,22 +14,27 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
-                    path: '/manage/cpt/setup',
+                    path: '/manage/cpt/cptSetup',
                     name: 'cptSetup',
                     component: () => import('@/views/cpt/setup/cptSetup.vue')
                 },
                 {
-                    path: '/manage/cpt/updatesitecpt',
+                    path: '/manage/cpt/updateSiteCpt',
                     name: 'updateSiteCpt',
                     component: () => import('@/views/cpt/setup/updateSiteCpt.vue')
                 },
                 {
-                    path: '/manage/cpt/mastercptsetup',
+                    path: '/manage/cpt/updateSiteWorkitem',
+                    name: 'updateSiteWorkitem',
+                    component: () => import('@/views/cpt/setup/updateSiteWorkitem.vue')
+                },
+                {
+                    path: '/manage/cpt/masterCptSetup',
                     name: 'masterCptSetup',
                     component: () => import('@/views/cpt/setup/masterCptSetup.vue')
                 },
                 {
-                    path: '/manage/judge/judgelist',
+                    path: '/manage/judge/judgeList',
                     name: 'judgeList',
                     component: () => import('@/views/cpt/judge/judgeList.vue')
                 },

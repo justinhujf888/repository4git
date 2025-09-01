@@ -43,13 +43,6 @@
                                     <img class="rounded w-full" :src="`https://primefaces.org/cdn/primevue/images/product/${item.image}`" :alt="item.name" style="max-width: 300px"/>
                                 </div>
                             </div>
-                            <div class="pt-2">
-                                <div class="flex flex-row justify-between items-start gap-2">
-                                    <div>
-                                        <div class="text-base font-medium mt-1">{{ item.name }}</div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -88,7 +81,7 @@ onMounted(() => {
         }
     });
 
-    workRest.qySiteWorkItemList({sourceType:0,type:0},(res)=>{
+    workRest.qySiteWorkItemList({sourceId:host.value,sourceType:0,type:0},(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteZhuTiWorkItemList.value = res.data;
@@ -97,7 +90,7 @@ onMounted(() => {
         ProductService.getProducts().then((data) => (siteZhuTiWorkItemList.value = data.slice(0, 12)));
     });
 
-    workRest.qySiteWorkItemList({sourceType:0,type:1},(res)=>{
+    workRest.qySiteWorkItemList({sourceId:host.value,sourceType:0,type:1},(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteZuoPingWorkItemList.value = res.data;
@@ -105,23 +98,6 @@ onMounted(() => {
         }
     });
 });
-
-const getSeverity = (product) => {
-    switch (product.inventoryStatus) {
-        case 'INSTOCK':
-            return 'success';
-
-        case 'LOWSTOCK':
-            return 'warn';
-
-        case 'OUTOFSTOCK':
-            return 'danger';
-
-        default:
-            return null;
-    }
-}
-
 </script>
 
 <style scoped lang="scss">
