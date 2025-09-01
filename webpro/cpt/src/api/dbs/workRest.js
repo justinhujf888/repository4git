@@ -40,5 +40,22 @@ export default {
             null,
             true
         );
+    },
+    qySiteWorkItemList(ds, onfun) {
+        Http.httpclient_json(
+            '/r/work/qySiteWorkItemList',
+            'post',
+            ds,
+            'json',
+            (res) => {
+                if (res.data.status == 'FA_ER') {
+                    dialog.showApiErrorMsg();
+                } else {
+                    onfun(res.data);
+                }
+            },
+            null,
+            true
+        );
     }
 }

@@ -44,7 +44,7 @@ onMounted(() => {
     if (useUrlSearchParams(Config.vueRouterMode)?.param) {
         let param = JSON.parse(useUrlSearchParams(Config.vueRouterMode).param);
         if (param?.goback) {
-            Page.redirectTo("cptsetup",null);
+            Page.redirectTo("cptSetup",null);
             return;
         }
     }

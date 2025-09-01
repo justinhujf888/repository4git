@@ -80,7 +80,7 @@ class WorkRest extends BaseRest
                      "data":({
                          workService.newQueryUtils(false).masterTable("SiteWorkItem",null,null)
                          .where("sourceType=:sourceType",["sourceType":query.sourceType as byte],null,{return true})
-                         .where("type=:type",["type":query.type as byte],null,{return true})
+                         .where("type=:type",["type":query.type as byte],"and",{return true})
                          .orderBy("createDate desc")
                          .buildSql().run().content;
                      }).call()
