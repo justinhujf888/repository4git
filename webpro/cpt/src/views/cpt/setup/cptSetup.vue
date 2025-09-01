@@ -37,7 +37,7 @@
             <template #grid="slotProps">
                 <div class="grid grid-cols-12 gap-4">
                     <div v-for="(item, index) in slotProps.items" :key="index" class="col-span-6 sm:col-span-4 md:col-span-4 xl:col-span-4 p-2">
-                        <div class="p-2 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
+                        <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                             <div class="bg-surface-50 flex justify-center rounded p-1">
                                 <div class="relative mx-auto">
                                     <img class="rounded w-full" :src="`https://primefaces.org/cdn/primevue/images/product/${item.image}`" :alt="item.name" style="max-width: 300px"/>
