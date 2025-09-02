@@ -99,16 +99,17 @@ const onFormSubmit = ({ valid }) => {
             });
 
             await new Promise(resolve => {
-                dialog.alertBack("设置已保存",()=>{
-                    Config.getConfig();
-                    window.location = window.location.href + "?param=" + encodeURIComponent(JSON.stringify({goback:true}));
-                });
+                callClose();
                 resolve();
             });
         })();
     }
 };
 
+const emit = defineEmits(["callClose"]);
+const callClose = ()=>{
+    emit("callClose");
+};
 </script>
 
 <style scoped lang="scss">

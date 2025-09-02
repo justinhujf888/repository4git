@@ -16,12 +16,20 @@ const router = createRouter({
                 {
                     path: '/manage/cpt/cptSetup',
                     name: 'cptSetup',
-                    component: () => import('@/views/cpt/setup/cptSetup.vue')
+                    component: () => import('@/views/cpt/setup/cptSetup.vue'),
+                    meta:{
+                        isHide: true,
+                        keepAlive:true
+                    }
                 },
                 {
                     path: '/manage/cpt/updateSiteCpt',
                     name: 'updateSiteCpt',
-                    component: () => import('@/views/cpt/setup/updateSiteCpt.vue')
+                    component: () => import('@/views/cpt/setup/updateSiteCpt.vue'),
+                    meta:{
+                        isHide: true,
+                        keepAlive:true
+                    }
                 },
                 {
                     path: '/manage/cpt/updateSiteWorkitem',

@@ -2,7 +2,7 @@
     <div class="p-2 card">
         <div class="flex flex-wrap items-center justify-between">
             <span class="text-base">赛事基础信息设置</span>
-            <Button label="基础信息设置" @click="Page.navigateTo('updateSiteCpt',null)"/>
+            <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="visible4updateSiteCpt=true"/>
         </div>
         <DataTable :value="[siteCompetition]" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
         {
@@ -31,7 +31,7 @@
     <div class="p-2 card">
         <div class="flex flex-wrap items-center justify-between">
             <span class="text-base">设置赛事主题图</span>
-            <Button label="主题图设置" @click="Page.navigateTo('updateSiteWorkitem',null)"/>
+            <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="visible4updateSiteWorkitem=true"/>
         </div>
         <DataView :value="siteZhuTiWorkItemList" layout="grid">
             <template #grid="slotProps">
@@ -49,6 +49,17 @@
             </template>
         </DataView>
     </div>
+
+    <div>
+        <Dialog v-model:visible="visible4updateSiteCpt" modal header="设置赛事基础信息" class="w-11/12 h-full">
+            <updateSiteCpt @callClose="updateSiteCptDialogClose"/>
+        </Dialog>
+    </div>
+    <div>
+        <Dialog v-model:visible="visible4updateSiteWorkitem" modal header="上传主题图" class="w-11/12 h-full">
+            <updateSiteWorkitem @callClose="updateSiteWorkitemDialogClose"/>
+        </Dialog>
+    </div>
 </template>
 
 <script setup>
@@ -64,10 +75,15 @@ import Page from '@/api/uniapp/page';
 import primeUtil from '@/api/prime/util';
 import util from "@/api/util";
 import { ProductService } from '@/service/ProductService';
+import updateSiteWorkitem from "@/views/cpt/setup/updateSiteWorkitem.vue";
+import updateSiteCpt from "@/views/cpt/setup/updateSiteCpt.vue";
 
 const siteCompetition = ref(Beans.siteCompetition());
 const siteZhuTiWorkItemList = ref([]);
 const siteZuoPingWorkItemList = ref([]);
+
+const visible4updateSiteCpt = ref(false);
+const visible4updateSiteWorkitem = ref(false);
 
 let errors = [];
 const host = ref(window.location.host);
@@ -98,6 +114,16 @@ onMounted(() => {
         }
     });
 });
+
+const updateSiteWorkitemDialogClose = ()=>{
+    visible4updateSiteWorkitem.value = false;
+}
+
+const updateSiteCptDialogClose = ()=>{
+    Config.getConfig();
+    visible4updateSiteCpt.value = false;
+    dialog.toastSuccess("赛事基础信息已设置");
+}
 </script>
 
 <style scoped lang="scss">

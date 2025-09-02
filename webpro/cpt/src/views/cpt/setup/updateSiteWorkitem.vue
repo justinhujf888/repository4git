@@ -1,11 +1,14 @@
 <template>
     <div class="p-2 card">
-        <Button label="back" @click="Page.navBack()"/>
+        <Button label="back" @click="callClose"/>
     </div>
 </template>
 
 <script setup>
-import Page from '@/api/uniapp/page';
+const emit = defineEmits(["callClose"]);
+const callClose = ()=>{
+  emit("callClose");
+};
 </script>
 
 <style scoped lang="scss">
