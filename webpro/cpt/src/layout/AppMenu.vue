@@ -5,20 +5,20 @@ import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
     {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/manage/index' }]
+        label: '',
+        items: [{ label: '首页', icon: 'pi pi-fw pi-home', to: '/manage/index' }]
     },
     {
-        label: 'CPT',
+        label: '',
         items: [
             {
-                label: "赛事管理",
+                label: "赛事管理",icon: 'pi pi-fw pi-bars',
                 items: [
                     { label: '系列赛事设置', icon: '', to: '/manage/cpt/cptSetup' },
                     { label: '年份赛事管理', icon: '', to: '/manage/cpt/masterCptSetup' }
                 ]
             },
-            { label: '评委管理', icon: '', to: '/manage/judge/judgeList' }
+            { label: '评委管理', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' }
         ]
     },
     {
