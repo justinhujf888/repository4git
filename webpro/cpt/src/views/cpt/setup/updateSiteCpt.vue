@@ -12,8 +12,9 @@
                     <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">简介</label>
                     <Textarea v-model="siteCompetition.description" autoResize rows="15" class="w-full" />
 
-                    <div class="row mt-12 center">
+                    <div class="row mt-12 center gap-4">
                         <Button type="submit" label="保存设置" class="px-8" _as="router-link" _to="/"></Button>
+                        <Button severity="warn" label="取消" class="px-8" @click="callClose"></Button>
                     </div>
                 </Form>
             </div>
@@ -99,6 +100,7 @@ const onFormSubmit = ({ valid }) => {
             });
 
             await new Promise(resolve => {
+                dialog.toastSuccess("赛事基础信息已设置");
                 callClose();
                 resolve();
             });

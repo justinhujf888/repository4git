@@ -5,10 +5,17 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
+
+const props = defineProps(['sourceType','type'])
 const emit = defineEmits(["callClose"]);
 const callClose = ()=>{
   emit("callClose");
 };
+
+onMounted(() => {
+    console.log(props);
+});
 </script>
 
 <style scoped lang="scss">
