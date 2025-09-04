@@ -31,7 +31,7 @@
     <div class="p-2 card">
         <div class="flex flex-wrap items-center justify-between">
             <span class="text-base">设置赛事主题图</span>
-            <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="visible4updateSiteZhiTiWorkitem=true"/>
+            <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="visible4updateSiteZhuTiWorkitem=true"/>
         </div>
         <DataView :value="siteZhuTiWorkItemList" layout="grid" :pt="{
             emptyMessage:{
@@ -39,12 +39,12 @@
             }
         }">
             <template #grid="slotProps">
-                <div class="grid grid-cols-12 gap-4">
+                <div _class="grid grid-cols-12 gap-4" class="row flex-wrap">
                     <div v-for="(item, index) in slotProps.items" :key="index" class="col-span-4 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
                         <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                             <div class="bg-surface-50 flex justify-center rounded p-1">
                                 <div class="relative mx-auto">
-                                    <img class="rounded w-full" :src="`https://primefaces.org/cdn/primevue/images/product/${item.image}`" :alt="item.name" style="max-width: 300px"/>
+                                    <img class="rounded w-32" :src="oss.buildImgPath(item.path)" :alt="item.name" style="max-width: 300px"/>
                                 </div>
                             </div>
                         </div>
@@ -112,13 +112,13 @@
         </Dialog>
     </div>
     <div>
-        <Dialog v-model:visible="visible4updateSiteZhiTiWorkitem" modal header="上传主题图" class="w-11/12 h-full">
-            <updateSiteWorkitem :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhiti`" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
+        <Dialog v-model:visible="visible4updateSiteZhuTiWorkitem" modal header="上传主题图" class="w-11/12 h-full">
+            <updateSiteWorkitem :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhiti`" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
         </Dialog>
     </div>
     <div>
         <Dialog v-model:visible="visible4updateSiteZuoPingWorkitem" modal header="设置系列作品" class="w-11/12 h-full">
-            <updateSiteWorkitem :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
+            <updateSiteWorkitem :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
         </Dialog>
     </div>
 </template>
@@ -131,11 +131,10 @@ import lodash from "lodash";
 import workRest from '@/api/dbs/workRest';
 import { Beans } from "@/api/dbs/beans";
 import checker from "@/api/check/checker";
-import { useUrlSearchParams } from '@vueuse/core';
 import Page from '@/api/uniapp/page';
 import primeUtil from '@/api/prime/util';
 import util from "@/api/util";
-import { ProductService } from '@/service/ProductService';
+import oss from "@/api/oss"
 import updateSiteWorkitem from "@/views/cpt/setup/updateSiteWorkitem.vue";
 import updateSiteCpt from "@/views/cpt/setup/updateSiteCpt.vue";
 
@@ -145,14 +144,17 @@ const siteZuoPingWorkItemList = ref([]);
 const siteOrgHumanList = ref([]);
 
 const visible4updateSiteCpt = ref(false);
-const visible4updateSiteZhiTiWorkitem = ref(false);
+const visible4updateSiteZhuTiWorkitem = ref(false);
 const visible4updateSiteZuoPingWorkitem = ref(false);
 const visible4updateSiteOrgHuman = ref(false);
 
 let errors = [];
-const host = ref(window.location.host);
+const host = ref(util.getDomainFromUrl(window.location));
+
+let ossClient = null;
 
 onMounted(() => {
+    oss.genClient(null);
     workRest.qySiteCompetition(host.value,(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
@@ -167,8 +169,7 @@ onMounted(() => {
                 siteZhuTiWorkItemList.value = res.data;
             }
         }
-        ProductService.getProducts().then((data) => (siteZhuTiWorkItemList.value = data.slice(0, 12)));
-    });
+      });
 
     workRest.qySiteWorkItemList({sourceId:host.value,sourceType:0,type:1},(res)=>{
         if (res.status=="OK") {
@@ -180,7 +181,7 @@ onMounted(() => {
 });
 
 const updateSiteZhiTiWorkitemDialogClose = ()=>{
-    visible4updateSiteZhiTiWorkitem.value = false;
+    visible4updateSiteZhuTiWorkitem.value = false;
 }
 
 const updateSiteZuoPingWorkitemDialogClose = ()=>{

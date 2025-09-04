@@ -38,7 +38,7 @@ import util from "@/api/util";
 const siteCompetition = ref(Beans.siteCompetition());
 
 let errors = [];
-let host = window.location.host;
+let host = util.getDomainFromUrl(window.location);
 
 onMounted(() => {
     // console.log(util.getUrlParamJson());

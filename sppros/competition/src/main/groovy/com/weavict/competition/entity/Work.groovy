@@ -69,6 +69,9 @@ class SiteWorkItem extends BEntity implements Serializable, IEntity
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
+    @Column(length=30)
+    String appId;
+
     void cancelLazyEr()
     {
 
@@ -105,6 +108,9 @@ class OrgHuman extends BEntity implements Serializable, IEntity
 
     @Column(length=150)
     String headImgUrl;
+
+    @Column(length=30)
+    String appId;
 
     void cancelLazyEr()
     {

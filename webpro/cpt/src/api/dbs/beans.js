@@ -45,8 +45,8 @@ export const Beans = {
             sourceId: "",
             type: -1,
             mediaType: -1,
-            siteCompetition: this.siteCompetition(),
-            createDate: null
+            createDate: null,
+            appId: ""
         }
     },
 
@@ -59,7 +59,8 @@ export const Beans = {
             sourceId: "",
             description: "",
             createDate: null,
-            headImgUrl: ""
+            headImgUrl: "",
+            appId: ""
         }
     },
 

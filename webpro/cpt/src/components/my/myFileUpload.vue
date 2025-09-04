@@ -13,12 +13,12 @@
             }
         }">
             <template #grid="slotProps">
-                <div class="grid grid-cols-12 gap-4">
-                    <div v-for="(item, index) in slotProps.items" :key="index" _class="col-span-4 sm:col-span-4 md:col-span-2 xl:col-span-2 p-2" class="col-span-6 sm:col-span-4 md:col-span-3 xl:col-span-2 p-2">
+                <div class="row flex-wrap">
+                    <div v-for="(item, index) in slotProps.items" :key="index" _class="col-span-4 sm:col-span-4 md:col-span-2 xl:col-span-2 p-2" class="col-span-2 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
                         <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                             <div class="bg-surface-50 flex justify-center rounded p-1">
                                 <div class="relative mx-auto">
-                                    <img class="rounded w-full" :src="item.path ? item.path : item.objectURL" :alt="item.name"/>
+                                    <img class="rounded w-32" :src="item.path ? oss.buildImgPath(item.path) : item.objectURL" :alt="item.name"/>
                                     <div class="absolute bg-black/70 rounded-border -bottom-5 -right-2">
                                         <Tag :value="lodash.floor(lodash.divide(item.size,1024),2) + 'KB'" :severity="item.size"></Tag>
                                     </div>
@@ -42,25 +42,24 @@ import dialog from '@/api/uniapp/dialog';
 import oss from '@/api/oss';
 
 // const fileupload = useTemplateRef("fileupload");
-const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey']);
+const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey','obj']);
 const emit = defineEmits(["theFileUploaded","allFilesUploaded"]);
-const theFileUploaded = (file,index)=>{
-    emit("theFileUploaded",file,index);
+const theFileUploaded = (file,index,obj)=>{
+    emit("theFileUploaded",file,index,obj);
 };
-const allFilesUploaded = (files)=>{
-    emit("allFilesUploaded",files);
+const allFilesUploaded = (files,obj)=>{
+    emit("allFilesUploaded",files,obj);
 };
 
-const files = ref([]);
+const files = ref(props.files ? props.files : []);
 const maxFileSize = ref(props.maxFileSize ? props.maxFileSize : 1000000);
 const fileLimit = ref(props.fileLimit ? props.fileLimit : 20);
 const fileAccept = ref(props.fileAccept ? props.fileAccept : "image/*");
 const filePreKey = ref(props.filePreKey ? props.filePreKey : "temp");
+let obj = props.obj;
 
 onMounted(() => {
-    if (props.files && props.files.length>0) {
-        files.value = lodash.concat(files.value,props.files);
-    }
+
 });
 
 function onFileSelect(e) {
@@ -70,7 +69,7 @@ function onFileSelect(e) {
 
 function uploadFile(step) {
     if (step > files.value.length - 1) {
-        allFilesUploaded(files.value);
+        allFilesUploaded(files.value,obj);
         dialog.toastNone(`文件已上传`);
     } else {
         if (files.value[step].path) {
@@ -83,7 +82,7 @@ function uploadFile(step) {
                 (res) => {
                     dialog.toastNone(`${files.value[step].name} 已上传`);
                     files.value[step].filekey = fileKey;
-                    theFileUploaded(files.value[step],step);
+                    theFileUploaded(files.value[step],step,obj);
                     uploadFile(step + 1);
                 },
                 (er) => {
@@ -112,7 +111,7 @@ function uploader() {
 function delTheFile(index) {
     dialog.confirm("是否删除这个文件？",()=>{
         if (files.value[index].path) {
-
+            console.log(files.value[index]);
         } else {
             files.value.splice(index,1);
         }
