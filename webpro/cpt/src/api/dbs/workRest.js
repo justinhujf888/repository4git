@@ -57,5 +57,22 @@ export default {
             null,
             true
         );
+    },
+    updateSiteWorkItem(ds, onfun) {
+        Http.httpclient_json(
+            '/r/work/updateSiteWorkItem',
+            'post',
+            ds,
+            'json',
+            (res) => {
+                if (res.data.status == 'FA_ER') {
+                    dialog.showApiErrorMsg();
+                } else {
+                    onfun(res.data);
+                }
+            },
+            null,
+            true
+        );
     }
 }

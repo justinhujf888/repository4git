@@ -113,12 +113,12 @@
     </div>
     <div>
         <Dialog v-model:visible="visible4updateSiteZhiTiWorkitem" modal header="上传主题图" class="w-11/12 h-full">
-            <updateSiteWorkitem :sourceType="0" :type="0" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
+            <updateSiteWorkitem :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhiti`" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
         </Dialog>
     </div>
     <div>
         <Dialog v-model:visible="visible4updateSiteZuoPingWorkitem" modal header="设置系列作品" class="w-11/12 h-full">
-            <updateSiteWorkitem :sourceType="0" :type="1" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
+            <updateSiteWorkitem :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
         </Dialog>
     </div>
 </template>
