@@ -72,6 +72,10 @@ class SiteWorkItem extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String appId;
 
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> fileFields;
+
     void cancelLazyEr()
     {
 

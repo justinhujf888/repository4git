@@ -40,11 +40,11 @@
         }">
             <template #grid="slotProps">
                 <div _class="grid grid-cols-12 gap-4" class="row flex-wrap">
-                    <div v-for="(item, index) in slotProps.items" :key="index" class="col-span-4 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
+                    <div v-for="(item, index) in slotProps.items" :key="index" _class="col-span-4 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
                         <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                             <div class="bg-surface-50 flex justify-center rounded p-1">
-                                <div class="relative mx-auto">
-                                    <img class="rounded w-32" :src="oss.buildImgPath(item.path)" :alt="item.name" style="max-width: 300px"/>
+                                <div class="w-24 h-24 sm:w-24 sm:h-24 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
+                                    <img class="rounded w-full h-full object-cover" :src="item.tempMap.imgPath" :alt="item.name" style="max-width: 300px;"/>
                                 </div>
                             </div>
                         </div>
@@ -165,9 +165,13 @@ onMounted(() => {
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteZhuTiWorkItemList.value = res.data;
-                // lodash.forEach(siteZhuTiWorkItemList.value,(v,i)=>{
-                //     console.log(oss.buildImgPath(v.path));
-                // });
+                lodash.forEach(siteZhuTiWorkItemList.value,(v,i)=>{
+                    v.tempMap = {};
+                    v.tempMap.size = v.fileFields.size;
+                    v.tempMap.name = v.fileFields.name;
+                    v.tempMap.type = v.fileFields.type;
+                    v.tempMap.imgPath = oss.buildImgPath(v.path);
+                });
             }
         }
       });

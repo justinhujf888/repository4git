@@ -46,7 +46,8 @@ export const Beans = {
             type: -1,
             mediaType: -1,
             createDate: null,
-            appId: ""
+            appId: "",
+            fileFields: null
         }
     },
 

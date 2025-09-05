@@ -47,6 +47,7 @@ function theFileUpload(file,index,obj) {
     siteWorkItem.mediaType = obj.mediaType;
     siteWorkItem.createDate = dayjs().valueOf();
     siteWorkItem.appId = obj.appId;
+    siteWorkItem.fileFields = {name:file.name,size:file.size,type:file.type};
     workRest.updateSiteWorkItem({siteWorkItem:siteWorkItem},(res)=>{
         if (res.status=="OK") {
             files.value.push(siteWorkItem);
@@ -60,8 +61,11 @@ function deleteFile(file,index,obj) {
         workRest.deleteSiteWorkItem({id:file.id},(res)=>{
             if (res.status=="OK") {
                 oss.deleteFile(file.path);
+                dialog.toastSuccess(`文件${file.name}已删除`);
             }
         });
+    } else {
+        dialog.toastSuccess(`文件${file.name}已删除`);
     }
 }
 

@@ -1,5 +1,5 @@
 <template>
-    <div class="relative">
+    <div class="">
         <FileUpload _mode="basic" :accept="fileAccept" multiple auto :maxFileSize="maxFileSize" :fileLimit="fileLimit" _uploader="uploader" customUpload @select="onFileSelect" chooseLabel="选择文件" :pt="{
             root: {
                 class: '!border-0'
@@ -19,7 +19,7 @@
                     <div class="flex gap-2">
                         <Button @click="chooseCallback()" icon="pi pi-images" rounded label="选择文件"></Button>
                         <Button vv-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
-<!--                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>-->
+                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>
                     </div>
                 </div>
             </template>
@@ -37,13 +37,16 @@
         }">
             <template #grid="slotProps">
                 <div class="row flex-wrap">
-                    <div v-for="(item, index) in slotProps.items" :key="index" _class="col-span-4 sm:col-span-4 md:col-span-2 xl:col-span-2 p-2" class="col-span-2 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
+                    <div v-for="(item, index) in slotProps.items" :key="index" _class="col-span-4 sm:col-span-4 md:col-span-2 xl:col-span-2 p-2" cclass="col-span-2 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
                         <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                             <div class="bg-surface-50 flex justify-center rounded p-1">
                                 <div class="relative mx-auto">
-                                    <img class="rounded w-32" :src="item.path ? oss.buildImgPath(item.path) : item.objectURL" :alt="item.name"/>
+                                    <div class="w-24 h-24 sm:w-24 sm:h-24 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
+                                        <img class="rounded w-full h-full object-cover" :src="item.tempMap.imgPath" :alt="item.name"/>
+                                    </div>
+                                    <span v-if="item.path" class="text-xs bg-green-200 text-gray-500 absolute -top-5 left-0 p-1 rounded-md">已上传</span>
                                     <div class="absolute bg-black/70 rounded-border -bottom-5 -right-2">
-                                        <Tag :value="lodash.floor(lodash.divide(item.size,1024),2) + 'KB'" :severity="item.size"></Tag>
+                                        <Tag :value="formatSize(item.tempMap.size)" :severity="item.size"></Tag>
                                     </div>
                                     <div class="absolute -top-6 -right-2">
                                         <Button icon="pi pi-times" severity="danger" rounded aria-label="Cancel" size="small" @click="delTheFile(index)"/>
@@ -62,12 +65,14 @@
 </template>
 
 <script setup>
+import { usePrimeVue } from 'primevue/config';
 import { ref,useTemplateRef,onMounted } from 'vue';
 import lodash from "lodash-es";
 import dialog from '@/api/uniapp/dialog';
 import oss from '@/api/oss';
 import util from "@/api/util";
 
+const $primevue = usePrimeVue();
 // const fileupload = useTemplateRef("fileupload");
 const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey','obj']);
 const emit = defineEmits(["theFileUploaded","allFilesUploaded","deleteFile"]);
@@ -93,8 +98,26 @@ onMounted(() => {
 });
 
 function onFileSelect(e) {
-    files.value = lodash.concat(files.value,e.files);
-    console.log(files.value);
+    // clearCallback();
+    console.log(e.files);
+    lodash.forEach(e.files,(v,i)=>{
+        if (lodash.findIndex(files.value,(o)=>{
+            if (o.objectURL) {
+                return o.objectURL==v.objectURL;
+            } else {
+                return false;
+            }
+        })<0) {
+            v.tempMap = {};
+            v.tempMap.size = v.size;
+            v.tempMap.name = v.name;
+            v.tempMap.type = v.type;
+            v.tempMap.imgPath = v.objectURL;
+            files.value.push(v);
+        }
+    });
+    // files.value = lodash.concat(files.value,e.files);
+    // console.log(files.value);
 }
 
 function uploadFile(step) {
@@ -138,14 +161,25 @@ function uploader() {
 
 function delTheFile(index) {
     dialog.confirm("是否删除这个文件？",()=>{
-        if (files.value[index].path) {
-            deleteFile(files.value[index],index,obj);
-            files.value.splice(index,1);
-        } else {
-            files.value.splice(index,1);
-        }
+        deleteFile(files.value[index],index,obj);
+        files.value.splice(index,1);
     },null);
 }
+
+const formatSize = (bytes) => {
+    const k = 1024;
+    const dm = 3;
+    const sizes = $primevue.config.locale.fileSizeTypes;
+
+    if (bytes === 0) {
+        return `0 ${sizes[0]}`;
+    }
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
+
+    return `${formattedSize} ${sizes[i]}`;
+};
 </script>
 
 <style scoped lang="scss">
