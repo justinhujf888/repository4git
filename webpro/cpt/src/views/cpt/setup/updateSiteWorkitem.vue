@@ -1,6 +1,6 @@
 <template>
     <div class="p-2 card">
-        <myFileUpload :files="files" :filePreKey="filePreKey" :maxFileSize="1000000" :fileLimit="20" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload"/>
+        <myFileUpload :files="files" :filePreKey="filePreKey" :maxFileSize="1000000" :fileLimit="20" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload" @deleteFile="deleteFile"/>
     </div>
 </template>
 
@@ -13,6 +13,7 @@ import myFileUpload from "@/components/my/myFileUpload.vue";
 import { Beans } from '@/api/dbs/beans';
 import workRest from '@/api/dbs/workRest';
 import {Config} from '@/api/config';
+import oss from "@/api/oss"
 
 const props = defineProps(['files','sourceType','type','sourceId','filePreKey'])
 const emit = defineEmits(["callClose"]);
@@ -31,13 +32,15 @@ onMounted(() => {
 });
 
 function filesUpload(files,obj) {
-    dialog.alert(`文件已上传！数量：${files.length}`);
+    dialog.alertBack(`文件上传完成！`,()=>{
+        callClose();
+    });
 }
 
 function theFileUpload(file,index,obj) {
     let siteWorkItem = Beans.siteWorkItem();
     siteWorkItem.id = Beans.buildPId("zt");
-    siteWorkItem.path = file.filekey;
+    siteWorkItem.path = file.fileKey;
     siteWorkItem.type = type;
     siteWorkItem.sourceType = sourceType;
     siteWorkItem.sourceId = sourceId;
@@ -46,9 +49,20 @@ function theFileUpload(file,index,obj) {
     siteWorkItem.appId = obj.appId;
     workRest.updateSiteWorkItem({siteWorkItem:siteWorkItem},(res)=>{
         if (res.status=="OK") {
+            files.value.push(siteWorkItem);
             dialog.toastSuccess(`文件${file.name}已上传`);
         }
     });
+}
+
+function deleteFile(file,index,obj) {
+    if (file.id) {
+        workRest.deleteSiteWorkItem({id:file.id},(res)=>{
+            if (res.status=="OK") {
+                oss.deleteFile(file.path);
+            }
+        });
+    }
 }
 
 </script>

@@ -121,5 +121,15 @@ export default {
                 }
             }
         });
-    }
+    },
+    deleteFile(path) {
+        this.genClient(async (c)=>{
+            try {
+                return await c.delete(path);
+            } catch(er) {
+                return null;
+            }
+        });
+        // client.delete(path);
+    },
 };

@@ -43,13 +43,16 @@ import oss from '@/api/oss';
 
 // const fileupload = useTemplateRef("fileupload");
 const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey','obj']);
-const emit = defineEmits(["theFileUploaded","allFilesUploaded"]);
+const emit = defineEmits(["theFileUploaded","allFilesUploaded","deleteFile"]);
 const theFileUploaded = (file,index,obj)=>{
     emit("theFileUploaded",file,index,obj);
 };
 const allFilesUploaded = (files,obj)=>{
     emit("allFilesUploaded",files,obj);
 };
+const deleteFile = (file,index,obj)=>{
+    emit("deleteFile",file,index,obj);
+}
 
 const files = ref(props.files ? props.files : []);
 const maxFileSize = ref(props.maxFileSize ? props.maxFileSize : 1000000);
@@ -59,7 +62,7 @@ const filePreKey = ref(props.filePreKey ? props.filePreKey : "temp");
 let obj = props.obj;
 
 onMounted(() => {
-
+    oss.genClient(null);
 });
 
 function onFileSelect(e) {
@@ -81,7 +84,7 @@ function uploadFile(step) {
                 fileKey,
                 (res) => {
                     dialog.toastNone(`${files.value[step].name} 已上传`);
-                    files.value[step].filekey = fileKey;
+                    files.value[step].fileKey = fileKey;
                     theFileUploaded(files.value[step],step,obj);
                     uploadFile(step + 1);
                 },
@@ -111,7 +114,8 @@ function uploader() {
 function delTheFile(index) {
     dialog.confirm("是否删除这个文件？",()=>{
         if (files.value[index].path) {
-            console.log(files.value[index]);
+            deleteFile(files.value[index],index,obj);
+            files.value.splice(index,1);
         } else {
             files.value.splice(index,1);
         }

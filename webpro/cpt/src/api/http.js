@@ -39,6 +39,24 @@ export const Http = {
             });
     },
 
+    callHttpFunction(url,ds,onfun) {
+        Http.httpclient_json(
+            url,
+            'post',
+            ds,
+            'json',
+            (res) => {
+                if (res.data.status == 'FA_ER') {
+                    dialog.showApiErrorMsg();
+                } else {
+                    onfun(res.data);
+                }
+            },
+            null,
+            true
+        );
+    },
+
     uploadFileOss(file,host,key,ossAccessKeyId,policy,signature,securityToken,okfun,erfun) {
         // axios({
         //     method: 'post',

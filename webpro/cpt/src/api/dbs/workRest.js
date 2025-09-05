@@ -74,5 +74,8 @@ export default {
             null,
             true
         );
+    },
+    deleteSiteWorkItem(ds, onfun) {
+        Http.callHttpFunction('/r/work/deleteSiteWorkItem',ds,onfun);
     }
 }

@@ -134,7 +134,7 @@ import checker from "@/api/check/checker";
 import Page from '@/api/uniapp/page';
 import primeUtil from '@/api/prime/util';
 import util from "@/api/util";
-import oss from "@/api/oss"
+import oss from "@/api/oss";
 import updateSiteWorkitem from "@/views/cpt/setup/updateSiteWorkitem.vue";
 import updateSiteCpt from "@/views/cpt/setup/updateSiteCpt.vue";
 
@@ -151,8 +151,6 @@ const visible4updateSiteOrgHuman = ref(false);
 let errors = [];
 const host = ref(util.getDomainFromUrl(window.location));
 
-let ossClient = null;
-
 onMounted(() => {
     oss.genClient(null);
     workRest.qySiteCompetition(host.value,(res)=>{
@@ -167,6 +165,9 @@ onMounted(() => {
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteZhuTiWorkItemList.value = res.data;
+                // lodash.forEach(siteZhuTiWorkItemList.value,(v,i)=>{
+                //     console.log(oss.buildImgPath(v.path));
+                // });
             }
         }
       });
