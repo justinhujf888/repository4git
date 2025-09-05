@@ -1,11 +1,34 @@
 <template>
-    <div>
-        <div class="row gap-4">
-            <FileUpload mode="basic" :accept="fileAccept" multiple auto :maxFileSize="maxFileSize" :fileLimit="fileLimit" _uploader="uploader" customUpload @select="onFileSelect" chooseLabel="选择文件" :pt="{
+    <div class="relative">
+        <FileUpload _mode="basic" :accept="fileAccept" multiple auto :maxFileSize="maxFileSize" :fileLimit="fileLimit" _uploader="uploader" customUpload @select="onFileSelect" chooseLabel="选择文件" :pt="{
+            root: {
+                class: '!border-0'
+            },
+            Message:{
+                    pcMessage:{
+                        class:'!absolute !bottom-0 !left-0'
+                    }
+                }
+            }">
+<!--            <template #header>-->
+<!--                <Button @click="chooseCallback()" icon="pi pi-images" rounded variant="outlined" severity="secondary"></Button>-->
+<!--                <Button vv-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1" label="上传文件" class="!bg-orange-400 !border-orange-400" @click="uploader"/>-->
+<!--            </template>-->
+            <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
+                <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
+                    <div class="flex gap-2">
+                        <Button @click="chooseCallback()" icon="pi pi-images" rounded label="选择文件"></Button>
+                        <Button vv-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
+<!--                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>-->
+                    </div>
+                </div>
+            </template>
+            <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
+                <div class="row flex-wrap">
 
-                }"/>
-            <Button v-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1" label="上传文件" class="!bg-orange-400 !border-orange-400" @click="uploader"/>
-        </div>
+                </div>
+            </template>
+        </FileUpload>
         <!--        <Button label="back" @click="callClose"/>-->
         <DataView :value="files" layout="grid" :pt="{
             emptyMessage:{
@@ -32,6 +55,9 @@
                 </div>
             </template>
         </DataView>
+        <div v-if="files?.length<1" class="hwcenter text-gray-600 text-xs">
+            <text>未上传文件</text>
+        </div>
     </div>
 </template>
 
@@ -40,6 +66,7 @@ import { ref,useTemplateRef,onMounted } from 'vue';
 import lodash from "lodash-es";
 import dialog from '@/api/uniapp/dialog';
 import oss from '@/api/oss';
+import util from "@/api/util";
 
 // const fileupload = useTemplateRef("fileupload");
 const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey','obj']);
@@ -62,7 +89,7 @@ const filePreKey = ref(props.filePreKey ? props.filePreKey : "temp");
 let obj = props.obj;
 
 onMounted(() => {
-    oss.genClient(null);
+
 });
 
 function onFileSelect(e) {
@@ -73,17 +100,15 @@ function onFileSelect(e) {
 function uploadFile(step) {
     if (step > files.value.length - 1) {
         allFilesUploaded(files.value,obj);
-        dialog.toastNone(`文件已上传`);
     } else {
         if (files.value[step].path) {
             uploadFile(step + 1);
         } else if (files.value[step].objectURL) {
-            let fileKey = filePreKey.value + '/' + files.value[step].name;
+            let fileKey = `${filePreKey.value}/${util.random_string(5)}_${files.value[step].name}`;//filePreKey.value + '/' + files.value[step].name;
             oss.uploadFileWithClient(
                 files.value[step],
                 fileKey,
                 (res) => {
-                    dialog.toastNone(`${files.value[step].name} 已上传`);
                     files.value[step].fileKey = fileKey;
                     theFileUploaded(files.value[step],step,obj);
                     uploadFile(step + 1);

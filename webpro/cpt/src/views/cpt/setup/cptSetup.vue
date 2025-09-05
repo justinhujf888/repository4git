@@ -65,12 +65,12 @@
             }
         }">
             <template #grid="slotProps">
-                <div class="grid grid-cols-12 gap-4">
+                <div _class="grid grid-cols-12 gap-4" class="row flex-wrap">
                     <div v-for="(item, index) in slotProps.items" :key="index" class="col-span-4 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
                         <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                             <div class="bg-surface-50 flex justify-center rounded p-1">
                                 <div class="relative mx-auto">
-                                    <img class="rounded w-full" :src="`https://primefaces.org/cdn/primevue/images/product/${item.image}`" :alt="item.name" style="max-width: 300px"/>
+                                    <img class="rounded w-32" :src="oss.buildImgPath(item.path)" :alt="item.name" style="max-width: 300px"/>
                                 </div>
                             </div>
                         </div>
@@ -113,12 +113,12 @@
     </div>
     <div>
         <Dialog v-model:visible="visible4updateSiteZhuTiWorkitem" modal header="上传主题图" class="w-11/12 h-full">
-            <updateSiteWorkitem :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhiti`" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
+            <updateSiteWorkitem :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhuti`" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
         </Dialog>
     </div>
     <div>
         <Dialog v-model:visible="visible4updateSiteZuoPingWorkitem" modal header="设置系列作品" class="w-11/12 h-full">
-            <updateSiteWorkitem :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
+            <updateSiteWorkitem :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
         </Dialog>
     </div>
 </template>
