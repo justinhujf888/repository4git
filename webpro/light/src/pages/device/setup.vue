@@ -33,7 +33,7 @@
 					<text class="iconfont text-3xl text-green-500">&#xe61f;</text>
 					<text class="text-base text-green-500 font-semibold">{{$t("page.setup.daylight")}}</text>
 				</view>
-<!--           #ifdef MP     -->
+<!--           #ifdef MP    -->
 				<view class="col justify-center items-center flex-1 mt-2">
 					<view class="row justify-center items-center" @tap="goKgtime">
 						<text>{{$t("page.setup.daymode")}} {{times.onTime}}</text>
