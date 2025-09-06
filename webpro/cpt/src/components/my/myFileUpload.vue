@@ -1,12 +1,12 @@
 <template>
     <div class="">
-        <FileUpload _mode="basic" :accept="fileAccept" multiple auto :maxFileSize="maxFileSize" :fileLimit="fileLimit" _uploader="uploader" customUpload @select="onFileSelect" chooseLabel="选择文件" :pt="{
+        <FileUpload ref="fu" mode="advanced" :accept="fileAccept" multiple auto :maxFileSize="maxFileSize" :fileLimit="fileLimit" _uploader="uploader" customUpload @select="onFileSelect" chooseLabel="选择文件" :invalidFileSizeMessage="`{0}: 文件太大, 文件大小必须小于 {1}`" :pt="{
             root: {
                 class: '!border-2'
             },
             Message:{
                     pcMessage:{
-                        class:'!absolute !bottom-0 !left-0'
+                        class:''
                     }
                 }
             }">
@@ -14,17 +14,20 @@
 <!--                <Button @click="chooseCallback()" icon="pi pi-images" rounded variant="outlined" severity="secondary"></Button>-->
 <!--                <Button vv-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1" label="上传文件" class="!bg-orange-400 !border-orange-400" @click="uploader"/>-->
 <!--            </template>-->
-            <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
+            <template #header="{ chooseCallback, uploadCallback, clearCallback }">
                 <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
                     <div class="flex gap-2">
                         <Button @click="chooseCallback()" icon="pi pi-images" rounded label="选择文件"></Button>
-                        <Button vv-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
+                        <Button v-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1 && files.length<=fileLimit" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
 <!--                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>-->
                     </div>
                 </div>
             </template>
-            <template #content="{ filess, uploadedFiles, removeUploadedFileCallback, removeFileCallback, messages }">
-                <Message v-for="message of messages" :key="message" :class="{ 'mb-8': !files.length && !uploadedFiles.length}" severity="error">
+            <template #content="{ messages }">
+                <Message v-for="message of messages" :key="message" :class="{ 'mb-8': !files.length }" severity="error">
+                    {{ message }}
+                </Message>
+                <Message v-for="message of fileMessages" :key="message" :class="{ 'mb-8': !files.length }" severity="error">
                     {{ message }}
                 </Message>
                 <DataView :value="files" layout="grid" :pt="{
@@ -39,7 +42,7 @@
                                     <div class="bg-surface-50 flex justify-center rounded p-1">
                                         <div class="relative mx-auto">
                                             <div class="w-20 h-20 sm:w-20 sm:h-20 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
-                                                <img class="rounded w-full h-full object-cover" :src="item.tempMap.imgPath" :alt="item.name"/>
+                                                <Image class="rounded w-full h-full object-cover" :src="item.tempMap.imgPath" :alt="item.name" style="max-width: 300px;" preview :pt="{image:{class:'!w-full !h-full object-cover'}}"/>
                                             </div>
                                             <span v-if="item.path" class="text-xs bg-green-200 text-gray-500 absolute -top-5 left-0 p-1 rounded-md">已上传</span>
                                             <div class="absolute bg-black/70 rounded-border -bottom-5 -right-2">
@@ -112,6 +115,7 @@ import dialog from '@/api/uniapp/dialog';
 import oss from '@/api/oss';
 import util from "@/api/util";
 
+const fu = useTemplateRef("fu");
 const $primevue = usePrimeVue();
 // const fileupload = useTemplateRef("fileupload");
 const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey','obj']);
@@ -127,27 +131,46 @@ const deleteFile = (file,index,obj)=>{
 }
 
 const files = ref(props.files ? lodash.cloneDeep(props.files) : []);
-const maxFileSize = ref(props.maxFileSize ? props.maxFileSize : 1000000);
+const maxFileSize = ref(props.maxFileSize ? props.maxFileSize : 2097152);
 const fileLimit = ref(props.fileLimit ? props.fileLimit : 20);
 const fileAccept = ref(props.fileAccept ? props.fileAccept : "image/*");
 const filePreKey = ref(props.filePreKey ? props.filePreKey : "temp");
+const fileMessages = ref([]);
+
 let obj = props.obj;
 
 onMounted(() => {
-
+    // console.log(fu);
 });
 
 function onFileSelect(e) {
-    // clearCallback();
-    console.log(e.files);
+    // console.log(e.files,fu.value.files);
+
+    // lodash.forEach(e.files,(v,i)=>{
+    //     if (lodash.findIndex(files.value,(o)=>{
+    //         if (o.objectURL) {
+    //             return o.objectURL==v.objectURL;
+    //         } else {
+    //             return false;
+    //         }
+    //     })<0) {
+    //         if (files.value.length > fileLimit.value) {
+    //             fileMessages.value.push(`${v.name} 已经超出允许上传的最大数量限制，没有加载。`);
+    //         } else {
+    //             v.tempMap = {};
+    //             v.tempMap.size = v.size;
+    //             v.tempMap.name = v.name;
+    //             v.tempMap.type = v.type;
+    //             v.tempMap.imgPath = v.objectURL;
+    //             files.value.push(v);
+    //         }
+    //     }
+    // });
+
     lodash.forEach(e.files,(v,i)=>{
-        if (lodash.findIndex(files.value,(o)=>{
-            if (o.objectURL) {
-                return o.objectURL==v.objectURL;
-            } else {
-                return false;
-            }
-        })<0) {
+        if (files.value.length >= fileLimit.value) {
+            fileMessages.value.push(`${v.name} 已经超出允许上传的最大数量限制，没有加载。`);
+        } else {
             v.tempMap = {};
             v.tempMap.size = v.size;
             v.tempMap.name = v.name;
@@ -156,6 +179,8 @@ function onFileSelect(e) {
             files.value.push(v);
         }
     });
+    fu.value.files = [];
+
     // files.value = lodash.concat(files.value,e.files);
     // console.log(files.value);
 }

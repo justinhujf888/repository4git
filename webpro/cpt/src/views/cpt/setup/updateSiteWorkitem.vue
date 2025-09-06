@@ -1,6 +1,6 @@
 <template>
     <div class="p-2 card">
-        <myFileUpload :files="files" :filePreKey="filePreKey" :maxFileSize="1000000" :fileLimit="20" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload" @deleteFile="deleteFile"/>
+        <myFileUpload :files="files" :filePreKey="filePreKey" :maxFileSize="maxFileSize" :fileLimit="fileLimit" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload" @deleteFile="deleteFile"/>
     </div>
 </template>
 
@@ -15,7 +15,7 @@ import workRest from '@/api/dbs/workRest';
 import {Config} from '@/api/config';
 import oss from "@/api/oss"
 
-const props = defineProps(['files','sourceType','type','sourceId','filePreKey'])
+const props = defineProps(['files','sourceType','type','sourceId','filePreKey','maxFileSize','fileLimit'])
 const emit = defineEmits(["callClose"]);
 const callClose = ()=>{
   emit("callClose");
@@ -26,6 +26,8 @@ let sourceType = props.sourceType ? props.sourceType : 0;
 let type = props.type ? props.type : 0;
 let sourceId = props.sourceId ? props.sourceId : "";
 const filePreKey = ref(props.filePreKey ? props.filePreKey : "temp");
+const maxFileSize = ref(props.maxFileSize ? props.maxFileSize : 2097152);
+const fileLimit = ref(props.fileLimit ? props.fileLimit : 20);
 
 onMounted(() => {
 
@@ -39,7 +41,7 @@ function filesUpload(files,obj) {
 
 function theFileUpload(file,index,obj) {
     let siteWorkItem = Beans.siteWorkItem();
-    siteWorkItem.id = Beans.buildPId("zt");
+    siteWorkItem.id = Beans.buildPId( type==0 ? "zt" : "zp");
     siteWorkItem.path = file.fileKey;
     siteWorkItem.type = type;
     siteWorkItem.sourceType = sourceType;

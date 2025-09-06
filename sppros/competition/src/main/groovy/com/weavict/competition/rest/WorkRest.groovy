@@ -83,7 +83,7 @@ class WorkRest extends BaseRest
                          .where("sourceId=:sourceId",["sourceId":query.sourceId],null,{return true})
                          .where("sourceType=:sourceType",["sourceType":query.sourceType as byte],"and",{return true})
                          .where("type=:type",["type":query.type as byte],"and",{return true})
-                         .orderBy("createDate desc")
+                         .orderBy("createDate")
                          .buildSql().run().content;
                      }).call()
                     ]);
