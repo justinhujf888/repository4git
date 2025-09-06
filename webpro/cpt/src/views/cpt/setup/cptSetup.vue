@@ -43,7 +43,7 @@
                     <div v-for="(item, index) in slotProps.items" :key="index" _class="col-span-4 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
                         <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
                             <div class="bg-surface-50 flex justify-center rounded p-1">
-                                <div class="w-24 h-24 sm:w-24 sm:h-24 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
+                                <div class="w-20 h-20 sm:w-20 sm:h-20 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
                                     <img class="rounded w-full h-full object-cover" :src="item.tempMap.imgPath" :alt="item.name" style="max-width: 300px;"/>
                                 </div>
                             </div>

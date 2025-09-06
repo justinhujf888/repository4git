@@ -50,6 +50,11 @@ function theFileUpload(file,index,obj) {
     siteWorkItem.fileFields = {name:file.name,size:file.size,type:file.type};
     workRest.updateSiteWorkItem({siteWorkItem:siteWorkItem},(res)=>{
         if (res.status=="OK") {
+            siteWorkItem.tempMap = {};
+            siteWorkItem.tempMap.size = siteWorkItem.fileFields.size;
+            siteWorkItem.tempMap.name = siteWorkItem.fileFields.name;
+            siteWorkItem.tempMap.type = siteWorkItem.fileFields.type;
+            siteWorkItem.tempMap.imgPath = oss.buildImgPath(siteWorkItem.path);
             files.value.push(siteWorkItem);
             dialog.toastSuccess(`文件${file.name}已上传`);
         }
@@ -61,11 +66,13 @@ function deleteFile(file,index,obj) {
         workRest.deleteSiteWorkItem({id:file.id},(res)=>{
             if (res.status=="OK") {
                 oss.deleteFile(file.path);
-                dialog.toastSuccess(`文件${file.name}已删除`);
+                files.value.splice(index,1);
+                dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
             }
         });
     } else {
-        dialog.toastSuccess(`文件${file.name}已删除`);
+        files.value.splice(index,1);
+        dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
     }
 }
 
