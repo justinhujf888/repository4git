@@ -29,7 +29,7 @@
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
 				<view>
-					<text class="text-gray-600 text-sm">我的设备</text>
+					<text class="text-gray-600 text-sm">{{$t('page.index.myDevices')}}</text>
 					<view v-if="deviceList?.length > 0">
 						<view v-for="(device,index) in deviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row relative">
 							<view class="mx-2">
@@ -41,7 +41,7 @@
 									<text class="text-sm font-semibold">{{device.name}}</text>
 								</view>
 								<view v-if="device.tempMap.near">
-									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" :disabled="device.tempMap.connecting" @click="addDevice(device)" click="page.navigateTo('../device/scriptList',{device:device})">连接</wd-button>
+									<wd-button size="small" custom-class="py-1 text-xs text-white w-15" custom-style="background: #6AAE36" :loading="device.tempMap.connecting" :disabled="device.tempMap.connecting" @click="addDevice(device)" click="page.navigateTo('../device/scriptList',{device:device})">{{$t('page.index.connect')}}</wd-button>
 								</view>
 								<view v-else>
 									<text class="text-gray-400 text-xs"></text>
@@ -54,12 +54,12 @@
 						</view>
 					</view>
 					<view v-else class="center mt-10">
-						<text class="text-gray-500 text-xs">没有添加设备</text>
+						<text class="text-gray-500 text-xs">{{$t('page.index.noDevices')}}</text>
 					</view>
 				</view>
 				<wd-divider></wd-divider>
 				<view class="mt-2">
-					<text class="text-gray-600 text-sm">搜索其它设备</text>
+					<text class="text-gray-600 text-sm">{{$t('page.index.serOthDevices')}}</text>
 					<view v-if="preDeviceList?.length > 0">
 						<view v-for="device in preDeviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row">
 							<view class="mx-2">
@@ -75,7 +75,7 @@
 						</view>
 					</view>
 					<view v-else class="center mt-10">
-						<text class="text-gray-500 text-xs">没有搜索到设备</text>
+						<text class="text-gray-500 text-xs">{{$t('page.index.noSerOthDevices')}}</text>
 					</view>
 				</view>
 			</view>
@@ -113,13 +113,13 @@
 <!-- #ifdef MP	-->
 	<wd-popup v-model="renameShow" position="bottom" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
 		<view class="col center text-gray-500 mt-10">
-			<text class="mt-2 row center">修改设备名称</text>
+			<text class="mt-2 row center">{{$t('page.index.editDeviceName')}}</text>
 			<view class="row mt-10">
-				<text class="text-xs">设备名称</text>
+				<text class="text-xs">{{$t('page.index.deviceName')}}</text>
 				<input class="minput ml-2" v-model="deviceName"/>
 			</view>
 			<view class="mt-10 mb-20">
-				<wd-button custom-style="background: #6AAE36" size="small" @click="rename()"><text class="mx-4">确定</text></wd-button>
+				<wd-button custom-style="background: #6AAE36" size="small" @click="rename()"><text class="mx-4">{{$t('page.index.saveDeviceName')}}</text></wd-button>
 			</view>
 		</view>
 	</wd-popup>
@@ -322,9 +322,11 @@
                     // #ifdef MP
 					let pages = getCurrentPages();
 					
-					if (data.label) {
-						showNotify(data.label);
-					}
+					if (data.lang) {
+						showNotify(proxy.$t(data.lang));
+					} else {
+                        showNotify(data.label);
+                    }
 					// this.state = data.label;
 					if (data.deviceId) {
 						let device = null;
@@ -599,7 +601,7 @@
 								if (viewStatus.value!=2) {
 									theDevice.value = {};
 								}
-								showNotify("设备名称已修改");
+								showNotify(proxy.$t("page.index.deviceNameUpdated"));
 							}
 						}
 					});
@@ -615,7 +617,7 @@
 						if (viewStatus.value!=2) {
 							theDevice.value = {};
 						}
-						showNotify("设备名称已修改");
+						showNotify(proxy.$t("page.index.deviceNameUpdated"));
 					}
 				}
 			});
@@ -624,7 +626,7 @@
 	};
 	
 	const delBuyerDevice = (deviceId,index)=>{
-		dialog.confirm("是否删除这个设备？",()=>{
+		dialog.confirm(proxy.$t("page.index.isDelDevice"),()=>{
 			deviceRest.delBuyerDevice(userId,deviceId,(data)=>{
 				if (data.status=="OK") {
 					deviceList.value.splice(index,1);
@@ -726,7 +728,7 @@
 	
 	function addDevice(device) {
 		if (device.tempMap?.near) {
-			dialog.openLoading("正在连接设备……");
+			dialog.openLoading(proxy.$t("page.index.connecting"));
 			// console.log("connect...",device.advertisServiceUUIDs);
 			// Blue.setBlueServiceId(device.advertisServiceUUIDs[0]);
 			// Blue.createBLEConnection(device.deviceId);

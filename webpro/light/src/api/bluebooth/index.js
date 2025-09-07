@@ -158,11 +158,14 @@ export const Blue = {
 			deviceId: bleConnectDeviceID,
 			success: ()=> {
 				bleConnectDeviceID = null
-				this.connectState = -1
-				uni.showToast({
-					icon: 'none',
-					title: '蓝牙已断开连接'
-				})
+				this.connectState = -1;
+				ConnectController.connectStateListen({
+					...BLUE_STATE.DISCONNECT
+				});
+				// uni.showToast({
+				// 	icon: 'none',
+				// 	title: '蓝牙已断开连接'
+				// })
 			},
 			fail:(er)=>{
 				console.log(er);

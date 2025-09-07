@@ -2,14 +2,14 @@
 	<wd-navbar fixed placeholder leftArrow safeAreaInsetTop @click-left="page.navBack()">
 		<template #title>
 			<view class="flex center mt-1">
-				<text class="text-base">个人中心</text>
+				<text class="text-base">{{$t('page.user.userCenter')}}</text>
 			</view>
 		</template>
 	</wd-navbar>
 	<view class="my-2 mx-3">
         <wd-notify></wd-notify>
 		<view>
-			<text class="text-gray-600 text-sm">我的设备</text>
+			<text class="text-gray-600 text-sm">{{$t('page.index.myDevices')}}</text>
 			<view v-if="deviceList?.length > 0">
 				<view v-for="(device,index) in deviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row relative">
 					<view class="mx-2">
@@ -28,19 +28,19 @@
 				</view>
 			</view>
 			<view v-else class="center mt-10">
-				<text class="text-gray-500 text-xs">没有添加设备</text>
+				<text class="text-gray-500 text-xs">{{$t('page.index.noDevices')}}</text>
 			</view>
 		</view>
 	</view>
 	<wd-popup v-model="renameShow" position="bottom" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
 		<view class="col center text-gray-500 mt-10">
-			<text class="mt-2 row center">修改设备名称</text>
+			<text class="mt-2 row center">{{$t('page.index.editDeviceName')}}</text>
 			<view class="row mt-10">
-				<text class="text-xs">设备名称</text>
+				<text class="text-xs">{{$t('page.index.deviceName')}}</text>
 				<input class="minput ml-2" v-model="theDevice.name"/>
 			</view>
 			<view class="mt-10">
-				<wd-button size="medium" @click="rename()" custom-style="background: #6AAE36">确定</wd-button>
+				<wd-button size="medium" @click="rename()" custom-style="background: #6AAE36">{{$t('page.index.saveDeviceName')}}</wd-button>
 			</view>
 		</view>
 	</wd-popup>
@@ -65,6 +65,7 @@
 	const renameShow = ref(false);
 	
 	const { showNotify, closeNotify } = useNotify();
+    const { proxy } = getCurrentInstance();
 	
 	let userId = null;
 		
@@ -105,14 +106,14 @@
 					de.name = theDevice.value.name;
 					theDevice.value = {};
 					renameShow.value = false;
-					showNotify("设备名称已修改");
+					showNotify(proxy.$t('page.index.deviceNameUpdated'));
 				}
 			}
 		});
 	};
 	
 	const delBuyerDevice = (deviceId,index)=>{
-		dialog.confirm("是否删除这个设备？",()=>{
+		dialog.confirm(proxy.$t('page.index.isDelDevice'),()=>{
 			deviceRest.delBuyerDevice(userId,deviceId,(data)=>{
 				if (data.status=="OK") {
 					deviceList.value.splice(index,1);

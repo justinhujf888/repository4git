@@ -119,7 +119,7 @@
 			<wd-tabbar-item title="">
 				<template #icon>
 					<view>
-						<wd-button custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="saveScript">保存到方案</wd-button>
+						<wd-button custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="saveScript">{{$t('page.setup.saveSolu')}}</wd-button>
 					</view>
 				</template>
 			</wd-tabbar-item>

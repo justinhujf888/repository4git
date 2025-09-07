@@ -2,7 +2,7 @@
 	<wd-navbar fixed placeholder safeAreaInsetTop @click-left="page.navBack()">
 		<template #title>
 			<view class="flex center mt-1">
-				<text class="text-base">个人中心</text>
+				<text class="text-base">{{$t('page.user.userCenter')}}</text>
 			</view>
 		</template>
 	</wd-navbar>
@@ -14,22 +14,22 @@
 			</view>
 			<view class="flex-1">
 				<text v-if="userId">{{userId}}</text>
-				<text v-else>未登录</text>
+				<text v-else>{{$t('page.user.notLogin')}}</text>
 			</view>
 		</view>
 		
 		<view v-if="userId">
 			<wd-cell-group border>
-			  <wd-cell size="large" title="我的设备" is-link value="" to="/pages/user/myDevices"/>
-			  <wd-cell size="large" title="隐私政策" is-link value="" />
+			  <wd-cell size="large" :title="$t('page.index.myDevices')" is-link value="" to="/pages/user/myDevices"/>
+			  <wd-cell size="large" :title="$t('page.index.privacyPolicy')" is-link value="" />
 			</wd-cell-group>
 		</view>
 		
 		<view v-if="userId" class="mt-14">
-			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="logout()" custom-style="background: #6AAE36">退出登录</wd-button>
+			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="logout()" custom-style="background: #6AAE36">{{$t('page.index.logout')}}</wd-button>
 		</view>
 		<view v-else class="mt-14">
-			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="login()" custom-style="background: #6AAE36">登    录</wd-button>
+			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="login()" custom-style="background: #6AAE36">{{$t('page.index.login')}}</wd-button>
 		</view>
 	</view>
 	<my-wxLogin :isShow="loginShow" @close="loginClose" @runAgain="loginRunAgain"></my-wxLogin>
@@ -45,6 +45,7 @@
 	
 	const userId = ref("");
 	const loginShow = ref(false);
+    const { proxy } = getCurrentInstance();
 	
 	
 	onLoad((option)=>{
@@ -56,7 +57,7 @@
 	});
 	
 	const logout = ()=>{
-		dialog.confirm("是否退出登录？",()=>{
+		dialog.confirm(proxy.$t("page.user.isLogout"),()=>{
 			wxRest.clearLoginInfo();
 			page.reLaunch("/pages/index/index",{});
 		},null);
