@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.ejb.BaseBean
 import com.weavict.common.ejb.StaticBean
+import com.weavict.competition.entity.Judge
 import com.weavict.competition.rest.BaseRest
 import jakarta.persistence.Query
 import org.springframework.transaction.annotation.Transactional
@@ -657,6 +658,8 @@ class PageUtil
      */
     int number;
 
+    int firstRecord;
+
     /**
      * 是否为第一页
      */
@@ -681,6 +684,12 @@ class PageUtil
      * 当前页一共有多少条数据
      */
     int numberOfElements;
+
+    void setContent(List content)
+    {
+        this.content = content;
+        this.numberOfElements = this.content==null ? 0 : this.content.size();
+    }
 
     /**
      * 数据
@@ -707,5 +716,7 @@ class PageUtil
         this.first = number == 0 ? true : false;
 
         this.last = number == this.totalPages-1 ? true : false;
+
+        this.firstRecord = this.number * this.size;
     }
 }

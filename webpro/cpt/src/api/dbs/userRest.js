@@ -61,23 +61,7 @@ export default {
             true
         );
     },
-    queryJudgeList(queryJudge,pageSize,currentPage, onfun) {
-        Http.httpclient_json(
-            '/r/user/queryJudgeList',
-            'post',
-            {
-                "queryJudge":queryJudge,"pageSize":pageSize,"currentPage":currentPage
-            },
-            'json',
-            (res) => {
-                if (res.data.status == 'FA_ER') {
-                    dialog.showApiErrorMsg();
-                } else {
-                    onfun(res.data);
-                }
-            },
-            null,
-            true
-        );
+    queryJudgeList(ds, onfun) {
+        Http.callHttpFunction('/r/user/queryJudgeList',ds,onfun);
     },
 };

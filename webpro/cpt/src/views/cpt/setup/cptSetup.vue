@@ -85,25 +85,32 @@
             <span class="text-base">设置组委会成员信息</span>
             <Button label="组委会成员设置" @click="visible4updateSiteOrgHuman=true"/>
         </div>
-        <DataView :value="siteOrgHumanList" layout="grid" :pt="{
-            emptyMessage:{
-                class:'opacity-0'
+        <DataTable :value="siteOrgHumanList" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
+        {
+            table:{
+                class:'min-w-full mt-5'
+            },
+            column:{
+                bodyCell:{class:'!text-center'},
+                columnHeaderContent:{class:'justify-self-center'}
+            },
+            pcPaginator:{
+
             }
         }">
-            <template #grid="slotProps">
-                <div class="grid grid-cols-12 gap-4">
-                    <div v-for="(item, index) in slotProps.items" :key="index" class="col-span-4 sm:col-span-2 md:col-span-2 xl:col-span-2 p-2">
-                        <div class="p-1 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
-                            <div class="bg-surface-50 flex justify-center rounded p-1">
-                                <div class="relative mx-auto">
-                                    <img class="rounded w-full" :src="`https://primefaces.org/cdn/primevue/images/product/${item.image}`" :alt="item.name" style="max-width: 300px"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </DataView>
+            <Column header="" class="!w-20">
+                <template #body="{data}">
+                    <img :src="data?.tempMap?.headImgPath" :alt="data.name" class="rounded-full w-20 h-20 object-cover"/>
+                </template>
+            </Column>
+            <Column field="name" header="姓名" class="w-36"></Column>
+            <Column header="简介" class="">
+                <template #body="{data}">
+                    <p class="truncate w-80">{{data.description}}</p>
+                </template>
+            </Column>
+            <!--            <Column field="engName" header="Eng Name"></Column>-->
+        </DataTable>
     </div>
 
     <div>
@@ -187,6 +194,14 @@ onMounted(() => {
                     v.tempMap.type = v.fileFields.type;
                     v.tempMap.imgPath = oss.buildImgPath(v.path);
                 });
+            }
+        }
+    });
+
+    workRest.qyOrgHumanList({appId:host.value,sourceType:0,sourceId:host.value},(res)=>{
+        if (res.status=="OK") {
+            if (res.data!=null) {
+                siteOrgHumanList.value = res.data;
             }
         }
     });

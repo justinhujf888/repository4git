@@ -77,5 +77,8 @@ export default {
     },
     deleteSiteWorkItem(ds, onfun) {
         Http.callHttpFunction('/r/work/deleteSiteWorkItem',ds,onfun);
+    },
+    qyOrgHumanList(ds,onfun) {
+        Http.callHttpFunction('/r/work/qyOrgHumanList',ds,onfun);
     }
 }

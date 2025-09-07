@@ -324,7 +324,7 @@
 					
 					if (data.lang) {
 						showNotify(proxy.$t(data.lang));
-					} else {
+					} else if (data.label) {
                         showNotify(data.label);
                     }
 					// this.state = data.label;
@@ -485,7 +485,7 @@
 		callBle();
 		viewStatus.value = 1;
 	};
-	
+
 	onLoad((option)=>{
         uni.hideTabBar();
         // #ifdef MP

@@ -1,6 +1,6 @@
 <template>
     <div class="p-2 card">
-        <DataTable :value="judgePageUtil.content" header="Flex Scroll" resizableColumns showGridlines stripedRows paginator :rows="Config.pageSize" :totalRecords="300" :first="0" :lazy="true" tableStyle="min-width: 50rem" paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport" currentPageReportTemplate="【{first} - {last}】  记录总数：{totalRecords}" :pageLinkSize="5" @page="updateFirst" :pt="
+        <DataTable :value="judgePageUtil.content" header="Flex Scroll" resizableColumns showGridlines stripedRows paginator :rows="Config.pageSize" :totalRecords="judgePageUtil.totalRecords" :first="judgePageUtil.number" :lazy="true" tableStyle="min-width: 50rem" paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport" currentPageReportTemplate="【{first} - {last}】  记录总数：{totalRecords}" :pageLinkSize="5" @page="updateFirst" :pt="
         {
             table:{
                 class:'min-w-full'
@@ -19,17 +19,21 @@
                     <Button label="新增评委" @click="loadDatas"/>
                 </div>
             </template>
-            <Column field="index" header="编号"></Column>
             <Column field="headImgUrl" header="" class="w-10">
                 <template #body="{ data }">
                     <div class="center w-10">
-                        <img :alt="data.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.headImgUrl}`" class="w-full" />
+                        <img :alt="data.name" :src="`https://primefaces.org/cdn/primevue/images/avatar/${data.headImgUrl}`" class="rounded-full w-20 h-20 object-cover" />
                     </div>
                 </template>
             </Column>
-            <Column field="name" header="姓名"></Column>
-            <Column field="phone" header="手机号码"></Column>
+            <Column field="name" header="姓名" class="w-36"></Column>
+            <Column field="phone" header="手机号码" class="w-36"></Column>
 <!--            <Column field="engName" header="Eng Name"></Column>-->
+            <Column header="简介" class="">
+                <template #body="{data}">
+                    <p class="truncate w-80">{{data.description}}</p>
+                </template>
+            </Column>
         </DataTable>
     </div>
 </template>
@@ -40,43 +44,24 @@ import dialog from '@/api/uniapp/dialog';
 import userRest from "@/api/dbs/userRest";
 import {Config} from "@/api/config";
 import lodash from "lodash";
-import { ProductService } from "@/service/ProductService";
+import util from "@/api/util";
 
 const judgePageUtil = ref({});
 
-let currentPage = 0;
+const currentPage = ref(0);
 
 onMounted(() => {
     loadDatas();
 });
 
 function loadDatas() {
-    userRest.queryJudgeList({name:"1",phone:"132"},Config.pageSize,currentPage,(res)=>{
+    userRest.queryJudgeList({name:"1",phone:"132",appId:util.getDomainFromUrl(window.location),pageSize:Config.pageSize,currentPage:currentPage.value},(res)=>{
         if (res.status=="OK") {
-            judgePageUtil.value = res.data;
-            if (judgePageUtil.value.content==null) {
-                judgePageUtil.value.content = [];
-
-                let images = [
-                    { name: 'Amy Elsner', image: 'amyelsner.png' },
-                    { name: 'Anna Fali', image: 'annafali.png' },
-                    { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-                    { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-                    { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-                    { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-                    { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-                    { name: 'Onyama Limba', image: 'onyamalimba.png' },
-                    { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-                    { name: 'XuXue Feng', image: 'xuxuefeng.png' }
-                ];
-                let index = 0;
-                lodash.forEach(ProductService.getProductsData(),(v,i)=>{
-                    judgePageUtil.value.content.push({name:v.name,headImgUrl:images[index].image,phone:v.code,index:currentPage*Config.pageSize+i});
-                    index ++;
-                    if (i > index) {
-                        index = 0;
-                    }
-                });
+            if (res.status=="OK") {
+                if (res.data!=null) {
+                    judgePageUtil.value = res.data;
+                    console.log(judgePageUtil.value);
+                }
             }
         }
     });
@@ -84,7 +69,7 @@ function loadDatas() {
 
 function updateFirst(e) {
     console.log(e);
-    currentPage = e.page;
+    currentPage.value = e.page;
     loadDatas();
 }
 </script>

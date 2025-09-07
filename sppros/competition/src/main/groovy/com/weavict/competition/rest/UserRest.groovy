@@ -130,14 +130,14 @@ class UserRest extends BaseRest
         try
         {
             ObjectMapper objectMapper = this.buildObjectMapper();
-            Map map = this.objToBean(query.queryJudge,Map.class,objectMapper);
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
                          userBean.newQueryUtils(false).masterTable("Judge",null,null)
-                                .where("name like :name",["name":"%${map.name}%".toString()],null,{return !(map.name in [null,""])})
-                                 .where("engName like :engName",["engName":"%${map.engName}%".toString()],"and",{return !(map.engName in [null,""])})
-                                 .where("phone like :phone",["phone":"%${map.phone}%".toString()],"and",{return !(map.phone in [null,""])})
+                                .where("name like :name",["name":"%${query.name}%".toString()],null,{return !(query.name in [null,""])})
+                                 .where("engName like :engName",["engName":"%${query.engName}%".toString()],"and",{return !(query.engName in [null,""])})
+                                 .where("phone like :phone",["phone":"%${query.phone}%".toString()],"and",{return !(query.phone in [null,""])})
+                                .where("appId = :appId",["appId":query.appId],"and",{return true})
                                 .orderBy("createDate desc")
                                 .pageLimit(query.pageSize as int,query.currentPage as int,"id").buildSql().run();
                      }).call()

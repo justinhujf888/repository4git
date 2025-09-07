@@ -1,6 +1,8 @@
 package com.weavict.competition.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.competition.entity.Judge
+import com.weavict.competition.entity.OrgHuman
 import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
@@ -156,4 +158,35 @@ class WorkRest extends BaseRest
         }
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyOrgHumanList")
+    String qyOrgHumanList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.newQueryUtils(false,false).masterTable(OrgHuman.class.name,"j",null)
+                                .where("j.appId = :appId",["appId":query.appId],null,{return true})
+                                 .where("j.sourceType = :sourceType",["sourceType":query.sourceType],"and",{return true})
+                                 .where("j.sourceId = :sourceId",["sourceId":query.sourceId],"and",{return true})
+                                .where("j.phone like :phone",["phone":"%${query.phone}%"],"and",{return !(query.phone in [null,""])})
+                                 .where("j.name like :name",["name":"%${query.name}%"],"and",{return !(query.name in [null,""])})
+                                 .where("j.engName like :engName",["engName":"%${query.engName}%"],"and",{return !(query.engName in [null,""])})
+                                .orderBy("createDate")
+                                .buildSql().run().content;
+
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }
