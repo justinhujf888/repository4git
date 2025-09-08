@@ -128,7 +128,7 @@ export const Beans = {
             pingShenDate: null,
             endDate: null,
             createDate: null,
-            description: "",
+            description: null,
             appId: "",
             siteCompetition: this.siteCompetition(),
             competitionList: []
