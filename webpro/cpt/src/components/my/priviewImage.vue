@@ -1,14 +1,46 @@
 <template>
     <div>
-        <Galleria v-model:activeIndex="activeIndex" v-model:visible="shiShow" :value="files" :responsiveOptions="responsiveOptions" :numVisible="files.length"
-                  containerStyle="max-width: 850px" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails">
+        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" :value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" containerStyle="max-width: 640px" :pt="{
+            root: {
+                class: [{ 'flex flex-col': fullScreen }]
+            },
+            content: {
+                class: ['relative', { 'flex-1 justify-center': fullScreen }]
+            },
+            nextButton: {
+                class: 'mix-blend-difference'
+            },
+            prevButton: {
+                class: 'mix-blend-difference'
+            },
+            thumbnails: 'absolute w-full left-0 bottom-0'
+        }">
             <template #item="slotProps">
-                <div class="h-screen">
-                    <img :src="slotProps.item.tempMap.imgPath" :alt="slotProps.item.tempMap.name" class="block h-full" />
-                </div>
+<!--                <div class="h-lvh">-->
+<!--                    <img :src="slotProps.item.tempMap.imgPath" :alt="slotProps.item.tempMap.name" class="block h-full" />-->
+<!--                </div>-->
+                <img :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" :class="[{'w-full':!fullScreen},{'block':!fullScreen}]" />
             </template>
             <template #thumbnail="slotProps">
-                <img :src="slotProps.item.tempMap.imgPath" :alt="slotProps.item.tempMap.name" class="block w-20 h-20 object-cover" />
+                <div class="grid gap-4 justify-center">
+                    <img :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" class="block w-20 h-20 object-cover" />
+                </div>
+            </template>
+            <template #footerrr>
+                <div class="flex items-stretch bg-surface-950 text-white h-10">
+                    <button type="button" @click="onThumbnailButtonClick" class="bg-transparent border-none rounded-none hover:bg-white/10 text-white inline-flex justify-center items-center cursor-pointer px-3">
+                        <i class="pi pi-th-large"></i>
+                    </button>
+<!--                    <button type="button" @click="toggleAutoSlide" class="bg-transparent border-none rounded-none hover:bg-white/10 text-white inline-flex justify-center items-center cursor-pointer px-3"><i :class="slideButtonIcon"></i></button>-->
+                    <span v-if="files" class="flex items-center gap-4 ml-3">
+                        <span class="text-sm">{{ activeIndex + 1 }}/{{ files.length }}</span>
+                        <span class="font-bold text-sm">{{ files[activeIndex]?.tempMap.name }}</span>
+<!--                        <span class="text-sm">{{ files[activeIndex].alt }}</span>-->
+                    </span>
+<!--                    <button type="button" @click="toggleFullScreen" class="bg-transparent border-none rounded-none hover:bg-white/10 text-white inline-flex justify-center items-center cursor-pointer px-3 ml-auto">-->
+<!--                        <i :class="fullScreenIcon"></i>-->
+<!--                    </button>-->
+                </div>
             </template>
         </Galleria>
         <DataView :value="files" layout="grid" :pt="{
@@ -34,27 +66,91 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
-const props = defineProps(['files','activeIndex','fullScreen','showItemNavigators','showThumbnails','responsiveOptions','obj']);
+const props = defineProps(['files','activeIndex','fullScreen','showItemNavigators','showThumbnails','thumbnailsPosition','responsiveOptions','obj']);
+
+const galleria = ref();
 const files = ref(props.files);
 const activeIndex = ref(props.activeIndex);
 const shiShow = ref(false);
 const fullScreen = ref(props.fullScreen ? props.fullScreen : true);
 const showItemNavigators = ref(props.showItemNavigators ? props.showItemNavigators : true);
-const showThumbnails = ref(props.showThumbnails ? props.showThumbnails : true);
+const showThumbnails = ref(props.showThumbnails ? props.showThumbnails : false);
+const thumbnailsPosition = ref(props.thumbnailsPosition ? props.thumbnailsPosition : "bottom");
 const responsiveOptions = ref(props.responsiveOptions ? props.responsiveOptions : null);
 
 let obj = props.obj;
 
 onMounted(() => {
-    console.log(files.value);
+    // console.log(files.value);
+    bindDocumentListeners();
 });
 
 const imageClick = (index) => {
     activeIndex.value = index;
     shiShow.value = true;
 };
+
+const onThumbnailButtonClick = () => {
+    showThumbnails.value  = !showThumbnails.value ;
+};
+const toggleFullScreen = () => {
+    if (fullScreen.value ) {
+        closeFullScreen();
+    } else {
+        openFullScreen();
+    }
+};
+const onFullScreenChange = () => {
+    fullScreen.value  = !fullScreen.value;
+};
+const openFullScreen = () =>{
+    let elem = galleria.value.$el;
+
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+        /* Firefox */
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+        /* Chrome, Safari & Opera */
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        /* IE/Edge */
+        elem.msRequestFullscreen();
+    }
+};
+const closeFullScreen = () => {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+};
+const bindDocumentListeners = () => {
+    document.addEventListener('fullscreenchange', onFullScreenChange);
+    document.addEventListener('mozfullscreenchange', onFullScreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullScreenChange);
+    document.addEventListener('msfullscreenchange', onFullScreenChange);
+};
+const unbindDocumentListeners = () => {
+    document.removeEventListener('fullscreenchange', onFullScreenChange);
+    document.removeEventListener('mozfullscreenchange', onFullScreenChange);
+    document.removeEventListener('webkitfullscreenchange', onFullScreenChange);
+    document.removeEventListener('msfullscreenchange', onFullScreenChange);
+};
+
+const fullScreenIcon = computed(() => {
+    return `pi ${fullScreen.value ? 'pi-window-minimize' : 'pi-window-maximize'}`;
+});
+const slideButtonIcon = computed(() => {
+    return `pi ${isAutoPlay.value ? 'pi-pause' : 'pi-play'}`;
+});
 </script>
 
 <style scoped lang="scss">

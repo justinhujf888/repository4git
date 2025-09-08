@@ -42,7 +42,7 @@
                                     <div class="bg-surface-50 flex justify-center rounded p-1">
                                         <div class="relative mx-auto">
                                             <div class="w-20 h-20 sm:w-20 sm:h-20 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
-                                                <Image class="rounded w-full h-full object-cover" :src="item.tempMap.imgPath" :alt="item.name" style="max-width: 300px;" preview :pt="{image:{class:'!w-full !h-full object-cover'}}"/>
+                                                <Image class="rounded w-full h-full object-cover" :src="item.tempMap.imgPath" :alt="item.name" style="max-width: 300px;" preview_ :pt="{image:{class:'!w-full !h-full object-cover'}}"/>
                                             </div>
                                             <span v-if="item.path" class="text-xs bg-green-200 text-gray-500 absolute -top-5 left-0 p-1 rounded-md">已上传</span>
                                             <div class="absolute bg-black/70 rounded-border -bottom-5 -right-2">

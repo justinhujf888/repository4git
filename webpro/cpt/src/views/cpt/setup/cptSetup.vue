@@ -142,6 +142,8 @@ const visible4updateSiteOrgHuman = ref(false);
 let errors = [];
 const host = ref(util.getDomainFromUrl(window.location));
 
+
+
 onMounted(() => {
     oss.genClient(null);
     workRest.qySiteCompetition(host.value,(res)=>{
