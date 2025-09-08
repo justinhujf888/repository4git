@@ -529,6 +529,10 @@ export default {
         // }
         // return params;
     },
+    getUrlParamJson(url) {
+        let pstr = this.getUrlParams(url).param;console.log(pstr);
+        return pstr ? JSON.parse(pstr) : null;
+    },
     getDomainFromUrl(url) {
         // 使用正则表达式提取域名部分
         // const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
