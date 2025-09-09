@@ -1,6 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { computed, ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
@@ -8,6 +8,10 @@ import AppTopbar from './AppTopbar.vue';
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
+
+onMounted(() => {
+
+});
 
 watch(isSidebarActive, (newVal) => {
     if (newVal) {
@@ -60,10 +64,10 @@ function isOutsideClicked(event) {
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
-            <div class="layout-main">
-                <router-view></router-view>
+            <div class="layout-main relative animate-slide-in-from-right">
+                <router-view />
             </div>
-            <app-footer></app-footer>
+             <app-footer></app-footer>
         </div>
         <div class="layout-mask animate-fadein"></div>
     </div>

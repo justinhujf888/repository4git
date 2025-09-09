@@ -75,10 +75,24 @@ onUnmounted(() => {
     <ConfirmDialog />
     <myDialog ref="mydRef"></myDialog>
     <Toast />
-    <router-view />
+    <div class="animate-slide-in-from-right">
+        <router-view />
+    </div>
     <loading ref="myLoading"></loading>
 </template>
 
 <style>
 @import '@/static/icons/iconfont.css';
+
+.page-slide {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-enter {
+    transform: translateX(100%);
+}
+
+.page-enter-active {
+    transform: translateX(0);
+}
 </style>

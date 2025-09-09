@@ -1,4 +1,5 @@
 <template>
+    <button @click="show=!show">test</button>
     <div class="p-2 card">
         <div class="flex flex-wrap items-center justify-between">
             <span class="text-base">赛事基础信息设置</span>
@@ -111,10 +112,14 @@
             <updateSiteWorkitem :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
         </Dialog>
     </div>
+
+    <div class="bg-green-600 absolute w-full h-dvh top-10 left-0" v-if="show" :class="[{'animate-slide-in-from-right duration-300':show},{'animate-slide-out-to-right duration-300':!show}]">
+
+    </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
 import lodash from "lodash";
@@ -128,21 +133,20 @@ import oss from "@/api/oss";
 import updateSiteWorkitem from "@/views/cpt/setup/updateSiteWorkitem.vue";
 import updateSiteCpt from "@/views/cpt/setup/updateSiteCpt.vue";
 import priviewImage from "@/components/my/priviewImage.vue";
+import AppFooter from '@/layout/AppFooter.vue';
 
 const siteCompetition = ref(Beans.siteCompetition());
 const siteZhuTiWorkItemList = ref([]);
 const siteZuoPingWorkItemList = ref([]);
 const siteOrgHumanList = ref([]);
-
+const show = ref(false);
 const visible4updateSiteCpt = ref(false);
 const visible4updateSiteZhuTiWorkitem = ref(false);
 const visible4updateSiteZuoPingWorkitem = ref(false);
 const visible4updateSiteOrgHuman = ref(false);
 
 let errors = [];
-const host = ref(util.getDomainFromUrl(window.location));
-
-
+const host = ref(inject("domain"));
 
 onMounted(() => {
     oss.genClient(null);
@@ -201,13 +205,15 @@ const updateSiteZuoPingWorkitemDialogClose = ()=>{
     visible4updateSiteZuoPingWorkitem.value = false;
 }
 
-const updateSiteCptDialogClose = ()=>{
-    Config.getConfig();
+const updateSiteCptDialogClose = (shiSubmit)=>{
+    if (shiSubmit) {
+        Config.getConfig();
+        window.location = window.location.href;
+    }
     visible4updateSiteCpt.value = false;
-    window.location = window.location.href;
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 
 </style>

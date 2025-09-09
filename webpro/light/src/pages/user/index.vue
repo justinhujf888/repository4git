@@ -21,15 +21,15 @@
 		<view v-if="userId">
 			<wd-cell-group border>
 			  <wd-cell size="large" :title="$t('page.index.myDevices')" is-link value="" to="/pages/user/myDevices"/>
-			  <wd-cell size="large" :title="$t('page.index.privacyPolicy')" is-link value="" />
+			  <wd-cell size="large" :title="$t('page.user.privacyPolicy')" is-link value="" />
 			</wd-cell-group>
 		</view>
 		
 		<view v-if="userId" class="mt-14">
-			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="logout()" custom-style="background: #6AAE36">{{$t('page.index.logout')}}</wd-button>
+			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="logout()" custom-style="background: #6AAE36">{{$t('page.user.logout')}}</wd-button>
 		</view>
 		<view v-else class="mt-14">
-			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="login()" custom-style="background: #6AAE36">{{$t('page.index.login')}}</wd-button>
+			<wd-button block size="large" custom-class="bg-write text-gray-600" @click="login()" custom-style="background: #6AAE36">{{$t('page.user.login')}}</wd-button>
 		</view>
 	</view>
 	<my-wxLogin :isShow="loginShow" @close="loginClose" @runAgain="loginRunAgain"></my-wxLogin>

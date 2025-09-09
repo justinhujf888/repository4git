@@ -14,7 +14,7 @@
 
                     <div class="row mt-12 center gap-4">
                         <Button type="submit" label="保存设置" class="px-8" _as="router-link" _to="/"></Button>
-                        <Button severity="warn" label="取消" class="px-8" @click="callClose"></Button>
+                        <Button severity="warn" label="取消" class="px-8" @click="callClose(false)"></Button>
                     </div>
                 </Form>
             </div>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
 import lodash from "lodash";
@@ -38,7 +38,7 @@ import util from "@/api/util";
 const siteCompetition = ref(Beans.siteCompetition());
 
 let errors = [];
-let host = util.getDomainFromUrl(window.location);
+let host = inject("domain");
 
 onMounted(() => {
     // console.log(util.getUrlParamJson());
@@ -94,23 +94,25 @@ const onFormSubmit = ({ valid }) => {
             });
 
             await new Promise(resolve => {
-                localStorage.setItem("siteCpt",util.encryptStoreInfo(JSON.stringify(siteCompetition.value)));
+                util.intoStorgeCry("siteCpt",JSON.stringify(siteCompetition.value));
+                // localStorage.setItem("siteCpt",util.encryptStoreInfo(JSON.stringify(siteCompetition.value)));
                 // useStorage("siteCpt",util.encryptStoreInfo(JSON.stringify(siteCompetition.value)));
                 resolve();
             });
 
             await new Promise(resolve => {
-                dialog.toastSuccess("赛事基础信息已设置");
-                callClose();
-                resolve();
+                dialog.alertBack("赛事基础信息已设置",()=>{
+                    callClose(true);
+                    resolve();
+                });
             });
         })();
     }
 };
 
 const emit = defineEmits(["callClose"]);
-const callClose = ()=>{
-    emit("callClose");
+const callClose = (shiSubmit)=>{
+    emit("callClose",shiSubmit);
 };
 </script>
 

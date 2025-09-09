@@ -485,10 +485,10 @@ export default {
 		return decryptByDES(message, Config.desKey);
 	},
 	intoStorgeCry(key,message) {
-		return uni.setStorageSync(key,encryptByDES(message, Config.desKey));
+		return localStorage.setItem(key,encryptByDES(message, Config.desKey));
 	},
 	giveStorgeCry(key) {
-		return decryptByDES(uni.getStorageSync(key), config.desKey);
+		return decryptByDES(localStorage.getItem(key), Config.desKey);
 	},
 	buildPasswordStr(v) {
 		return v.substr(6, 23);
@@ -499,7 +499,7 @@ export default {
 	floatObj,
 	isJson,
 	callPhone,
-    getUrlParamJson(url) {
+    getUrlParamJson_2(url) {
         if (decodeURIComponent(url ? url : window.location).split("?param=").length > 1) {
             return JSON.parse(decodeURIComponent(url ? url : window.location).split("?param=")[1]);
         } else {

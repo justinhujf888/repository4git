@@ -13,7 +13,7 @@
             prevButton: {
                 class: 'mix-blend-difference'
             },
-            thumbnails: 'absolute w-full left-0 bottom-0'
+            thumbnails: {class:'absolute w-full left-0 bottom-0'}
         }">
             <template #item="slotProps">
 <!--                <div class="h-lvh">-->

@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, inject } from 'vue';
 import dialog from '@/api/uniapp/dialog';
 import userRest from "@/api/dbs/userRest";
 import {Config} from "@/api/config";
@@ -55,7 +55,7 @@ onMounted(() => {
 });
 
 function loadDatas() {
-    userRest.queryJudgeList({name:"1",phone:"132",appId:util.getDomainFromUrl(window.location),pageSize:Config.pageSize,currentPage:currentPage.value},(res)=>{
+    userRest.queryJudgeList({name:"1",phone:"132",appId:inject("domain"),pageSize:Config.pageSize,currentPage:currentPage.value},(res)=>{
         if (res.status=="OK") {
             if (res.status=="OK") {
                 if (res.data!=null) {
