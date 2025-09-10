@@ -128,7 +128,7 @@ const allFilesUploaded = (files,obj)=>{
 };
 const deleteFile = (file,index,obj)=>{
     emit("deleteFile",file,index,obj);
-}
+};
 
 const files = ref(props.files ? lodash.cloneDeep(props.files) : []);
 const maxFileSize = ref(props.maxFileSize ? props.maxFileSize : 2097152);

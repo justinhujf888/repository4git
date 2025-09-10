@@ -83,16 +83,5 @@ onUnmounted(() => {
 
 <style>
 @import '@/static/icons/iconfont.css';
-
-.page-slide {
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.page-enter {
-    transform: translateX(100%);
-}
-
-.page-enter-active {
-    transform: translateX(0);
-}
+@import "@/static/css/animate.css";
 </style>

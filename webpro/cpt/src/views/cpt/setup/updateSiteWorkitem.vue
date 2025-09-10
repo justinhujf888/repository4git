@@ -1,11 +1,12 @@
 <template>
-    <div class="p-2 card">
+    <div class="p-2 card w-full h-auto relative">
         <myFileUpload :files="files" :filePreKey="filePreKey" :maxFileSize="maxFileSize" :fileLimit="fileLimit" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload" @deleteFile="deleteFile"/>
+        <Button label="退出" severity="danger" class="!absolute !right-2 !top-2" @click="callClose"/>
     </div>
 </template>
 
 <script setup>
-import { ref,useTemplateRef,onMounted } from 'vue';
+import { ref,useTemplateRef,onMounted,watch } from 'vue';
 import lodash from "lodash-es";
 import dayjs from "dayjs";
 import dialog from '@/api/uniapp/dialog';
@@ -77,7 +78,6 @@ function deleteFile(file,index,obj) {
         dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
     }
 }
-
 </script>
 
 <style scoped lang="scss">

@@ -530,7 +530,7 @@ export default {
         // return params;
     },
     getUrlParamJson(url) {
-        let pstr = this.getUrlParams(url).param;console.log(pstr);
+        let pstr = this.getUrlParams(url).param;
         return pstr ? JSON.parse(pstr) : null;
     },
     getDomainFromUrl(url) {

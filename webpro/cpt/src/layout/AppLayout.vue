@@ -4,6 +4,7 @@ import { computed, ref, watch, onMounted } from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
+import animationPage from "@/components/my/animationPage.vue";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
@@ -64,11 +65,15 @@ function isOutsideClicked(event) {
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
-            <div class="layout-main relative animate-slide-in-from-right">
-                <router-view />
+            <div styleClass="layout-main" class="layout-main">
+                <router-view/>
             </div>
-             <app-footer></app-footer>
+            <app-footer></app-footer>
         </div>
         <div class="layout-mask animate-fadein"></div>
     </div>
 </template>
+
+<style>
+
+</style>
