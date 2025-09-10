@@ -189,4 +189,22 @@ class WorkRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateOrgHuman")
+    String updateOrgHuman (@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.orgHuman, OrgHuman.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

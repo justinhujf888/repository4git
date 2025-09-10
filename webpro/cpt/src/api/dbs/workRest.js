@@ -80,5 +80,8 @@ export default {
     },
     qyOrgHumanList(ds,onfun) {
         Http.callHttpFunction('/r/work/qyOrgHumanList',ds,onfun);
+    },
+    updateOrgHuman(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateOrgHuman',ds,onfun);
     }
 }

@@ -24,10 +24,16 @@ const iterationCcount = ref(props.iterationCcount ? props.iterationCcount : 1);
 const styleClass = ref(props.styleClass ? props.styleClass : "");
 const shiAnimationPageShow = ref(props.show ? props.show : false);
 
-const open = ()=>{
+const open = (mainRef)=>{
+    if (mainRef!=null) {
+        mainRef.close(null);
+    }
     shiAnimationPageShow.value = true;
 }
-const close = ()=>{
+const close = (mainRef)=>{
+    if  (mainRef!=null) {
+        mainRef.open(null);
+    }
     shiAnimationPageShow.value = false;
 }
 defineExpose({ open, close });

@@ -4,7 +4,7 @@
             <div class="p-2 card">
                 <div class="flex flex-wrap items-center justify-between">
                     <span class="text-base">赛事基础信息设置</span>
-                    <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="mainPage.close();updateSiteCptPage.open()"/>
+                    <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="updateSiteCptPage.open(mainPage)"/>
                 </div>
                 <DataTable :value="[siteCompetition]" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
         {
@@ -33,7 +33,7 @@
             <div class="p-2 card">
                 <div class="flex flex-wrap items-center justify-between">
                     <span class="text-base">设置赛事主题图</span>
-                    <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="updateSiteZhuTiWorkitemPage.open()"/>
+                    <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="updateSiteZhuTiWorkitemPage.open(mainPage)"/>
                 </div>
                 <priviewImage v-if="siteZhuTiWorkItemList?.length>0" :files="siteZhuTiWorkItemList"/>
                 <!--        <DataView :value="siteZhuTiWorkItemList" layout="grid" :pt="{-->
@@ -60,7 +60,7 @@
             <div class="p-2 card">
                 <div class="flex flex-wrap items-center justify-between">
                     <span class="text-base">设置系列赛事作品</span>
-                    <Button label="系列赛事作品设置" @click="updateSiteZuoPingWorkitemPage.open()"/>
+                    <Button label="系列赛事作品设置" @click="updateSiteZuoPingWorkitemPage.open(mainPage)"/>
                 </div>
                 <priviewImage v-if="siteZuoPingWorkItemList?.length>0" :files="siteZuoPingWorkItemList"/>
             </div>
@@ -68,7 +68,7 @@
             <div class="p-2 card">
                 <div class="flex flex-wrap items-center justify-between">
                     <span class="text-base">设置组委会成员信息</span>
-                    <Button label="组委会成员设置" @click="visible4updateSiteOrgHuman=true"/>
+                    <Button label="组委会成员设置" @click="orgHumanUpdatePage.open(mainPage)"/>
                 </div>
                 <DataTable :value="siteOrgHumanList" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
                 {
@@ -110,6 +110,10 @@
         <animationPage ref="updateSiteZuoPingWorkitemPage" class="w-full absolute top-0 z-40">
             <updateSiteWorkitem v-if="siteZuoPingWorkItemList?.length>0" :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
         </animationPage>
+
+        <animationPage ref="orgHumanUpdatePage" class="w-full absolute top-0 z-40">
+            <orgHumanUpdate :obj="{process:'c'}" @callClose="backOrgHumanUpdateClose"/>
+        </animationPage>
     </div>
 </template>
 
@@ -127,6 +131,7 @@ import util from "@/api/util";
 import oss from "@/api/oss";
 import updateSiteWorkitem from "@/views/cpt/setup/updateSiteWorkitem.vue";
 import updateSiteCpt from "@/views/cpt/setup/updateSiteCpt.vue";
+import orgHumanUpdate from "@/views/cpt/setup/orgHumanUpdate.vue";
 import priviewImage from "@/components/my/priviewImage.vue";
 import AppFooter from '@/layout/AppFooter.vue';
 import animationPage from "@/components/my/animationPage.vue";
@@ -135,6 +140,7 @@ const updateSiteCptPage = useTemplateRef("updateSiteCptPage");
 const updateSiteZhuTiWorkitemPage = useTemplateRef("updateSiteZhuTiWorkitemPage");
 const mainPage = useTemplateRef("mainPage");
 const updateSiteZuoPingWorkitemPage = useTemplateRef("updateSiteZuoPingWorkitemPage");
+const orgHumanUpdatePage = useTemplateRef("orgHumanUpdatePage");
 
 const siteCompetition = ref(Beans.siteCompetition());
 const siteZhuTiWorkItemList = ref([]);
@@ -196,11 +202,11 @@ onMounted(() => {
 });
 
 const updateSiteZhiTiWorkitemDialogClose = ()=>{
-    updateSiteZhuTiWorkitemPage.value.close();
+    updateSiteZhuTiWorkitemPage.value.close(mainPage.value);
 }
 
 const updateSiteZuoPingWorkitemDialogClose = ()=>{
-    updateSiteZuoPingWorkitemPage.value.close();
+    updateSiteZuoPingWorkitemPage.value.close(mainPage.value);
 }
 
 const updateSiteCptDialogClose = (shiSubmit)=>{
@@ -208,8 +214,11 @@ const updateSiteCptDialogClose = (shiSubmit)=>{
         Config.getConfig();
         // window.location = window.location.href;
     }
-    updateSiteCptPage.value.close();
-    mainPage.value.open();
+    updateSiteCptPage.value.close(mainPage.value);
+}
+
+const backOrgHumanUpdateClose = (orgHuman,obj)=>{
+    orgHumanUpdatePage.value.close(mainPage.value);
 }
 </script>
 

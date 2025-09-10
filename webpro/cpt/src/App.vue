@@ -9,6 +9,7 @@ import { useTemplateRef,onMounted,onUnmounted } from 'vue';
 import { Config } from '@/api/config';
 import {ConnectController} from "@/api/controller";
 import loading from "@/components/my/loading.vue";
+import 'animate.css';
 
 const toast = useToast();
 const confirmPopup = useConfirm();

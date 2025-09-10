@@ -1,0 +1,109 @@
+<template>
+    <div class="p-2 card">
+        <div class="start overflow-hidden">
+            <div class="col center w-full p-2">
+                <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full">
+                    <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">姓名</label>
+                    <InputText name="name" placeholder="请输入姓名" class="w-full md:w-[30rem] mb-4" v-model="orgHuman.name" />
+                    <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
+                    <div class="col card items-center gap-6">
+                        <FileUpload mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
+                        <Message v-if="$form.headImg?.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.headImg?.error?.message}}</Message>
+                        <img v-if="src" :src="src" alt="Image" class="shadow-md rounded-xl w-40 sm:w-22" />
+                        <inputText name="headImg" :value="src" class="hidden"/>
+                    </div>
+
+                    <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">简介</label>
+                    <Textarea v-model="orgHuman.description" autoResize rows="15" class="w-full" />
+
+                    <div class="row mt-12 center gap-4">
+                        <Button type="submit" label="保存" class="px-8" _as="router-link" _to="/"></Button>
+                        <Button severity="warn" label="取消" class="px-8" @click="callClose(false)"></Button>
+                    </div>
+                </Form>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import animationPage from "@/components/my/animationPage.vue";
+import { onMounted, ref, useTemplateRef, inject } from 'vue';
+import Page from '@/api/uniapp/page';
+import { Config } from '@/api/config';
+import primeUtil from "@/api/prime/util";
+import {Beans} from "@/api/dbs/beans";
+import workRest from '@/api/dbs/workRest';
+import util from '@/api/util';
+import dialog from '@/api/uniapp/dialog';
+import checker from '@/api/check/checker';
+const props = defineProps(['obj'])
+
+const mainPage = useTemplateRef("mainPage");
+const orgHuman = ref(props.obj?.orgHuman ? props.obj.orgHuman : Beans.orgHuman());
+const src = ref(null);
+
+let errors = [];
+let host = inject("domain");
+
+onMounted(() => {
+
+});
+
+const resolver = ({ values }) => {
+    errors = primeUtil.checkFormRequiredValid([
+        {val:orgHuman.value.name,name:"name"},
+        {val:orgHuman.value.description,name:"description"},
+        // {val:src.value,name:"headImg",label:"照片"}
+    ]);
+
+    primeUtil.buildFormValidError(errors.headImg,"error","请选择照片",()=>{
+        return true;
+    },(error)=>{errors.headImg = error});
+
+    return {
+        values, // (Optional) Used to pass current form values to submit event.
+        errors
+    };
+};
+
+const onFormSubmit = ({ valid }) => {
+    if (valid) {return;
+        if (props.obj.process=="new") {
+            orgHuman.value.appId = host;
+            orgHuman.value.sourceType = 0;
+            orgHuman.value.sourceId = props.obj.sourceId;
+            orgHuman.value.id = Beans.buildPId("");
+            orgHuman.value.createDate = new Date().getTime();
+        }
+        workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
+            if (res.status=="OK") {
+                callClose();
+            }
+        });
+    }
+};
+
+function onFileSelect(event) {
+    const file = event.files[0];
+    // console.log(file);
+    src.value = file.objectURL;
+    // const reader = new FileReader();
+    //
+    // reader.onload = async (e) => {
+    //    src.value = e.target.result;
+    //    console.log(src.value);
+    // };
+    //
+    // reader.readAsDataURL(file);
+}
+
+const emit = defineEmits(["callClose"]);
+const callClose = (orgHuman,obj)=>{
+    emit("callClose",orgHuman.value,props.obj);
+};
+</script>
+
+<style scoped lang="scss">
+
+</style>

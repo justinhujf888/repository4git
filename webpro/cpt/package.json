@@ -12,6 +12,7 @@
         "@primevue/forms": "^4.3.7",
         "@vueuse/core": "^13.5.0",
         "ali-oss": "^6.23.0",
+        "animate.css": "^4.1.1",
         "axios": "^1.10.0",
         "chart.js": "3.3.2",
         "crypto-es": "^2.1.0",

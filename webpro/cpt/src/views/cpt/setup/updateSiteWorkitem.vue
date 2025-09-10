@@ -1,7 +1,7 @@
 <template>
     <div class="p-2 card w-full h-auto relative">
         <myFileUpload :files="files" :filePreKey="filePreKey" :maxFileSize="maxFileSize" :fileLimit="fileLimit" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload" @deleteFile="deleteFile"/>
-        <Button label="退出" severity="danger" class="!absolute !right-2 !top-2" @click="callClose"/>
+        <Button label="退出" severity="danger" class="!absolute !right-2 !top-2 !rounded-2xl" @click="callClose"/>
     </div>
 </template>
 
