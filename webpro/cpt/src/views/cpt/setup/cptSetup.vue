@@ -68,7 +68,7 @@
             <div class="p-2 card">
                 <div class="flex flex-wrap items-center justify-between">
                     <span class="text-base">设置组委会成员信息</span>
-                    <Button label="组委会成员设置" @click="orgHumanUpdatePage.open(mainPage)"/>
+                    <Button label="组委会成员设置" @click="refOrgHumanUpdate.init(null,{process:'c',sourceId:host});orgHumanUpdatePage.open(mainPage)"/>
                 </div>
                 <DataTable :value="siteOrgHumanList" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
                 {
@@ -85,7 +85,7 @@
                 }">
                     <Column header="" class="!w-20">
                         <template #body="{data}">
-                            <img :src="data?.tempMap?.headImgPath" :alt="data.name" class="rounded-full w-20 h-20 object-cover"/>
+                            <Image class="rounded w-full h-full object-cover" :src="data?.tempMap?.headImgUrl" :alt="data.name" style="max-width: 300px;" _preview :pt="{image:{class:'!w-full !h-full object-cover'}}"/>
                         </template>
                     </Column>
                     <Column field="name" header="姓名" class="w-36"></Column>
@@ -96,6 +96,7 @@
                     </Column>
                     <!--            <Column field="engName" header="Eng Name"></Column>-->
                 </DataTable>
+                <priviewImage v-if="siteOrgHumanList?.length>0" :files="siteOrgHumanList" class="hidden"/>
             </div>
         </animationPage>
 
@@ -112,7 +113,7 @@
         </animationPage>
 
         <animationPage ref="orgHumanUpdatePage" class="w-full absolute top-0 z-40">
-            <orgHumanUpdate :obj="{process:'c'}" @callClose="backOrgHumanUpdateClose"/>
+            <orgHumanUpdate ref="refOrgHumanUpdate" @callClose="backOrgHumanUpdateClose"/>
         </animationPage>
     </div>
 </template>
@@ -142,12 +143,12 @@ const mainPage = useTemplateRef("mainPage");
 const updateSiteZuoPingWorkitemPage = useTemplateRef("updateSiteZuoPingWorkitemPage");
 const orgHumanUpdatePage = useTemplateRef("orgHumanUpdatePage");
 
+const refOrgHumanUpdate = useTemplateRef("refOrgHumanUpdate");
+
 const siteCompetition = ref(Beans.siteCompetition());
 const siteZhuTiWorkItemList = ref([]);
 const siteZuoPingWorkItemList = ref([]);
 const siteOrgHumanList = ref([]);
-
-const visible4updateSiteOrgHuman = ref(false);
 
 let errors = [];
 const host = ref(inject("domain"));
@@ -196,6 +197,11 @@ onMounted(() => {
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteOrgHumanList.value = res.data;
+                lodash.forEach(siteOrgHumanList.value,(v,i)=>{
+                    v.tempMap = {};
+                    v.tempMap.headImgUrl = oss.buildImgPath(v.headImgUrl);
+                    v.tempMap.imgPath = v.tempMap.headImgUrl;
+                });
             }
         }
     });

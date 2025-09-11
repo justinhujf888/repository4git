@@ -174,7 +174,6 @@ class WorkRest extends BaseRest
                                 .where("j.appId = :appId",["appId":query.appId],null,{return true})
                                  .where("j.sourceType = :sourceType",["sourceType":query.sourceType],"and",{return true})
                                  .where("j.sourceId = :sourceId",["sourceId":query.sourceId],"and",{return true})
-                                .where("j.phone like :phone",["phone":"%${query.phone}%"],"and",{return !(query.phone in [null,""])})
                                  .where("j.name like :name",["name":"%${query.name}%"],"and",{return !(query.name in [null,""])})
                                  .where("j.engName like :engName",["engName":"%${query.engName}%"],"and",{return !(query.engName in [null,""])})
                                 .orderBy("createDate")

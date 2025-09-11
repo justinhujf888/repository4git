@@ -8,9 +8,9 @@
                     <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
                     <div class="col card items-center gap-6">
                         <FileUpload mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
-                        <Message v-if="$form.headImg?.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.headImg?.error?.message}}</Message>
+                        <Message v-if="!src" severity="error" size="small" variant="simple">{{ $form.headImgUrl?.error?.message}}</Message>
                         <img v-if="src" :src="src" alt="Image" class="shadow-md rounded-xl w-40 sm:w-22" />
-                        <inputText name="headImg" :value="src" class="hidden"/>
+                        <inputText name="headImgUrl" :value="src" class="hidden"/>
                     </div>
 
                     <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">简介</label>
@@ -18,7 +18,7 @@
 
                     <div class="row mt-12 center gap-4">
                         <Button type="submit" label="保存" class="px-8" _as="router-link" _to="/"></Button>
-                        <Button severity="warn" label="取消" class="px-8" @click="callClose(false)"></Button>
+                        <Button severity="warn" label="取消" class="px-8" @click="callClose(orgHuman,obj)"></Button>
                     </div>
                 </Form>
             </div>
@@ -37,17 +37,20 @@ import workRest from '@/api/dbs/workRest';
 import util from '@/api/util';
 import dialog from '@/api/uniapp/dialog';
 import checker from '@/api/check/checker';
-const props = defineProps(['obj'])
+import oss from "@/api/oss";
 
-const mainPage = useTemplateRef("mainPage");
-const orgHuman = ref(props.obj?.orgHuman ? props.obj.orgHuman : Beans.orgHuman());
+const orgHuman = ref(Beans.orgHuman());
+const file = ref(null);
+const obj = ref(null);
 const src = ref(null);
 
 let errors = [];
 let host = inject("domain");
 
 onMounted(() => {
-
+    if (orgHuman?.value?.headImgUrl) {
+        src.value = oss.buildImgPath(orgHuman.value.headImgUrl);
+    }
 });
 
 const resolver = ({ values }) => {
@@ -57,9 +60,9 @@ const resolver = ({ values }) => {
         // {val:src.value,name:"headImg",label:"照片"}
     ]);
 
-    primeUtil.buildFormValidError(errors.headImg,"error","请选择照片",()=>{
-        return true;
-    },(error)=>{errors.headImg = error});
+    primeUtil.buildFormValidError(errors.headImgUrl,"error","请选择照片",()=>{
+        return !src.value;
+    },(error)=>{errors.headImgUrl = error});
 
     return {
         values, // (Optional) Used to pass current form values to submit event.
@@ -68,26 +71,51 @@ const resolver = ({ values }) => {
 };
 
 const onFormSubmit = ({ valid }) => {
-    if (valid) {return;
-        if (props.obj.process=="new") {
+    console.log(obj.value);
+    if (valid) {
+        let headImgUrl = null;
+        if (obj.value.process=="c") {
             orgHuman.value.appId = host;
             orgHuman.value.sourceType = 0;
-            orgHuman.value.sourceId = props.obj.sourceId;
+            orgHuman.value.sourceId = obj.value.sourceId;
             orgHuman.value.id = Beans.buildPId("");
             orgHuman.value.createDate = new Date().getTime();
-        }
-        workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
-            if (res.status=="OK") {
-                callClose();
+            orgHuman.value.headImgUrl = `cpt/${host}/orgHuman/${orgHuman.value.id}_${file.value.name}`;
+            headImgUrl = orgHuman.value.headImgUrl;
+        } else {
+            if (file.value!=null) {
+                headImgUrl = file.value.objectURL;
             }
-        });
+        }
+        if (headImgUrl) {
+            oss.uploadFileWithClient(
+                file.value,
+                headImgUrl,
+                (res) => {
+                    workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
+                        if (res.status=="OK") {
+                            callClose(orgHuman.value,obj.value);
+                        }
+                    });
+                },
+                (er) => {
+                    dialog.toastError(er);
+                }
+            );
+        } else {
+            workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
+                if (res.status=="OK") {
+                    callClose(orgHuman.value,obj.value);
+                }
+            });
+        }
     }
 };
 
 function onFileSelect(event) {
-    const file = event.files[0];
+    file.value = event.files[0];
+    src.value = file.value.objectURL;
     // console.log(file);
-    src.value = file.objectURL;
     // const reader = new FileReader();
     //
     // reader.onload = async (e) => {
@@ -100,8 +128,17 @@ function onFileSelect(event) {
 
 const emit = defineEmits(["callClose"]);
 const callClose = (orgHuman,obj)=>{
-    emit("callClose",orgHuman.value,props.obj);
+    emit("callClose",orgHuman,obj);
 };
+
+const init = (og,o)=>{
+    if (og) {
+        orgHuman.value = og;
+    }
+    obj.value = o;
+    console.log(obj.value);
+}
+defineExpose({ init });
 </script>
 
 <style scoped lang="scss">
