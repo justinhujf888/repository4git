@@ -1,5 +1,5 @@
 <template>
-    <div :class="[styleClass,shiAnimationPageShow ? `block ${animationInName}` : `${animationOutName} hidden`]" :style="{
+    <div class="w-full absolute top-0 z-40" :class="[styleClass,shiAnimationPageShow ? `block ${animationInName}` : `${animationOutName} hidden`]" :style="{
 		'animation-duration'         : duration,
 		'animation-timing-function'  : timingFunction,
 		'animation-fill-mode'        : fillMode,

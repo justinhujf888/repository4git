@@ -76,9 +76,7 @@ onUnmounted(() => {
     <ConfirmDialog />
     <myDialog ref="mydRef"></myDialog>
     <Toast />
-    <div class="animate-slide-in-from-right">
-        <router-view />
-    </div>
+    <router-view />
     <loading ref="myLoading"></loading>
 </template>
 

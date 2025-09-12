@@ -14,32 +14,32 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
-                    path: '/manage/cpt/cptSetup',
+                    path: '/manage/cpt/site/cptSetup',
                     name: 'cptSetup',
-                    component: () => import('@/views/cpt/setup/cptSetup.vue'),
+                    component: () => import('@/views/cpt/setup/siteCpt/cptSetup.vue'),
                     meta:{
                         isHide: true,
                         keepAlive:true
                     }
                 },
                 {
-                    path: '/manage/cpt/updateSiteCpt',
+                    path: '/manage/cpt/site/updateSiteCpt',
                     name: 'updateSiteCpt',
-                    component: () => import('@/views/cpt/setup/updateSiteCpt.vue'),
+                    component: () => import('@/views/cpt/setup/siteCpt/updateSiteCpt.vue'),
                     meta:{
                         isHide: true,
                         keepAlive:true
                     }
                 },
                 {
-                    path: '/manage/cpt/updateSiteWorkitem',
+                    path: '/manage/cpt/site/updateSiteWorkitem',
                     name: 'updateSiteWorkitem',
-                    component: () => import('@/views/cpt/setup/updateSiteWorkitem.vue')
+                    component: () => import('@/views/cpt/setup/siteCpt/updateSiteWorkitem.vue')
                 },
                 {
-                    path: '/manage/cpt/masterCptSetup',
+                    path: '/manage/cpt/master/masterCptSetup',
                     name: 'masterCptSetup',
-                    component: () => import('@/views/cpt/setup/masterCptSetup.vue')
+                    component: () => import('@/views/cpt/setup/masterCpt/masterCptSetup.vue')
                 },
                 {
                     path: '/manage/judge/judgeList',

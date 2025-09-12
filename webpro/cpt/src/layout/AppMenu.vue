@@ -14,8 +14,8 @@ const model = ref([
             {
                 label: "赛事管理",icon: 'pi pi-fw pi-bars',
                 items: [
-                    { label: '系列赛事设置', icon: '', to: '/manage/cpt/cptSetup' },
-                    { label: '创建子赛事', icon: '', to: '/manage/cpt/masterCptSetup' }
+                    { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
+                    { label: '创建子赛事', icon: '', to: '/manage/cpt/master/masterCptSetup' }
                 ]
             },
             { label: '评委管理', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' }
