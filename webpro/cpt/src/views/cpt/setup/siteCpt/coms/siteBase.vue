@@ -1,10 +1,11 @@
 <template>
-    <div class="p-2 card">
-        <div class="flex flex-wrap items-center justify-between">
-            <span class="text-base">赛事基础信息设置</span>
-            <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="updateSiteCptPage.open(mainPage)"/>
-        </div>
-        <DataTable :value="[siteCompetition]" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
+    <animationPage ref="mainPage" :show="true" class="w-full absolute top-8 z-40">
+        <div class="card mt-12">
+            <div class="flex flex-wrap items-center justify-between">
+                <span class="text-base">赛事基础信息设置</span>
+                <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="updateSiteCptPage.open(mainPage)"/>
+            </div>
+            <DataTable :value="[siteCompetition]" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
     {
         table:{
             class:'min-w-full mt-5'
@@ -17,17 +18,19 @@
 
         }
     }">
-            <Column field="name" header="系列赛事名称"></Column>
-            <Column field="domain" header="域名"></Column>
-            <Column header="系列赛事描述" class="!w-80">
-                <template #body="{data}">
-                    <p class="truncate w-80">{{data.description}}</p>
-                </template>
-            </Column>
-            <!--            <Column field="engName" header="Eng Name"></Column>-->
-        </DataTable>
-    </div>
-    <animationPage ref="updateSiteCptPage" class="w-full absolute top-0 z-40">
+                <Column field="name" header="系列赛事名称"></Column>
+                <Column field="domain" header="域名"></Column>
+                <Column header="系列赛事描述" class="!w-80">
+                    <template #body="{data}">
+                        <p class="truncate w-80">{{data.description}}</p>
+                    </template>
+                </Column>
+                <!--            <Column field="engName" header="Eng Name"></Column>-->
+            </DataTable>
+        </div>
+    </animationPage>
+
+    <animationPage ref="updateSiteCptPage" class="w-full absolute top-8 z-40">
         <updateSiteCpt @callClose="updateSiteCptDialogClose"/>
     </animationPage>
 </template>
@@ -40,8 +43,7 @@ import workRest from '@/api/dbs/workRest';
 import { Beans } from '@/api/dbs/beans';
 import { Config } from '@/api/config';
 
-const props = defineProps(['mainPage']);
-const mainPage = ref(props.mainPage);
+const mainPage = useTemplateRef("mainPage");
 
 const updateSiteCptPage = useTemplateRef("updateSiteCptPage");
 

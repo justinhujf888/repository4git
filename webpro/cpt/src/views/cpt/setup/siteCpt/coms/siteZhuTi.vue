@@ -1,12 +1,15 @@
 <template>
-    <div class="p-2 card">
-        <div class="flex flex-wrap items-center justify-between">
-            <span class="text-base">设置赛事主题图</span>
-            <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="updateSiteZhuTiWorkitemPage.open(mainPage)"/>
+    <animationPage ref="mainPage" :show="true" class="w-full absolute top-8 z-40">
+        <div class="card">
+            <div class="flex flex-wrap items-center justify-between">
+                <span class="text-base">设置赛事主题图</span>
+                <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="updateSiteZhuTiWorkitemPage.open(mainPage)"/>
+            </div>
+            <priviewImage v-if="siteZhuTiWorkItemList?.length>0" :files="siteZhuTiWorkItemList"/>
         </div>
-        <priviewImage v-if="siteZhuTiWorkItemList?.length>0" :files="siteZhuTiWorkItemList"/>
-    </div>
-    <animationPage ref="updateSiteZhuTiWorkitemPage" class="w-full absolute top-0 z-40">
+    </animationPage>
+
+    <animationPage ref="updateSiteZhuTiWorkitemPage" class="w-full absolute top-8 z-40">
         <updateSiteWorkitem v-if="siteZhuTiWorkItemList?.length > 0" :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhuti`" :maxFileSize="2097152" :fileLimit="5" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
     </animationPage>
 </template>
@@ -20,8 +23,7 @@ import oss from '@/api/oss';
 import lodash from "lodash";
 import workRest from '@/api/dbs/workRest';
 
-const props = defineProps(['mainPage']);
-const mainPage = ref(props.mainPage);
+const mainPage = useTemplateRef("mainPage");
 
 const updateSiteZhuTiWorkitemPage = useTemplateRef("updateSiteZhuTiWorkitemPage");
 
