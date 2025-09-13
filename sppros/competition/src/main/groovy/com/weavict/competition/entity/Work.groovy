@@ -153,6 +153,9 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     Map<String,Object> setupFields;
 
     @Temporal(TemporalType.TIMESTAMP)
+    Date cptDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
     Date beginDate;
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -124,6 +124,7 @@ export const Beans = {
             name: "",
             pxBiaozun: "",
             setupFields: null,
+            cptDate: null,
             beginDate: null,
             pingShenDate: null,
             endDate: null,

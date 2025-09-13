@@ -46,7 +46,7 @@ import siteZhuTi from "@/views/cpt/setup/siteCpt/coms/siteZhuTi.vue";
 import siteWorkItemPage from "@/views/cpt/setup/siteCpt/coms/siteWorkItem.vue";
 import siteOrgHuman from "@/views/cpt/setup/siteCpt/coms/siteOrgHuman.vue";
 
-onMounted(async () => {
+onMounted(() => {
 
 });
 </script>

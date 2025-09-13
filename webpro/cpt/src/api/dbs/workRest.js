@@ -83,5 +83,8 @@ export default {
     },
     updateOrgHuman(ds,onfun) {
         Http.callHttpFunction('/r/work/updateOrgHuman',ds,onfun);
+    },
+    qyMasterSiteCompetition(ds,onfun) {
+        Http.callHttpFunction('/r/work/qyMasterSiteCompetition',ds,onfun);
     }
 }

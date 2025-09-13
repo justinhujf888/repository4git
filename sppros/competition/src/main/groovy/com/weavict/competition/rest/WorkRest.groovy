@@ -2,6 +2,7 @@ package com.weavict.competition.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Judge
+import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
 import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
@@ -199,6 +200,39 @@ class WorkRest extends BaseRest
         {
             workService.updateTheObject(this.objToBean(query.orgHuman, OrgHuman.class,null));
             return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyMasterSiteCompetition")
+    String qyMasterSiteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         List<MasterCompetition> masterCompetitionList = workService.newQueryUtils(false).masterTable("MasterCompetition",null,null)
+                            .where("appId = :appId",["appId":query.appId],null,{return true})
+                            .where("siteCompetition.id = :siteCompetitionId",["siteCompetitionId":query.siteCompetitionId],"and",{return true})
+                            .where("cptDate = :cptDate",["cptDate":query.cptDate],"and",{return query.cptDate!=null})
+                            .orderBy("cptDate,beginDate")
+                                 .buildSql().run().content;
+                         for(MasterCompetition masterCompetition in masterCompetitionList)
+                         {
+                             masterCompetition.cancelLazyEr();
+                         }
+                         return masterCompetitionList;
+                     }).call()
+                    ]);
         }
         catch (Exception e)
         {
