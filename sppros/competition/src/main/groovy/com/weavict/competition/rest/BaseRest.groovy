@@ -17,6 +17,11 @@ class BaseRest
         return StaticBean.buildObjectMapper();
     }
 
+    ObjectMapper buildObjectMapper4DateTime(String dateFormat,String timeZone)
+    {
+        return StaticBean.objectMapping4DateTime(dateFormat,timeZone);
+    }
+
     void processExcetion(Exception e)
     {
         e.printStackTrace();

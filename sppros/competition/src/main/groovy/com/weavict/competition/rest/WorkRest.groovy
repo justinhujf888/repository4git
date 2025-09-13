@@ -216,7 +216,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = buildObjectMapper();
+            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
@@ -233,6 +233,24 @@ class WorkRest extends BaseRest
                          return masterCompetitionList;
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateMasterCompetition")
+    String updateMasterCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.masterCompetition, MasterCompetition.class,null));
+            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {

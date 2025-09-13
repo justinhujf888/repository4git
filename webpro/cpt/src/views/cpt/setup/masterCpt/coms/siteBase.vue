@@ -3,9 +3,9 @@
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">年份赛事管理</span>
-                <Button label="新增年份赛事" @click="updateMasterCptPage.open()"/>
+                <Button label="新增年份赛事" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'c',returnFunction:returnFunction});updateMasterCptPage.open(mainPage)"/>
             </div>
-            <DataTable :value="masterCompetitionList" dataKey="id" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
+            <DataTable :value="masterCompetitionList" v-model:expandedRows="expandedRows" dataKey="id" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
                 {
                     table:{
                         class:'min-w-full mt-5'
@@ -33,24 +33,38 @@
                         <Button icon="pi pi-pencil" severity="secondary" rounded></Button>
                     </template>
                 </Column>
+                <template #expansion="slotProps">
+                    <div class="p-4 w-full">
+                         <article class="text-wrap !text-start">
+                            <h5>评审标准</h5>
+                            <p>{{slotProps.data.pxBiaozun}}</p>
+                        </article>
+                    </div>
+                    <Divider/>
+                </template>
             </DataTable>
         </div>
     </animationPage>
 
     <animationPage ref="updateMasterCptPage">
-        <updateMasterCpt/>
+        <updateMasterCpt ref="refUpdateMasterCpt"/>
     </animationPage>
 </template>
 
 <script setup>
 import { inject, onMounted, ref, useTemplateRef } from 'vue';
+import dialog from '@/api/uniapp/dialog';
 import animationPage from "@/components/my/animationPage.vue";
 import workRest from '@/api/dbs/workRest';
 import updateMasterCpt from "@/views/cpt/setup/masterCpt/updateMasterCpt.vue";
+import lodash from 'lodash-es';
 
+const mainPage = useTemplateRef("mainPage");
 const updateMasterCptPage = useTemplateRef("updateMasterCptPage");
+const refUpdateMasterCpt = useTemplateRef("refUpdateMasterCpt");
 
 const masterCompetitionList = ref([]);
+const expandedRows = ref({});
 
 let host = inject("domain");
 
@@ -63,6 +77,15 @@ onMounted(() => {
         }
     });
 });
+
+const returnFunction = (obj)=>{
+    if (obj.process=="c") {
+        masterCompetitionList.value.push(obj.masterCompetition);
+        dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事基本资料已建立，请在列表中进行其它项目设置。`);
+    }
+}
+defineExpose({returnFunction});
+
 </script>
 
 <style scoped lang="scss">

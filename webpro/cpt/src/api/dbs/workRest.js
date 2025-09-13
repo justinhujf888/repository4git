@@ -86,5 +86,8 @@ export default {
     },
     qyMasterSiteCompetition(ds,onfun) {
         Http.callHttpFunction('/r/work/qyMasterSiteCompetition',ds,onfun);
+    },
+    updateMasterCompetition(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateMasterCompetition',ds,onfun);
     }
 }
