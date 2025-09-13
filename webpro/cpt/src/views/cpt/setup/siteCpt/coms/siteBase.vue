@@ -1,32 +1,21 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-8 z-40">
-        <div class="card mt-12">
+        <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">赛事基础信息设置</span>
                 <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="updateSiteCptPage.open(mainPage)"/>
             </div>
-            <DataTable :value="[siteCompetition]" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
-    {
-        table:{
-            class:'min-w-full mt-5'
-        },
-        column:{
-            bodyCell:{class:'!text-center'},
-            columnHeaderContent:{class:'justify-self-center'}
-        },
-        pcPaginator:{
-
-        }
-    }">
-                <Column field="name" header="系列赛事名称"></Column>
-                <Column field="domain" header="域名"></Column>
-                <Column header="系列赛事描述" class="!w-80">
-                    <template #body="{data}">
-                        <p class="truncate w-80">{{data.description}}</p>
-                    </template>
-                </Column>
-                <!--            <Column field="engName" header="Eng Name"></Column>-->
-            </DataTable>
+            <div class="col w-full mt-5">
+                <Divider/>
+                <label class="block text-blue-900 dark:text-surface-0 text-sm font-medium mb-2">赛事名称</label>
+                <span>{{siteCompetition.name}}</span>
+                <Divider/>
+                <label class="block text-blue-900 dark:text-surface-0 text-sm font-medium mb-2 mt-5">域名</label>
+                <span>{{siteCompetition.domain}}</span>
+                <Divider/>
+                <label class="block text-blue-900 dark:text-surface-0 text-sm font-medium mb-2 mt-5">系列赛事描述</label>
+                <span>{{siteCompetition.description}}</span>
+            </div>
         </div>
     </animationPage>
 
@@ -64,7 +53,7 @@ onMounted(() => {
 const updateSiteCptDialogClose = (shiSubmit)=>{
     if (shiSubmit) {
         Config.getConfig();
-        // window.location = window.location.href;
+        window.location = window.location.href;
     }
     updateSiteCptPage.value.close(mainPage.value);
 }

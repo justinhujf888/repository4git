@@ -3,22 +3,26 @@
         <div class="start overflow-hidden">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full">
-                    <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">姓名</label>
-                    <InputText name="name" placeholder="请输入姓名" class="w-full md:w-[30rem] mb-4" v-model="orgHuman.name" />
-                    <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
-                    <div class="col card items-center gap-6">
-                        <FileUpload mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
-                        <Message v-if="!src" severity="error" size="small" variant="simple">{{ $form.headImgUrl?.error?.message}}</Message>
-                        <img v-if="src" :src="src" alt="Image" class="shadow-md rounded-xl w-40 sm:w-22" />
-                        <inputText name="headImgUrl" :value="src" class="hidden"/>
-                    </div>
-
-                    <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">简介</label>
-                    <Textarea v-model="orgHuman.description" autoResize rows="15" class="w-full" />
-
+                    <IftaLabel>
+                        <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">姓名</label>
+                        <InputText name="name" placeholder="请输入姓名" class="w-full md:w-[30rem] mb-4" v-model="orgHuman.name" />
+                    </IftaLabel>
+                    <IftaLabel>
+                        <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
+                        <div class="col card items-center gap-6">
+                            <FileUpload mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
+                            <Message v-if="!src" severity="error" size="small" variant="simple">{{ $form.headImgUrl?.error?.message}}</Message>
+                            <img v-if="src" :src="src" alt="Image" class="shadow-md rounded-xl w-40 sm:w-22" />
+                            <inputText name="headImgUrl" :value="src" class="hidden"/>
+                        </div>
+                    </IftaLabel>
+                    <IftaLabel>
+                        <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">简介</label>
+                        <Textarea v-model="orgHuman.description" autoResize rows="15" class="w-full" />
+                    </IftaLabel>
                     <div class="row mt-12 center gap-4">
                         <Button type="submit" label="保存" class="px-8" _as="router-link" _to="/"></Button>
-                        <Button severity="warn" label="取消" class="px-8" @click="callClose(orgHuman,obj)"></Button>
+                        <Button severity="warn" label="取消" class="px-8" @click="callClose(null,obj)"></Button>
                     </div>
                 </Form>
             </div>
@@ -28,7 +32,7 @@
 
 <script setup>
 import animationPage from "@/components/my/animationPage.vue";
-import { onMounted, ref, useTemplateRef, inject } from 'vue';
+import { onMounted, ref, useTemplateRef, inject, nextTick } from 'vue';
 import Page from '@/api/uniapp/page';
 import { Config } from '@/api/config';
 import primeUtil from "@/api/prime/util";
@@ -47,7 +51,8 @@ const src = ref(null);
 let errors = [];
 let host = inject("domain");
 
-onMounted(() => {
+onMounted(async () => {
+    nextTick();
     if (orgHuman?.value?.headImgUrl) {
         src.value = oss.buildImgPath(orgHuman.value.headImgUrl);
     }
@@ -71,7 +76,6 @@ const resolver = ({ values }) => {
 };
 
 const onFormSubmit = ({ valid }) => {
-    console.log(obj.value);
     if (valid) {
         let headImgUrl = null;
         if (obj.value.process=="c") {
@@ -84,9 +88,14 @@ const onFormSubmit = ({ valid }) => {
             headImgUrl = orgHuman.value.headImgUrl;
         } else {
             if (file.value!=null) {
-                headImgUrl = file.value.objectURL;
+                if (orgHuman.value.headImgUrl) {
+                    oss.deleteFile(orgHuman.value.headImgUrl);
+                }
+                orgHuman.value.headImgUrl = `cpt/${host}/orgHuman/${orgHuman.value.id}_${file.value.name}`;
+                headImgUrl = orgHuman.value.headImgUrl;
             }
         }
+        console.log(headImgUrl);
         if (headImgUrl) {
             oss.uploadFileWithClient(
                 file.value,
@@ -94,6 +103,9 @@ const onFormSubmit = ({ valid }) => {
                 (res) => {
                     workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
                         if (res.status=="OK") {
+                            orgHuman.value.tempMap = {};
+                            orgHuman.value.tempMap.headImgUrl = oss.buildImgPath(orgHuman.value.headImgUrl);
+                            orgHuman.value.tempMap.imgPath = orgHuman.value.tempMap.headImgUrl;
                             callClose(orgHuman.value,obj.value);
                         }
                     });
@@ -105,6 +117,9 @@ const onFormSubmit = ({ valid }) => {
         } else {
             workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
                 if (res.status=="OK") {
+                    orgHuman.value.tempMap = {};
+                    orgHuman.value.tempMap.headImgUrl = oss.buildImgPath(orgHuman.value.headImgUrl);
+                    orgHuman.value.tempMap.imgPath = orgHuman.value.tempMap.headImgUrl;
                     callClose(orgHuman.value,obj.value);
                 }
             });
@@ -134,6 +149,11 @@ const callClose = (orgHuman,obj)=>{
 const init = (og,o)=>{
     if (og) {
         orgHuman.value = og;
+        if (orgHuman?.value?.headImgUrl) {
+            src.value = oss.buildImgPath(orgHuman.value.headImgUrl);
+        }
+    } else {
+        orgHuman.value = Beans.orgHuman();
     }
     obj.value = o;
     console.log(obj.value);
