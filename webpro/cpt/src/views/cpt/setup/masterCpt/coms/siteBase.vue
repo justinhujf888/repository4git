@@ -30,7 +30,7 @@
                 <Column field="endDate" header="公布时间"></Column>
                 <Column class="w-24 !text-end">
                     <template #body="{ data,index }">
-                        <SplitButton label="修改基本资料" :model="getSplitItems(data,index)" icon="pi pi-plus" rounded size="small" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)" :pt="{Menu:{pcMenu:{class:'!bg-green-400 !text-green-800'}}}"></SplitButton>
+                        <Button label="修改基本资料" :_model="getSplitItems(data,index)" variant="outlined" class="!text-xs rounded-2xl font-semibold" icon="pi pi-pencil" rounded size="small" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)" :pt="{Menu:{pcMenu:{class:'!bg-green-400 !text-green-800'}}}"></Button>
 <!--                        <Button label="修改基本资料" class="!bg-green-400 !text-xs rounded-2xl" icon="pi pi-pencil" severity="secondary" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)"></Button>-->
                     </template>
                 </Column>
@@ -38,8 +38,26 @@
                     <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true">
                         <p>{{slotProps.data.pxBiaozun}}</p>
                     </Fieldset>
+
                     <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true">
-                        <priviewImage v-if="slotProps.data.tempMap?.masterZhuTiWorkItemList" :files="slotProps.data.tempMap?.masterZhuTiWorkItemList"/>
+                        <div class="relative">
+                            <div class="absolute -top-8 right-1">
+                                <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[1].command()"/>
+                            </div>
+                            <div>
+                                <priviewImage v-if="selMasterCompetition.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition.tempMap?.masterZhuTiWorkItemList"/>
+                            </div>
+                        </div>
+                    </Fieldset>
+                    <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true">
+                        <div class="relative">
+                            <div class="absolute -top-8 right-1">
+                                <Button label="设置" size="small" rounded severity="warn" @click="getSplitItems(slotProps.data,slotProps.index)[2].command()"/>
+                            </div>
+                            <div>
+
+                            </div>
+                        </div>
                     </Fieldset>
                 </template>
             </DataTable>
@@ -51,7 +69,7 @@
     </animationPage>
 
     <animationPage ref="zuTiPage">
-        <myFileUpload @theFileUploaded="theFileUploaded" @cancel="cancelUpload"/>
+        <myFileUpload ref="refFileUpload" v-if="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :filePreKey="`cpt/${host}/master/zhiti`" :fileLimit="5" @theFileUploaded="theFileUploaded" @allFilesUploaded="filesUpload" @cancel="cancelUpload" @deleteFile="deleteFile"/>
     </animationPage>
 </template>
 
@@ -72,12 +90,13 @@ const mainPage = useTemplateRef("mainPage");
 const updateMasterCptPage = useTemplateRef("updateMasterCptPage");
 const refUpdateMasterCpt = useTemplateRef("refUpdateMasterCpt");
 const zuTiPage = useTemplateRef("zuTiPage");
+const refFileUpload = useTemplateRef("refFileUpload");
 
 const masterCompetitionList = ref([]);
 const expandedRows = ref({});
+const selMasterCompetition = ref(null);
 
 let host = inject("domain");
-let selMasterCompetition = null;
 let selIndex = -1;
 
 onMounted(() => {
@@ -92,21 +111,25 @@ onMounted(() => {
 });
 
 const getSplitItems = (data,index)=>{
-    selMasterCompetition = data;
+    selMasterCompetition.value = data;
     selIndex = index;
     return [
         {label:"修改基本资料",command:()=>{
-                refUpdateMasterCpt.value.init(mainPage.value,updateMasterCptPage.value,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.value.open(mainPage.value);
+                refUpdateMasterCpt.value.init(mainPage.value,updateMasterCptPage.value,{process:'u',data:data,index:index,returnFunction:returnFunction});
+                updateMasterCptPage.value.open(mainPage.value);
             }},
         {label:"设置主题图",command:()=>{
                 zuTiPage.value.open(mainPage.value);
+            }},
+        {label:"设置简介",command:()=>{
+
             }}
     ];
 }
 
 const onRowExpand = (event) => {
-    selMasterCompetition = event.data;
-    if (!event.data.tempMap?.masterZhuTiWorkItemList) {
+    selMasterCompetition.value = event.data;
+    if (!selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList) {
         workRest.qySiteWorkItemList({sourceId:host,sourceType:1,type:0},(res)=>{
             if (res.status=="OK") {
                 if (res.data!=null) {
@@ -118,8 +141,8 @@ const onRowExpand = (event) => {
                         v.tempMap.type = v.fileFields.type;
                         v.tempMap.imgPath = oss.buildImgPath(v.path);
                     });
-                    event.data.tempMap = {};
-                    event.data.tempMap.masterZhuTiWorkItemList = masterZhuTiWorkItemList;
+                    selMasterCompetition.value.tempMap = {};
+                    selMasterCompetition.value.tempMap.masterZhuTiWorkItemList = masterZhuTiWorkItemList;
                 }
             }
         });
@@ -136,7 +159,7 @@ const theFileUploaded = (file,index,obj)=>{
     siteWorkItem.path = file.fileKey;
     siteWorkItem.type = 0;
     siteWorkItem.sourceType = 1;
-    siteWorkItem.sourceId = selMasterCompetition.siteCompetition.id;
+    siteWorkItem.sourceId = selMasterCompetition.value.siteCompetition.id;
     siteWorkItem.mediaType = 0;
     siteWorkItem.createDate = dayjs().valueOf();
     siteWorkItem.appId = host;
@@ -148,14 +171,37 @@ const theFileUploaded = (file,index,obj)=>{
             siteWorkItem.tempMap.name = siteWorkItem.fileFields.name;
             siteWorkItem.tempMap.type = siteWorkItem.fileFields.type;
             siteWorkItem.tempMap.imgPath = oss.buildImgPath(siteWorkItem.path);
-            selMasterCompetition.tempMap?.masterZhuTiWorkItemList.push(siteWorkItem);
+            selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList.push(siteWorkItem);
             dialog.toastSuccess(`文件${file.name}已上传`);
         }
     });
 }
 
+const filesUpload = (files,obj)=>{
+    zuTiPage.value.close(mainPage.value);
+    dialog.alertBack(`文件上传完成！`,()=>{
+        console.log(selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList);
+        refFileUpload.value.reLoadFiles(selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList);
+    });
+}
+
 const cancelUpload = ()=>{
     zuTiPage.value.close(mainPage.value);
+}
+
+const deleteFile = (file,index,obj)=>{
+    if (file.id) {
+        workRest.deleteSiteWorkItem({id:file.id},(res)=>{
+            if (res.status=="OK") {
+                oss.deleteFile(file.path);
+                selMasterCompetition.value.tempMap.masterZhuTiWorkItemList.splice(index,1);
+                dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
+            }
+        });
+    } else {
+        selMasterCompetition.value.tempMap.masterZhuTiWorkItemList.splice(index,1);
+        dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
+    }
 }
 
 const returnFunction = (obj)=>{

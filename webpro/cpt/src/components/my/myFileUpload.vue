@@ -16,11 +16,13 @@
 <!--            </template>-->
             <template #header="{ chooseCallback, uploadCallback, clearCallback }">
                 <div class="flex flex-wrap justify-between items-center flex-1 gap-4">
-                    <div class="flex gap-2">
-                        <Button @click="chooseCallback()" icon="pi pi-images" rounded label="选择文件"></Button>
-                        <Button v-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1 && files.length<=fileLimit" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
-<!--                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>-->
-                        <Button class="!bg-red-400 !border-red-400" @click="cancel" rounded label="退出"></Button>
+                    <div class="flex between gap-2 w-full">
+                        <div class="flex gap-2">
+                            <Button @click="chooseCallback()" icon="pi pi-images" rounded label="选择文件"></Button>
+                            <Button v-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1 && files.length<=fileLimit" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
+                            <!--                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>-->
+                        </div>
+                        <Button class="!bg-gray-800 !border-gray-900 !text-white" @click="cancel" rounded label="退出"></Button>
                     </div>
                 </div>
             </template>
@@ -235,6 +237,11 @@ function delTheFile(index) {
     },null);
 }
 
+function reLoadFiles(_files) {
+    fu.value.files = [];
+    files.value = lodash.cloneDeep(_files);
+}
+
 const formatSize = (bytes) => {
     const k = 1024;
     const dm = 3;
@@ -249,6 +256,8 @@ const formatSize = (bytes) => {
 
     return `${formattedSize} ${sizes[i]}`;
 };
+
+defineExpose({reLoadFiles});
 </script>
 
 <style scoped lang="scss">
