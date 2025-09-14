@@ -6,13 +6,13 @@
                 <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="updateSiteCptPage.open(mainPage)"/>
             </div>
             <div class="col w-full mt-5 leading-6">
-                <Fieldset class="text-wrap text-start" legend="赛事名称" :toggleable="true">
+                <Fieldset class="text-wrap text-start" legend="赛事名称" :toggleable="false">
                     <p>{{siteCompetition.name}}</p>
                 </Fieldset>
-                <Fieldset class="text-wrap text-start" legend="域名" :toggleable="true">
+                <Fieldset class="text-wrap text-start" legend="域名" :toggleable="false">
                     <p>{{siteCompetition.domain}}</p>
                 </Fieldset>
-                <Fieldset class="text-wrap text-start" legend="系列赛事描述" :toggleable="true">
+                <Fieldset class="text-wrap text-start" legend="系列赛事描述" :toggleable="false">
                     <p>{{siteCompetition.description}}</p>
                 </Fieldset>
             </div>

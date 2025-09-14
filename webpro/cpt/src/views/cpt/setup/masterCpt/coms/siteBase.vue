@@ -5,7 +5,7 @@
                 <span class="text-base">年份赛事管理</span>
                 <Button label="新增年份赛事" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'c',returnFunction:returnFunction});updateMasterCptPage.open(mainPage)"/>
             </div>
-            <DataTable :value="masterCompetitionList" v-model:expandedRows="expandedRows" dataKey="id" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
+            <DataTable :value="masterCompetitionList" v-model:expandedRows="expandedRows" dataKey="id" @rowExpand="onRowExpand" @rowCollapse="onRowCollapse" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
                 {
                     table:{
                         class:'min-w-full mt-5'
@@ -30,12 +30,16 @@
                 <Column field="endDate" header="公布时间"></Column>
                 <Column class="w-24 !text-end">
                     <template #body="{ data,index }">
-                        <Button icon="pi pi-pencil" severity="secondary" rounded @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)"></Button>
+                        <SplitButton label="修改基本资料" :model="getSplitItems(data,index)" icon="pi pi-plus" rounded size="small" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)" :pt="{Menu:{pcMenu:{class:'!bg-green-400 !text-green-800'}}}"></SplitButton>
+<!--                        <Button label="修改基本资料" class="!bg-green-400 !text-xs rounded-2xl" icon="pi pi-pencil" severity="secondary" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)"></Button>-->
                     </template>
                 </Column>
                 <template #expansion="slotProps">
                     <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true">
                         <p>{{slotProps.data.pxBiaozun}}</p>
+                    </Fieldset>
+                    <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true">
+                        <priviewImage v-if="slotProps.data.tempMap?.masterZhuTiWorkItemList" :files="slotProps.data.tempMap?.masterZhuTiWorkItemList"/>
                     </Fieldset>
                 </template>
             </DataTable>
@@ -45,6 +49,10 @@
     <animationPage ref="updateMasterCptPage">
         <updateMasterCpt ref="refUpdateMasterCpt"/>
     </animationPage>
+
+    <animationPage ref="zuTiPage">
+        <myFileUpload @theFileUploaded="theFileUploaded" @cancel="cancelUpload"/>
+    </animationPage>
 </template>
 
 <script setup>
@@ -53,19 +61,27 @@ import dialog from '@/api/uniapp/dialog';
 import animationPage from "@/components/my/animationPage.vue";
 import workRest from '@/api/dbs/workRest';
 import updateMasterCpt from "@/views/cpt/setup/masterCpt/updateMasterCpt.vue";
+import myFileUpload from "@/components/my/myFileUpload.vue";
+import priviewImage from "@/components/my/priviewImage.vue";
 import lodash from 'lodash-es';
 import dayjs from "dayjs";
+import oss from '@/api/oss';
+import { Beans } from '@/api/dbs/beans';
 
 const mainPage = useTemplateRef("mainPage");
 const updateMasterCptPage = useTemplateRef("updateMasterCptPage");
 const refUpdateMasterCpt = useTemplateRef("refUpdateMasterCpt");
+const zuTiPage = useTemplateRef("zuTiPage");
 
 const masterCompetitionList = ref([]);
 const expandedRows = ref({});
 
 let host = inject("domain");
+let selMasterCompetition = null;
+let selIndex = -1;
 
 onMounted(() => {
+    oss.genClient();
     workRest.qyMasterSiteCompetition({siteCompetitionId:host},(res)=>{
         if (res.status=="OK") {
             if (res.data) {
@@ -74,6 +90,73 @@ onMounted(() => {
         }
     });
 });
+
+const getSplitItems = (data,index)=>{
+    selMasterCompetition = data;
+    selIndex = index;
+    return [
+        {label:"修改基本资料",command:()=>{
+                refUpdateMasterCpt.value.init(mainPage.value,updateMasterCptPage.value,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.value.open(mainPage.value);
+            }},
+        {label:"设置主题图",command:()=>{
+                zuTiPage.value.open(mainPage.value);
+            }}
+    ];
+}
+
+const onRowExpand = (event) => {
+    selMasterCompetition = event.data;
+    if (!event.data.tempMap?.masterZhuTiWorkItemList) {
+        workRest.qySiteWorkItemList({sourceId:host,sourceType:1,type:0},(res)=>{
+            if (res.status=="OK") {
+                if (res.data!=null) {
+                    let masterZhuTiWorkItemList = res.data;
+                    lodash.forEach(masterZhuTiWorkItemList,(v,i)=>{
+                        v.tempMap = {};
+                        v.tempMap.size = v.fileFields.size;
+                        v.tempMap.name = v.fileFields.name;
+                        v.tempMap.type = v.fileFields.type;
+                        v.tempMap.imgPath = oss.buildImgPath(v.path);
+                    });
+                    event.data.tempMap = {};
+                    event.data.tempMap.masterZhuTiWorkItemList = masterZhuTiWorkItemList;
+                }
+            }
+        });
+    }
+    // console.log(event);
+};
+const onRowCollapse = (event) => {
+
+};
+
+const theFileUploaded = (file,index,obj)=>{
+    let siteWorkItem = Beans.siteWorkItem();
+    siteWorkItem.id = Beans.buildPId("zt");
+    siteWorkItem.path = file.fileKey;
+    siteWorkItem.type = 0;
+    siteWorkItem.sourceType = 1;
+    siteWorkItem.sourceId = selMasterCompetition.siteCompetition.id;
+    siteWorkItem.mediaType = 0;
+    siteWorkItem.createDate = dayjs().valueOf();
+    siteWorkItem.appId = host;
+    siteWorkItem.fileFields = {name:file.name,size:file.size,type:file.type};
+    workRest.updateSiteWorkItem({siteWorkItem:siteWorkItem},(res)=>{
+        if (res.status=="OK") {
+            siteWorkItem.tempMap = {};
+            siteWorkItem.tempMap.size = siteWorkItem.fileFields.size;
+            siteWorkItem.tempMap.name = siteWorkItem.fileFields.name;
+            siteWorkItem.tempMap.type = siteWorkItem.fileFields.type;
+            siteWorkItem.tempMap.imgPath = oss.buildImgPath(siteWorkItem.path);
+            selMasterCompetition.tempMap?.masterZhuTiWorkItemList.push(siteWorkItem);
+            dialog.toastSuccess(`文件${file.name}已上传`);
+        }
+    });
+}
+
+const cancelUpload = ()=>{
+    zuTiPage.value.close(mainPage.value);
+}
 
 const returnFunction = (obj)=>{
     if (obj.process=="c") {

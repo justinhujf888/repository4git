@@ -20,6 +20,7 @@
                         <Button @click="chooseCallback()" icon="pi pi-images" rounded label="选择文件"></Button>
                         <Button v-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1 && files.length<=fileLimit" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
 <!--                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>-->
+                        <Button class="!bg-red-400 !border-red-400" @click="cancel" rounded label="退出"></Button>
                     </div>
                 </div>
             </template>
@@ -119,7 +120,7 @@ const fu = useTemplateRef("fu");
 const $primevue = usePrimeVue();
 // const fileupload = useTemplateRef("fileupload");
 const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey','obj']);
-const emit = defineEmits(["theFileUploaded","allFilesUploaded","deleteFile"]);
+const emit = defineEmits(["theFileUploaded","allFilesUploaded","deleteFile","cancel"]);
 const theFileUploaded = (file,index,obj)=>{
     emit("theFileUploaded",file,index,obj);
 };
@@ -129,6 +130,9 @@ const allFilesUploaded = (files,obj)=>{
 const deleteFile = (file,index,obj)=>{
     emit("deleteFile",file,index,obj);
 };
+const cancel = ()=>{
+    emit("cancel");
+}
 
 const files = ref(props.files ? lodash.cloneDeep(props.files) : []);
 const maxFileSize = ref(props.maxFileSize ? props.maxFileSize : 2097152);

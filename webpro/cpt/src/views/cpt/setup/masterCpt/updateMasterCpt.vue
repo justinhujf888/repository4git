@@ -4,7 +4,8 @@
             <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full">
                 <IftaLabel>
                     <label for="cptDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">赛事年份</label>
-                    <DatePicker name="cptDate" v-model="masterCompetition.cptDate" view="year" dateFormat="yy" showIcon placeholder="请输入赛事年份" class="w-full mb-4"/>
+                    <InputText name="cptDate" v-model="masterCompetition.cptDate" class="hidden"/>
+                    <DatePicker v-model="masterCompetition.cptDate" view="year" dateFormat="yy" showIcon placeholder="请输入赛事年份" class="w-full mb-4"/>
                 </IftaLabel>
                 <IftaLabel>
                     <label for="beginDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">报名时间</label>
@@ -45,6 +46,7 @@ import util from "@/api/util";
 import dayjs from "dayjs";
 
 const masterCompetition = ref(Beans.masterCompetition());
+const date = ref();
 let mainPage = null;
 let mePage = null;
 let obj = null;
@@ -82,7 +84,7 @@ const onFormSubmit = ({ valid }) => {
     if (valid) {
 
         if (obj.process=="c") {
-            masterCompetition.value.id = host;
+            masterCompetition.value.id = Beans.buildPId("");
             masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).year();
             masterCompetition.value.createDate = new Date().getTime();
             masterCompetition.value.appId = host;
