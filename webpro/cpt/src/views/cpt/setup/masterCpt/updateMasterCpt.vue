@@ -87,8 +87,9 @@ const onFormSubmit = ({ valid }) => {
             masterCompetition.value.createDate = new Date().getTime();
             masterCompetition.value.appId = host;
             masterCompetition.value.siteCompetition.id = host;
+        } else if (obj.process=="u") {
+            masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).year();
         }
-
         workRest.updateMasterCompetition({masterCompetition:masterCompetition.value}, (res) => {
             if (res.status == "OK") {
                 obj.masterCompetition = masterCompetition.value;
@@ -107,6 +108,9 @@ const init = (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
     obj = _obj;
+    if (obj.process=="u") {
+        masterCompetition.value = obj.data;
+    }
 }
 
 defineExpose({init});

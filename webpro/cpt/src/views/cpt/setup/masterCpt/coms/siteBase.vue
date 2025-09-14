@@ -30,17 +30,13 @@
                 <Column field="endDate" header="公布时间"></Column>
                 <Column class="w-24 !text-end">
                     <template #body="{ data,index }">
-                        <Button icon="pi pi-pencil" severity="secondary" rounded></Button>
+                        <Button icon="pi pi-pencil" severity="secondary" rounded @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)"></Button>
                     </template>
                 </Column>
                 <template #expansion="slotProps">
-                    <div class="p-4 w-full">
-                         <article class="text-wrap !text-start">
-                            <h5>评审标准</h5>
-                            <p>{{slotProps.data.pxBiaozun}}</p>
-                        </article>
-                    </div>
-                    <Divider/>
+                    <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true">
+                        <p>{{slotProps.data.pxBiaozun}}</p>
+                    </Fieldset>
                 </template>
             </DataTable>
         </div>
@@ -58,6 +54,7 @@ import animationPage from "@/components/my/animationPage.vue";
 import workRest from '@/api/dbs/workRest';
 import updateMasterCpt from "@/views/cpt/setup/masterCpt/updateMasterCpt.vue";
 import lodash from 'lodash-es';
+import dayjs from "dayjs";
 
 const mainPage = useTemplateRef("mainPage");
 const updateMasterCptPage = useTemplateRef("updateMasterCptPage");
@@ -82,6 +79,13 @@ const returnFunction = (obj)=>{
     if (obj.process=="c") {
         masterCompetitionList.value.push(obj.masterCompetition);
         dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事基本资料已建立，请在列表中进行其它项目设置。`);
+    } else if (obj.process=="u") {
+        obj.masterCompetition.beginDate = dayjs(obj.masterCompetition.beginDate).format("YYYY-MM-DD");
+        obj.masterCompetition.endDate = dayjs(obj.masterCompetition.endDate).format("YYYY-MM-DD");
+        obj.masterCompetition.pingShenDate = dayjs(obj.masterCompetition.pingShenDate).format("YYYY-MM-DD");
+        obj.masterCompetition.cptDate = dayjs(obj.masterCompetition.cptDate).format("YYYY-MM-DD");
+        masterCompetitionList.value[obj.index] = obj.masterCompetition;
+        dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事基本资料已更新，请在列表中进行其它项目设置。`);
     }
 }
 defineExpose({returnFunction});

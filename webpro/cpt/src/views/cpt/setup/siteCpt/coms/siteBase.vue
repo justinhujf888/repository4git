@@ -5,16 +5,16 @@
                 <span class="text-base">赛事基础信息设置</span>
                 <Button label="基础信息设置" _click="Page.navigateTo('updateSiteCpt',null)" @click="updateSiteCptPage.open(mainPage)"/>
             </div>
-            <div class="col w-full mt-5">
-                <Divider/>
-                <label class="block text-blue-900 dark:text-surface-0 text-sm font-medium mb-2">赛事名称</label>
-                <span>{{siteCompetition.name}}</span>
-                <Divider/>
-                <label class="block text-blue-900 dark:text-surface-0 text-sm font-medium mb-2 mt-5">域名</label>
-                <span>{{siteCompetition.domain}}</span>
-                <Divider/>
-                <label class="block text-blue-900 dark:text-surface-0 text-sm font-medium mb-2 mt-5">系列赛事描述</label>
-                <span>{{siteCompetition.description}}</span>
+            <div class="col w-full mt-5 leading-6">
+                <Fieldset class="text-wrap text-start" legend="赛事名称" :toggleable="true">
+                    <p>{{siteCompetition.name}}</p>
+                </Fieldset>
+                <Fieldset class="text-wrap text-start" legend="域名" :toggleable="true">
+                    <p>{{siteCompetition.domain}}</p>
+                </Fieldset>
+                <Fieldset class="text-wrap text-start" legend="系列赛事描述" :toggleable="true">
+                    <p>{{siteCompetition.description}}</p>
+                </Fieldset>
             </div>
         </div>
     </animationPage>
