@@ -9,7 +9,7 @@ import { onMounted, ref } from 'vue';
 import dialog from '@/api/uniapp/dialog';
 import {Config} from "@/api/config";
 import lodash from "lodash";
-import siteBase from "@/views/cpt/setup/masterCpt/coms/siteBase.vue";
+import siteBase from "@/views/cpt/setup/masterCpt/coms/masterBase.vue";
 
 </script>
 

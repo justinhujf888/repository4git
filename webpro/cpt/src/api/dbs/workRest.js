@@ -89,5 +89,8 @@ export default {
     },
     updateMasterCompetition(ds,onfun) {
         Http.callHttpFunction('/r/work/updateMasterCompetition',ds,onfun);
+    },
+    updateMasterCompetitionDescription(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateMasterCompetitionDescription',ds,onfun);
     }
 }

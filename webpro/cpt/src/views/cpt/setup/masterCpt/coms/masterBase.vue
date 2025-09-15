@@ -35,29 +35,56 @@
                     </template>
                 </Column>
                 <template #expansion="slotProps">
-                    <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true">
-                        <p>{{slotProps.data.pxBiaozun}}</p>
+                    <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true" :collapsed="true">
+                        <ScrollPanel class="w-72 md:w-full">
+                            <div class="!relative w-full">
+                                <div class="absolute -top-10 right-1 z-100">
+                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[0].command()"/>
+                                </div>
+                                <div class="mt-10">
+                                    <p>{{slotProps.data.pxBiaozun}}</p>
+                                </div>
+                            </div>
+                        </ScrollPanel>
                     </Fieldset>
 
-                    <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true">
-                        <div class="relative">
-                            <div class="absolute -top-8 right-1">
-                                <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[1].command()"/>
+                    <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true" :collapsed="true">
+                        <ScrollPanel class="w-72 md:w-full">
+                            <div class="!relative w-full">
+                                <div class="absolute -top-10 right-1 z-100">
+                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[1].command()"/>
+                                </div>
+                                <div class="mt-10">
+                                    <priviewImage v-if="selMasterCompetition.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition.tempMap?.masterZhuTiWorkItemList"/>
+                                </div>
                             </div>
-                            <div>
-                                <priviewImage v-if="selMasterCompetition.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition.tempMap?.masterZhuTiWorkItemList"/>
-                            </div>
-                        </div>
+                        </ScrollPanel>
                     </Fieldset>
-                    <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true">
-                        <div class="relative">
-                            <div class="absolute -top-8 right-1">
-                                <Button label="设置" size="small" rounded severity="warn" @click="getSplitItems(slotProps.data,slotProps.index)[2].command()"/>
+                    <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true" :collapsed="true">
+                        <ScrollPanel class="w-72 md:w-full">
+                            <div class="!relative w-full">
+                                <div class="absolute -top-10 right-1 z-100">
+                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[2].command()"/>
+                                </div>
+                                <div class="mt-10">
+                                    <DataView :value="selMasterCompetition.description?.data" :pt="{
+                                        emptyMessage:{
+                                            class:'opacity-0'
+                                        }
+                                    }">
+                                        <template #list="slotProps">
+                                            <div class="col">
+                                                <div v-for="(item,index) in slotProps.items" :key="index">
+                                                    <Panel :header="item.title">
+                                                        <p>{{item.description}}</p>
+                                                    </Panel>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </DataView>
+                                </div>
                             </div>
-                            <div>
-
-                            </div>
-                        </div>
+                        </ScrollPanel>
                     </Fieldset>
                 </template>
             </DataTable>
@@ -71,6 +98,10 @@
     <animationPage ref="zuTiPage">
         <myFileUpload ref="refFileUpload" v-if="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :filePreKey="`cpt/${host}/master/zhiti`" :fileLimit="5" @theFileUploaded="theFileUploaded" @allFilesUploaded="filesUpload" @cancel="cancelUpload" @deleteFile="deleteFile"/>
     </animationPage>
+
+    <animationPage ref="updateDescriptionPage">
+        <updateDescription ref="refUpdateDescription"/>
+    </animationPage>
 </template>
 
 <script setup>
@@ -79,6 +110,7 @@ import dialog from '@/api/uniapp/dialog';
 import animationPage from "@/components/my/animationPage.vue";
 import workRest from '@/api/dbs/workRest';
 import updateMasterCpt from "@/views/cpt/setup/masterCpt/updateMasterCpt.vue";
+import updateDescription from "@/views/cpt/setup/masterCpt/updateDescription.vue";
 import myFileUpload from "@/components/my/myFileUpload.vue";
 import priviewImage from "@/components/my/priviewImage.vue";
 import lodash from 'lodash-es';
@@ -91,6 +123,8 @@ const updateMasterCptPage = useTemplateRef("updateMasterCptPage");
 const refUpdateMasterCpt = useTemplateRef("refUpdateMasterCpt");
 const zuTiPage = useTemplateRef("zuTiPage");
 const refFileUpload = useTemplateRef("refFileUpload");
+const updateDescriptionPage = useTemplateRef("updateDescriptionPage");
+const refUpdateDescription = useTemplateRef("refUpdateDescription");
 
 const masterCompetitionList = ref([]);
 const expandedRows = ref({});
@@ -122,7 +156,8 @@ const getSplitItems = (data,index)=>{
                 zuTiPage.value.open(mainPage.value);
             }},
         {label:"设置简介",command:()=>{
-
+                refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFuntion});
+                updateDescriptionPage.value.open(mainPage.value);
             }}
     ];
 }
@@ -217,6 +252,12 @@ const returnFunction = (obj)=>{
         dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事基本资料已更新，请在列表中进行其它项目设置。`);
     }
 }
+
+const descriptionReturnFuntion = (obj)=>{
+    masterCompetitionList.value[obj.index].description = obj.masterCompetition.description;
+    dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事简介已更新`);
+}
+
 defineExpose({returnFunction});
 
 </script>
