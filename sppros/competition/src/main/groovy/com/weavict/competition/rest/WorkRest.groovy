@@ -268,8 +268,7 @@ class WorkRest extends BaseRest
         try
         {
             ObjectMapper objectMapper = this.buildObjectMapper();
-            println this.objToBean(query.description,Map.class,objectMapper);
-            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", ["description":[template:"001", data:[[title:"abc", description:"aaaaaaaaaaaaaaabbbbbbbbbcccccccccc"]]]],["id":query.id],false);
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", [description:query.description],["id":query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)

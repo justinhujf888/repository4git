@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <FileUpload ref="fu" mode="advanced" :accept="fileAccept" multiple auto :maxFileSize="maxFileSize" :fileLimit="fileLimit" _uploader="uploader" customUpload @select="onFileSelect" chooseLabel="选择文件" :invalidFileSizeMessage="`{0}: 文件太大, 文件大小必须小于 {1}`" :pt="{
+        <FileUpload ref="fu" :files="files" mode="advanced" :accept="fileAccept" multiple auto :maxFileSize="maxFileSize" :fileLimit="fileLimit" _uploader="uploader" customUpload @select="onFileSelect" chooseLabel="选择文件" :invalidFileSizeMessage="`{0}: 文件太大, 文件大小必须小于 {1}`" :pt="{
             root: {
                 class: '!border-2'
             },
@@ -27,10 +27,10 @@
                 </div>
             </template>
             <template #content="{ messages }">
-                <Message v-for="message of messages" :key="message" :class="{ 'mb-8': !files.length }" severity="error">
+                <Message v-for="message of messages" :key="message" :class="{ 'mb-8': !files?.length }" severity="error">
                     {{ message }}
                 </Message>
-                <Message v-for="message of fileMessages" :key="message" :class="{ 'mb-8': !files.length }" severity="error">
+                <Message v-for="message of fileMessages" :key="message" :class="{ 'mb-8': !files?.length }" severity="error">
                     {{ message }}
                 </Message>
                 <DataView :value="files" layout="grid" :pt="{
@@ -242,6 +242,17 @@ function reLoadFiles(_files) {
     files.value = lodash.cloneDeep(_files);
 }
 
+// 'maxFileSize','fileLimit','fileAccept','filePreKey','obj'
+function init(_files,_maxFileSize,_fileLimit,_fileAccept,_filePreKey,_obj) {
+    fu.value.files = [];
+    files.value = lodash.cloneDeep(_files);
+    maxFileSize.value = _maxFileSize==null ? maxFileSize.value : _maxFileSize;
+    fileLimit.value = _fileLimit==null ? fileLimit.value : _fileLimit;
+    fileAccept.value = _fileAccept==null ? fileAccept.value : _fileAccept;
+    filePreKey.value = _filePreKey==null ? filePreKey.value : _filePreKey;
+    obj = _obj;
+}
+
 const formatSize = (bytes) => {
     const k = 1024;
     const dm = 3;
@@ -257,7 +268,7 @@ const formatSize = (bytes) => {
     return `${formattedSize} ${sizes[i]}`;
 };
 
-defineExpose({reLoadFiles});
+defineExpose({reLoadFiles,init});
 </script>
 
 <style scoped lang="scss">

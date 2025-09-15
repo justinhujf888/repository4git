@@ -55,7 +55,7 @@
                                     <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[1].command()"/>
                                 </div>
                                 <div class="mt-10">
-                                    <priviewImage v-if="selMasterCompetition.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition.tempMap?.masterZhuTiWorkItemList"/>
+                                    <priviewImage v-if="slotProps.data.tempMap?.masterZhuTiWorkItemList" :files="slotProps.data.tempMap?.masterZhuTiWorkItemList"/>
                                 </div>
                             </div>
                         </ScrollPanel>
@@ -67,7 +67,7 @@
                                     <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[2].command()"/>
                                 </div>
                                 <div class="mt-10">
-                                    <DataView :value="selMasterCompetition.description?.data" :pt="{
+                                    <DataView :value="slotProps.data.description?.data" :pt="{
                                         emptyMessage:{
                                             class:'opacity-0'
                                         }
@@ -96,7 +96,7 @@
     </animationPage>
 
     <animationPage ref="zuTiPage">
-        <myFileUpload ref="refFileUpload" v-if="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :filePreKey="`cpt/${host}/master/zhiti`" :fileLimit="5" @theFileUploaded="theFileUploaded" @allFilesUploaded="filesUpload" @cancel="cancelUpload" @deleteFile="deleteFile"/>
+        <myFileUpload ref="refFileUpload" v-if="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :files="selMasterCompetition?.tempMap?.masterZhuTiWorkItemList" :filePreKey="`cpt/${host}/master/${selMasterCompetition?.id}/zhiti`" :fileLimit="5" @theFileUploaded="theFileUploaded" @allFilesUploaded="filesUpload" @cancel="cancelUpload" @deleteFile="deleteFile"/>
     </animationPage>
 
     <animationPage ref="updateDescriptionPage">
@@ -139,6 +139,7 @@ onMounted(() => {
         if (res.status=="OK") {
             if (res.data) {
                 masterCompetitionList.value = res.data;
+                // console.log(masterCompetitionList.value);
             }
         }
     });
@@ -153,6 +154,8 @@ const getSplitItems = (data,index)=>{
                 updateMasterCptPage.value.open(mainPage.value);
             }},
         {label:"设置主题图",command:()=>{
+                // refFileUpload.value.reLoadFiles(selMasterCompetition.value?.tempMap?.masterZhuTiWorkItemList);
+                refFileUpload.value.init(selMasterCompetition.value?.tempMap?.masterZhuTiWorkItemList,null,null,null,`cpt/${host}/master/${selMasterCompetition.value?.id}/zhiti`,{data:selMasterCompetition.value});
                 zuTiPage.value.open(mainPage.value);
             }},
         {label:"设置简介",command:()=>{
@@ -165,7 +168,7 @@ const getSplitItems = (data,index)=>{
 const onRowExpand = (event) => {
     selMasterCompetition.value = event.data;
     if (!selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList) {
-        workRest.qySiteWorkItemList({sourceId:host,sourceType:1,type:0},(res)=>{
+        workRest.qySiteWorkItemList({sourceId:selMasterCompetition.value.id,sourceType:1,type:0},(res)=>{
             if (res.status=="OK") {
                 if (res.data!=null) {
                     let masterZhuTiWorkItemList = res.data;
@@ -178,6 +181,9 @@ const onRowExpand = (event) => {
                     });
                     selMasterCompetition.value.tempMap = {};
                     selMasterCompetition.value.tempMap.masterZhuTiWorkItemList = masterZhuTiWorkItemList;
+                } else {
+                    selMasterCompetition.value.tempMap = {};
+                    selMasterCompetition.value.tempMap.masterZhuTiWorkItemList = [];
                 }
             }
         });
@@ -194,7 +200,7 @@ const theFileUploaded = (file,index,obj)=>{
     siteWorkItem.path = file.fileKey;
     siteWorkItem.type = 0;
     siteWorkItem.sourceType = 1;
-    siteWorkItem.sourceId = selMasterCompetition.value.siteCompetition.id;
+    siteWorkItem.sourceId = selMasterCompetition.value.id;
     siteWorkItem.mediaType = 0;
     siteWorkItem.createDate = dayjs().valueOf();
     siteWorkItem.appId = host;
@@ -240,22 +246,23 @@ const deleteFile = (file,index,obj)=>{
 }
 
 const returnFunction = (obj)=>{
+    obj.masterCompetition.beginDate = dayjs(obj.masterCompetition.beginDate).format("YYYY-MM-DD");
+    obj.masterCompetition.endDate = dayjs(obj.masterCompetition.endDate).format("YYYY-MM-DD");
+    obj.masterCompetition.pingShenDate = dayjs(obj.masterCompetition.pingShenDate).format("YYYY-MM-DD");
+    obj.masterCompetition.cptDate = dayjs(obj.masterCompetition.cptDate).format("YYYY-MM-DD");
     if (obj.process=="c") {
         masterCompetitionList.value.push(obj.masterCompetition);
         dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事基本资料已建立，请在列表中进行其它项目设置。`);
     } else if (obj.process=="u") {
-        obj.masterCompetition.beginDate = dayjs(obj.masterCompetition.beginDate).format("YYYY-MM-DD");
-        obj.masterCompetition.endDate = dayjs(obj.masterCompetition.endDate).format("YYYY-MM-DD");
-        obj.masterCompetition.pingShenDate = dayjs(obj.masterCompetition.pingShenDate).format("YYYY-MM-DD");
-        obj.masterCompetition.cptDate = dayjs(obj.masterCompetition.cptDate).format("YYYY-MM-DD");
         masterCompetitionList.value[obj.index] = obj.masterCompetition;
         dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事基本资料已更新，请在列表中进行其它项目设置。`);
     }
 }
 
 const descriptionReturnFuntion = (obj)=>{
-    masterCompetitionList.value[obj.index].description = obj.masterCompetition.description;
-    dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事简介已更新`);
+    // console.log(obj);
+    masterCompetitionList.value[obj.index].description = obj.data.description;
+    dialog.toastSuccess(`${obj.data.name}年份赛事简介已更新`);
 }
 
 defineExpose({returnFunction});

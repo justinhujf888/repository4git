@@ -1,8 +1,13 @@
 <template>
     <div class="card">
         <div class="flex flex-wrap items-center justify-between">
-            <span class="text-base">赛事描述标题内容设置</span>
-            <Button label="新增标题内容" @click="addItem"/>
+            <div>
+                <span class="text-base">赛事描述标题内容设置</span>
+            </div>
+            <div class="row end gap-4">
+                <span class="text-sm text-red-600">可拖拽排序</span>
+                <Button label="新增标题内容" @click="addItem"/>
+            </div>
         </div>
         <DataView :value="selMasterCompetition.description?.data" :pt="{
                                         emptyMessage:{
@@ -11,22 +16,40 @@
                                     }">
             <template #list="slotProps">
                 <div class="col">
-                    <div v-for="(item,index) in slotProps.items" :key="index">
-                        <Panel class="m-2 !relative">
-                            <IftaLabel>
-                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>
-                                <InputText v-model="item.title"/>
-                            </IftaLabel>
-                            <Divider/>
-                            <IftaLabel>
-                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">内容</label>
-                                <Textarea v-model="item.description" autoResize rows="4" class="w-full"/>
-                            </IftaLabel>
-                            <div class="absolute top-1 right-1">
-                                <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)"/>
-                            </div>
-                        </Panel>
-                    </div>
+                    <draggable :list="slotProps.items" item-key="id">
+                        <template #item="{ element,index  }">
+                            <Panel class="m-2 !relative !border-2 !border-gray-600 !border-solid">
+                                <IftaLabel>
+                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>
+                                    <InputText v-model="element.title"/>
+                                </IftaLabel>
+                                <Divider/>
+                                <IftaLabel>
+                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">内容</label>
+                                    <Textarea v-model="element.description" autoResize rows="4" class="w-full"/>
+                                </IftaLabel>
+                                <div class="absolute top-1 right-1">
+                                    <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)"/>
+                                </div>
+                            </Panel>
+                        </template>
+                    </draggable>
+<!--                    <div v-for="(item,index) in slotProps.items" :key="index">-->
+<!--                        <Panel class="m-2 !relative">-->
+<!--                            <IftaLabel>-->
+<!--                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>-->
+<!--                                <InputText v-model="item.title"/>-->
+<!--                            </IftaLabel>-->
+<!--                            <Divider/>-->
+<!--                            <IftaLabel>-->
+<!--                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">内容</label>-->
+<!--                                <Textarea v-model="item.description" autoResize rows="4" class="w-full"/>-->
+<!--                            </IftaLabel>-->
+<!--                            <div class="absolute top-1 right-1">-->
+<!--                                <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)"/>-->
+<!--                            </div>-->
+<!--                        </Panel>-->
+<!--                    </div>-->
                 </div>
             </template>
         </DataView>
@@ -41,6 +64,7 @@
 import { ref } from 'vue';
 import dialog from '@/api/uniapp/dialog';
 import workRest from '@/api/dbs/workRest';
+import draggable from 'vuedraggable';
 
 const selMasterCompetition = ref({});
 

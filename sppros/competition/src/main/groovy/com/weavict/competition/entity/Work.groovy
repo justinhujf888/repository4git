@@ -140,7 +140,7 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
 
     @Column(length=1000,columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    String description;
+    Map<String,Object> description;
 
     @Column(length=30)
     String appId;
