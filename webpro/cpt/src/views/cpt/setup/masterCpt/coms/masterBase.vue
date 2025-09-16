@@ -86,6 +86,31 @@
                             </div>
                         </ScrollPanel>
                     </Fieldset>
+
+                    <Fieldset class="text-wrap text-start" legend="字段配置" :toggleable="true" :collapsed="true">
+                        <ScrollPanel class="w-72 md:w-full">
+                            <div class="!relative w-full">
+                                <div class="absolute -top-10 right-1 z-100">
+                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[3].command()"/>
+                                </div>
+                                <div class="mt-10">
+                                    <DataView :value="slotProps.data.setupFields?.data" :pt="{
+                                        emptyMessage:{
+                                            class:'opacity-0'
+                                        }
+                                    }">
+                                        <template #list="slotProps">
+                                            <div class="col">
+                                                <div v-for="(item,index) in slotProps.items" :key="index">
+                                                    <p>{{item.label}}</p>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </DataView>
+                                </div>
+                            </div>
+                        </ScrollPanel>
+                    </Fieldset>
                 </template>
             </DataTable>
         </div>

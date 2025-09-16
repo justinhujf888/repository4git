@@ -2,14 +2,14 @@
     <div class="card">
         <div class="flex flex-wrap items-center justify-between">
             <div>
-                <span class="text-base">赛事描述标题内容设置</span>
+                <span class="text-base">赛事字段设置</span>
             </div>
             <div class="row end gap-4">
                 <span class="text-sm text-red-600">可拖拽排序</span>
-                <Button label="新增标题内容" @click="addItem"/>
+                <Button label="新增字段" @click="addItem"/>
             </div>
         </div>
-        <DataView :value="selMasterCompetition.description?.data" :pt="{
+        <DataView :value="selMasterCompetition.setupFields?.data" :pt="{
                                         emptyMessage:{
                                             class:'opacity-0'
                                         }
@@ -34,22 +34,22 @@
                             </Panel>
                         </template>
                     </draggable>
-<!--                    <div v-for="(item,index) in slotProps.items" :key="index">-->
-<!--                        <Panel class="m-2 !relative">-->
-<!--                            <IftaLabel>-->
-<!--                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>-->
-<!--                                <InputText v-model="item.title"/>-->
-<!--                            </IftaLabel>-->
-<!--                            <Divider/>-->
-<!--                            <IftaLabel>-->
-<!--                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">内容</label>-->
-<!--                                <Textarea v-model="item.description" autoResize rows="4" class="w-full"/>-->
-<!--                            </IftaLabel>-->
-<!--                            <div class="absolute top-1 right-1">-->
-<!--                                <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)"/>-->
-<!--                            </div>-->
-<!--                        </Panel>-->
-<!--                    </div>-->
+                    <!--                    <div v-for="(item,index) in slotProps.items" :key="index">-->
+                    <!--                        <Panel class="m-2 !relative">-->
+                    <!--                            <IftaLabel>-->
+                    <!--                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>-->
+                    <!--                                <InputText v-model="item.title"/>-->
+                    <!--                            </IftaLabel>-->
+                    <!--                            <Divider/>-->
+                    <!--                            <IftaLabel>-->
+                    <!--                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">内容</label>-->
+                    <!--                                <Textarea v-model="item.description" autoResize rows="4" class="w-full"/>-->
+                    <!--                            </IftaLabel>-->
+                    <!--                            <div class="absolute top-1 right-1">-->
+                    <!--                                <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)"/>-->
+                    <!--                            </div>-->
+                    <!--                        </Panel>-->
+                    <!--                    </div>-->
                 </div>
             </template>
         </DataView>
