@@ -276,4 +276,22 @@ class WorkRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateMasterCompetitionSetupFields")
+    String updateMasterCompetitionSetupFields(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", [setupFields:query.setupFields],["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

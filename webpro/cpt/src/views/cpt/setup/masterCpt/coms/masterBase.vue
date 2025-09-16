@@ -18,6 +18,12 @@
 
                     }
                 }">
+<!--                <template #header>-->
+<!--                    <div class="flex flex-wrap justify-end gap-2">-->
+<!--                        <Button variant="text" icon="pi pi-plus" label="Expand All" @click="expandAll" />-->
+<!--                        <Button variant="text" icon="pi pi-minus" label="收起折叠" @click="collapseAll" />-->
+<!--                    </div>-->
+<!--                </template>-->
                 <Column expander class="w-5" />
                 <Column field="name" header="年份" class="w-36"></Column>
 <!--                <Column header="简介">-->
@@ -28,10 +34,10 @@
                 <Column field="beginDate" header="报名时间"></Column>
                 <Column field="pingShenDate" header="评审时间"></Column>
                 <Column field="endDate" header="公布时间"></Column>
-                <Column class="w-24 !text-end">
+                <Column class="w-28 !text-end col">
                     <template #body="{ data,index }">
-                        <Button label="修改基本资料" :_model="getSplitItems(data,index)" variant="outlined" class="!text-xs rounded-2xl font-semibold" icon="pi pi-pencil" rounded size="small" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)" :pt="{Menu:{pcMenu:{class:'!bg-green-400 !text-green-800'}}}"></Button>
-<!--                        <Button label="修改基本资料" class="!bg-green-400 !text-xs rounded-2xl" icon="pi pi-pencil" severity="secondary" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)"></Button>-->
+                        <Button label="基本资料" :_model="getSplitItems(data,index)" variant="outlined" class="!text-xs rounded-2xl font-semibold" icon="pi pi-pencil" rounded size="small" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)" :pt="{Menu:{pcMenu:{class:'!bg-green-400 !text-green-800'}}}"></Button>
+                        <Button label="赛事组别" class="!text-xs rounded-2xl font-semibold" variant="outlined" icon="pi pi-pencil" severity="warn" rounded size="small" @click=""></Button>
                     </template>
                 </Column>
                 <template #expansion="slotProps">
@@ -100,9 +106,9 @@
                                         }
                                     }">
                                         <template #list="slotProps">
-                                            <div class="col">
+                                            <div class="row gap-4">
                                                 <div v-for="(item,index) in slotProps.items" :key="index">
-                                                    <p>{{item.label}}</p>
+                                                    <Chip :label="item.name" class="!border-indigo-400 !border-2 !border-solid !text-indigo-400 !rounded-xl !text-sm"/>
                                                 </div>
                                             </div>
                                         </template>
@@ -127,6 +133,10 @@
     <animationPage ref="updateDescriptionPage">
         <updateDescription ref="refUpdateDescription"/>
     </animationPage>
+
+    <animationPage ref="updateFieldsPage">
+        <updateFields ref="refUpdateFields"/>
+    </animationPage>
 </template>
 
 <script setup>
@@ -136,6 +146,7 @@ import animationPage from "@/components/my/animationPage.vue";
 import workRest from '@/api/dbs/workRest';
 import updateMasterCpt from "@/views/cpt/setup/masterCpt/updateMasterCpt.vue";
 import updateDescription from "@/views/cpt/setup/masterCpt/updateDescription.vue";
+import updateFields from "@/views/cpt/setup/masterCpt/updateFields.vue";
 import myFileUpload from "@/components/my/myFileUpload.vue";
 import priviewImage from "@/components/my/priviewImage.vue";
 import lodash from 'lodash-es';
@@ -150,6 +161,8 @@ const zuTiPage = useTemplateRef("zuTiPage");
 const refFileUpload = useTemplateRef("refFileUpload");
 const updateDescriptionPage = useTemplateRef("updateDescriptionPage");
 const refUpdateDescription = useTemplateRef("refUpdateDescription");
+const updateFieldsPage = useTemplateRef("updateFieldsPage");
+const refUpdateFields = useTemplateRef("refUpdateFields");
 
 const masterCompetitionList = ref([]);
 const expandedRows = ref({});
@@ -186,6 +199,10 @@ const getSplitItems = (data,index)=>{
         {label:"设置简介",command:()=>{
                 refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFuntion});
                 updateDescriptionPage.value.open(mainPage.value);
+            }},
+        {label:"设置字段",command:()=>{
+                refUpdateFields.value.init(mainPage.value,updateFieldsPage.value,{data:data,index:index,returnFunction:fieldsReturnFuntion});
+                updateFieldsPage.value.open(mainPage.value);
             }}
     ];
 }
@@ -289,6 +306,18 @@ const descriptionReturnFuntion = (obj)=>{
     masterCompetitionList.value[obj.index].description = obj.data.description;
     dialog.toastSuccess(`${obj.data.name}年份赛事简介已更新`);
 }
+
+const fieldsReturnFuntion = (obj)=>{
+    masterCompetitionList.value[obj.index].setupFields = obj.data.setupFields;
+    dialog.toastSuccess(`${obj.data.name}年份赛事字段已更新`);
+}
+
+const expandAll = () => {
+    // expandedRows.value = products.value.reduce((acc, p) => (acc[p.id] = true) && acc, {});
+};
+const collapseAll = () => {
+    expandedRows.value = null;
+};
 
 defineExpose({returnFunction});
 
