@@ -18,7 +18,7 @@
                 <div class="col">
                     <draggable :list="slotProps.items" item-key="id">
                         <template #item="{ element,index }">
-                            <Panel class="m-2 !relative !border-2 !border-gray-300 !border-solid">
+                            <div class="m-2 p-2 !relative !border-2 !border-gray-300 !border-solid between">
                                 <IftaLabel>
                                     <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">字段名称</label>
                                     <InputText v-model="element.name"/>
@@ -28,10 +28,10 @@
 <!--                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">字段类型</label>-->
 <!--                                    <InputText v-model="element.type"/>-->
 <!--                                </IftaLabel>-->
-                                <div class="absolute top-1 right-1">
-                                    <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)"/>
+                                <div _class="absolute top-1 right-1">
+                                    <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" size="small" @click="deleteItem(index)"/>
                                 </div>
-                            </Panel>
+                            </div>
                         </template>
                     </draggable>
                     <!--                    <div v-for="(item,index) in slotProps.items" :key="index">-->

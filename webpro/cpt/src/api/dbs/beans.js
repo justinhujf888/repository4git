@@ -75,9 +75,9 @@ export const Beans = {
             otherFields: null,
             lat: "",
             lng: "",
-            guige: "",
+            guiGe: this.guiGe(),
+            guiGeId: "",
             buyer: this.buyer(),
-            competition: this.competition(),
             createDate: null,
             appId: "",
             status: -1,
@@ -109,14 +109,24 @@ export const Beans = {
 		return {
 			id: "",
 			name: "",
-            guigeFields: null,
             status: -1,
             description: "",
             appId: "",
             masterCompetition: this.masterCompetition(),
-            workList: []
+            guiGeList: []
 		}
 	},
+
+    guiGe() {
+        return {
+            id: "",
+            name: "",
+            guigeFields: null,
+            appId: "",
+            competition: this.competition(),
+            workList: []
+        }
+    },
 
     masterCompetition() {
         return {

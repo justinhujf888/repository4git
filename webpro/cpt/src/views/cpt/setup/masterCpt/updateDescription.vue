@@ -18,20 +18,22 @@
                 <div class="col">
                     <draggable :list="slotProps.items" item-key="id">
                         <template #item="{ element,index  }">
-                            <Panel class="m-2 !relative !border-2 !border-gray-600 !border-solid">
-                                <IftaLabel>
-                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>
-                                    <InputText v-model="element.title"/>
-                                </IftaLabel>
-                                <Divider/>
-                                <IftaLabel>
-                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">内容</label>
-                                    <Textarea v-model="element.description" autoResize rows="4" class="w-full"/>
-                                </IftaLabel>
-                                <div class="absolute top-1 right-1">
-                                    <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)"/>
+                            <div class="m-2 p-2 !border-2 !border-gray-600 !border-solid rounded-2xl between !relative">
+                                <div class="w-full">
+                                    <IftaLabel>
+                                        <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>
+                                        <InputText v-model="element.title"/>
+                                    </IftaLabel>
+                                    <Divider/>
+                                    <IftaLabel>
+                                        <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">内容</label>
+                                        <Textarea v-model="element.description" autoResize rows="4" class="w-full"/>
+                                    </IftaLabel>
                                 </div>
-                            </Panel>
+                                <div class="absolute top-3 right-1">
+                                    <Button class="!border-orange-500 !text-orange-600" label="删除" rounded variant="outlined" @click="deleteItem(index)" size="small"/>
+                                </div>
+                            </div>
                         </template>
                     </draggable>
 <!--                    <div v-for="(item,index) in slotProps.items" :key="index">-->

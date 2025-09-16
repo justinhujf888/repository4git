@@ -37,7 +37,7 @@
                 <Column class="w-28 !text-end col">
                     <template #body="{ data,index }">
                         <Button label="基本资料" :_model="getSplitItems(data,index)" variant="outlined" class="!text-xs rounded-2xl font-semibold" icon="pi pi-pencil" rounded size="small" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)" :pt="{Menu:{pcMenu:{class:'!bg-green-400 !text-green-800'}}}"></Button>
-                        <Button label="赛事组别" class="!text-xs rounded-2xl font-semibold" variant="outlined" icon="pi pi-pencil" severity="warn" rounded size="small" @click=""></Button>
+<!--                        <Button label="赛事组别" class="!text-xs rounded-2xl font-semibold" variant="outlined" icon="pi pi-pencil" severity="warn" rounded size="small" @click=""></Button>-->
                     </template>
                 </Column>
                 <template #expansion="slotProps">
@@ -117,6 +117,31 @@
                             </div>
                         </ScrollPanel>
                     </Fieldset>
+
+                    <Fieldset class="text-wrap text-start" legend="组别设置" :toggleable="true" :collapsed="true">
+                        <ScrollPanel class="w-72 md:w-full">
+                            <div class="!relative w-full">
+                                <div class="absolute -top-10 right-1 z-100">
+                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[4].command()"/>
+                                </div>
+                                <div class="mt-10">
+                                    <DataView :value="slotProps.data.competitionList" :pt="{
+                                        emptyMessage:{
+                                            class:'opacity-0'
+                                        }
+                                    }">
+                                        <template #list="slotProps">
+                                            <div class="row gap-4">
+                                                <div v-for="(item,index) in slotProps.items" :key="index">
+                                                    <Chip :label="item.name" class="!border-indigo-400 !border-2 !border-solid !text-indigo-400 !rounded-xl !text-sm"/>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </DataView>
+                                </div>
+                            </div>
+                        </ScrollPanel>
+                    </Fieldset>
                 </template>
             </DataTable>
         </div>
@@ -137,6 +162,10 @@
     <animationPage ref="updateFieldsPage">
         <updateFields ref="refUpdateFields"/>
     </animationPage>
+
+    <animationPage ref="updateCompetitionPage">
+        <updateCompetition ref="refUpdateCompetition"/>
+    </animationPage>
 </template>
 
 <script setup>
@@ -147,6 +176,7 @@ import workRest from '@/api/dbs/workRest';
 import updateMasterCpt from "@/views/cpt/setup/masterCpt/updateMasterCpt.vue";
 import updateDescription from "@/views/cpt/setup/masterCpt/updateDescription.vue";
 import updateFields from "@/views/cpt/setup/masterCpt/updateFields.vue";
+import updateCompetition from "@/views/cpt/setup/masterCpt/updateCompetition.vue";
 import myFileUpload from "@/components/my/myFileUpload.vue";
 import priviewImage from "@/components/my/priviewImage.vue";
 import lodash from 'lodash-es';
@@ -163,6 +193,8 @@ const updateDescriptionPage = useTemplateRef("updateDescriptionPage");
 const refUpdateDescription = useTemplateRef("refUpdateDescription");
 const updateFieldsPage = useTemplateRef("updateFieldsPage");
 const refUpdateFields = useTemplateRef("refUpdateFields");
+const updateCompetitionPage = useTemplateRef("updateCompetitionPage");
+const refUpdateCompetition = useTemplateRef("refUpdateCompetition");
 
 const masterCompetitionList = ref([]);
 const expandedRows = ref({});
@@ -197,39 +229,59 @@ const getSplitItems = (data,index)=>{
                 zuTiPage.value.open(mainPage.value);
             }},
         {label:"设置简介",command:()=>{
-                refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFuntion});
+                refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFunction});
                 updateDescriptionPage.value.open(mainPage.value);
             }},
         {label:"设置字段",command:()=>{
-                refUpdateFields.value.init(mainPage.value,updateFieldsPage.value,{data:data,index:index,returnFunction:fieldsReturnFuntion});
+                refUpdateFields.value.init(mainPage.value,updateFieldsPage.value,{data:data,index:index,returnFunction:fieldsReturnFunction});
                 updateFieldsPage.value.open(mainPage.value);
+            }},
+        {label:"设置组别",command:()=>{
+                refUpdateCompetition.value.init(mainPage.value,updateCompetitionPage.value,{data:data,index:index,returnFunction:competitionReturnFunction});
+                updateCompetitionPage.value.open(mainPage.value);
             }}
     ];
 }
 
 const onRowExpand = (event) => {
     selMasterCompetition.value = event.data;
-    if (!selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList) {
-        workRest.qySiteWorkItemList({sourceId:selMasterCompetition.value.id,sourceType:1,type:0},(res)=>{
-            if (res.status=="OK") {
-                if (res.data!=null) {
-                    let masterZhuTiWorkItemList = res.data;
-                    lodash.forEach(masterZhuTiWorkItemList,(v,i)=>{
-                        v.tempMap = {};
-                        v.tempMap.size = v.fileFields.size;
-                        v.tempMap.name = v.fileFields.name;
-                        v.tempMap.type = v.fileFields.type;
-                        v.tempMap.imgPath = oss.buildImgPath(v.path);
-                    });
-                    selMasterCompetition.value.tempMap = {};
-                    selMasterCompetition.value.tempMap.masterZhuTiWorkItemList = masterZhuTiWorkItemList;
-                } else {
-                    selMasterCompetition.value.tempMap = {};
-                    selMasterCompetition.value.tempMap.masterZhuTiWorkItemList = [];
+    if (!selMasterCompetition.value.tempMap) {
+        selMasterCompetition.value.tempMap = {};
+
+        if (!selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList) {
+            workRest.qySiteWorkItemList({sourceId:selMasterCompetition.value.id,sourceType:1,type:0},(res)=>{
+                if (res.status=="OK") {
+                    if (res.data!=null) {
+                        let masterZhuTiWorkItemList = res.data;
+                        lodash.forEach(masterZhuTiWorkItemList,(v,i)=>{
+                            v.tempMap = {};
+                            v.tempMap.size = v.fileFields.size;
+                            v.tempMap.name = v.fileFields.name;
+                            v.tempMap.type = v.fileFields.type;
+                            v.tempMap.imgPath = oss.buildImgPath(v.path);
+                        });
+                        selMasterCompetition.value.tempMap.masterZhuTiWorkItemList = masterZhuTiWorkItemList;
+                    } else {
+                        selMasterCompetition.value.tempMap.masterZhuTiWorkItemList = [];
+                    }
                 }
-            }
-        });
+            });
+        }
+
+        if (!selMasterCompetition.value.competitionList) {
+            workRest.qyCompetitionList({masterCompetitionId:selMasterCompetition.value.id},(res)=>{
+                if (res.status=="OK") {
+                    if (res.data!=null) {
+                        let competitionList = res.data;
+                        selMasterCompetition.value.competitionList = competitionList;
+                    } else {
+                        selMasterCompetition.value.competitionList = [];
+                    }
+                }
+            });
+        }
     }
+
     // console.log(event);
 };
 const onRowCollapse = (event) => {
@@ -301,15 +353,20 @@ const returnFunction = (obj)=>{
     }
 }
 
-const descriptionReturnFuntion = (obj)=>{
+const descriptionReturnFunction = (obj)=>{
     // console.log(obj);
     masterCompetitionList.value[obj.index].description = obj.data.description;
     dialog.toastSuccess(`${obj.data.name}年份赛事简介已更新`);
 }
 
-const fieldsReturnFuntion = (obj)=>{
+const fieldsReturnFunction = (obj)=>{
     masterCompetitionList.value[obj.index].setupFields = obj.data.setupFields;
     dialog.toastSuccess(`${obj.data.name}年份赛事字段已更新`);
+}
+
+const competitionReturnFunction = (obj)=>{
+    masterCompetitionList.value[obj.index].competitionList = obj.data.competitionList;
+    dialog.toastSuccess(`${obj.data.name}年份赛事组别已更新`);
 }
 
 const expandAll = () => {

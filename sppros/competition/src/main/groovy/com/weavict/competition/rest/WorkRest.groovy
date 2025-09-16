@@ -1,6 +1,7 @@
 package com.weavict.competition.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
@@ -244,6 +245,39 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyCompetitionList")
+    String qyCompetitionList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper4DateTime(null,null);
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         List<Competition> competitionList = workService.newQueryUtils(false).masterTable(Competition.class.simpleName,null,null)
+                                 .where("appId = :appId",["appId":query.appId],null,{return true})
+                                 .where("masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return true})
+                                 .where("name = :name",["name":query.name],"and",{return query.name!=null})
+//                                 .orderBy("id")
+                                 .buildSql().run().content;
+                         for(Competition competition in competitionList)
+                         {
+                             competition.cancelLazyEr();
+                         }
+                         return competitionList;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/updateMasterCompetition")
     String updateMasterCompetition(@RequestBody Map<String,Object> query)
     {
@@ -286,6 +320,64 @@ class WorkRest extends BaseRest
         try
         {
             workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", [setupFields:query.setupFields],["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateCompetition")
+    String updateCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.competition, Competition.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateCompetitionList")
+    String updateCompetitionList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            List<Competition> competitionList = this.objToBean(query.competitionList,List.class,null);
+            for (Competition competition in competitionList)
+            {
+                workService.updateTheObject(this.objToBean(competition, Competition.class,null));
+            }
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deleteCompetition")
+    String deleteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.deleteTheObject8Fields(Competition.class.simpleName,"id=:id",[id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)

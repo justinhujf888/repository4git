@@ -96,4 +96,16 @@ export default {
     updateMasterCompetitionSetupFields(ds,onfun) {
         Http.callHttpFunction('/r/work/updateMasterCompetitionSetupFields',ds,onfun);
     },
+    qyCompetitionList(ds,onfun) {
+        Http.callHttpFunction('/r/work/qyCompetitionList',ds,onfun);
+    },
+    updateCompetition(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateCompetition',ds,onfun);
+    },
+    updateCompetitionList(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateCompetitionList',ds,onfun);
+    },
+    deleteCompetition(ds,onfun) {
+        Http.callHttpFunction('/r/work/deleteCompetition',ds,onfun);
+    }
 }
