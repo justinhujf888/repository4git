@@ -33,7 +33,7 @@ export const Beans = {
             domain: "",
             description: "",
             appId: "",
-            masterCompetitionList: null
+            masterCompetitionList: []
         }
     },
 

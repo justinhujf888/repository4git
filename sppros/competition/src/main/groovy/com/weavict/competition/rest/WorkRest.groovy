@@ -2,6 +2,7 @@ package com.weavict.competition.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Competition
+import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
@@ -263,6 +264,13 @@ class WorkRest extends BaseRest
                          for(Competition competition in competitionList)
                          {
                              competition.cancelLazyEr();
+                             competition.guiGeList = workService.newQueryUtils(false).masterTable(GuiGe.class.simpleName,null,null)
+                                .where("competition.id = :competitionId",["competitionId":competition.id],null,{return true})
+                                .buildSql().run().content;
+                             for(GuiGe guiGe in competition.guiGeList)
+                             {
+                                 guiGe.cancelLazyEr();
+                             }
                          }
                          return competitionList;
                      }).call()
@@ -358,7 +366,11 @@ class WorkRest extends BaseRest
             List<Competition> competitionList = this.objToBean(query.competitionList,List.class,null);
             for (Competition competition in competitionList)
             {
-                workService.updateTheObject(this.objToBean(competition, Competition.class,null));
+                workService.updateTheObject(competition);
+                for (GuiGe guiGe in competition.tempMap.guiGeList)
+                {
+                    workService.updateTheObject(guiGe);
+                }
             }
             return """{"status":"OK"}""";
         }

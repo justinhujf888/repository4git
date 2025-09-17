@@ -106,7 +106,7 @@
                                         }
                                     }">
                                         <template #list="slotProps">
-                                            <div class="row gap-4">
+                                            <div class="row gap-4 flex-wrap">
                                                 <div v-for="(item,index) in slotProps.items" :key="index">
                                                     <Chip :label="item.name" class="!border-indigo-400 !border-2 !border-solid !text-indigo-400 !rounded-xl !text-sm"/>
                                                 </div>
@@ -131,7 +131,7 @@
                                         }
                                     }">
                                         <template #list="slotProps">
-                                            <div class="row gap-4">
+                                            <div class="row gap-4 flex-wrap">
                                                 <div v-for="(item,index) in slotProps.items" :key="index">
                                                     <Chip :label="item.name" class="!border-indigo-400 !border-2 !border-solid !text-indigo-400 !rounded-xl !text-sm"/>
                                                 </div>
