@@ -19,8 +19,8 @@
                     }
                 }">
                 <Column header="" class="!w-20">
-                    <template #body="{data}">
-                        <Image class="rounded w-full h-full object-cover" :src="data?.tempMap?.headImgUrl" :alt="data.name" style="max-width: 300px;" _preview :pt="{image:{class:'!w-full !h-full object-cover'}}"/>
+                    <template #body="{data,index}">
+                        <Image class="rounded w-full h-full object-cover" :src="data?.tempMap?.headImgUrl" :alt="data.name" style="max-width: 300px;" _preview :pt="{image:{class:'!w-full !h-full object-cover'}}" @click="refPriviewImage.imagesShow([data],0)"/>
                     </template>
                 </Column>
                 <Column field="name" header="姓名" class="w-36"></Column>
@@ -36,7 +36,7 @@
                     </template>
                 </Column>
             </DataTable>
-            <priviewImage v-if="siteOrgHumanList?.length>0" :files="siteOrgHumanList" class="hidden"/>
+            <priviewImage ref="refPriviewImage" v-if="siteOrgHumanList?.length>0" :files="siteOrgHumanList" :shiShowImgGrid="false" _class="hidden"/>
         </div>
     </animationPage>
 
@@ -59,6 +59,7 @@ import dialog from '@/api/uniapp/dialog';
 const mainPage = useTemplateRef("mainPage");
 
 const orgHumanUpdatePage = useTemplateRef("orgHumanUpdatePage");
+const refPriviewImage = useTemplateRef("refPriviewImage");
 
 const siteOrgHumanList = ref([]);
 

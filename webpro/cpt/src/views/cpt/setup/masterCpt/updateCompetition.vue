@@ -18,22 +18,23 @@
                 <div class="col">
                     <div v-for="(element,index) in slotProps.items" :key="index" class="m-2 p-2 !relative !border-2 !border-gray-300 !border-solid flex-wrap between">
                         <div class="row flex-wrap gap-2 w-full mt-6">
-                            <IftaLabel>
-                                <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">组别名称</label>
-                                <InputText v-model="element.name"/>
-                            </IftaLabel>
-                            <div class="col w-full md:2/5 lg:w-3/5 border-solid border-2 border-gray-200 p-2 gap-2 relative">
-                                <p class="text-xs place-self-start h-6">规格</p>
+                            <Fieldset legend="设置组别">
+                                <IftaLabel>
+                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">组别名称</label>
+                                    <InputText v-model="element.name"/>
+                                </IftaLabel>
+                            </Fieldset>
+                            <Fieldset legend="设置规格" class="col w-full md:w-2/5 lg:w-3/5 border-solid border-2 border-gray-200 p-2 gap-2 relative">
                                 <div class="gap-x-2">
                                     <p v-for="(gg,gIndex) in element.guiGeList" :key="gIndex" class="row gap-x-2">
                                         <InputText v-model="gg.name" size="small" placeholder="输入规格名称"/>
-                                        <button class="text-xs border-2 border-solid border-red-300 px-2 py-1 text-red-400 rounded-2xl place-self-start">删除</button>
+                                        <button @click="deleteGuiGe(element,gIndex)" class="text-xs border-2 border-solid border-red-300 px-2 py-1 text-red-400 rounded-2xl place-self-center">删除</button>
                                     </p>
                                 </div>
-                                <div class="absolute top-1 right-1">
+                                <div class="absolute -top-8 left-32">
                                     <button @click="addGuiGe(index)" class="bg-indigo-400 text-xs h-6 px-2 text-white rounded-2xl place-self-start">新增规格</button>
                                 </div>
-                            </div>
+                            </Fieldset>
                         </div>
                         <div class="absolute top-1 right-1">
                             <Button class="!border-orange-500 !text-orange-600" label="删除组别" rounded variant="outlined" size="small" @click="deleteItem(index)"/>
@@ -84,7 +85,7 @@ function addItem() {
 }
 
 function deleteItem(index) {
-    dialog.confirm("是否删除这个项目？",()=>{
+    dialog.confirm("分组下的规格将一并删除，是否删除这个分组？",()=>{
         if (selMasterCompetition.value.competitionList[index].temp==0) {
             selMasterCompetition.value.competitionList.splice(index,1);
         } else {
@@ -111,6 +112,20 @@ function addGuiGe(index) {
         selMasterCompetition.value.competitionList[index].guiGeList = [];
     }
     selMasterCompetition.value.competitionList[index].guiGeList.push(guiGe);
+}
+
+function deleteGuiGe(competition,index) {
+    dialog.confirm("是否删除这个规格？",()=>{
+        if (competition.guiGeList[index].temp==0) {
+            competition.guiGeList.splice(index,1);
+        } else {
+            workRest.deleteGuiGe({id:competition.guiGeList[index].id},(res)=>{
+                if (res.status=="OK") {
+                    competition.guiGeList.splice(index,1);
+                }
+            });
+        }
+    },null);
 }
 
 function save() {

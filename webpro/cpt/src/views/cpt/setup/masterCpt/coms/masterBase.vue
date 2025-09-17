@@ -42,7 +42,7 @@
                 </Column>
                 <template #expansion="slotProps">
                     <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-72 md:w-full">
+                        <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
                                     <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[0].command()"/>
@@ -55,7 +55,7 @@
                     </Fieldset>
 
                     <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-72 md:w-full">
+                        <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
                                     <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[1].command()"/>
@@ -67,7 +67,7 @@
                         </ScrollPanel>
                     </Fieldset>
                     <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-72 md:w-full">
+                        <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
                                     <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[2].command()"/>
@@ -94,7 +94,7 @@
                     </Fieldset>
 
                     <Fieldset class="text-wrap text-start" legend="字段配置" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-72 md:w-full">
+                        <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
                                     <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[3].command()"/>
@@ -106,10 +106,8 @@
                                         }
                                     }">
                                         <template #list="slotProps">
-                                            <div class="row gap-4 flex-wrap">
-                                                <div v-for="(item,index) in slotProps.items" :key="index">
-                                                    <Chip :label="item.name" class="!border-indigo-400 !border-2 !border-solid !text-indigo-400 !rounded-xl !text-sm"/>
-                                                </div>
+                                            <div class="row gap-2 flex-wrap">
+                                                <Chip v-for="(item,index) in slotProps.items" :key="index" :label="item.name" class="!bg-orange-100 !border-2 !border-orange-200 !border-solid"/>
                                             </div>
                                         </template>
                                     </DataView>
@@ -119,7 +117,7 @@
                     </Fieldset>
 
                     <Fieldset class="text-wrap text-start" legend="组别设置" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-72 md:w-full">
+                        <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
                                     <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[4].command()"/>
@@ -131,11 +129,16 @@
                                         }
                                     }">
                                         <template #list="slotProps">
-                                            <div class="row gap-4 flex-wrap">
-                                                <div v-for="(item,index) in slotProps.items" :key="index">
-                                                    <Chip :label="item.name" class="!border-indigo-400 !border-2 !border-solid !text-indigo-400 !rounded-xl !text-sm"/>
-                                                </div>
-                                            </div>
+                                            <DataTable :value="slotProps.items">
+                                                <Column field="name" header="分组名称" class="w-32"></Column>
+                                                <Column header="规格">
+                                                    <template #body="slotProps">
+                                                        <div class="row flex-wrap gap-x-2">
+                                                            <Chip v-for="(gg,index) in slotProps.data.guiGeList" :key="index" :label="gg.name" class="!bg-sky-100 !border-2 !border-sky-200 !border-solid"/>
+                                                        </div>
+                                                    </template>
+                                                </Column>
+                                            </DataTable>
                                         </template>
                                     </DataView>
                                 </div>

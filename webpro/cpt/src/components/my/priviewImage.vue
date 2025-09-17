@@ -43,7 +43,7 @@
                 </div>
             </template>
         </Galleria>
-        <DataView :value="files" layout="grid" :pt="{
+        <DataView v-if="shiShowImgGrid" :value="files" layout="grid" :pt="{
             emptyMessage:{
                 class:'opacity-0'
             }
@@ -68,17 +68,30 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 
-const props = defineProps(['files','activeIndex','fullScreen','showItemNavigators','showThumbnails','thumbnailsPosition','responsiveOptions','obj']);
+// const props = defineProps(['files','activeIndex','fullScreen','showItemNavigators','showThumbnails','thumbnailsPosition','responsiveOptions',{shiShowImgGrid:{type:Object,default:true}},'obj']);
+
+const props = defineProps({
+    files: { type: Array, required: true },
+    activeIndex: { type: Number, default: 0 },
+    fullScreen: { type: Boolean, default: true },
+    showItemNavigators: { type: Boolean, default: true },
+    showThumbnails: { type: Boolean, default: false },
+    thumbnailsPosition: { type: String, default: "bottom" },
+    responsiveOptions: { type: Array },
+    shiShowImgGrid: { type: Boolean, default: true },
+    obj: { type: Object }
+})
 
 const galleria = ref();
 const files = ref(props.files);
 const activeIndex = ref(props.activeIndex);
 const shiShow = ref(false);
-const fullScreen = ref(props.fullScreen ? props.fullScreen : true);
-const showItemNavigators = ref(props.showItemNavigators ? props.showItemNavigators : true);
-const showThumbnails = ref(props.showThumbnails ? props.showThumbnails : false);
-const thumbnailsPosition = ref(props.thumbnailsPosition ? props.thumbnailsPosition : "bottom");
-const responsiveOptions = ref(props.responsiveOptions ? props.responsiveOptions : null);
+const fullScreen = ref(props.fullScreen);
+const showItemNavigators = ref(props.showItemNavigators);
+const showThumbnails = ref(props.showThumbnails);
+const thumbnailsPosition = ref(props.thumbnailsPosition);
+const responsiveOptions = ref(props.responsiveOptions);
+const shiShowImgGrid = ref(props.shiShowImgGrid);
 
 let obj = props.obj;
 
@@ -89,6 +102,13 @@ onMounted(() => {
 
 const imageClick = (index) => {
     activeIndex.value = index;
+    shiShow.value = true;
+};
+
+const imagesShow = (_files,_index) => {
+    // console.log(_files,_index);
+    files.value = _files;
+    activeIndex.value = _index;
     shiShow.value = true;
 };
 
@@ -151,6 +171,8 @@ const fullScreenIcon = computed(() => {
 const slideButtonIcon = computed(() => {
     return `pi ${isAutoPlay.value ? 'pi-pause' : 'pi-play'}`;
 });
+
+defineExpose({imagesShow});
 </script>
 
 <style scoped lang="scss">

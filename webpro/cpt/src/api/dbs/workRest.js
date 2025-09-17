@@ -107,5 +107,8 @@ export default {
     },
     deleteCompetition(ds,onfun) {
         Http.callHttpFunction('/r/work/deleteCompetition',ds,onfun);
+    },
+    deleteGuiGe(ds,onfun) {
+        Http.callHttpFunction('/r/work/deleteGuiGe',ds,onfun);
     }
 }
