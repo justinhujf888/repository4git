@@ -1,5 +1,6 @@
 <script setup>
 import oss from "@/api/oss";
+import lodash from "lodash-es";
 import dialog from '@/api/uniapp/dialog';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
@@ -19,6 +20,9 @@ const myLoading = useTemplateRef("myLoading");
 
 var source = null;
 onMounted(() => {
+    if (lodash.includes(window.location.href,"manage")) {
+        document.documentElement.classList.toggle('app-dark');
+    }
     // oss.genClient(null);
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
     Config.getConfig();

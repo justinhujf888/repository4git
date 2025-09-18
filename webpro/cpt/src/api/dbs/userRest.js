@@ -64,4 +64,7 @@ export default {
     queryJudgeList(ds, onfun) {
         Http.callHttpFunction('/r/user/queryJudgeList',ds,onfun);
     },
+    updateJudge(ds, onfun) {
+        Http.callHttpFunction('/r/user/updateJudge',ds,onfun);
+    }
 };

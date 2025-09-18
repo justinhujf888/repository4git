@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" :value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" containerStyle="max-width: 640px" :pt="{
+        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" :value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" _containerStyle="max-width: 640px" :pt="{
             root: {
                 class: [{ 'flex flex-col': fullScreen }]
             },
@@ -19,7 +19,7 @@
 <!--                <div class="h-lvh">-->
 <!--                    <img :src="slotProps.item.tempMap.imgPath" :alt="slotProps.item.tempMap.name" class="block h-full" />-->
 <!--                </div>-->
-                <img :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" :class="[{'w-full':fullScreen},{'block':!fullScreen}]" />
+                <Image :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" :class="[{'max-w-3xl height-auto object-cover object-top':fullScreen},{'block':!fullScreen}]" />
             </template>
             <template #thumbnail="slotProps">
                 <div class="grid gap-4 justify-center">

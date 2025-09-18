@@ -107,7 +107,7 @@
                                     }">
                                         <template #list="slotProps">
                                             <div class="row gap-2 flex-wrap">
-                                                <Chip v-for="(item,index) in slotProps.items" :key="index" :label="item.name" class="!bg-orange-100 !border-2 !border-orange-200 !border-solid"/>
+                                                <Chip v-for="(item,index) in slotProps.items" :key="index" :label="item.name" class="!bg-orange-100 !border-2 !border-orange-200 !border-solid !text-gray-800"/>
                                             </div>
                                         </template>
                                     </DataView>
@@ -134,7 +134,7 @@
                                                 <Column header="规格">
                                                     <template #body="slotProps">
                                                         <div class="row flex-wrap gap-x-2">
-                                                            <Chip v-for="(gg,index) in slotProps.data.guiGeList" :key="index" :label="gg.name" class="!bg-sky-100 !border-2 !border-sky-200 !border-solid"/>
+                                                            <Chip v-for="(gg,index) in slotProps.data.guiGeList" :key="index" :label="gg.name" class="!bg-sky-100 !border-2 !border-sky-200 !border-solid !text-gray-800"/>
                                                         </div>
                                                     </template>
                                                 </Column>
