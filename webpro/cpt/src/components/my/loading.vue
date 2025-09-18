@@ -1,5 +1,5 @@
 <template>
-    <div v-show="shiShow" class="absolute hwcenter col bg-gray-200 center w-48 h-48 rounded-2xl z-90">
+    <div v-show="shiShow" class="absolute hwcenter col bg-gray-200 center w-48 h-48 rounded-2xl z-50">
         <div class="loader"></div>
         <div class="text-gray-800 text-xl font-semibold mt-4">
             <span>{{msg}}</span>

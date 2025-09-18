@@ -137,7 +137,7 @@ class OtherUtils
 			request.setRoleArn(givePropsValue("ali_ram_arn"));
 			request.setRoleSessionName("ossSts");
 			request.setPolicy(null);
-			request.setDurationSeconds(900L);
+			request.setDurationSeconds(1800L);
 			final AssumeRoleResponse response = client.getAcsResponse(request);
 			return ["expiration":response.getCredentials().getExpiration(),"accessId":response.getCredentials().getAccessKeyId(),"accessKey":response.getCredentials().getAccessKeySecret(),"securityToken":response.getCredentials().getSecurityToken(),"requestId":response.getRequestId()];
 		}

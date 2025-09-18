@@ -318,7 +318,7 @@ const theFileUploaded = (file,index,obj)=>{
 const filesUpload = (files,obj)=>{
     zuTiPage.value.close(mainPage.value);
     dialog.alertBack(`文件上传完成！`,()=>{
-        console.log(selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList);
+        // console.log(selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList);
         refFileUpload.value.reLoadFiles(selMasterCompetition.value.tempMap?.masterZhuTiWorkItemList);
     });
 }

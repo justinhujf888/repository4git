@@ -129,8 +129,12 @@ function deleteGuiGe(competition,index) {
 }
 
 function save() {
+    let shiEmpty = true;
     let cList = lodash.cloneDeep(selMasterCompetition.value.competitionList);
     lodash.forEach(cList,(v)=>{
+        if (!v.name) {
+            shiEmpty = false;
+        }
         let mid = selMasterCompetition.value.id;
         v.masterCompetition = Beans.masterCompetition();
         v.masterCompetition.id = mid;
@@ -139,11 +143,19 @@ function save() {
         v.tempMap.guiGeList = gList;
         v.guiGeList = null;
         lodash.forEach(v.tempMap.guiGeList,(g)=>{
+            if (!g.name) {
+                shiEmpty = false;
+            }
             let cid = g.competition.id;
             g.competition = Beans.competition();
             g.competition.id = cid;
         })
     });
+
+    if (!shiEmpty) {
+        dialog.toastError("有组别名称以及规格名称没有输入");
+        return;
+    }
 
     workRest.updateCompetitionList({competitionList:cList},(res)=>{
         if (res.status=="OK") {

@@ -19,7 +19,7 @@
 <!--                <div class="h-lvh">-->
 <!--                    <img :src="slotProps.item.tempMap.imgPath" :alt="slotProps.item.tempMap.name" class="block h-full" />-->
 <!--                </div>-->
-                <img :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" :class="[{'w-full':!fullScreen},{'block':!fullScreen}]" />
+                <img :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" :class="[{'w-full':fullScreen},{'block':!fullScreen}]" />
             </template>
             <template #thumbnail="slotProps">
                 <div class="grid gap-4 justify-center">

@@ -66,6 +66,7 @@ import dialog from '@/api/uniapp/dialog';
 import workRest from '@/api/dbs/workRest';
 import draggable from 'vuedraggable';
 import { Beans } from '@/api/dbs/beans';
+import lodash from 'lodash-es';
 
 const selMasterCompetition = ref({});
 
@@ -88,6 +89,16 @@ function cancel() {
 }
 
 function save() {
+    let shiEmpty = true;
+    lodash.forEach(selMasterCompetition.value.setupFields.data,(v)=>{
+        if (!v.name) {
+            shiEmpty = false;
+        }
+    });
+    if (!shiEmpty) {
+        dialog.toastError("有字段名称没有输入");
+        return;
+    }
     workRest.updateMasterCompetitionSetupFields({id:selMasterCompetition.value.id,setupFields:selMasterCompetition.value.setupFields},(res)=>{
         if (res.status=="OK") {
             obj.returnFunction(obj);

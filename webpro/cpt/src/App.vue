@@ -72,12 +72,12 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <loading ref="myLoading"></loading>
     <DynamicDialog />
     <ConfirmDialog />
     <myDialog ref="mydRef"></myDialog>
     <Toast />
     <router-view/>
-    <loading ref="myLoading"></loading>
 </template>
 
 <style>

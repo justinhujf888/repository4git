@@ -19,10 +19,10 @@
                     <div class="flex between gap-2 w-full">
                         <div class="flex gap-2">
                             <Button @click="chooseCallback()" icon="pi pi-images" rounded label="选择文件"></Button>
-                            <Button v-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1 && files.length<=fileLimit" label="上传文件" class="!bg-orange-400 !border-orange-400" icon="pi pi-cloud-upload" rounded @click="uploader"/>
+                            <Button v-if="lodash.findIndex(files,(o)=>{return o.objectURL})>-1 && files.length<=fileLimit" label="上传文件" class="!bg-orange-400 !border-orange-400 hover:!bg-orange-500" icon="pi pi-cloud-upload" rounded @click="uploader"/>
                             <!--                        <Button @click="clearCallback()" icon="pi pi-times" rounded variant="outlined" severity="danger" :disabled="!files || files.length === 0"></Button>-->
                         </div>
-                        <Button class="!bg-gray-800 !border-gray-900 !text-white" @click="cancel" rounded label="退出"></Button>
+                        <Button class="!bg-gray-500 hover:!bg-gray-600 !border-gray-900 !text-white" @click="cancel" rounded label="退出"></Button>
                     </div>
                 </div>
             </template>
@@ -192,8 +192,10 @@ function onFileSelect(e) {
 }
 
 function uploadFile(step) {
+    dialog.openLoading("开始上传文件");
     if (step > files.value.length - 1) {
         allFilesUploaded(files.value,obj);
+        dialog.closeLoading();
     } else {
         if (files.value[step].path) {
             uploadFile(step + 1);

@@ -92,7 +92,10 @@ const onFormSubmit = ({ valid }) => {
         } else if (obj.process=="u") {
             masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).year();
         }
-        workRest.updateMasterCompetition({masterCompetition:masterCompetition.value}, (res) => {
+
+        let mc = lodash.cloneDeep(masterCompetition.value);
+        mc.competitionList = null;
+        workRest.updateMasterCompetition({masterCompetition:mc}, (res) => {
             if (res.status == "OK") {
                 obj.masterCompetition = masterCompetition.value;
                 obj.returnFunction(obj);
