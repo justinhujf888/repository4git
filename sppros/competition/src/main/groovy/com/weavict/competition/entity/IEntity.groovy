@@ -10,7 +10,7 @@ import jakarta.persistence.Transient
 class BEntity
 {
 	@Transient
-	String temp;
+	Object temp;
 
 	@Transient
 	Map tempMap;

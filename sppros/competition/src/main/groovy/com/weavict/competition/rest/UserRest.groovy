@@ -159,7 +159,12 @@ class UserRest extends BaseRest
     {
         try
         {
-            userBean.updateTheObject(this.objToBean(query.judge, Judge.class,null));
+            Judge judge = this.objToBean(query.judge, Judge.class,null);
+            if (judge.temp==true || true)
+            {
+                judge.password = userBean.buildPasswordCode(judge.phone);
+            }
+            userBean.updateTheObject(judge);
             return """{"status":"OK"}""";
         }
         catch (Exception e)

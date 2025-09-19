@@ -10,6 +10,7 @@
                     <IftaLabel>
                         <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">手机号码</label>
                         <InputText name="phone" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-4" v-model="judge.phone" />
+                        <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
                     </IftaLabel>
                     <IftaLabel>
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
@@ -26,7 +27,7 @@
                     </IftaLabel>
                     <div class="row mt-12 center gap-4">
                         <Button type="submit" label="保存" class="px-8" _as="router-link" _to="/"></Button>
-                        <Button severity="warn" label="取消" class="px-8" @click="callClose(null,obj)"></Button>
+                        <Button severity="warn" label="取消" class="px-8" @click="cancel()"></Button>
                     </div>
                 </Form>
             </div>
@@ -74,6 +75,9 @@ const resolver = ({ values }) => {
     primeUtil.buildFormValidError(errors.headImgUrl,"error","请选择照片",()=>{
         return !src.value;
     },(error)=>{errors.headImgUrl = error});
+    primeUtil.buildFormValidError(errors.phone,"error","手机格式错误",()=>{
+        return !checker.check({"phone":judge.value.phone},[{name:"phone",checkType:"phone",checkRule:"",errorMsg:"手机格式错误"}]);
+    },(error)=>{errors.phone = error});
 
     return {
         values, // (Optional) Used to pass current form values to submit event.
@@ -89,6 +93,7 @@ const onFormSubmit = ({ valid }) => {
             judge.value.id = Beans.buildPId("");
             judge.value.createDate = new Date().getTime();
             judge.value.headImgUrl = `cpt/${host}/judge/${judge.value.id}_${file.value.name}`;
+            judge.value.temp = true;
             headImgUrl = judge.value.headImgUrl;
         } else {
             if (file.value!=null) {
@@ -99,7 +104,6 @@ const onFormSubmit = ({ valid }) => {
                 headImgUrl = judge.value.headImgUrl;
             }
         }
-        console.log(headImgUrl);
         if (headImgUrl) {
             oss.uploadFileWithClient(
                 file.value,
@@ -110,7 +114,9 @@ const onFormSubmit = ({ valid }) => {
                             judge.value.tempMap = {};
                             judge.value.tempMap.headImgUrl = oss.buildImgPath(judge.value.headImgUrl);
                             judge.value.tempMap.imgPath = judge.value.tempMap.headImgUrl;
+                            obj.data = judge.value;
                             obj.returnFunction(obj);
+                            mePage.close(mainPage);
                         }
                     });
                 },
@@ -124,7 +130,9 @@ const onFormSubmit = ({ valid }) => {
                     judge.value.tempMap = {};
                     judge.value.tempMap.headImgUrl = oss.buildImgPath(judge.value.headImgUrl);
                     judge.value.tempMap.imgPath = judge.value.tempMap.headImgUrl;
+                    obj.data = judge.value;
                     obj.returnFunction(obj);
+                    mePage.close(mainPage);
                 }
             });
         }
@@ -145,12 +153,23 @@ function onFileSelect(event) {
     // reader.readAsDataURL(file);
 }
 
+function cancel() {
+    mePage.close(mainPage);
+}
+
 const init = (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
     obj = _obj;
-    if (obj.process=="u") {
+    if (obj.process=="c") {
+        judge.value = Beans.judge();
+        src.value = null;
+    } else if (obj.process=="u") {
+        file.value = null;
         judge.value = obj.data;
+        if (judge?.value?.headImgUrl) {
+            src.value = oss.buildImgPath(judge.value.headImgUrl);
+        }
     }
 }
 defineExpose({ init });

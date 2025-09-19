@@ -18,9 +18,9 @@
 
                     }
                 }">
-                <Column header="" class="!w-20">
+                <Column header="" class="w-16">
                     <template #body="{data,index}">
-                        <Image class="rounded w-full h-full object-cover" :src="data?.tempMap?.headImgUrl" :alt="data.name" style="max-width: 300px;" _preview :pt="{image:{class:'!w-full !h-full object-cover'}}" @click="refPriviewImage.imagesShow([data],0)"/>
+                        <img class="rounded-full w-16 h-16 object-cover" :src="data?.tempMap?.headImgUrl" :alt="data.name" style="max-width: 300px;" _preview :pt="{image:{class:'!w-full !h-full object-cover'}}" @click="refPriviewImage.imagesShow([data],0)"/>
                     </template>
                 </Column>
                 <Column field="name" header="姓名" class="w-36"></Column>
@@ -30,7 +30,7 @@
                     </template>
                 </Column>
                 <!--            <Column field="engName" header="Eng Name"></Column>-->
-                <Column class="w-24 !text-end">
+                <Column class="w-16 !text-end">
                     <template #body="{ data,index }">
                         <Button icon="pi pi-pencil" @click="edit(data,index)" severity="secondary" rounded></Button>
                     </template>
@@ -96,7 +96,7 @@ const backOrgHumanUpdateClose = (orgHuman,obj)=>{
 
 function edit(data,index) {
     refOrgHumanUpdate.value.init(data,{process:'u',sourceId:host,index:index});
-    orgHumanUpdatePage.value.open(mainPage.value)
+    orgHumanUpdatePage.value.open(mainPage.value);
 }
 </script>
 
