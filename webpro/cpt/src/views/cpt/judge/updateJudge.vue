@@ -116,6 +116,8 @@ const onFormSubmit = ({ valid }) => {
                             judge.value.tempMap.imgPath = judge.value.tempMap.headImgUrl;
                             obj.data = judge.value;
                             obj.returnFunction(obj);
+                            file.value = null;
+                            src.value = null;
                             mePage.close(mainPage);
                         }
                     });
@@ -132,6 +134,8 @@ const onFormSubmit = ({ valid }) => {
                     judge.value.tempMap.imgPath = judge.value.tempMap.headImgUrl;
                     obj.data = judge.value;
                     obj.returnFunction(obj);
+                    file.value = null;
+                    src.value = null;
                     mePage.close(mainPage);
                 }
             });
@@ -161,12 +165,13 @@ const init = (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
     obj = _obj;
+    file.value = null;
+    src.value = null;
     if (obj.process=="c") {
         judge.value = Beans.judge();
-        src.value = null;
     } else if (obj.process=="u") {
-        file.value = null;
         judge.value = obj.data;
+        console.log(judge.value);
         if (judge?.value?.headImgUrl) {
             src.value = oss.buildImgPath(judge.value.headImgUrl);
         }

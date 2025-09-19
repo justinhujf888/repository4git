@@ -107,6 +107,8 @@ const onFormSubmit = ({ valid }) => {
                             orgHuman.value.tempMap.headImgUrl = oss.buildImgPath(orgHuman.value.headImgUrl);
                             orgHuman.value.tempMap.imgPath = orgHuman.value.tempMap.headImgUrl;
                             callClose(orgHuman.value,obj.value);
+                            file.value = null;
+                            src.value = null;
                         }
                     });
                 },
@@ -121,6 +123,8 @@ const onFormSubmit = ({ valid }) => {
                     orgHuman.value.tempMap.headImgUrl = oss.buildImgPath(orgHuman.value.headImgUrl);
                     orgHuman.value.tempMap.imgPath = orgHuman.value.tempMap.headImgUrl;
                     callClose(orgHuman.value,obj.value);
+                    file.value = null;
+                    src.value = null;
                 }
             });
         }
@@ -147,6 +151,8 @@ const callClose = (orgHuman,obj)=>{
 };
 
 const init = (og,o)=>{
+    file.value = null;
+    src.value = null;
     if (og) {
         orgHuman.value = og;
         if (orgHuman?.value?.headImgUrl) {
