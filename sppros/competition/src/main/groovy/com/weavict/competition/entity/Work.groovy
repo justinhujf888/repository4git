@@ -29,6 +29,10 @@ class SiteCompetition extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String appId;
 
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> setupFields;
+
     @OneToMany(mappedBy="siteCompetition",fetch = FetchType.LAZY)
     List<MasterCompetition> masterCompetitionList;
 

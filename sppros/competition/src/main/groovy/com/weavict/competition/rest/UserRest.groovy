@@ -160,7 +160,7 @@ class UserRest extends BaseRest
         try
         {
             Judge judge = this.objToBean(query.judge, Judge.class,null);
-            if (judge.temp==true || true)
+            if (judge.temp==true)
             {
                 judge.password = userBean.buildPasswordCode(judge.phone);
             }

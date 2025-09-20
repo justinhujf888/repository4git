@@ -2,11 +2,11 @@
     <div class="card">
         <div class="flex flex-wrap items-center justify-between">
             <div>
-                <span class="text-base">赛事组别设置</span>
+                <span class="text-base">赛事类别设置</span>
             </div>
             <div class="row end gap-4">
 <!--                <span class="text-sm text-red-600">可拖拽排序</span>-->
-                <Button label="新增组别" @click="addItem"/>
+                <Button label="新增类别" @click="addItem"/>
             </div>
         </div>
         <DataView :value="selMasterCompetition.competitionList" :pt="{
@@ -18,26 +18,26 @@
                 <div class="col">
                     <div v-for="(element,index) in slotProps.items" :key="index" class="m-2 p-2 !relative !border-2 !border-gray-300 !border-solid flex-wrap between">
                         <div class="row flex-wrap gap-2 w-full mt-6">
-                            <Fieldset legend="设置组别">
+                            <Fieldset legend="设置类别">
                                 <IftaLabel>
-                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">组别名称</label>
+                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">类别名称</label>
                                     <InputText v-model="element.name"/>
                                 </IftaLabel>
                             </Fieldset>
-                            <Fieldset legend="设置规格" class="col w-full md:w-2/5 lg:w-3/5 border-solid border-2 border-gray-200 p-2 gap-2 relative">
+                            <Fieldset legend="设置分组" class="col w-full md:w-2/5 lg:w-3/5 border-solid border-2 border-gray-200 p-2 gap-2 relative">
                                 <div class="gap-x-2">
                                     <p v-for="(gg,gIndex) in element.guiGeList" :key="gIndex" class="row gap-x-2">
-                                        <InputText v-model="gg.name" size="small" placeholder="输入规格名称"/>
+                                        <InputText v-model="gg.name" size="small" placeholder="输入分组名称"/>
                                         <button @click="deleteGuiGe(element,gIndex)" class="text-xs border-2 border-solid border-red-300 px-2 py-1 text-red-400 rounded-2xl place-self-center">删除</button>
                                     </p>
                                 </div>
                                 <div class="absolute -top-8 left-32">
-                                    <button @click="addGuiGe(index)" class="bg-indigo-400 text-xs h-6 px-2 text-white rounded-2xl place-self-start">新增规格</button>
+                                    <button @click="addGuiGe(index)" class="bg-indigo-400 text-xs h-6 px-2 text-white rounded-2xl place-self-start">新增分组</button>
                                 </div>
                             </Fieldset>
                         </div>
                         <div class="absolute top-1 right-1">
-                            <Button class="!border-orange-500 !text-orange-600" label="删除组别" rounded variant="outlined" size="small" @click="deleteItem(index)"/>
+                            <Button class="!border-orange-500 !text-orange-600" label="删除类别" rounded variant="outlined" size="small" @click="deleteItem(index)"/>
                         </div>
                     </div>
 <!--                    <draggable :list="slotProps.items" item-key="id">-->
@@ -85,7 +85,7 @@ function addItem() {
 }
 
 function deleteItem(index) {
-    dialog.confirm("分组下的规格将一并删除，是否删除这个分组？",()=>{
+    dialog.confirm("类别下的分组将一并删除，是否删除这个类别？",()=>{
         if (selMasterCompetition.value.competitionList[index].temp==0) {
             selMasterCompetition.value.competitionList.splice(index,1);
         } else {
@@ -115,7 +115,7 @@ function addGuiGe(index) {
 }
 
 function deleteGuiGe(competition,index) {
-    dialog.confirm("是否删除这个规格？",()=>{
+    dialog.confirm("是否删除这个分组？",()=>{
         if (competition.guiGeList[index].temp==0) {
             competition.guiGeList.splice(index,1);
         } else {
@@ -153,7 +153,7 @@ function save() {
     });
 
     if (!shiEmpty) {
-        dialog.toastError("有组别名称以及规格名称没有输入");
+        dialog.toastError("有类别名称以及分组名称没有输入");
         return;
     }
 

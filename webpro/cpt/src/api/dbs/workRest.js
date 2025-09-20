@@ -102,6 +102,9 @@ export default {
     updateCompetition(ds,onfun) {
         Http.callHttpFunction('/r/work/updateCompetition',ds,onfun);
     },
+    updateSiteCompetitionSetupFields(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateSiteCompetitionSetupFields',ds,onfun);
+    },
     updateCompetitionList(ds,onfun) {
         Http.callHttpFunction('/r/work/updateCompetitionList',ds,onfun);
     },

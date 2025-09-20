@@ -37,7 +37,7 @@
                 <Column class="w-28 !text-end col">
                     <template #body="{ data,index }">
                         <Button label="基本资料" :_model="getSplitItems(data,index)" variant="outlined" class="!text-xs rounded-2xl font-semibold" icon="pi pi-pencil" rounded size="small" @click="refUpdateMasterCpt.init(mainPage,updateMasterCptPage,{process:'u',data:data,index:index,returnFunction:returnFunction});updateMasterCptPage.open(mainPage)" :pt="{Menu:{pcMenu:{class:'!bg-green-400 !text-green-800'}}}"></Button>
-<!--                        <Button label="赛事组别" class="!text-xs rounded-2xl font-semibold" variant="outlined" icon="pi pi-pencil" severity="warn" rounded size="small" @click=""></Button>-->
+<!--                        <Button label="赛事类别" class="!text-xs rounded-2xl font-semibold" variant="outlined" icon="pi pi-pencil" severity="warn" rounded size="small" @click=""></Button>-->
                     </template>
                 </Column>
                 <template #expansion="slotProps">
@@ -116,7 +116,7 @@
                         </ScrollPanel>
                     </Fieldset>
 
-                    <Fieldset class="text-wrap text-start" legend="组别设置" :toggleable="true" :collapsed="true">
+                    <Fieldset class="text-wrap text-start" legend="类别设置" :toggleable="true" :collapsed="true">
                         <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
@@ -130,8 +130,8 @@
                                     }">
                                         <template #list="slotProps">
                                             <DataTable :value="slotProps.items">
-                                                <Column field="name" header="分组名称" class="w-32"></Column>
-                                                <Column header="规格">
+                                                <Column field="name" header="类别名称" class="w-32"></Column>
+                                                <Column header="分组">
                                                     <template #body="slotProps">
                                                         <div class="row flex-wrap gap-x-2">
                                                             <Chip v-for="(gg,index) in slotProps.data.guiGeList" :key="index" :label="gg.name" class="!bg-sky-100 !border-2 !border-sky-200 !border-solid !text-gray-800"/>
@@ -239,7 +239,7 @@ const getSplitItems = (data,index)=>{
                 refUpdateFields.value.init(mainPage.value,updateFieldsPage.value,{data:data,index:index,returnFunction:fieldsReturnFunction});
                 updateFieldsPage.value.open(mainPage.value);
             }},
-        {label:"设置组别",command:()=>{
+        {label:"设置类别",command:()=>{
                 refUpdateCompetition.value.init(mainPage.value,updateCompetitionPage.value,{data:data,index:index,returnFunction:competitionReturnFunction});
                 updateCompetitionPage.value.open(mainPage.value);
             }}
@@ -369,7 +369,7 @@ const fieldsReturnFunction = (obj)=>{
 
 const competitionReturnFunction = (obj)=>{
     masterCompetitionList.value[obj.index].competitionList = obj.data.competitionList;
-    dialog.toastSuccess(`${obj.data.name}年份赛事组别已更新`);
+    dialog.toastSuccess(`${obj.data.name}年份赛事类别已更新`);
 }
 
 const expandAll = () => {
