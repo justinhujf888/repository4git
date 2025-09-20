@@ -2,18 +2,31 @@ import OSS from 'ali-oss';
 import otherRest from '@/api/dbs/otherRest.js';
 import { Http } from '@/api/http';
 import dayjs from "dayjs";
+import userRest from '@/api/dbs/userRest';
+import dialog from '@/api/uniapp/dialog';
 
 let client = null;
 let signatureInfo = {};
 let aliOssAccessInfo = {};
+let  _tokenExpiredTime = 0;
 
 export default {
     access() {
         return new Promise(resolve => {
-            this.buildAliOssAccessInfo((data) => {
-                resolve(data);
+            this.buildAliOssAccessInfo((info) => {
+                resolve(info);
             });
         });
+    },
+    checkToken() {
+        if (Date.now() >= this._tokenExpiredTime || this._token === null) {
+            this.access().then(info=>{
+                client.options.stsToken = info.securityToken;
+                client.options.accessKeyId = info.accessId;
+                client.options.accessKeySecret =  info.accessKey;
+                _tokenExpiredTime = new Date(info.expiration).getTime();
+            });
+        }
     },
     buildAliOssAccessInfo(fun) {
         otherRest.genAliOssAccessInfo((data) => {
@@ -63,6 +76,7 @@ export default {
                     },
                     refreshSTSTokenInterval: 400000
                 });
+                _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
                 if (fun) {
                     fun(client);
                 }
@@ -71,7 +85,9 @@ export default {
     },
     buildImgPath(imgPath) {
         if (client) {
-            return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600,'process': 'style/mobile'});
+            this.checkToken();
+            return client.signatureUrl(imgPath,{'process': 'style/mobile'});
+            // return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600,'process': 'style/mobile'});
         } else {
             return null;
         }

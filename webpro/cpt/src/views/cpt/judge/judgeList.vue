@@ -82,7 +82,7 @@ function loadDatas() {
                     v.tempMap = {};
                     v.tempMap.imgPath = oss.buildImgPath(v.headImgUrl);
                 });
-                console.log(judgePageUtil.value);
+                // console.log(judgePageUtil.value);
             }
         }
     });
