@@ -32,12 +32,11 @@ const siteZhuTiWorkItemList = ref([]);
 const host = ref(inject("domain"));
 
 onMounted(() => {
-    oss.genClient();
     workRest.qySiteWorkItemList({sourceId:host.value,sourceType:0,type:0},(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteZhuTiWorkItemList.value = res.data;
-                lodash.forEach(siteZhuTiWorkItemList.value,(v,i)=>{
+                lodash.forEach(siteZhuTiWorkItemList.value,(v)=>{
                     v.tempMap = {};
                     v.tempMap.size = v.fileFields.size;
                     v.tempMap.name = v.fileFields.name;

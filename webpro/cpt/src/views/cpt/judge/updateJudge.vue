@@ -58,7 +58,7 @@ let mainPage = null;
 let mePage = null;
 let obj = null;
 
-onMounted(async () => {
+onMounted(() => {
     if (judge?.value?.headImgUrl) {
         src.value = oss.buildImgPath(judge.value.headImgUrl);
     }

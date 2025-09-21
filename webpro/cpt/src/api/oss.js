@@ -19,13 +19,25 @@ export default {
         });
     },
     async checkToken() {
-        if (Date.now() >= _tokenExpiredTime) {
-            const info = await this.access();
-            client.options.stsToken = info.securityToken;
-            client.options.accessKeyId = info.accessId;
-            client.options.accessKeySecret =  info.accessKey;
-            _tokenExpiredTime = new Date(info.expiration).getTime();
+        if (!client) {
+            this.genClient();
         }
+        setTimeout(async ()=>{
+            try {
+                if (Date.now() >= _tokenExpiredTime && client) {
+                    const info = await this.access();
+                    client.options.stsToken = info.securityToken;
+                    client.options.accessKeyId = info.accessId;
+                    client.options.accessKeySecret =  info.accessKey;
+                    _tokenExpiredTime = new Date(info.expiration).getTime();
+                    console.log("checkToken update token");
+                }
+            } catch (e) {
+                console.log(e);
+            } finally {
+                await this.checkToken();
+            }
+        },60*20*1000);
     },
     buildAliOssAccessInfo(fun) {
         otherRest.genAliOssAccessInfo((data) => {
@@ -67,7 +79,7 @@ export default {
                         console.log("refreshSTSToken");
                         const info = await this.access();
                         console.log("info",info);
-                        await this.checkToken();
+                        _tokenExpiredTime = new Date(info.expiration).getTime();
                         return {
                             accessKeyId: info.accessId,
                             accessKeySecret: info.accessKey,
@@ -85,7 +97,6 @@ export default {
     },
     buildImgPath(imgPath) {
         if (client) {
-            this.checkToken();
             return client.signatureUrl(imgPath,{'process': 'style/mobile'});
             // return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600,'process': 'style/mobile'});
         } else {

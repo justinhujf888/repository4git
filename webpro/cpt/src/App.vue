@@ -25,7 +25,7 @@ onMounted(() => {
     } else {
         document.documentElement.classList.remove('app-dark');
     }
-    // oss.genClient(null);
+    oss.checkToken();
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
     Config.getConfig();
     if (typeof (EventSource) !== "undefined") {return;

@@ -69,7 +69,6 @@ const judgePageUtil = ref({});
 const currentPage = ref(0);
 
 onMounted(() => {
-    oss.genClient();
     loadDatas();
 });
 

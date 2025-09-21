@@ -207,7 +207,6 @@ let host = inject("domain");
 let selIndex = -1;
 
 onMounted(() => {
-    oss.genClient();
     workRest.qyMasterSiteCompetition({siteCompetitionId:host},(res)=>{
         if (res.status=="OK") {
             if (res.data) {
@@ -256,7 +255,7 @@ const onRowExpand = (event) => {
                 if (res.status=="OK") {
                     if (res.data!=null) {
                         let masterZhuTiWorkItemList = res.data;
-                        lodash.forEach(masterZhuTiWorkItemList,(v,i)=>{
+                        lodash.forEach(masterZhuTiWorkItemList,(v)=>{
                             v.tempMap = {};
                             v.tempMap.size = v.fileFields.size;
                             v.tempMap.name = v.fileFields.name;

@@ -51,7 +51,7 @@ const src = ref(null);
 let errors = [];
 let host = inject("domain");
 
-onMounted(async () => {
+onMounted(() => {
     nextTick();
     if (orgHuman?.value?.headImgUrl) {
         src.value = oss.buildImgPath(orgHuman.value.headImgUrl);

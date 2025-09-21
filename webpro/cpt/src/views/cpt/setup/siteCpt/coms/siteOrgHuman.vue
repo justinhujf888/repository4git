@@ -66,12 +66,11 @@ const siteOrgHumanList = ref([]);
 const host = ref(inject("domain"));
 
 onMounted(() => {
-    oss.genClient();
     workRest.qyOrgHumanList({appId:host.value,sourceType:0,sourceId:host.value},(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteOrgHumanList.value = res.data;
-                lodash.forEach(siteOrgHumanList.value,(v,i)=>{
+                lodash.forEach(siteOrgHumanList.value,(v)=>{
                     v.tempMap = {};
                     v.tempMap.headImgUrl = oss.buildImgPath(v.headImgUrl);
                     v.tempMap.imgPath = v.tempMap.headImgUrl;
