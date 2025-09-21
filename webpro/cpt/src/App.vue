@@ -22,6 +22,8 @@ var source = null;
 onMounted(() => {
     if (lodash.includes(window.location.href,"manage")) {
         document.documentElement.classList.toggle('app-dark');
+    } else {
+        document.documentElement.classList.remove('app-dark');
     }
     // oss.genClient(null);
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
@@ -81,7 +83,12 @@ onUnmounted(() => {
     <ConfirmDialog />
     <myDialog ref="mydRef"></myDialog>
     <Toast />
-    <router-view/>
+<!--    <router-view/>-->
+    <router-view v-slot="{ Component }">
+        <transition name="fade">
+            <component :is="Component" />
+        </transition>
+    </router-view>
 </template>
 
 <style>

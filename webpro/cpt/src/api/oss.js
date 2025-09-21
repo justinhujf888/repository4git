@@ -18,14 +18,13 @@ export default {
             });
         });
     },
-    checkToken() {
-        if (Date.now() >= this._tokenExpiredTime || this._token === null) {
-            this.access().then(info=>{
-                client.options.stsToken = info.securityToken;
-                client.options.accessKeyId = info.accessId;
-                client.options.accessKeySecret =  info.accessKey;
-                _tokenExpiredTime = new Date(info.expiration).getTime();
-            });
+    async checkToken() {
+        if (Date.now() >= _tokenExpiredTime) {
+            const info = await this.access();
+            client.options.stsToken = info.securityToken;
+            client.options.accessKeyId = info.accessId;
+            client.options.accessKeySecret =  info.accessKey;
+            _tokenExpiredTime = new Date(info.expiration).getTime();
         }
     },
     buildAliOssAccessInfo(fun) {
@@ -68,6 +67,7 @@ export default {
                         console.log("refreshSTSToken");
                         const info = await this.access();
                         console.log("info",info);
+                        await this.checkToken();
                         return {
                             accessKeyId: info.accessId,
                             accessKeySecret: info.accessKey,
