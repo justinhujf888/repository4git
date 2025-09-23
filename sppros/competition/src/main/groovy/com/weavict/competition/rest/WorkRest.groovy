@@ -1,6 +1,8 @@
 package com.weavict.competition.rest
 
 import cn.hutool.core.date.DateUtil
+import cn.hutool.core.io.FileUtil
+import cn.hutool.core.io.file.FileWriter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.GuiGe
@@ -11,6 +13,7 @@ import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.module.WorkService
+import com.weavict.website.common.OtherUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -182,7 +185,8 @@ class WorkRest extends BaseRest
                                  .where("j.engName like :engName",["engName":"%${query.engName}%"],"and",{return !(query.engName in [null,""])})
                                 .orderBy("createDate")
                                 .buildSql().run().content;
-
+//                         FileWriter writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/orgHuman.json""".toString(),"utf8");
+//                         writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString(orgHumanList));
                      }).call()
                     ]);
         }

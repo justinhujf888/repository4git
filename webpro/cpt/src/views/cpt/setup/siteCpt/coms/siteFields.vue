@@ -5,13 +5,11 @@
                 <span class="text-base">设置作品字段信息</span>
                 <Button label="设置" @click="refUpdateFields.init(mainPage,updateFieldsPage,{data:siteCompetition,returnFunction:returnFunction});updateFieldsPage.open(mainPage)"/>
             </div>
-            <ScrollPanel class="w-80 sm:w-full">
-                <div class="mt-10">
-                    <div class="row gap-2 flex-wrap">
-                        <Chip v-for="(item,index) in siteCompetition.setupFields?.data" :key="index" :label="item.name" class="!bg-orange-100 !border-2 !border-orange-200 !border-solid !text-gray-800"/>
-                    </div>
+            <Panel class="mt-5 w-80 sm:w-full">
+                <div class="row gap-2 flex-wrap">
+                    <Chip v-for="(item,index) in siteCompetition.setupFields?.data" :key="index" :label="item.name" class="!bg-orange-100 !border-2 !border-orange-200 !border-solid !text-gray-800"/>
                 </div>
-            </ScrollPanel>
+            </Panel>
         </div>
     </animationPage>
 

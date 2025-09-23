@@ -7,22 +7,27 @@
         <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8 text-base lg:text-base">
             <li>
                 <a @click="smoothScroll('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
-                    <span>首页</span>
+                    <span>关于</span>
                 </a>
             </li>
             <li>
                 <a @click="smoothScroll('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
-                    <span>Features</span>
+                    <span>报名参赛</span>
                 </a>
             </li>
             <li>
                 <a @click="smoothScroll('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
-                    <span>Highlights</span>
+                    <span>评委</span>
                 </a>
             </li>
             <li>
                 <a @click="smoothScroll('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
-                    <span>Pricing</span>
+                    <span>评审标准</span>
+                </a>
+            </li>
+            <li>
+                <a @click="smoothScroll('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <span>获奖作品</span>
                 </a>
             </li>
         </ul>

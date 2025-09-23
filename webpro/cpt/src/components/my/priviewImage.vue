@@ -69,9 +69,9 @@
 import { ref, onMounted, computed } from "vue";
 
 // const props = defineProps(['files','activeIndex','fullScreen','showItemNavigators','showThumbnails','thumbnailsPosition','responsiveOptions',{shiShowImgGrid:{type:Object,default:true}},'obj']);
-
+const files = defineModel({default:[]});
 const props = defineProps({
-    files: { type: Array, required: true },
+    // files: { type: Array, required: true },
     activeIndex: { type: Number, default: 0 },
     fullScreen: { type: Boolean, default: true },
     showItemNavigators: { type: Boolean, default: true },
@@ -83,7 +83,6 @@ const props = defineProps({
 })
 
 const galleria = ref();
-const files = ref(props.files);
 const activeIndex = ref(props.activeIndex);
 const shiShow = ref(false);
 const fullScreen = ref(props.fullScreen);

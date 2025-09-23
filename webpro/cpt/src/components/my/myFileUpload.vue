@@ -121,6 +121,7 @@ import util from "@/api/util";
 const fu = useTemplateRef("fu");
 const $primevue = usePrimeVue();
 // const fileupload = useTemplateRef("fileupload");
+
 const props = defineProps(['files','maxFileSize','fileLimit','fileAccept','filePreKey','obj']);
 const emit = defineEmits(["theFileUploaded","allFilesUploaded","deleteFile","cancel"]);
 const theFileUploaded = (file,index,obj)=>{

@@ -20,7 +20,7 @@
                 }">
                 <Column header="" class="w-16">
                     <template #body="{data,index}">
-                        <img class="rounded-full w-16 h-16 object-cover" :src="data?.tempMap?.headImgUrl" :alt="data.name" style="max-width: 300px;" _preview :pt="{image:{class:'!w-full !h-full object-cover'}}" @click="refPriviewImage.imagesShow([data],0)"/>
+                        <img class="rounded-full w-16 h-16 object-cover" :src="data?.tempMap?.headImgUrl" :alt="data.name" style="max-width: 300px;" _preview :pt="{image:{class:'!w-full !h-full object-cover'}}" @click="refPriviewImage.imagesShow(siteOrgHumanList,index)"/>
                     </template>
                 </Column>
                 <Column field="name" header="姓名" class="w-36"></Column>

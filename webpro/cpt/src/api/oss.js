@@ -20,8 +20,10 @@ export default {
     },
     async checkToken() {
         if (!client) {
-            this.genClient();
+            await this.genClient();
         }
+        let times = dayjs(_tokenExpiredTime).diff(new Date());
+        console.log("init times",times,_tokenExpiredTime);
         setTimeout(async ()=>{
             try {
                 if (Date.now() >= _tokenExpiredTime && client) {
@@ -30,14 +32,15 @@ export default {
                     client.options.accessKeyId = info.accessId;
                     client.options.accessKeySecret =  info.accessKey;
                     _tokenExpiredTime = new Date(info.expiration).getTime();
-                    console.log("checkToken update token");
+                    times = dayjs(_tokenExpiredTime).diff(new Date());
+                    console.log("checkToken update token",times,_tokenExpiredTime);
                 }
             } catch (e) {
                 console.log(e);
             } finally {
                 await this.checkToken();
             }
-        },60*20*1000);
+        },times);
     },
     buildAliOssAccessInfo(fun) {
         otherRest.genAliOssAccessInfo((data) => {
@@ -61,37 +64,37 @@ export default {
             }
         });
     },
-    genClient(fun) {
+    async genClient() {
         if (client) {
-            if (fun) {
-                fun(client);
-            }
+            return new Promise(resolve => {
+                resolve(client);
+            });
         } else {
-            this.buildAliOssAccessInfo(() => {
-                client = new OSS({
-                    authorizationV4: true,
-                    region: aliOssAccessInfo.region, //换成你自己的
-                    accessKeyId: aliOssAccessInfo.accessId,
-                    accessKeySecret: aliOssAccessInfo.accessKey,
-                    bucket: aliOssAccessInfo.bucketName,
-                    stsToken: aliOssAccessInfo.securityToken,
-                    refreshSTSToken: async () => {
-                        console.log("refreshSTSToken");
-                        const info = await this.access();
-                        console.log("info",info);
-                        _tokenExpiredTime = new Date(info.expiration).getTime();
-                        return {
-                            accessKeyId: info.accessId,
-                            accessKeySecret: info.accessKey,
-                            stsToken: info.securityToken
-                        }
-                    },
-                    refreshSTSTokenInterval: 400000
+            return new Promise(resolve => {
+                this.buildAliOssAccessInfo(() => {
+                    client = new OSS({
+                        authorizationV4: true,
+                        region: aliOssAccessInfo.region, //换成你自己的
+                        accessKeyId: aliOssAccessInfo.accessId,
+                        accessKeySecret: aliOssAccessInfo.accessKey,
+                        bucket: aliOssAccessInfo.bucketName,
+                        stsToken: aliOssAccessInfo.securityToken,
+                        refreshSTSToken: async () => {
+                            console.log("refreshSTSToken");
+                            const info = await this.access();
+                            console.log("info",info);
+                            _tokenExpiredTime = new Date(info.expiration).getTime();
+                            return {
+                                accessKeyId: info.accessId,
+                                accessKeySecret: info.accessKey,
+                                stsToken: info.securityToken
+                            }
+                        },
+                        refreshSTSTokenInterval: 400000
+                    });
+                    _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
+                    resolve(client);
                 });
-                _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
-                if (fun) {
-                    fun(client);
-                }
             });
         }
     },
@@ -134,7 +137,7 @@ export default {
         );
     },
     uploadFileWithClient(file,key,okfun,erfun) {
-        this.genClient(async ()=>{
+        (async ()=>{
             try {
                 let res = await client.put(key,file);
                 console.log("res",res);
@@ -147,16 +150,16 @@ export default {
                     erfun(er);
                 }
             }
-        });
+        })();
     },
     deleteFile(path) {
-        this.genClient(async (c)=>{
+        (async (c)=>{
             try {
                 return await c.delete(path);
             } catch(er) {
                 return null;
             }
-        });
+        })();
         // client.delete(path);
     },
 };

@@ -5,7 +5,7 @@
                 <span class="text-base">设置赛事主题图</span>
                 <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="updateSiteZhuTiWorkitemPage.open(mainPage)"/>
             </div>
-            <priviewImage v-if="siteZhuTiWorkItemList?.length>0" :files="siteZhuTiWorkItemList"/>
+            <priviewImage v-model="siteZhuTiWorkItemList"/>
         </div>
     </animationPage>
 

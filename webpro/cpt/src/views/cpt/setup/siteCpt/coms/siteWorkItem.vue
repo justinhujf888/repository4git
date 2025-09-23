@@ -5,7 +5,7 @@
                 <span class="text-base">设置系列赛事作品</span>
                 <Button label="系列赛事作品设置" @click="updateSiteZuoPingWorkitemPage.open(mainPage)"/>
             </div>
-            <priviewImage v-if="siteZuoPingWorkItemList?.length>0" :files="siteZuoPingWorkItemList"/>
+            <priviewImage v-model="siteZuoPingWorkItemList"/>
             <!--        <DataView :value="siteZhuTiWorkItemList" layout="grid" :pt="{-->
             <!--            emptyMessage:{-->
             <!--                class:'opacity-0'-->

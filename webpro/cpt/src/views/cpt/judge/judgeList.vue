@@ -20,9 +20,9 @@
                 }
             }">
                     <Column field="headImgUrl" header="" class="w-10">
-                        <template #body="{ data }">
+                        <template #body="{ data,index }">
                             <div class="center w-16">
-                                <img :alt="data.name" :src="data.tempMap.imgPath" class="rounded-full w-16 h-16 object-content" @click="refPriviewImage.imagesShow([data],0)"/>
+                                <img :alt="data.name" :src="data.tempMap.imgPath" class="rounded-full w-16 h-16 object-content" @click="refPriviewImage.imagesShow(judgePageUtil.content,index)"/>
                             </div>
                         </template>
                     </Column>
