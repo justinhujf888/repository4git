@@ -16,7 +16,7 @@ export default {
                 }
             },
             null,
-            true
+            false
         );
     },
     genSignature(onfun) {

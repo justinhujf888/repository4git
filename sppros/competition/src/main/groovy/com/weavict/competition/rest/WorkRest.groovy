@@ -1,8 +1,19 @@
 package com.weavict.competition.rest
 
+import cn.hutool.core.date.DateUtil
+import cn.hutool.core.io.FileUtil
+import cn.hutool.core.io.file.FileWriter
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.competition.entity.Competition
+import com.weavict.competition.entity.GuiGe
+import com.weavict.competition.entity.Judge
+import com.weavict.competition.entity.MasterCompetition
+import com.weavict.competition.entity.OrgHuman
+import com.weavict.competition.entity.SiteCompetition
+import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.module.WorkService
+import com.weavict.website.common.OtherUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -22,6 +33,112 @@ class WorkRest extends BaseRest
     @Autowired
     WorkService workService;
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/setupSiteCompetition")
+    String setupSiteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.siteCompetition, SiteCompetition.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qySiteCompetition")
+    String qySiteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         SiteCompetition siteCompetition = workService.findObjectById(SiteCompetition.class,query.id);
+                         siteCompetition?.cancelLazyEr();
+                         return siteCompetition;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qySiteWorkItemList")
+    String qySiteWorkItemList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         workService.newQueryUtils(false).masterTable("SiteWorkItem",null,null)
+                         .where("sourceId=:sourceId",["sourceId":query.sourceId],null,{return true})
+                         .where("sourceType=:sourceType",["sourceType":query.sourceType as byte],"and",{return true})
+                         .where("type=:type",["type":query.type as byte],"and",{return true})
+                         .orderBy("createDate")
+                         .buildSql().run().content;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateSiteWorkItem")
+    String updateSiteWorkItem (@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.siteWorkItem, SiteWorkItem.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deleteSiteWorkItem")
+    String deleteSiteWorkItem (@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.deleteTheObject8Fields(SiteWorkItem.class.name,"id=:id",["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -34,7 +151,7 @@ class WorkRest extends BaseRest
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
-                     "workList":({
+                     "data":({
                         return workService.qyBuyerCompetitionWorkInfo(query.userId,query.competitionId)?.each {
                             it.cancelLazyEr();
                         };
@@ -48,4 +165,278 @@ class WorkRest extends BaseRest
         }
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyOrgHumanList")
+    String qyOrgHumanList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.newQueryUtils(false,false).masterTable(OrgHuman.class.name,"j",null)
+                                .where("j.appId = :appId",["appId":query.appId],null,{return true})
+                                 .where("j.sourceType = :sourceType",["sourceType":query.sourceType],"and",{return true})
+                                 .where("j.sourceId = :sourceId",["sourceId":query.sourceId],"and",{return true})
+                                 .where("j.name like :name",["name":"%${query.name}%"],"and",{return !(query.name in [null,""])})
+                                 .where("j.engName like :engName",["engName":"%${query.engName}%"],"and",{return !(query.engName in [null,""])})
+                                .orderBy("createDate")
+                                .buildSql().run().content;
+//                         FileWriter writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/orgHuman.json""".toString(),"utf8");
+//                         writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString(orgHumanList));
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateOrgHuman")
+    String updateOrgHuman (@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.orgHuman, OrgHuman.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyMasterSiteCompetition")
+    String qyMasterSiteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         List<MasterCompetition> masterCompetitionList = workService.newQueryUtils(false).masterTable("MasterCompetition",null,null)
+                            .where("appId = :appId",["appId":query.appId],null,{return true})
+                            .where("siteCompetition.id = :siteCompetitionId",["siteCompetitionId":query.siteCompetitionId],"and",{return true})
+                            .where("cptDate = :cptDate",["cptDate":query.cptDate],"and",{return query.cptDate!=null})
+                            .orderBy("cptDate,beginDate")
+                                 .buildSql().run().content;
+                         for(MasterCompetition masterCompetition in masterCompetitionList)
+                         {
+                             masterCompetition.cancelLazyEr();
+                         }
+                         return masterCompetitionList;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyCompetitionList")
+    String qyCompetitionList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper4DateTime(null,null);
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         List<Competition> competitionList = workService.newQueryUtils(false).masterTable(Competition.class.simpleName,null,null)
+                                 .where("appId = :appId",["appId":query.appId],null,{return true})
+                                 .where("masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return true})
+                                 .where("name = :name",["name":query.name],"and",{return query.name!=null})
+//                                 .orderBy("id")
+                                 .buildSql().run().content;
+                         for(Competition competition in competitionList)
+                         {
+                             competition.cancelLazyEr();
+                             competition.guiGeList = workService.newQueryUtils(false).masterTable(GuiGe.class.simpleName,null,null)
+                                .where("competition.id = :competitionId",["competitionId":competition.id],null,{return true})
+                                .buildSql().run().content;
+                             for(GuiGe guiGe in competition.guiGeList)
+                             {
+                                 guiGe.cancelLazyEr();
+                             }
+                         }
+                         return competitionList;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateMasterCompetition")
+    String updateMasterCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.masterCompetition, MasterCompetition.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateMasterCompetitionDescription")
+    String updateMasterCompetitionDescription(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", [description:query.description],["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateMasterCompetitionSetupFields")
+    String updateMasterCompetitionSetupFields(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", [setupFields:query.setupFields],["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateCompetition")
+    String updateCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObject(this.objToBean(query.competition, Competition.class,null));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateSiteCompetitionSetupFields")
+    String updateSiteCompetitionSetupFields(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObjectFilds(SiteCompetition.class.name,"id=:id", [setupFields:query.setupFields],["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateCompetitionList")
+    String updateCompetitionList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            List<Competition> competitionList = this.objToBean(query.competitionList,List.class,null);
+            for (Competition competition in competitionList)
+            {
+                workService.updateTheObject(competition);
+                for (GuiGe guiGe in competition.tempMap.guiGeList)
+                {
+                    workService.updateTheObject(guiGe);
+                }
+            }
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deleteCompetition")
+    String deleteCompetition(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.deleteTheObject8Fields(Competition.class.simpleName,"id=:id",[id:query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deleteGuiGe")
+    String deleteGuiGe(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.deleteTheObject8Fields(GuiGe.class.simpleName,"id=:id",[id:query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

@@ -33,7 +33,7 @@
 					<text class="iconfont text-3xl text-green-500">&#xe61f;</text>
 					<text class="text-base text-green-500 font-semibold">{{$t("page.setup.daylight")}}</text>
 				</view>
-<!--           #ifdef MP     -->
+<!--           #ifdef MP    -->
 				<view class="col justify-center items-center flex-1 mt-2">
 					<view class="row justify-center items-center" @tap="goKgtime">
 						<text>{{$t("page.setup.daymode")}} {{times.onTime}}</text>
@@ -119,7 +119,7 @@
 			<wd-tabbar-item title="">
 				<template #icon>
 					<view>
-						<wd-button custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="saveScript">保存到方案</wd-button>
+						<wd-button custom-class="py-1 px-2 text-white" custom-style="background: #6AAE36" @click="saveScript">{{$t('page.setup.saveSolu')}}</wd-button>
 					</view>
 				</template>
 			</wd-tabbar-item>
@@ -492,7 +492,7 @@
         let cmd =lodash.find(cmdjson.commands,(o)=>{return o.command==item.cmd || o.command==item.exCmd});
         if (cmd?.deviceName) {
             // console.log("checkType---",cmd,device.value.deviceType.id);
-            return lodash.findIndex(cmd.deviceName,(o)=>{return o==device.value.tempMap.deviceName})>-1;
+            return lodash.findIndex(cmd.deviceName,(o)=>{return lodash.trim(o)==lodash.trim(device.value.tempMap.deviceName)})>-1;
         } else {
             return true;
         }

@@ -1,8 +1,10 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+import lodash from 'lodash-es';
 
 const router = createRouter({
-    history: createWebHistory(),
+    // base: import.meta.env.BASE_URL,
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/manage',
@@ -14,8 +16,36 @@ const router = createRouter({
                     component: () => import('@/views/Dashboard.vue')
                 },
                 {
-                    path: '/manage/judge/judgelist',
-                    name: 'judgelist',
+                    path: '/manage/cpt/site/cptSetup',
+                    name: 'cptSetup',
+                    component: () => import('@/views/cpt/setup/siteCpt/cptSetup.vue'),
+                    meta:{
+                        isHide: true,
+                        keepAlive:true
+                    }
+                },
+                {
+                    path: '/manage/cpt/site/updateSiteCpt',
+                    name: 'updateSiteCpt',
+                    component: () => import('@/views/cpt/setup/siteCpt/updateSiteCpt.vue'),
+                    meta:{
+                        isHide: true,
+                        keepAlive:true
+                    }
+                },
+                {
+                    path: '/manage/cpt/site/updateSiteWorkitem',
+                    name: 'updateSiteWorkitem',
+                    component: () => import('@/views/cpt/setup/siteCpt/updateSiteWorkitem.vue')
+                },
+                {
+                    path: '/manage/cpt/master/masterCptSetup',
+                    name: 'masterCptSetup',
+                    component: () => import('@/views/cpt/setup/masterCpt/masterCptSetup.vue')
+                },
+                {
+                    path: '/manage/judge/judgeList',
+                    name: 'judgeList',
                     component: () => import('@/views/cpt/judge/judgeList.vue')
                 },
                 {
@@ -148,7 +178,22 @@ const router = createRouter({
             name: 'error',
             component: () => import('@/views/pages/auth/Error.vue')
         }
-    ]
+    ],
+    scrollBehavior(to, from, savedPosition) {
+        // 始终滚动到顶部
+        return { top: 0 }
+    },
 });
+
+router.beforeEach((to, from) => {
+    // ...
+    if (lodash.includes(to.href,"manage")) {
+        document.documentElement.classList.add('app-dark');
+    } else {
+        document.documentElement.classList.remove('app-dark');
+    }
+    // 返回 false 以取消导航
+    return true
+})
 
 export default router;

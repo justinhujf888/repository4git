@@ -1,7 +1,7 @@
 import { Config } from '@/api/config.js';
-import util from '@/api/util.js';
 import axios from 'axios';
 import dialog from '@/api/uniapp/dialog';
+import util from "@/api/util";
 
 export const Http = {
     httpclient_json(url, method, ds, ptype, returnfun, errorfun, loading) {
@@ -14,7 +14,7 @@ export const Http = {
             .replace(/T/g, ' ')
             .replace(/\.[\d]{3}Z/, '');
         ds.loginState = null; //login.getLoginState();
-        ds.appId = Config.appId;
+        ds.appId = util.getDomainFromUrl(window.location);
         ds.vstr = str;
         axios({
             baseURL: Config.apiBaseURL,
@@ -37,6 +37,24 @@ export const Http = {
                 // dialog.alert("系统错误，请通知系统管理员或者客服；谢谢！");
                 console.log(error);
             });
+    },
+
+    callHttpFunction(url,ds,onfun) {
+        Http.httpclient_json(
+            url,
+            'post',
+            ds,
+            'json',
+            (res) => {
+                if (res.data.status == 'FA_ER') {
+                    dialog.showApiErrorMsg();
+                } else {
+                    onfun(res.data);
+                }
+            },
+            null,
+            true
+        );
     },
 
     uploadFileOss(file,host,key,ossAccessKeyId,policy,signature,securityToken,okfun,erfun) {

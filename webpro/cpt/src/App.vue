@@ -1,5 +1,6 @@
 <script setup>
 import oss from "@/api/oss";
+import lodash from "lodash-es";
 import dialog from '@/api/uniapp/dialog';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
@@ -9,6 +10,7 @@ import { useTemplateRef,onMounted,onUnmounted } from 'vue';
 import { Config } from '@/api/config';
 import {ConnectController} from "@/api/controller";
 import loading from "@/components/my/loading.vue";
+import 'animate.css';
 
 const toast = useToast();
 const confirmPopup = useConfirm();
@@ -18,8 +20,9 @@ const myLoading = useTemplateRef("myLoading");
 
 var source = null;
 onMounted(() => {
-    // oss.genClient(null);
+    oss.checkToken();
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
+    Config.getConfig();
     if (typeof (EventSource) !== "undefined") {return;
         source = new EventSource(Config.apiBaseURL + "/r/notifications");
         // 当通往服务器的连接被打开
@@ -70,14 +73,20 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <loading ref="myLoading"></loading>
     <DynamicDialog />
     <ConfirmDialog />
     <myDialog ref="mydRef"></myDialog>
     <Toast />
-    <router-view />
-    <loading ref="myLoading"></loading>
+<!--    <router-view/>-->
+    <router-view v-slot="{ Component }">
+        <transition name="fade">
+            <component :is="Component" />
+        </transition>
+    </router-view>
 </template>
 
 <style>
 @import '@/static/icons/iconfont.css';
+@import "@/static/css/animate.css";
 </style>

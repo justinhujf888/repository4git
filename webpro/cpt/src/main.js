@@ -8,12 +8,14 @@ import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
 import StyleClass from 'primevue/styleclass';
+import util from "@/api/util";
 
 import '@/assets/styles.scss';
 import zhCN from 'primelocale/zh-CN.json';
 
 const app = createApp(App);
 app.directive('styleclass', StyleClass);
+app.provide("domain",util.getDomainFromUrl(window.location));
 
 const routerParams = ()=>{
     return JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));

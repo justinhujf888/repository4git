@@ -159,6 +159,7 @@
 	{
 	  "command": "0x10",
 	  "description": "开关灯渐变时长（设置开关节点上的自然光模式）",
+      "deviceName": ["Breath NEO Pro","Breath NEO Elite"],
       "langvar": "cmsjson.w.0x10",
 	  "parameters": [
 	    { "name": "未使用", "fixed_value": "0x00" },

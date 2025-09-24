@@ -4,7 +4,8 @@ export default class Page {
 	static navigateTo(url, paramJson) {
 		// console.log(encodeURIComponent(JSON.stringify(paramJson)));
         if (paramJson) {
-            router.push({ name:url, params:{ param:encodeURIComponent(JSON.stringify(paramJson)) } });
+            // router.push({ name:url, params:{ param:encodeURIComponent(JSON.stringify(paramJson)) } });
+            router.push({ name:url, query:{ param:encodeURIComponent(JSON.stringify(paramJson)) } });
         } else {
             router.push({ name:url });
         }
@@ -12,7 +13,8 @@ export default class Page {
 	static redirectTo(url, paramJson) {
 		// alert(url + "?param=" + encodeURIComponent(JSON.stringify(paramJson)));
         if (paramJson) {
-            router.replace({ name:url, params:{ param:encodeURIComponent(JSON.stringify(paramJson)) } });
+            // router.replace({ name:url, params:{ param:encodeURIComponent(JSON.stringify(paramJson)) } });
+            router.replace({ name:url, query:{ param:encodeURIComponent(JSON.stringify(paramJson)) } });
         } else {
             router.replace({ name:url });
         }

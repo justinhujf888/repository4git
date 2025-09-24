@@ -485,10 +485,10 @@ export default {
 		return decryptByDES(message, Config.desKey);
 	},
 	intoStorgeCry(key,message) {
-		return uni.setStorageSync(key,encryptByDES(message, Config.desKey));
+		return localStorage.setItem(key,encryptByDES(message, Config.desKey));
 	},
 	giveStorgeCry(key) {
-		return decryptByDES(uni.getStorageSync(key), config.desKey);
+		return decryptByDES(localStorage.getItem(key), Config.desKey);
 	},
 	buildPasswordStr(v) {
 		return v.substr(6, 23);
@@ -498,5 +498,80 @@ export default {
 	swap,
 	floatObj,
 	isJson,
-	callPhone
+	callPhone,
+    getUrlParamJson_2(url) {
+        if (decodeURIComponent(url ? url : window.location).split("?param=").length > 1) {
+            return JSON.parse(decodeURIComponent(url ? url : window.location).split("?param=")[1]);
+        } else {
+            return null;
+        }
+    },
+    getUrlParams(url) {
+        const urlObject = url ? new URL(url) : new URL(window.location);
+        const params = {};
+        for (const [key, value] of urlObject.searchParams.entries()) {
+            params[key] = value;
+        }
+        return params;
+
+        // const searchParams = new URLSearchParams(url.split("?")[1]);
+        // const params = {};
+        // for (const [key, value] of searchParams.entries()) {
+        //     params[key] = value;
+        // }
+        // return params;
+
+        // const regex = /[?&]([^=#]+)=([^&#]*)/g;
+        // const params = {};
+        // let match;
+        // while (match = regex.exec(url)) {
+        //     params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+        // }
+        // return params;
+    },
+    getUrlParamJson(url) {
+        let pstr = this.getUrlParams(url).param;
+        return pstr ? JSON.parse(pstr) : null;
+    },
+    getDomainFromUrl(url) {
+        // 使用正则表达式提取域名部分
+        // const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
+        // const matches = url.match(regex);
+        // if (matches && matches.length > 1) {
+        //     return matches[1];
+        // }
+        // return null;
+
+        const parsedUrl = new URL(url);
+        return parsedUrl.hostname;
+
+        // const regex = /^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n]+)/im;
+        // const domain = url.match(regex)?.[1];
+        // if (domain) {
+        //     return domain.split('.').slice(-2).join('.');
+        // }
+        // return null;
+
+        // const protocolIndex = url.indexOf('://');
+        // if (protocolIndex > -1) {
+        //     url = url.slice(protocolIndex + 3);
+        // }
+        // const slashIndex = url.indexOf('/');
+        // if (slashIndex > -1) {
+        //     url = url.slice(0, slashIndex);
+        // }
+        // const wwwIndex = url.indexOf('www.');
+        // if (wwwIndex > -1) {
+        //     url = url.slice(wwwIndex + 4);
+        // }
+        // const dotIndex = url.indexOf('.');
+        // if (dotIndex > -1) {
+        //     url = url.slice(dotIndex + 1);
+        // }
+        // dotIndex = url.lastIndexOf('.');
+        // if (dotIndex > -1) {
+        //     url = url.slice(0, dotIndex);
+        // }
+        // return url;
+    }
 }

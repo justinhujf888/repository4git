@@ -4,6 +4,7 @@ export const BLUE_STATE = {
 	 */
 	UNAVAILABLE: {
 		label: '请检查手机蓝牙是否开启',
+		lang:'page.setup.ctx.checkbuleopen',
 		code: -1
 	},
 	/**
@@ -11,6 +12,7 @@ export const BLUE_STATE = {
 	 */
 	SCANING: {
 		label: '正在搜索设备...',
+		lang:'page.setup.ctx.searchdevice',
 		code: 12000
 	},
 	/**
@@ -18,6 +20,7 @@ export const BLUE_STATE = {
 	 */
 	CONNECTSUCCESS: {
 		label: '已连接蓝牙',
+		lang:'page.setup.ctx.blueconnected',
 		code: 200
 	},
 	
@@ -26,6 +29,7 @@ export const BLUE_STATE = {
 	 */
 	DISCONNECT: {
 		label: '蓝牙连接已断开',
+		lang:'page.setup.ctx.bluedisced',
 		code: 500
 	},
 	/**
@@ -33,6 +37,7 @@ export const BLUE_STATE = {
 	 */
 	CONNECTFAILED: {
 		label: '连接失败, 请重试！',
+		lang:'page.setup.ctx.connagain',
 		code: -2
 	},
 	/**
@@ -40,6 +45,7 @@ export const BLUE_STATE = {
 	 */
 	NOLOCATIONPERMISSION: {
 		label: '您关闭了微信位置权限，请前往手机设置页打开权限后重试',
+		lang:'',
 		code: 10007
 	},
 	/**
@@ -47,6 +53,7 @@ export const BLUE_STATE = {
 	 */
 	NOBLUETOOTHPERMISSION: {
 		label: '您关闭了微信蓝牙权限，请前往手机设置页打开权限后重试',
+		lang:'',
 		code: 10006
 	},
 	/**
@@ -54,6 +61,7 @@ export const BLUE_STATE = {
 	 */
 	VERSIONLOW: {
 		label: '当前系统版本过低，请升级后重试！',
+		lang:'',
 		code: 10009
 	},
 	/**
@@ -61,6 +69,7 @@ export const BLUE_STATE = {
 	 */
 	SYSTEMERROR: {
 		label: '系统异常，请稍后重试！',
+		lang:'page.setup.ctx.tryagainsys',
 		code: 10008
 	},
 	/**
@@ -68,6 +77,7 @@ export const BLUE_STATE = {
 	 */
 	READSUSSES: {
 		label: '特征值读取成功',
+		lang:'',
 		code: 10010
 	}
 }

@@ -39,4 +39,6 @@ interface BaseService
     Integer executeEQL(String var1, Map<String, Object> var2) throws Exception;
 
     void addObjectByNativeSQL(Object var1, Map<String, Object> var2) throws Exception;
+
+    void transactionCall(int propagationBehavior,Closure closure) throws Exception;
 }

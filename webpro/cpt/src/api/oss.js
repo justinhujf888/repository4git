@@ -2,18 +2,46 @@ import OSS from 'ali-oss';
 import otherRest from '@/api/dbs/otherRest.js';
 import { Http } from '@/api/http';
 import dayjs from "dayjs";
+import userRest from '@/api/dbs/userRest';
+import dialog from '@/api/uniapp/dialog';
 
 let client = null;
 let signatureInfo = {};
 let aliOssAccessInfo = {};
+let  _tokenExpiredTime = 0;
 
 export default {
-    access() {
+    async access() {
         return new Promise(resolve => {
-            this.buildAliOssAccessInfo((data) => {
-                resolve(data);
+            this.buildAliOssAccessInfo((info) => {
+                resolve(info);
             });
         });
+    },
+    async checkToken() {
+        let times = 0;
+        if (!client) {
+            await this.genClient();
+            times = dayjs(_tokenExpiredTime).diff(new Date());
+            console.log("init times",times,_tokenExpiredTime);
+        }
+        setTimeout(async ()=>{
+            try {
+                if (Date.now() >= _tokenExpiredTime && client) {
+                    const info = await this.access();
+                    client.options.stsToken = info.securityToken;
+                    client.options.accessKeyId = info.accessId;
+                    client.options.accessKeySecret =  info.accessKey;
+                    _tokenExpiredTime = new Date(info.expiration).getTime();
+                    times = dayjs(_tokenExpiredTime).diff(new Date());
+                    console.log("checkToken update token",times,_tokenExpiredTime);
+                }
+            } catch (e) {
+                await this.checkToken();
+            } finally {
+                await this.checkToken();
+            }
+        },times);
     },
     buildAliOssAccessInfo(fun) {
         otherRest.genAliOssAccessInfo((data) => {
@@ -37,41 +65,44 @@ export default {
             }
         });
     },
-    genClient(fun) {
+    async genClient() {
         if (client) {
-            if (fun) {
-                fun(client);
-            }
+            return new Promise(resolve => {
+                resolve(client);
+            });
         } else {
-            this.buildAliOssAccessInfo(() => {
-                client = new OSS({
-                    authorizationV4: true,
-                    region: aliOssAccessInfo.region, //换成你自己的
-                    accessKeyId: aliOssAccessInfo.accessId,
-                    accessKeySecret: aliOssAccessInfo.accessKey,
-                    bucket: aliOssAccessInfo.bucketName,
-                    stsToken: aliOssAccessInfo.securityToken,
-                    refreshSTSToken: async () => {
-                        console.log("refreshSTSToken");
-                        const info = await this.access();
-                        console.log("info",info);
-                        return {
-                            accessKeyId: info.accessId,
-                            accessKeySecret: info.accessKey,
-                            stsToken: info.securityToken
-                        }
-                    },
-                    refreshSTSTokenInterval: 400000
+            return new Promise(resolve => {
+                this.buildAliOssAccessInfo(() => {
+                    client = new OSS({
+                        authorizationV4: true,
+                        region: aliOssAccessInfo.region, //换成你自己的
+                        accessKeyId: aliOssAccessInfo.accessId,
+                        accessKeySecret: aliOssAccessInfo.accessKey,
+                        bucket: aliOssAccessInfo.bucketName,
+                        stsToken: aliOssAccessInfo.securityToken,
+                        refreshSTSToken: async () => {
+                            console.log("refreshSTSToken");
+                            const info = await this.access();
+                            console.log("info",info);
+                            _tokenExpiredTime = new Date(info.expiration).getTime();
+                            return {
+                                accessKeyId: info.accessId,
+                                accessKeySecret: info.accessKey,
+                                stsToken: info.securityToken
+                            }
+                        },
+                        refreshSTSTokenInterval: 400000
+                    });
+                    _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
+                    resolve(client);
                 });
-                if (fun) {
-                    fun(client);
-                }
             });
         }
     },
     buildImgPath(imgPath) {
         if (client) {
-            return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600,'process': 'style/mobile'});
+            return client.signatureUrl(imgPath,{'process': 'style/mobile'});
+            // return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600,'process': 'style/mobile'});
         } else {
             return null;
         }
@@ -107,7 +138,7 @@ export default {
         );
     },
     uploadFileWithClient(file,key,okfun,erfun) {
-        this.genClient(async ()=>{
+        (async ()=>{
             try {
                 let res = await client.put(key,file);
                 console.log("res",res);
@@ -120,6 +151,16 @@ export default {
                     erfun(er);
                 }
             }
-        });
-    }
+        })();
+    },
+    deleteFile(path) {
+        (async (c)=>{
+            try {
+                return await c.delete(path);
+            } catch(er) {
+                return null;
+            }
+        })();
+        // client.delete(path);
+    },
 };

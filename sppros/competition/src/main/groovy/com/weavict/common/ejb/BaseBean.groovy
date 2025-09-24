@@ -7,6 +7,10 @@ import jakarta.persistence.Query;
 import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.PreparedStatement
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.TransactionStatus
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 class BaseBean implements BaseService
 {
@@ -15,6 +19,9 @@ class BaseBean implements BaseService
     protected EntityManager em;
 
     protected DataSource dataSource;
+
+    @Autowired
+    PlatformTransactionManager transactionManager;
 
     BaseBean()
     {
@@ -427,5 +434,23 @@ class BaseBean implements BaseService
     void setEm(EntityManager em)
     {
         this.em = em;
+    }
+
+    @Override
+    void transactionCall(int propagationBehavior, Closure closure) throws Exception
+    {
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        definition.setPropagationBehavior(propagationBehavior);
+        TransactionStatus transactionStatus = transactionManager.getTransaction(definition);
+        try
+        {
+            closure.call();
+            transactionManager.commit(transactionStatus);
+        }
+        catch(Exception e)
+        {
+            transactionManager.rollback(transactionStatus);
+            throw e;
+        }
     }
 }

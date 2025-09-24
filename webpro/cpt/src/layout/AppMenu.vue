@@ -5,12 +5,21 @@ import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
     {
-        label: 'Home',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/manage/index' }]
+        label: '',
+        items: [{ label: '首页', icon: 'pi pi-fw pi-home', to: '/manage/index' }]
     },
     {
-        label: 'CPT',
-        items: [{ label: '评委管理', icon: 'pi pi-fw pi-home', to: '/manage/judge/judgelist' }]
+        label: '',
+        items: [
+            {
+                label: "赛事管理",icon: 'pi pi-fw pi-bars',
+                items: [
+                    { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
+                    { label: '创建子赛事', icon: '', to: '/manage/cpt/master/masterCptSetup' }
+                ]
+            },
+            { label: '评委管理', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' }
+        ]
     },
     {
         label: 'UI Components',

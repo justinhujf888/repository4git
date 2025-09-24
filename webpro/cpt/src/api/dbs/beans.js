@@ -33,7 +33,7 @@ export const Beans = {
             domain: "",
             description: "",
             appId: "",
-            masterCompetitionList: null
+            masterCompetitionList: []
         }
     },
 
@@ -45,8 +45,9 @@ export const Beans = {
             sourceId: "",
             type: -1,
             mediaType: -1,
-            siteCompetition: this.siteCompetition(),
-            createDate: null
+            createDate: null,
+            appId: "",
+            fileFields: null
         }
     },
 
@@ -59,7 +60,8 @@ export const Beans = {
             sourceId: "",
             description: "",
             createDate: null,
-            headImgUrl: ""
+            headImgUrl: "",
+            appId: ""
         }
     },
 
@@ -73,9 +75,9 @@ export const Beans = {
             otherFields: null,
             lat: "",
             lng: "",
-            guige: "",
+            guiGe: this.guiGe(),
+            guiGeId: "",
             buyer: this.buyer(),
-            competition: this.competition(),
             createDate: null,
             appId: "",
             status: -1,
@@ -107,14 +109,24 @@ export const Beans = {
 		return {
 			id: "",
 			name: "",
-            guigeFields: null,
             status: -1,
             description: "",
             appId: "",
             masterCompetition: this.masterCompetition(),
-            workList: []
+            guiGeList: []
 		}
 	},
+
+    guiGe() {
+        return {
+            id: "",
+            name: "",
+            guigeFields: null,
+            appId: "",
+            competition: this.competition(),
+            workList: []
+        }
+    },
 
     masterCompetition() {
         return {
@@ -122,11 +134,12 @@ export const Beans = {
             name: "",
             pxBiaozun: "",
             setupFields: null,
+            cptDate: null,
             beginDate: null,
             pingShenDate: null,
             endDate: null,
             createDate: null,
-            description: "",
+            description: null,
             appId: "",
             siteCompetition: this.siteCompetition(),
             competitionList: []

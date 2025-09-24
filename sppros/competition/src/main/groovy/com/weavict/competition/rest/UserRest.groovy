@@ -6,6 +6,7 @@ import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.BuyerAppInfo
 import com.weavict.competition.entity.BuyerAppInfoPK
 import com.weavict.competition.entity.Judge
+import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.module.UserBean
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -130,18 +131,41 @@ class UserRest extends BaseRest
         try
         {
             ObjectMapper objectMapper = this.buildObjectMapper();
-            Map map = this.objToBean(query.queryJudge,Map.class,objectMapper);
             return objectMapper.writeValueAsString(
                     ["status":"OK",
-                     "judgePageUtil":({
+                     "data":({
                          userBean.newQueryUtils(false).masterTable("Judge",null,null)
-                                .where("name like :name",["name":"%${map.name}%".toString()],null,{return !(map.name in [null,""])})
-                                 .where("engName like :engName",["engName":"%${map.engName}%".toString()],null,{return !(map.engName in [null,""])})
-                                 .where("phone like :phone",["phone":"%${map.phone}%".toString()],null,{return !(map.phone in [null,""])})
+                                 .where("appId = :appId",["appId":query.appId],null,{return true})
+                                .where("name like :name",["name":"%${query.name}%".toString()],"and",{return !(query.name in [null,""])})
+                                 .where("engName like :engName",["engName":"%${query.engName}%".toString()],"and",{return !(query.engName in [null,""])})
+                                 .where("phone like :phone",["phone":"%${query.phone}%".toString()],"and",{return !(query.phone in [null,""])})
                                 .orderBy("createDate desc")
                                 .pageLimit(query.pageSize as int,query.currentPage as int,"id").buildSql().run();
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateJudge")
+    String updateJudge(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            Judge judge = this.objToBean(query.judge, Judge.class,null);
+            if (judge.temp==true)
+            {
+                judge.password = userBean.buildPasswordCode(judge.phone);
+            }
+            userBean.updateTheObject(judge);
+            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {

@@ -29,6 +29,10 @@ class SiteCompetition extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String appId;
 
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> setupFields;
+
     @OneToMany(mappedBy="siteCompetition",fetch = FetchType.LAZY)
     List<MasterCompetition> masterCompetitionList;
 
@@ -69,6 +73,13 @@ class SiteWorkItem extends BEntity implements Serializable, IEntity
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
+    @Column(length=30)
+    String appId;
+
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> fileFields;
+
     void cancelLazyEr()
     {
 
@@ -106,6 +117,9 @@ class OrgHuman extends BEntity implements Serializable, IEntity
     @Column(length=150)
     String headImgUrl;
 
+    @Column(length=30)
+    String appId;
+
     void cancelLazyEr()
     {
 
@@ -128,8 +142,9 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @Column(length=50)
     String name;
 
-    @Column(length=350)
-    String description;
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> description;
 
     @Column(length=30)
     String appId;
@@ -140,6 +155,9 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @Column(length=1000,columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> setupFields;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date cptDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date beginDate;
@@ -180,10 +198,6 @@ class Competition extends BEntity implements Serializable, IEntity
     @Column(length=50)
     String name;
 
-    @Column(length=1000,columnDefinition = "jsonb")
-    @JdbcTypeCode(SqlTypes.JSON)
-    Map<String,Object> guigeFields;
-
     @Column(length=350)
     String description;
 
@@ -198,11 +212,45 @@ class Competition extends BEntity implements Serializable, IEntity
     MasterCompetition masterCompetition;
 
     @OneToMany(mappedBy="competition",fetch = FetchType.LAZY)
-    List<Work> workList;
+    List<GuiGe> guiGeList;
 
     void cancelLazyEr()
     {
         this.masterCompetition?.cancelLazyEr();
+        this.guiGeList = null;
+    }
+}
+
+@Table
+@Entity
+//规格
+class GuiGe extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String id;
+
+    @Column(length=50)
+    String name;
+
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> guigeFields;
+
+    @Column(length=30)
+    String appId;
+
+    @ManyToOne(fetch=FetchType.EAGER)
+    Competition competition;
+
+    @OneToMany(mappedBy="guiGe",fetch = FetchType.LAZY)
+    List<Work> workList;
+
+    void cancelLazyEr()
+    {
+        this.competition?.cancelLazyEr();
         this.workList = null;
     }
 }
@@ -227,9 +275,6 @@ class Work extends BEntity implements Serializable, IEntity
     @Column(length=20)
     String lng;
 
-    @Column(length=30)
-    String guige;
-
     @Column(length=300)
     String gousiDescription;
 
@@ -253,11 +298,15 @@ class Work extends BEntity implements Serializable, IEntity
     @Column(length=1)
     byte status;
 
-    @ManyToOne(fetch=FetchType.EAGER)
-    Competition competition;
-
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
+
+    @ManyToOne(fetch=FetchType.EAGER)
+    GuiGe guiGe;
+
+//    如果规格是多层级，那么这个就代表具体的那个层级ID，而guiGe对象表示最上层的。
+    @Column(length=30)
+    String guiGeId;
 
     @OneToMany(mappedBy="work",fetch = FetchType.LAZY)
     List<WorkItem> workItemList;
@@ -265,7 +314,7 @@ class Work extends BEntity implements Serializable, IEntity
     void cancelLazyEr()
     {
         this.buyer?.cancelLazyEr();
-        this.competition?.cancelLazyEr();
+        this.guiGe?.cancelLazyEr();
         this.workItemList = null;
     }
 }
