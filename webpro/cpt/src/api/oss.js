@@ -11,7 +11,7 @@ let aliOssAccessInfo = {};
 let  _tokenExpiredTime = 0;
 
 export default {
-    access() {
+    async access() {
         return new Promise(resolve => {
             this.buildAliOssAccessInfo((info) => {
                 resolve(info);
@@ -19,11 +19,12 @@ export default {
         });
     },
     async checkToken() {
+        let times = 0;
         if (!client) {
             await this.genClient();
+            times = dayjs(_tokenExpiredTime).diff(new Date());
+            console.log("init times",times,_tokenExpiredTime);
         }
-        let times = dayjs(_tokenExpiredTime).diff(new Date());
-        console.log("init times",times,_tokenExpiredTime);
         setTimeout(async ()=>{
             try {
                 if (Date.now() >= _tokenExpiredTime && client) {
@@ -36,7 +37,7 @@ export default {
                     console.log("checkToken update token",times,_tokenExpiredTime);
                 }
             } catch (e) {
-                console.log(e);
+                await this.checkToken();
             } finally {
                 await this.checkToken();
             }

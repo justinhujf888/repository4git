@@ -8,7 +8,7 @@
             <DataTable :value="siteOrgHumanList" header="Flex Scroll" resizableColumns showGridlines stripedRows :pt="
                 {
                     table:{
-                        class:'min-w-full mt-5'
+                        class:'min-w-full mt-5 w-2/3'
                     },
                     column:{
                         bodyCell:{class:'!text-center'},
@@ -26,7 +26,7 @@
                 <Column field="name" header="姓名" class="w-36"></Column>
                 <Column header="简介">
                     <template #body="{data}">
-                        <p class="truncate w-96">{{data.description}}</p>
+                        <p class="truncate w-full text-start text-wrap">{{data.description}}</p>
                     </template>
                 </Column>
                 <!--            <Column field="engName" header="Eng Name"></Column>-->

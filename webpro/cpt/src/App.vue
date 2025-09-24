@@ -20,11 +20,6 @@ const myLoading = useTemplateRef("myLoading");
 
 var source = null;
 onMounted(() => {
-    if (lodash.includes(window.location.href,"manage")) {
-        document.documentElement.classList.toggle('app-dark');
-    } else {
-        document.documentElement.classList.remove('app-dark');
-    }
     oss.checkToken();
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
     Config.getConfig();

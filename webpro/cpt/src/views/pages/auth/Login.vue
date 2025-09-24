@@ -3,24 +3,28 @@
     <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-                <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                     <div class="text-center mb-8">
                         <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">{{Config.appName}}</div>
                         <span class="text-muted-color font-medium">登录</span>
                     </div>
 
-                    <Form v-slot="$form" :resolver @submit="onFormSubmit">
-                        <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">手机号码</label>
-                        <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-4" v-model="buyer.phone" />
-                        <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
+                    <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
+                        <IftaLabel>
+                            <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium">手机号码</label>
+                            <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem]" v-model="buyer.phone" />
+                            <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
+                        </IftaLabel>
 
-                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2 mt-4">密码</label>
-                        <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
-                        <div class="flex items-center justify-end mt-2 mb-8 gap-8">
-                            <router-link :to="{name:'forgotpw'}">
-                                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">忘记密码</span>
-                            </router-link>
-                        </div>
+                        <IftaLabel>
+                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">密码</label>
+                            <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" fluid :feedback="false"></Password>
+                            <div class="flex items-center justify-end mt-2 mb-8 gap-8">
+                                <router-link :to="{name:'forgotpw'}">
+                                    <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">忘记密码</span>
+                                </router-link>
+                            </div>
+                        </IftaLabel>
 
                         <div class="row mt-12">
                             <Button type="submit" label="登录" class="w-full" _as="router-link" _to="/"></Button>

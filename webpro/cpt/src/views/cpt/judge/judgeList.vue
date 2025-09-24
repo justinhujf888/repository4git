@@ -9,7 +9,7 @@
                 <DataTable :value="judgePageUtil.content" header="Flex Scroll" resizableColumns showGridlines stripedRows paginator :rows="Config.pageSize" :totalRecords="judgePageUtil.totalElements" :first="judgePageUtil.number" :lazy="true" tableStyle="min-width: 50rem" paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport" currentPageReportTemplate="【{first} - {last}】  记录总数：{totalRecords}" :pageLinkSize="5" @page="updateFirst" :pt="
             {
                 table:{
-                    class:'min-w-full mt-5'
+                    class:'min-w-full mt-5 !w-2/3'
                 },
                 column:{
                     bodyCell:{class:'!text-center'},
@@ -31,7 +31,7 @@
                     <!--            <Column field="engName" header="Eng Name"></Column>-->
                     <Column header="简介">
                         <template #body="{data}">
-                            <p class="truncate w-80">{{data.description}}</p>
+                            <p class="truncate w-full text-start text-wrap">{{data.description}}</p>
                         </template>
                     </Column>
                     <Column class="w-16 !text-end">
