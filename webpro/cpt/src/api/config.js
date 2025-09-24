@@ -1,9 +1,13 @@
+import { useStorage } from '@vueuse/core';
+import util from "@/api/util";
+
 export const Config = {
     //单页应用的路由模式
     vueRouterMode: 'history',
 
-    appId: '001',
-    appName: '观赏鱼线上竞赛平台',
+    appId: window.location.host,
+    appName: null,
+    domain: null,
     appVersion: '0.2',
 
     //接口地址 http://localhost:8080/shop
@@ -13,5 +17,15 @@ export const Config = {
     desKey: 'vikehoo_public_key_%&%^*&^*',
     txMapKey: 'OWYBZ-QUQ6F-MU6J4-JYBLN-LL7E7-CNBE6',
 
-    pageSize: 30
+    pageSize: 30,
+
+    getConfig() {
+        if (useStorage("siteCpt").value) {
+            let siteInfo = JSON.parse(util.decryptStoreInfo(useStorage("siteCpt").value));
+            console.log("siteInfo",siteInfo);
+            this.appId = siteInfo.id;
+            this.appName = siteInfo.name;
+            this.domain = siteInfo.domain;
+        }
+    }
 };
