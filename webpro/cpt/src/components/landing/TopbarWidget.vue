@@ -31,7 +31,7 @@
                 </a>
             </li>
             <li v-if="userId">
-                <a @click="smoothScroll('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                <a @click="page.navigateTo('myWorks',null)" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                     <span>用户中心</span>
                 </a>
             </li>

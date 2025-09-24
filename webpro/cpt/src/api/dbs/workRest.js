@@ -113,5 +113,8 @@ export default {
     },
     deleteGuiGe(ds,onfun) {
         Http.callHttpFunction('/r/work/deleteGuiGe',ds,onfun);
+    },
+    qyWorks(ds,onfun) {
+        Http.callHttpFunction('/r/work/qyWorks',ds,onfun);
     }
 }

@@ -7,6 +7,22 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
+            path: '/user',
+            component: AppLayout,
+            children: [
+                {
+                    path: '/user/myWorks',
+                    name: 'myWorks',
+                    component: () => import('@/views/user/work/myWorks.vue')
+                },
+                {
+                    path: '/user/messages',
+                    name: 'myMessages',
+                    component: () => import('@/views/user/messages.vue')
+                },
+            ]
+        },
+        {
             path: '/manage',
             component: AppLayout,
             children: [
@@ -187,7 +203,7 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
     // ...
-    if (lodash.includes(to.href,"manage")) {
+    if (lodash.includes(to.href,"/manage/")) {
         document.documentElement.classList.add('app-dark');
     } else {
         document.documentElement.classList.remove('app-dark');

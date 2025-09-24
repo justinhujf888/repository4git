@@ -439,4 +439,39 @@ class WorkRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyWorks")
+    String qyWorks(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         List<Work> workList = workService.newQueryUtils(false).masterTable(Work.class.simpleName,null,null)
+                                 .where("appId = :appId",["appId":query.appId],null,{return true})
+                                 .where("guiGe.id = :guiGeId",["guiGeId":query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
+                                 .where("guiGeId = :guiGeJsonId",["guiGeJsonId":query.guiGeJsonId],"and",{return !(query.guiGeJsonId in [null,""])})
+                                    .where("buyer.phone=:userId",["userId":query.userId],"and",{return !(query.userId in [null,""])})
+                                    .where("guiGe.competition.masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+                                 .orderBy("createDate")
+                                 .buildSql().run().content;
+                         for(Work work in workList)
+                         {
+                             work.cancelLazyEr();
+                         }
+                         return workList;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

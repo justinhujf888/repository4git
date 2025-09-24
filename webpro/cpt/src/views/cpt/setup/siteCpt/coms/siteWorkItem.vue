@@ -29,7 +29,7 @@
     </animationPage>
 
     <animationPage ref="updateSiteZuoPingWorkitemPage" class="w-full absolute top-8 z-40">
-        <updateSiteWorkitem v-if="siteZuoPingWorkItemList?.length>0" :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
+        <updateSiteWorkitem v-if="siteZuoPingWorkItemList?.length>=0" :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
     </animationPage>
 </template>
 

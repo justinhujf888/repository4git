@@ -10,7 +10,7 @@
     </animationPage>
 
     <animationPage ref="updateSiteZhuTiWorkitemPage" class="w-full absolute top-8 z-40">
-        <updateSiteWorkitem v-if="siteZhuTiWorkItemList?.length > 0" :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhuti`" :maxFileSize="2097152" :fileLimit="5" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
+        <updateSiteWorkitem v-if="siteZhuTiWorkItemList?.length >= 0" :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhuti`" :maxFileSize="2097152" :fileLimit="5" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
     </animationPage>
 </template>
 
