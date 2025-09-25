@@ -140,6 +140,7 @@ class WorkRest extends BaseRest
         }
     }
 
+//    暂时没用，使用的是qyWork
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
@@ -266,15 +267,18 @@ class WorkRest extends BaseRest
                                  .where("name = :name",["name":query.name],"and",{return query.name!=null})
 //                                 .orderBy("id")
                                  .buildSql().run().content;
-                         for(Competition competition in competitionList)
+                         if (query.shiQyGuiGeList!=null && query.shiQyGuiGeList as boolean)
                          {
-                             competition.cancelLazyEr();
-                             competition.guiGeList = workService.newQueryUtils(false).masterTable(GuiGe.class.simpleName,null,null)
-                                .where("competition.id = :competitionId",["competitionId":competition.id],null,{return true})
-                                .buildSql().run().content;
-                             for(GuiGe guiGe in competition.guiGeList)
+                             for(Competition competition in competitionList)
                              {
-                                 guiGe.cancelLazyEr();
+                                 competition.cancelLazyEr();
+                                 competition.guiGeList = workService.newQueryUtils(false).masterTable(GuiGe.class.simpleName,null,null)
+                                         .where("competition.id = :competitionId",["competitionId":competition.id],null,{return true})
+                                         .buildSql().run().content;
+                                 for(GuiGe guiGe in competition.guiGeList)
+                                 {
+                                     guiGe.cancelLazyEr();
+                                 }
                              }
                          }
                          return competitionList;
