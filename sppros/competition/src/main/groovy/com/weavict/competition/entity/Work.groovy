@@ -336,6 +336,9 @@ class WorkItem extends BEntity implements Serializable, IEntity
     //	0:image；1:video；
     byte mediaType;
 
+    //	0:原退；1:全景主图；2:全景其它角度;3:其它细节;
+    byte type;
+
     @ManyToOne(fetch=FetchType.EAGER)
     Work work;
 
@@ -344,6 +347,10 @@ class WorkItem extends BEntity implements Serializable, IEntity
 
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
+
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> mediaFields;
 
     void cancelLazyEr()
     {

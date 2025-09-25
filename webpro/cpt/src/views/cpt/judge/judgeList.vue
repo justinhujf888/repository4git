@@ -9,7 +9,7 @@
                 <DataTable :value="judgePageUtil.content" header="Flex Scroll" resizableColumns showGridlines stripedRows paginator :rows="Config.pageSize" :totalRecords="judgePageUtil.totalElements" :first="judgePageUtil.number" :lazy="true" tableStyle="min-width: 50rem" paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport" currentPageReportTemplate="【{first} - {last}】  记录总数：{totalRecords}" :pageLinkSize="5" @page="updateFirst" :pt="
             {
                 table:{
-                    class:'min-w-full mt-5 !w-2/3'
+                    class:'min-w-full mt-5 !w-full'
                 },
                 column:{
                     bodyCell:{class:'!text-center'},

@@ -91,9 +91,11 @@ export const Beans = {
 			id: "",
 			path: "",
             mediaType: -1,
+            type: -1,
             exifInfo: "",
             work: this.work(),
-            createDate: null
+            createDate: null,
+            mediaFields: null
 		}
 	},
 

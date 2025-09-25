@@ -58,7 +58,7 @@ onMounted(() => {
             }
         }
     });
-    workRest.qyCompetitionList({appId:host,masterCompetitionId:"localhost"},(res)=>{
+    workRest.qyCompetitionList({appId:host,masterCompetitionId:"localhost",shiQyGuiGeList:true},(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 competitionList.value = res.data;
