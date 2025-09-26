@@ -116,5 +116,8 @@ export default {
     },
     qyWorks(ds,onfun) {
         Http.callHttpFunction('/r/work/qyWorks',ds,onfun);
+    },
+    buildCacheCpt(ds,onfun) {
+        Http.callHttpFunction('/r/work/buildCacheCpt',ds,onfun);
     }
 }

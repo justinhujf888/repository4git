@@ -63,9 +63,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         SiteCompetition siteCompetition = workService.findObjectById(SiteCompetition.class,query.id);
-                         siteCompetition?.cancelLazyEr();
-                         return siteCompetition;
+                         return workService.gainSiteCompetition(query);
                      }).call()
                     ]);
         }
@@ -88,12 +86,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         workService.newQueryUtils(false).masterTable("SiteWorkItem",null,null)
-                         .where("sourceId=:sourceId",["sourceId":query.sourceId],null,{return true})
-                         .where("sourceType=:sourceType",["sourceType":query.sourceType as byte],"and",{return true})
-                         .where("type=:type",["type":query.type as byte],"and",{return true})
-                         .orderBy("createDate")
-                         .buildSql().run().content;
+                         return workService.qySiteWorkItemList(query);
                      }).call()
                     ]);
         }
@@ -178,16 +171,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return workService.newQueryUtils(false,false).masterTable(OrgHuman.class.name,"j",null)
-                                .where("j.appId = :appId",["appId":query.appId],null,{return true})
-                                 .where("j.sourceType = :sourceType",["sourceType":query.sourceType],"and",{return true})
-                                 .where("j.sourceId = :sourceId",["sourceId":query.sourceId],"and",{return true})
-                                 .where("j.name like :name",["name":"%${query.name}%"],"and",{return !(query.name in [null,""])})
-                                 .where("j.engName like :engName",["engName":"%${query.engName}%"],"and",{return !(query.engName in [null,""])})
-                                .orderBy("createDate")
-                                .buildSql().run().content;
-//                         FileWriter writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/orgHuman.json""".toString(),"utf8");
-//                         writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString(orgHumanList));
+                         return workService.qyOrgHumanList(query);
                      }).call()
                     ]);
         }
@@ -228,17 +212,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         List<MasterCompetition> masterCompetitionList = workService.newQueryUtils(false).masterTable("MasterCompetition",null,null)
-                            .where("appId = :appId",["appId":query.appId],null,{return true})
-                            .where("siteCompetition.id = :siteCompetitionId",["siteCompetitionId":query.siteCompetitionId],"and",{return true})
-                            .where("cptDate = :cptDate",["cptDate":query.cptDate],"and",{return query.cptDate!=null})
-                            .orderBy("cptDate,beginDate")
-                                 .buildSql().run().content;
-                         for(MasterCompetition masterCompetition in masterCompetitionList)
-                         {
-                             masterCompetition.cancelLazyEr();
-                         }
-                         return masterCompetitionList;
+                         return workService.qyMasterSiteCompetitionList(query);
                      }).call()
                     ]);
         }
@@ -261,27 +235,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         List<Competition> competitionList = workService.newQueryUtils(false).masterTable(Competition.class.simpleName,null,null)
-                                 .where("appId = :appId",["appId":query.appId],null,{return true})
-                                 .where("masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return true})
-                                 .where("name = :name",["name":query.name],"and",{return query.name!=null})
-//                                 .orderBy("id")
-                                 .buildSql().run().content;
-                         if (query.shiQyGuiGeList!=null && query.shiQyGuiGeList as boolean)
-                         {
-                             for(Competition competition in competitionList)
-                             {
-                                 competition.cancelLazyEr();
-                                 competition.guiGeList = workService.newQueryUtils(false).masterTable(GuiGe.class.simpleName,null,null)
-                                         .where("competition.id = :competitionId",["competitionId":competition.id],null,{return true})
-                                         .buildSql().run().content;
-                                 for(GuiGe guiGe in competition.guiGeList)
-                                 {
-                                     guiGe.cancelLazyEr();
-                                 }
-                             }
-                         }
-                         return competitionList;
+                         return workService.qyCompetitionList(query);
                      }).call()
                     ]);
         }
@@ -471,6 +425,59 @@ class WorkRest extends BaseRest
                          return workList;
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/buildCacheCpt")
+    String buildCacheCpt(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            FileWriter writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/siteInfo.json""".toString(),"utf8");
+            writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
+                    siteCompetition:({
+                        SiteCompetition siteCompetition = workService.gainSiteCompetition([appId:query.appId,id:query.siteCompetitionId]);
+                        siteCompetition.cancelLazyEr();
+                        return siteCompetition;
+                    }).call(),
+                    siteZuTiMediaList:({
+                        return workService.qySiteWorkItemList(appId:query.appId,sourceType:0 as byte,sourceId:query.appId,type:0 as byte);
+                    }).call(),
+                    siteZuoPingInfo:({
+                        return null;
+                    }).call(),
+                    siteOrgHumanList:({
+                        return workService.qyOrgHumanList(appId:query.appId,sourceType: 0 as byte,sourceId: query.appId);
+                    }).call()
+            ]));
+
+            writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/masterCompetition.json""".toString(),"utf8");
+            writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
+                     masterCompetitionInfo:({
+                        MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
+                        masterCompetition.competitionList = workService.qyCompetitionList([appId:query.appId,masterCompetitionId:masterCompetition.id,shiQyGuiGeList:true]);
+                        for(Competition competition in masterCompetition.competitionList)
+                        {
+                            competition.masterCompetition = null;
+                            for (GuiGe guiGe in competition.guiGeList)
+                            {
+                                guiGe.cancelLazyEr();
+                                guiGe.competition = null;
+                            }
+                        }
+                        masterCompetition.siteCompetition = null;
+                        return masterCompetition;
+                    }).call()
+            ]));
+            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {

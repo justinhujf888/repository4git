@@ -65,6 +65,11 @@ const router = createRouter({
                     component: () => import('@/views/cpt/judge/judgeList.vue')
                 },
                 {
+                    path: '/manage/cpt/system/buildCache',
+                    name: 'buildCache',
+                    component: () => import('@/views/cpt/setup/system/buildCache.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

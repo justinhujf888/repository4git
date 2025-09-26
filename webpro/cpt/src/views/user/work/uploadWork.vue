@@ -73,7 +73,7 @@ let mainPage = null;
 let mePage = null;
 let obj = null;
 
-onMounted(() => {console.log(fileUpload.value);
+onMounted(() => {
     menuItems.value = [
         {label:'返回我的参赛作品',click:()=>{obj.returnFunction(obj);mePage.close(mainPage);}}
     ];
