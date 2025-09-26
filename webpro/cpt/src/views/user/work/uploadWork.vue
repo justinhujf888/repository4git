@@ -1,7 +1,7 @@
 <template>
-    <div class="card !p-1">
+    <div class="card !p-2">
         <routerPath :home="null" :items="menuItems"/>
-        <h1>{{competition?.name}}</h1>
+        <h2>{{competition?.name}}</h2>
         <div class="start overflow-hidden">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-2">
@@ -30,11 +30,11 @@
                     </IftaLabel>
                     <IftaLabel>
                         <label for="gousiDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品介绍</label>
-                        <Textarea v-model="work.gousiDescription" autoResize rows="15" class="w-full" />
+                        <Textarea name="gousiDescription" v-model="work.gousiDescription" autoResize rows="15" class="w-full" />
                     </IftaLabel>
                     <IftaLabel>
                         <label for="myMeanDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品理念</label>
-                        <Textarea v-model="work.myMeanDescription" autoResize rows="15" class="w-full" />
+                        <Textarea name="myMeanDescription" v-model="work.myMeanDescription" autoResize rows="15" class="w-full" />
                     </IftaLabel>
                     <div class="row mt-12 center gap-4">
                         <Button severity="warn" label="暂时保存" class="px-8" @click="cancel()"></Button>
