@@ -3,7 +3,7 @@
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">设置系列赛事作品</span>
-                <Button label="系列赛事作品设置" @click="updateSiteZuoPingWorkitemPage.open(mainPage)"/>
+                <Button label="系列赛事作品设置" @click="refUpdateSiteWorkitem.init(siteZuoPingWorkItemList);updateSiteZuoPingWorkitemPage.open(mainPage)"/>
             </div>
             <priviewImage v-model="siteZuoPingWorkItemList"/>
             <!--        <DataView :value="siteZhuTiWorkItemList" layout="grid" :pt="{-->
@@ -29,7 +29,7 @@
     </animationPage>
 
     <animationPage ref="updateSiteZuoPingWorkitemPage" class="w-full absolute top-8 z-40">
-        <updateSiteWorkitem v-if="siteZuoPingWorkItemList?.length>=0" :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
+        <updateSiteWorkitem ref="refUpdateSiteWorkitem" :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
     </animationPage>
 </template>
 
@@ -44,6 +44,7 @@ import workRest from '@/api/dbs/workRest';
 
 const mainPage = useTemplateRef("mainPage");
 
+const refUpdateSiteWorkitem = useTemplateRef("refUpdateSiteWorkitem");
 const updateSiteZuoPingWorkitemPage = useTemplateRef("updateSiteZuoPingWorkitemPage");
 
 const siteZuoPingWorkItemList = ref([]);

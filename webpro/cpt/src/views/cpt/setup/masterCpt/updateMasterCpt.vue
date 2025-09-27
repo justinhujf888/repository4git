@@ -115,6 +115,8 @@ const init = (_mainPage,_mePage,_obj)=>{
     obj = _obj;
     if (obj.process=="u") {
         masterCompetition.value = obj.data;
+    } else if (obj.process=="c") {
+        masterCompetition.value = Beans.masterCompetition();
     }
 }
 

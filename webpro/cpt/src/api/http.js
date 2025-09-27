@@ -4,6 +4,14 @@ import dialog from '@/api/uniapp/dialog';
 import util from "@/api/util";
 
 export const Http = {
+    fetchJson(url) {
+        return axios({
+            baseURL:url,
+            method: 'GET'
+        }).then((res) => {
+            return res.data;
+        });
+    },
     httpclient_json(url, method, ds, ptype, returnfun, errorfun, loading) {
         // console.log(ds);
         if (loading) {

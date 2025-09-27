@@ -49,8 +49,9 @@ const workList = ref([]);
 const competitionList = ref([]);
 
 let host = inject("domain");
+let masterCompetition = null;
 
-onMounted(() => {
+onMounted(async () => {
     workRest.qyWorks({appId:host,userId:userId.value,masterCompetitionId:"localhost"},(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
@@ -58,13 +59,15 @@ onMounted(() => {
             }
         }
     });
-    workRest.qyCompetitionList({appId:host,masterCompetitionId:"localhost",shiQyGuiGeList:true},(res)=>{
-        if (res.status=="OK") {
-            if (res.data!=null) {
-                competitionList.value = res.data;
-            }
-        }
-    });
+    // workRest.qyCompetitionList({appId:host,masterCompetitionId:"localhost",shiQyGuiGeList:true},(res)=>{
+    //     if (res.status=="OK") {
+    //         if (res.data!=null) {
+    //             competitionList.value = res.data;
+    //         }
+    //     }
+    // });
+    masterCompetition = (await workRest.gainCache8MasterCompetitionInfo()).masterCompetitionInfo;
+    competitionList.value = masterCompetition.competitionList;
 });
 
 function showCompetitionList(event) {

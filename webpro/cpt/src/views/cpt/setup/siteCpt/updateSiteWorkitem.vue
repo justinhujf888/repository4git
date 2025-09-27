@@ -1,6 +1,6 @@
 <template>
     <div class="p-2 card w-full h-auto relative">
-        <myFileUpload :files="files" :filePreKey="filePreKey" :maxFileSize="maxFileSize" :fileLimit="fileLimit" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload" @deleteFile="deleteFile" @cancel="cancelUpload"/>
+        <myFileUpload ref="refMyFileUpload" :files="files" :filePreKey="filePreKey" :maxFileSize="maxFileSize" :fileLimit="fileLimit" fileAccept="image/*" :obj="{mediaType:0,appId:Config.appId}" @allFilesUploaded="filesUpload" @theFileUploaded="theFileUpload" @deleteFile="deleteFile" @cancel="cancelUpload"/>
 <!--        <Button label="退出" severity="danger" class="!absolute !right-2 !top-2 !rounded-2xl" @click="callClose"/>-->
     </div>
 </template>
@@ -22,6 +22,7 @@ const callClose = ()=>{
   emit("callClose");
 };
 
+const refMyFileUpload = useTemplateRef("refMyFileUpload");
 const files = ref(props.files ? props.files : []);
 let sourceType = props.sourceType ? props.sourceType : 0;
 let type = props.type ? props.type : 0;
@@ -82,6 +83,13 @@ function deleteFile(file,index,obj) {
 function cancelUpload() {
     callClose();
 }
+
+function init(_files) {
+    files.value = _files;
+    refMyFileUpload.value.init(_files,null,null,null,null,{});
+}
+
+defineExpose({init});
 </script>
 
 <style scoped lang="scss">

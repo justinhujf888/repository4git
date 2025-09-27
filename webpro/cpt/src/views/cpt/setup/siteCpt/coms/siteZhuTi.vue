@@ -3,14 +3,14 @@
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">设置赛事主题图</span>
-                <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="updateSiteZhuTiWorkitemPage.open(mainPage)"/>
+                <Button label="主题图设置" _click="Page.navigateTo('updateSiteWorkitem',null)" @click="refUpdateSiteWorkitem.init(siteZhuTiWorkItemList);updateSiteZhuTiWorkitemPage.open(mainPage)"/>
             </div>
             <priviewImage v-model="siteZhuTiWorkItemList"/>
         </div>
     </animationPage>
 
     <animationPage ref="updateSiteZhuTiWorkitemPage" class="w-full absolute top-8 z-40">
-        <updateSiteWorkitem v-if="siteZhuTiWorkItemList?.length >= 0" :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhuti`" :maxFileSize="2097152" :fileLimit="5" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
+        <updateSiteWorkitem ref="refUpdateSiteWorkitem" :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhuti`" :maxFileSize="2097152" :fileLimit="5" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
     </animationPage>
 </template>
 
@@ -25,6 +25,7 @@ import workRest from '@/api/dbs/workRest';
 
 const mainPage = useTemplateRef("mainPage");
 
+const refUpdateSiteWorkitem = useTemplateRef("refUpdateSiteWorkitem");
 const updateSiteZhuTiWorkitemPage = useTemplateRef("updateSiteZhuTiWorkitemPage");
 
 const siteZhuTiWorkItemList = ref([]);

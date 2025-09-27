@@ -119,5 +119,11 @@ export default {
     },
     buildCacheCpt(ds,onfun) {
         Http.callHttpFunction('/r/work/buildCacheCpt',ds,onfun);
+    },
+    async gainCache8MasterCompetitionInfo() {
+        return Http.fetchJson(`${Config.siteJson}/masterCompetition.json`);
+        // return fetch(`${Config.siteJson}/masterCompetition.json`)
+        //     .then(response => response.json())
+        //     .then(data => {return data});
     }
 }
