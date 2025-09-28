@@ -4,42 +4,46 @@
         <h2>{{competition?.name}}</h2>
         <div class="start overflow-hidden">
             <div class="col center w-full p-2">
-                <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-2">
-                    <IftaLabel>
-                        <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">分组</label>
-                        <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" placeholder="选择分组" fluid />
-                    </IftaLabel>
-                    <IftaLabel>
+                <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">
+                    <FloatLabel variant="on">
+                        <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
+                        <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid />
+                    </FloatLabel>
+                    <FloatLabel variant="on">
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品名称</label>
-                        <InputText name="name" placeholder="请输入作品名称" class="w-full md:w-[30rem] mb-4" v-model="work.name" />
-                    </IftaLabel>
-                    <IftaLabel>
+                        <InputText id="name" class="w-full md:w-[30rem]" v-model="work.name" />
+                    </FloatLabel>
+                    <Fieldset legend="上传作品文件">
                         <FileUpload v-show="false" ref="fileUpload" mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                         <div class="row flex-wrap gap-2">
                             <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workItems" :key="index" @click="uploadButtonClick(item)">
                                 <Image :src="item.file?.objectURL" class="absolute top-0 left-0 z-10"/>
-                                <div class="absolute top-5 left-0 mix-blend-difference z-20 text-white">
+                                <div class="absolute top-5 left-0 mix-blend-difference z-20 text-white col">
                                     <span class="text-xl">{{item.title}}</span>
                                     <span class="text-sm">{{item.text}}</span>
                                 </div>
                             </Button>
                         </div>
-                    </IftaLabel>
-                    <IftaLabel>
+                    </Fieldset>
+                    <FloatLabel variant="on">
 
-                    </IftaLabel>
-                    <IftaLabel>
+                    </FloatLabel>
+                    <FloatLabel variant="on">
                         <label for="gousiDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品介绍</label>
                         <Textarea name="gousiDescription" v-model="work.gousiDescription" autoResize rows="8" class="w-full" />
-                    </IftaLabel>
-                    <IftaLabel>
+                    </FloatLabel>
+                    <FloatLabel variant="on">
                         <label for="myMeanDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品理念</label>
                         <Textarea name="myMeanDescription" v-model="work.myMeanDescription" autoResize rows="8" class="w-full" />
-                    </IftaLabel>
-                    <IftaLabel v-for="(item,index) in masterCompetition.setupFields?.data" :key="index">
+                    </FloatLabel>
+                    <FloatLabel variant="on" v-for="(item,index) in masterCompetition.tempMap?.setupFields?.data" :key="index">
                         <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
                         <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
-                    </IftaLabel>
+                    </FloatLabel>
+                    <FloatLabel variant="on" v-for="(item,index) in masterCompetition.setupFields?.data" :key="index">
+                        <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
+                        <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
+                    </FloatLabel>
                     <div class="row mt-12 center gap-4">
                         <Button severity="warn" label="暂时保存" class="px-8" @click="cancel()"></Button>
                         <Button type="submit" label="提交" class="px-8" _as="router-link" _to="/"></Button>

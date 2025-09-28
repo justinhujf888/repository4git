@@ -1,6 +1,7 @@
 import { Http } from '@/api/http.js';
 import dialog from "/src/api/uniapp/dialog.js";
 import { Config } from '@/api/config.js';
+import {Beans} from "@/api/dbs/beans";
 
 export default {
     setupSiteCompetition(siteCompetition, onfun) {
@@ -121,9 +122,12 @@ export default {
         Http.callHttpFunction('/r/work/buildCacheCpt',ds,onfun);
     },
     async gainCache8MasterCompetitionInfo() {
-        return Http.fetchJson(`${Config.siteJson}/masterCompetition.json`);
+        return Http.fetchJson(`${Config.siteJson}/masterCompetition.json?${Beans.buildPId("")}`);
         // return fetch(`${Config.siteJson}/masterCompetition.json`)
         //     .then(response => response.json())
         //     .then(data => {return data});
+    },
+    async gainCache8SiteInfo() {
+        return Http.fetchJson(`${Config.siteJson}/siteInfo.json?${Beans.buildPId("")}`);
     }
 }

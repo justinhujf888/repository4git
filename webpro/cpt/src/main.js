@@ -27,6 +27,9 @@ app.config.globalProperties.$config = Config;
 app.use(router);
 app.use(PrimeVue, {
     locale: zhCN['zh-CN'],
+    pt:{
+
+    },
     theme: {
         preset: Aura,
         options: {

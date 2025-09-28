@@ -441,11 +441,11 @@ class WorkRest extends BaseRest
     {
         try
         {
+            SiteCompetition siteCompetition = workService.gainSiteCompetition([appId:query.appId,id:query.siteCompetitionId]);
+            siteCompetition.cancelLazyEr();
             FileWriter writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/siteInfo.json""".toString(),"utf8");
             writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
                     siteCompetition:({
-                        SiteCompetition siteCompetition = workService.gainSiteCompetition([appId:query.appId,id:query.siteCompetitionId]);
-                        siteCompetition.cancelLazyEr();
                         return siteCompetition;
                     }).call(),
                     siteZuTiMediaList:({
@@ -474,6 +474,8 @@ class WorkRest extends BaseRest
                             }
                         }
                         masterCompetition.siteCompetition = null;
+                        masterCompetition.tempMap = [:];
+                        masterCompetition.tempMap.setupFields = siteCompetition.setupFields;
                         return masterCompetition;
                     }).call()
             ]));
