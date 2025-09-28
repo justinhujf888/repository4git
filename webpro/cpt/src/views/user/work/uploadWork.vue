@@ -30,11 +30,15 @@
                     </IftaLabel>
                     <IftaLabel>
                         <label for="gousiDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品介绍</label>
-                        <Textarea name="gousiDescription" v-model="work.gousiDescription" autoResize rows="15" class="w-full" />
+                        <Textarea name="gousiDescription" v-model="work.gousiDescription" autoResize rows="8" class="w-full" />
                     </IftaLabel>
                     <IftaLabel>
                         <label for="myMeanDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品理念</label>
-                        <Textarea name="myMeanDescription" v-model="work.myMeanDescription" autoResize rows="15" class="w-full" />
+                        <Textarea name="myMeanDescription" v-model="work.myMeanDescription" autoResize rows="8" class="w-full" />
+                    </IftaLabel>
+                    <IftaLabel v-for="(item,index) in masterCompetition.setupFields?.data" :key="index">
+                        <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
+                        <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
                     </IftaLabel>
                     <div class="row mt-12 center gap-4">
                         <Button severity="warn" label="暂时保存" class="px-8" @click="cancel()"></Button>
@@ -61,6 +65,7 @@ import lodash from "lodash-es";
 
 const fileUpload = useTemplateRef("fileUpload");
 
+const masterCompetition = ref(Beans.masterCompetition());
 const competition = ref(Beans.competition());
 const work = ref(Beans.work());
 const menuItems = ref([]);
@@ -120,7 +125,7 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
     if (valid) {
-
+        console.log(masterCompetition.value.setupFields.data);
     }
 };
 
@@ -133,6 +138,7 @@ const init = (_mainPage,_mePage,_obj)=>{
     mePage = _mePage;
     obj = _obj;
     competition.value = obj.data;
+    masterCompetition.value = obj.masterCompetition;
 }
 
 defineExpose({init});
