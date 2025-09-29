@@ -407,6 +407,7 @@
                         buyer.phone = userId;
                         device.buyer = buyer;
                         device.tempMap = {};
+                        device.tempMap.deviceName = device.name;
                         device.tempMap.isDB = false;
                         device.tempMap.connected = true;
                         device.tempMap.connecting = true;

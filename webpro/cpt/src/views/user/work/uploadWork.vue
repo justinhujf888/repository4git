@@ -11,7 +11,7 @@
                     </FloatLabel>
                     <FloatLabel variant="on">
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品名称</label>
-                        <InputText id="name" class="w-full md:w-[30rem]" v-model="work.name" />
+                        <InputText name="name" class="w-full md:w-[30rem]" v-model="work.name" />
                     </FloatLabel>
                     <Fieldset legend="上传作品文件">
                         <FileUpload v-show="false" ref="fileUpload" mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
@@ -45,7 +45,7 @@
                         <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
                     </FloatLabel>
                     <div class="row mt-12 center gap-4">
-                        <Button severity="warn" label="暂时保存" class="px-8" @click="cancel()"></Button>
+                        <Button severity="warn" label="暂时保存" class="px-8" @click="tempSave()"></Button>
                         <Button type="submit" label="提交" class="px-8" _as="router-link" _to="/"></Button>
                     </div>
                 </Form>
@@ -120,7 +120,7 @@ const resolver = ({ values }) => {
         {val:work.value.gousiDescription,name:"gousiDescription"},
         // {val:src.value,name:"headImg",label:"照片"}
     ]);
-
+    console.log(errors,values);
     return {
         values, // (Optional) Used to pass current form values to submit event.
         errors
@@ -132,6 +132,10 @@ const onFormSubmit = ({ valid }) => {
         console.log(masterCompetition.value.setupFields.data);
     }
 };
+
+function tempSave() {
+
+}
 
 function onFileSelect(event) {
     item.file = event.files[0];

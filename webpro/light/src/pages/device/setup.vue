@@ -491,8 +491,11 @@
         // console.log("checkType---",device.value);
         let cmd =lodash.find(cmdjson.commands,(o)=>{return o.command==item.cmd || o.command==item.exCmd});
         if (cmd?.deviceName) {
-            // console.log("checkType---",cmd,device.value.deviceType.id);
-            return lodash.findIndex(cmd.deviceName,(o)=>{return lodash.trim(o)==lodash.trim(device.value.tempMap.deviceName)})>-1;
+            console.log("checkType device.value---",cmd,device.value);
+            return lodash.findIndex(cmd.deviceName,(o)=>{
+                console.log("cmdrule:",lodash.trim(o),"devicename:",lodash.trim(device.value.tempMap.deviceName));
+                return lodash.trim(o)==lodash.trim(device.value.tempMap.deviceName)
+            })>-1;
         } else {
             return true;
         }

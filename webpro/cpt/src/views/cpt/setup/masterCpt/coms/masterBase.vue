@@ -271,7 +271,7 @@ const onRowExpand = (event) => {
         }
 
         if (!selMasterCompetition.value.competitionList) {
-            workRest.qyCompetitionList({masterCompetitionId:selMasterCompetition.value.id},(res)=>{
+            workRest.qyCompetitionList({masterCompetitionId:selMasterCompetition.value.id,shiQyGuiGeList:true},(res)=>{
                 if (res.status=="OK") {
                     if (res.data!=null) {
                         let competitionList = res.data;
