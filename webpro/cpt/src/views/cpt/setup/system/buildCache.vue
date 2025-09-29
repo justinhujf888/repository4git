@@ -52,7 +52,7 @@ const resolver = ({ values }) => {
     };
 };
 
-const onFormSubmit = ({ valid }) => {console.log(masterCompetition.value.id);
+const onFormSubmit = ({ valid }) => {
     if (valid) {
         workRest.buildCacheCpt({siteCompetitionId:host,masterCompetitionId:masterCompetition.value.id},(res)=>{
             if (res.status=="OK") {
