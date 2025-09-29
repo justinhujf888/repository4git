@@ -6,7 +6,7 @@
                     asdfgasdf
                 </div>
                 <div v-else class="center grid gap-4">
-                    <span>您还没有创建作品，请添加一个作品最多可提交三件作品</span>
+                    <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>
                     <Button class="!text-4xl" label="+" severity="secondary" @click="showCompetitionList($event)"/>
                 </div>
             </div>
@@ -16,7 +16,7 @@
 <!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
                         <div class="grid gap-2">
                             <div v-for="(competition,index) in competitionList" :key="index">
-                                <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
+                                <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
                             </div>
                         </div>
                         <p>{{ slotProps.message.message }}</p>
@@ -47,6 +47,20 @@ const updateWorkPage = useTemplateRef("updateWorkPage");
 const userId = useStorage("userId");
 const workList = ref([]);
 const competitionList = ref([]);
+const uploadRule = ref({
+    maxWorkCount: 3,
+    workType:{
+        image:[
+            {type:0,mediaType:0,showCount:1,maxCount:1,title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容"},
+            {type:1,mediaType:0,showCount:1,maxCount:1,title:"上传作品全景图主图",text:""},
+            {type:2,mediaType:0,showCount:2,maxCount:2,title:"上传作品全景图其他角度",text:""},
+            {type:3,mediaType:0,showCount:4,maxCount:2,title:"上传作品其他细节至少2张",text:""}
+        ],
+        video:[
+            {type:4,mediaType:1,showCount:1,maxCount:1,title:"上传视频",text:""}
+        ]
+    }
+});
 
 let host = inject("domain");
 let masterCompetition = null;

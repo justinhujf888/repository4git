@@ -7,18 +7,31 @@
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">
                     <FloatLabel variant="on">
                         <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
-                        <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid />
+                        <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid placeholder="选择分组"/>
                     </FloatLabel>
                     <FloatLabel variant="on">
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品名称</label>
                         <InputText name="name" class="w-full md:w-[30rem]" v-model="work.name" />
                     </FloatLabel>
-                    <Fieldset legend="上传作品文件">
+                    <Fieldset legend="作品照片">
+                        <InputText v-model="imageVaild" name="imageVaild" class="hidden"/>
+                        <Message class="my-2" severity="error" size="small" variant="simple">{{ $form.imageVaild?.error?.message}}</Message>
                         <FileUpload v-show="false" ref="fileUpload" mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                         <div class="row flex-wrap gap-2">
-                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workItems" :key="index" @click="uploadButtonClick(item)">
-                                <Image :src="item.file?.objectURL" class="absolute top-0 left-0 z-10"/>
-                                <div class="absolute top-5 left-0 mix-blend-difference z-20 text-white col">
+                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workImageItems" :key="index" @click="uploadButtonClick(item)">
+                                <Image :src="item.file?.objectURL" class="absolute top-0 left-0 z-10 object-center"/>
+                                <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
+                                    <span class="text-xl">{{item.title}}</span>
+                                    <span class="text-sm">{{item.text}}</span>
+                                </div>
+                            </Button>
+                        </div>
+                    </Fieldset>
+                    <Fieldset legend="作品视频">
+                        <div class="row flex-wrap gap-2">
+                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workVideoItems" :key="index" @click="uploadButtonClick(item)">
+                                <Image :src="item.file?.objectURL" class="absolute top-0 left-0 z-10 object-center"/>
+                                <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
                                     <span class="text-xl">{{item.title}}</span>
                                     <span class="text-sm">{{item.text}}</span>
                                 </div>
@@ -73,7 +86,9 @@ const masterCompetition = ref(Beans.masterCompetition());
 const competition = ref(Beans.competition());
 const work = ref(Beans.work());
 const menuItems = ref([]);
-const workItems = ref([]);
+const workImageItems = ref([]);
+const workVideoItems = ref([]);
+const imageVaild = ref(false);
 
 let item = null;
 let errors = [];
@@ -86,16 +101,16 @@ onMounted(() => {
     menuItems.value = [
         {label:'返回我的参赛作品',click:()=>{obj.returnFunction(obj);mePage.close(mainPage);}}
     ];
-    workItems.value = [
-        {title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",file:null,bean:buildWorkItem(0,0)},
-        {title:"上传作品全景图主图",text:"",file:null,bean:buildWorkItem(0,1)},
-        {title:"上传作品全景图其他角度",text:"",file:null,bean:buildWorkItem(0,2)},
-        {title:"上传作品全景图其他角度",text:"",file:null,bean:buildWorkItem(0,2)},
-        {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)},
-        {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)},
-        {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)},
-        {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)}
-    ];
+    // workImageItems.value = [
+    //     {title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",file:null,bean:buildWorkItem(0,0)},
+    //     {title:"上传作品全景图主图",text:"",file:null,bean:buildWorkItem(0,1)},
+    //     {title:"上传作品全景图其他角度",text:"",file:null,bean:buildWorkItem(0,2)},
+    //     {title:"上传作品全景图其他角度",text:"",file:null,bean:buildWorkItem(0,2)},
+    //     {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)},
+    //     {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)},
+    //     {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)},
+    //     {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)}
+    // ];
 });
 
 function uploadButtonClick(_item) {
@@ -120,7 +135,9 @@ const resolver = ({ values }) => {
         {val:work.value.gousiDescription,name:"gousiDescription"},
         // {val:src.value,name:"headImg",label:"照片"}
     ]);
-    console.log(errors,values);
+    primeUtil.buildFormValidError(errors.imageVaild,"error","请选择照片",()=>{
+        return !imageVaild.value;
+    },(error)=>{errors.imageVaild = error});
     return {
         values, // (Optional) Used to pass current form values to submit event.
         errors
@@ -144,9 +161,24 @@ function onFileSelect(event) {
 const init = (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
-    obj = _obj;
+    obj = lodash.cloneDeep(_obj);
     competition.value = obj.data;
     masterCompetition.value = obj.masterCompetition;
+    if (obj.process=="c") {
+        work.value = Beans.work();
+        workImageItems.value = [];
+        workVideoItems.value = [];
+    }
+    lodash.forEach(obj.uploadRule.workType.image,(v)=>{
+        for(let i=0;i<v.showCount;i++) {
+            workImageItems.value.push({title:v.title,text:v.text,file:null,bean:buildWorkItem(v.mediaType,v.type)});
+        }
+    });
+    lodash.forEach(obj.uploadRule.workType.video,(v)=>{
+        for(let i=0;i<v.showCount;i++) {
+            workVideoItems.value.push({title:v.title,text:v.text,file:null,bean:buildWorkItem(v.mediaType,v.type)});
+        }
+    });
 }
 
 defineExpose({init});
