@@ -1,8 +1,8 @@
 <template>
-    <div class="relative">
-        <animationPage :show="true" class="w-full absolute top-0 z-40">
-            <div class="card !p-2">
-                <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-2 hwcenter mt-20">
+    <animationPage :show="true" class="w-full absolute top-0 z-40">
+        <div class="card !p-2">
+            <div class="col center w-full p-2">
+                <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">
                     <IftaLabel>
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">年份赛事</label>
                         <Select name="name" v-model="masterCompetition" :options="masterCompetitionList" optionLabel="name" placeholder="选择要发布的年份赛事" fluid />
@@ -13,8 +13,8 @@
                     </div>
                 </Form>
             </div>
-        </animationPage>
-    </div>
+        </div>
+    </animationPage>
 </template>
 
 <script setup>

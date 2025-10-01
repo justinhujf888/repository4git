@@ -15,11 +15,11 @@
                     </FloatLabel>
                     <Fieldset legend="作品照片">
                         <InputText v-model="imageVaild" name="imageVaild" class="hidden"/>
-                        <Message class="my-2" severity="error" size="small" variant="simple">{{ $form.imageVaild?.error?.message}}</Message>
-                        <FileUpload v-show="false" ref="fileUpload" mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
+                        <Message v-for="er of $form.imageVaild?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
+                        <FileUpload v-show="false" ref="imageFileUpload" mode="basic" accept="image/*" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                         <div class="row flex-wrap gap-2">
                             <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workImageItems" :key="index" @click="uploadButtonClick(item)">
-                                <Image :src="item.file?.objectURL" class="absolute top-0 left-0 z-10 object-center"/>
+                                <Image :src="item.src" class="absolute top-0 left-0 z-10 object-cover object-center"/>
                                 <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
                                     <span class="text-xl">{{item.title}}</span>
                                     <span class="text-sm">{{item.text}}</span>
@@ -28,9 +28,12 @@
                         </div>
                     </Fieldset>
                     <Fieldset legend="作品视频">
+                        <InputText v-model="videoVaild" name="videoVaild" class="hidden"/>
+                        <FileUpload v-show="false" ref="videoFileUpload" mode="basic" accept="video/*" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
+                        <Message v-for="er of $form.videoVaild?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
                         <div class="row flex-wrap gap-2">
                             <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workVideoItems" :key="index" @click="uploadButtonClick(item)">
-                                <Image :src="item.file?.objectURL" class="absolute top-0 left-0 z-10 object-center"/>
+                                <video :src="item.src" class="absolute top-0 left-0 z-10 object-center"/>
                                 <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
                                     <span class="text-xl">{{item.title}}</span>
                                     <span class="text-sm">{{item.text}}</span>
@@ -80,7 +83,8 @@ import userRest from "@/api/dbs/userRest";
 import dialog from "@/api/uniapp/dialog";
 import lodash from "lodash-es";
 
-const fileUpload = useTemplateRef("fileUpload");
+const imageFileUpload = useTemplateRef("imageFileUpload");
+const videoFileUpload = useTemplateRef("videoFileUpload");
 
 const masterCompetition = ref(Beans.masterCompetition());
 const competition = ref(Beans.competition());
@@ -89,6 +93,7 @@ const menuItems = ref([]);
 const workImageItems = ref([]);
 const workVideoItems = ref([]);
 const imageVaild = ref(false);
+const videoVaild = ref(false);
 
 let item = null;
 let errors = [];
@@ -115,7 +120,11 @@ onMounted(() => {
 
 function uploadButtonClick(_item) {
     item = _item;
-    fileUpload.value.choose();
+    if (item.mediaType==0) {
+        imageFileUpload.value.choose();
+    } else {
+        videoFileUpload.value.choose();
+    }
 }
 
 function buildWorkItem(mediaType,type) {
@@ -135,9 +144,25 @@ const resolver = ({ values }) => {
         {val:work.value.gousiDescription,name:"gousiDescription"},
         // {val:src.value,name:"headImg",label:"照片"}
     ]);
-    primeUtil.buildFormValidError(errors.imageVaild,"error","请选择照片",()=>{
-        return !imageVaild.value;
-    },(error)=>{errors.imageVaild = error});
+
+    errors.imageVaild = [];
+    lodash.forEach(obj.uploadRule.workType.image,(v)=>{
+        const count = lodash.size(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}));
+        if (count < v.maxCount) {
+            errors.imageVaild.push({type:"error",message:v.title});
+        }
+    });
+
+    errors.videoVaild = [];
+    lodash.forEach(obj.uploadRule.workType.video,(v)=>{
+        const count = lodash.size(lodash.filter(workVideoItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}));
+        if (count < v.maxCount) {
+            errors.videoVaild.push({type:"error",message:v.title});
+        }
+    });
+    // primeUtil.buildFormValidError(errors.videoVaild,"error","上传视频",()=>{
+    //     workVideoItems.value
+    // },(error)=>{errors.videoVaild = error});
     return {
         values, // (Optional) Used to pass current form values to submit event.
         errors
@@ -154,8 +179,15 @@ function tempSave() {
 
 }
 
-function onFileSelect(event) {
+async function onFileSelect(event) {
+    // console.log(event.files);
     item.file = event.files[0];
+    if (item.mediaType==0) {
+        item.src = item.file.objectURL;
+    } else {
+        item.src = URL.createObjectURL(item.file);
+    }
+    // item.fileUrl = URL.createObjectURL(new Blob([await event.files[0].arrayBuffer()],{type:"video/mp4"}));
 }
 
 const init = (_mainPage,_mePage,_obj)=>{
@@ -168,15 +200,16 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value = Beans.work();
         workImageItems.value = [];
         workVideoItems.value = [];
+        errors = [];
     }
     lodash.forEach(obj.uploadRule.workType.image,(v)=>{
         for(let i=0;i<v.showCount;i++) {
-            workImageItems.value.push({title:v.title,text:v.text,file:null,bean:buildWorkItem(v.mediaType,v.type)});
+            workImageItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,bean:buildWorkItem(v.mediaType,v.type)});
         }
     });
     lodash.forEach(obj.uploadRule.workType.video,(v)=>{
         for(let i=0;i<v.showCount;i++) {
-            workVideoItems.value.push({title:v.title,text:v.text,file:null,bean:buildWorkItem(v.mediaType,v.type)});
+            workVideoItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,bean:buildWorkItem(v.mediaType,v.type)});
         }
     });
 }

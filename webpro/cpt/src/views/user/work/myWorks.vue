@@ -1,34 +1,32 @@
 <template>
-    <div class="relative">
-        <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
-            <div class="card">
-                <div v-if="workList.length>0">
-                    asdfgasdf
-                </div>
-                <div v-else class="center grid gap-4">
-                    <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>
-                    <Button class="!text-4xl" label="+" severity="secondary" @click="showCompetitionList($event)"/>
-                </div>
+    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
+        <div class="card">
+            <div v-if="workList.length>0">
+                asdfgasdf
             </div>
-            <ConfirmPopup group="templating" :pt="{footer:{class:'!hidden'}}">
-                <template #message="slotProps">
-                    <div class="flex flex-col items-center w-full gap-4 p-4 mb-4 pb-0">
-<!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
-                        <div class="grid gap-2">
-                            <div v-for="(competition,index) in competitionList" :key="index">
-                                <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
-                            </div>
+            <div v-else class="center grid gap-4">
+                <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>
+                <Button class="!text-4xl" label="+" severity="secondary" @click="showCompetitionList($event)"/>
+            </div>
+        </div>
+        <ConfirmPopup group="templating" :pt="{footer:{class:'!hidden'}}">
+            <template #message="slotProps">
+                <div class="flex flex-col items-center w-full gap-4 p-4 mb-4 pb-0">
+                    <!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
+                    <div class="grid gap-2">
+                        <div v-for="(competition,index) in competitionList" :key="index">
+                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
                         </div>
-                        <p>{{ slotProps.message.message }}</p>
                     </div>
-                </template>
-            </ConfirmPopup>
-        </animationPage>
+                    <p>{{ slotProps.message.message }}</p>
+                </div>
+            </template>
+        </ConfirmPopup>
+    </animationPage>
 
-        <animationPage ref="updateWorkPage">
-            <uploadWork ref="refUploadWork"/>
-        </animationPage>
-    </div>
+    <animationPage ref="updateWorkPage">
+        <uploadWork ref="refUploadWork"/>
+    </animationPage>
 </template>
 
 <script setup>
