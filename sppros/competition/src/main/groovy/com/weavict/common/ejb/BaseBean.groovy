@@ -18,6 +18,7 @@ class BaseBean implements BaseService
     @PersistenceContext
     protected EntityManager em;
 
+    @Autowired
     protected DataSource dataSource;
 
     @Autowired
