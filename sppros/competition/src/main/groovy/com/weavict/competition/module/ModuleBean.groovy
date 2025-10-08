@@ -87,7 +87,7 @@ class ModuleBean extends BaseBean
         return pageUtil;
     }
 
-    PageUtil createNativeQueryLimit(String sql, String sqlcount, int currentPageNu, int pageSize)
+    PageUtil createNativeQueryLimit(String sql, String sqlcount, int currentPageNu, int pageSize,...args)
     {
         int firstRecord = currentPageNu * pageSize;
         int totalRecords = this.em.createNativeQuery(sqlcount).getResultList()[0] as int;
@@ -97,14 +97,14 @@ class ModuleBean extends BaseBean
             ++totalPageNumber;
         }
         PageUtil pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
-        pageUtil.content = createNativeQuery("$sql limit ${pageSize} offset ${firstRecord}").getResultList();
+        pageUtil.content = createNativeQuery("$sql limit ${pageSize} offset ${firstRecord}",args).getResultList();
         return pageUtil;
     }
 
-    PageUtil createNativeQueryLimit(String sql, String sqlcount, Map<String, Object> paramsMap, int currentPageNu, int pageSize)
+    PageUtil createNativeQueryLimit(String sql, String sqlcount, Map<String, Object> paramsMap, int currentPageNu, int pageSize,...args)
     {
         int firstRecord = currentPageNu * pageSize;
-        int totalRecords = createNativeQuery4Params(sqlcount,paramsMap).getSingleResult() as int;
+        int totalRecords = createNativeQuery4Params(sqlcount,paramsMap,args).getSingleResult() as int;
 
         int totalPageNumber = totalRecords / pageSize;
         if (totalPageNumber * pageSize < totalRecords)
@@ -112,18 +112,25 @@ class ModuleBean extends BaseBean
             ++totalPageNumber;
         }
         PageUtil pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
-        pageUtil.content = createNativeQuery4Params("$sql limit ${pageSize} offset ${firstRecord}",paramsMap).getResultList();
+        pageUtil.content = createNativeQuery4Params("$sql limit ${pageSize} offset ${firstRecord}",paramsMap,args).getResultList();
         return pageUtil;
     }
 
-    Query createNativeQuery(String sql)
+    Query createNativeQuery(String sql,...args)
     {
-        this.em.createNativeQuery(sql.replaceAll("<script", ""));
+        if (args!=null && args.length>0)
+        {
+            this.em.createNativeQuery(sql.replaceAll("<script", ""),args[0]);
+        }
+        else
+        {
+            this.em.createNativeQuery(sql.replaceAll("<script", ""));
+        }
     }
 
-    Query createNativeQuery4Params(String sql,Map<String, Object> paramsMap)
+    Query createNativeQuery4Params(String sql,Map<String, Object> paramsMap,...args)
     {
-        Query query = createNativeQuery(sql);
+        Query query = createNativeQuery(sql,args);
         if (paramsMap!=null)
         {
             Iterator iter = paramsMap.keySet().iterator();
