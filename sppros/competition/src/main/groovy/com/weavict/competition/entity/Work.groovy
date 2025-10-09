@@ -5,6 +5,22 @@ import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 
+//@SqlResultSetMappings(
+//        [@SqlResultSetMapping(
+//                name = "SiteCompetitionMapping",
+//                entities = @EntityResult(
+//                        entityClass = SiteCompetition.class,
+//                        fields = [
+//                                @FieldResult(name = "id",column = "id"),
+//                                @FieldResult(name = "name",column = "name"),
+//                                @FieldResult(name = "domain",column = "domain"),
+//                                @FieldResult(name = "description",column = "description"),
+//                                @FieldResult(name = "appId",column = "appid"),
+//                                @FieldResult(name = "setupFields",column = "setupfields")
+//                        ]
+//                )
+//        )]
+//)
 
 @Table
 @Entity

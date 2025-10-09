@@ -25,7 +25,7 @@ export default {
             times = dayjs(_tokenExpiredTime).diff(new Date());
             console.log("init times",times,_tokenExpiredTime);
         }
-        setTimeout(async ()=>{
+        const timer = setTimeout(async ()=>{
             try {
                 if (Date.now() >= _tokenExpiredTime && client) {
                     const info = await this.access();
@@ -37,8 +37,9 @@ export default {
                     console.log("checkToken update token",times,_tokenExpiredTime);
                 }
             } catch (e) {
-                await this.checkToken();
+                console.log(e);
             } finally {
+                clearTimeout(timer);
                 await this.checkToken();
             }
         },times);
