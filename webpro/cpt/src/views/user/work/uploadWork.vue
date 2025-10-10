@@ -171,7 +171,16 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
     if (valid) {
-        console.log(masterCompetition.value.setupFields.data);
+        console.log(workImageItems.value,workVideoItems.value);
+        let workItemList = [];
+        lodash.forEach(workImageItems.value,(v)=>{
+            if (v.src) {
+                let workItem = v.bean;
+                workItem.createDate = new Date().getTime();
+                workItem.mediaFields = {name:v.file.name,size:v.file.size,type:v.file.type};
+                workItem.path = `cpt/${host}/work/${obj.userId}/${work.value.id}_${v.file.name}`;
+            }
+        });
     }
 };
 
@@ -198,9 +207,10 @@ const init = (_mainPage,_mePage,_obj)=>{
     masterCompetition.value = obj.masterCompetition;
     if (obj.process=="c") {
         work.value = Beans.work();
+        work.value.id = Beans.buildPId(obj.userId.substring(7));
         workImageItems.value = [];
         workVideoItems.value = [];
-        errors = [];
+        errors = null;
     }
     lodash.forEach(obj.uploadRule.workType.image,(v)=>{
         for(let i=0;i<v.showCount;i++) {

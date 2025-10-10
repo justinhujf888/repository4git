@@ -15,7 +15,7 @@
                     <!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
                     <div class="grid gap-2">
                         <div v-for="(competition,index) in competitionList" :key="index">
-                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
+                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId.value,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
                         </div>
                     </div>
                     <p>{{ slotProps.message.message }}</p>
