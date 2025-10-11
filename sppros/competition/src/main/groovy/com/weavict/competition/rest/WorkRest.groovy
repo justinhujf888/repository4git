@@ -443,7 +443,7 @@ class WorkRest extends BaseRest
         {
             SiteCompetition siteCompetition = workService.gainSiteCompetition([appId:query.appId,id:query.siteCompetitionId]);
             siteCompetition.cancelLazyEr();
-            FileWriter writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/siteInfo.json""".toString(),"utf8");
+            FileWriter writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/siteInfo.json""".toString(),"utf8");
             writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
                     siteCompetition:({
                         return siteCompetition;
@@ -459,7 +459,7 @@ class WorkRest extends BaseRest
                     }).call()
             ]));
 
-            writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/masterCompetition.json""".toString(),"utf8");
+            writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/masterCompetition.json""".toString(),"utf8");
             writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
                      masterCompetitionInfo:({
                         MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];

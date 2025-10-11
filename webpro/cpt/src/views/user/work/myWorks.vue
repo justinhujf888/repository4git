@@ -15,7 +15,7 @@
                     <!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
                     <div class="grid gap-2">
                         <div v-for="(competition,index) in competitionList" :key="index">
-                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId.value,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
+                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
                         </div>
                     </div>
                     <p>{{ slotProps.message.message }}</p>
@@ -42,7 +42,7 @@ const mainPage = useTemplateRef("mainPage");
 const refUploadWork = useTemplateRef("refUploadWork");
 const updateWorkPage = useTemplateRef("updateWorkPage");
 
-const userId = useStorage("userId");
+const userId = useStorage("userId");//注意，userId不是ref对象
 const workList = ref([]);
 const competitionList = ref([]);
 const uploadRule = ref({
@@ -78,7 +78,7 @@ onMounted(async () => {
     //         }
     //     }
     // });
-    masterCompetition = (await workRest.gainCache8MasterCompetitionInfo()).masterCompetitionInfo;
+    masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     competitionList.value = masterCompetition.competitionList;
 });
 

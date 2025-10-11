@@ -82,6 +82,7 @@ import oss from "@/api/oss";
 import userRest from "@/api/dbs/userRest";
 import dialog from "@/api/uniapp/dialog";
 import lodash from "lodash-es";
+import exifr from 'exifr';
 
 const imageFileUpload = useTemplateRef("imageFileUpload");
 const videoFileUpload = useTemplateRef("videoFileUpload");
@@ -171,16 +172,20 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
     if (valid) {
-        console.log(workImageItems.value,workVideoItems.value);
-        let workItemList = [];
-        lodash.forEach(workImageItems.value,(v)=>{
+        // console.log(workImageItems.value,workVideoItems.value);
+        lodash.forEach(lodash.concat(workImageItems.value,workVideoItems.value),(v)=>{
             if (v.src) {
                 let workItem = v.bean;
                 workItem.createDate = new Date().getTime();
-                workItem.mediaFields = {name:v.file.name,size:v.file.size,type:v.file.type};
                 workItem.path = `cpt/${host}/work/${obj.userId}/${work.value.id}_${v.file.name}`;
+                if (workItem.mediaType==0) {
+                    workItem.exifInfo = v.exifInfo;
+                }
+                workItem.mediaFields = {name:v.file.name,size:v.file.size,type:v.file.type};
+                work.value.workItemList.push(workItem);
             }
         });
+        console.log(work.value.workItemList);
     }
 };
 
@@ -189,10 +194,18 @@ function tempSave() {
 }
 
 async function onFileSelect(event) {
-    // console.log(event.files);
+    console.log(event.files);
     item.file = event.files[0];
     if (item.mediaType==0) {
         item.src = item.file.objectURL;
+        exifr.parse(item.file).then(output => {
+            if (output) {
+                item.exifInfo = {Make:output.Make,Software:output.Software};
+            } else {
+                item.exifInfo = {Make:null,Software:null};
+            }
+            console.log(output);
+        })
     } else {
         item.src = URL.createObjectURL(item.file);
     }
@@ -208,6 +221,10 @@ const init = (_mainPage,_mePage,_obj)=>{
     if (obj.process=="c") {
         work.value = Beans.work();
         work.value.id = Beans.buildPId(obj.userId.substring(7));
+        work.value.appId = host;
+        work.value.buyer = Beans.buyer();
+        work.value.buyer.phone = obj.userId;
+        work.value.workItemList = [];
         workImageItems.value = [];
         workVideoItems.value = [];
         errors = null;

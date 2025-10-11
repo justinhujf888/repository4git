@@ -54,7 +54,7 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
     if (valid) {
-        workRest.buildCacheCpt({siteCompetitionId:host,masterCompetitionId:masterCompetition.value.id},(res)=>{
+        workRest.buildCacheCpt({siteCompetitionId:host,masterCompetitionId:masterCompetition.value.id,host:host},(res)=>{
             if (res.status=="OK") {
                 dialog.toastSuccess("赛事已成功发布");
             }

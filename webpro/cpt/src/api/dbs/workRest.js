@@ -121,13 +121,13 @@ export default {
     buildCacheCpt(ds,onfun) {
         Http.callHttpFunction('/r/work/buildCacheCpt',ds,onfun);
     },
-    async gainCache8MasterCompetitionInfo() {
-        return Http.fetchJson(`${Config.siteJson}/masterCompetition.json?${Beans.buildPId("")}`);
+    async gainCache8MasterCompetitionInfo(host) {
+        return Http.fetchJson(`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
         // return fetch(`${Config.siteJson}/masterCompetition.json`)
         //     .then(response => response.json())
         //     .then(data => {return data});
     },
-    async gainCache8SiteInfo() {
-        return Http.fetchJson(`${Config.siteJson}/siteInfo.json?${Beans.buildPId("")}`);
+    async gainCache8SiteInfo(host) {
+        return Http.fetchJson(`${Config.siteJson}/${host}/siteInfo.json?${Beans.buildPId("")}`);
     }
 }
