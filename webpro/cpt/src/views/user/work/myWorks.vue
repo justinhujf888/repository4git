@@ -25,7 +25,7 @@
     </animationPage>
 
     <animationPage ref="updateWorkPage">
-        <uploadWork ref="refUploadWork"/>
+        <uploadWork ref="refUploadWork" :key="forceUpdateKey"/>
     </animationPage>
 </template>
 
@@ -36,11 +36,13 @@ import { inject, onMounted, ref, useTemplateRef } from 'vue';
 import {useStorage} from "@vueuse/core";
 import { useConfirm } from "primevue/useconfirm";
 import uploadWork from "@/views/user/work/uploadWork.vue";
+import lodash from "lodash-es";
 
 const confirm = useConfirm();
 const mainPage = useTemplateRef("mainPage");
 const refUploadWork = useTemplateRef("refUploadWork");
 const updateWorkPage = useTemplateRef("updateWorkPage");
+const forceUpdateKey = ref(0);
 
 const userId = useStorage("userId");//注意，userId不是ref对象
 const workList = ref([]);
@@ -49,10 +51,10 @@ const uploadRule = ref({
     maxWorkCount: 3,
     workType:{
         image:[
-            {type:0,mediaType:0,showCount:1,maxCount:1,title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容"},
-            {type:1,mediaType:0,showCount:1,maxCount:1,title:"上传作品全景图主图",text:""},
-            {type:2,mediaType:0,showCount:2,maxCount:2,title:"上传作品全景图其他角度",text:""},
-            {type:3,mediaType:0,showCount:4,maxCount:2,title:"上传作品其他细节至少2张",text:""}
+            {type:0,mediaType:0,showCount:1,maxCount:1,checkExif:true,title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容"},
+            {type:1,mediaType:0,showCount:1,maxCount:1,checkExif:false,title:"上传作品全景图主图",text:""},
+            {type:2,mediaType:0,showCount:2,maxCount:2,checkExif:false,title:"上传作品全景图其他角度",text:""},
+            {type:3,mediaType:0,showCount:4,maxCount:2,checkExif:false,title:"上传作品其他细节至少2张",text:""}
         ],
         video:[
             {type:4,mediaType:1,showCount:1,maxCount:1,title:"上传视频",text:""}
@@ -91,7 +93,7 @@ function showCompetitionList(event) {
 }
 
 function returnFunction(obj) {
-
+    forceUpdateKey.value++;
 }
 </script>
 

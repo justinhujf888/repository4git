@@ -352,7 +352,7 @@ class WorkItem extends BEntity implements Serializable, IEntity
     //	0:image；1:video；
     byte mediaType;
 
-    //	0:原退；1:全景主图；2:全景其它角度;3:其它细节;
+    //	由用户定义
     byte type;
 
     @ManyToOne(fetch=FetchType.EAGER)
