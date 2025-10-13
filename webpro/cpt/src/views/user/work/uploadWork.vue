@@ -98,6 +98,7 @@ const videoVaild = ref(false);
 
 let item = null;
 let shiTempSave = true;
+let preUploadFiles = [];
 let errors = [];
 let host = inject("domain");
 let mainPage = null;
@@ -206,26 +207,55 @@ const onFormSubmit = ({ valid }) => {
         // console.log(workImageItems.value,workVideoItems.value);
         work.value.guiGeId = work.value.guiGe.id;
         work.value.status = shiTempSave ? 0 : 1;
-        lodash.forEach(lodash.concat(workImageItems.value,workVideoItems.value),(v)=>{
-            if (v.src) {
-                let workItem = v.bean;
-                workItem.createDate = work.value.createDate;
-                workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${v.file.name}`;
-                if (workItem.mediaType==0) {
-                    workItem.exifInfo = JSON.stringify(v.exifInfo);
-                }
-                workItem.mediaFields = {name:v.file.name,size:v.file.size,type:v.file.type};
-                work.value.workItemList = null;
-                work.value.tempMap = {workItemList:[]};
-                work.value.tempMap.workItemList.push(workItem);
-            }
-        });
-        console.log(work.value);
+        work.value.workItemList = null;
+        work.value.tempMap = {workItemList:[]};
+
+        preUploadFiles = lodash.filter(lodash.concat(workImageItems.value,workVideoItems.value),(o)=>{return o.src});
+        uploadFile(0);
+
+        // lodash.forEach(lodash.concat(workImageItems.value,workVideoItems.value),(v)=>{
+        //     if (v.src) {
+        //         let workItem = v.bean;
+        //         workItem.createDate = work.value.createDate;
+        //         workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${v.file.name}`;
+        //         if (workItem.mediaType==0) {
+        //             workItem.exifInfo = JSON.stringify(v.exifInfo);
+        //         }
+        //         workItem.mediaFields = {name:v.file.name,size:v.file.size,type:v.file.type};
+        //         work.value.tempMap.workItemList.push(workItem);
+        //     }
+        // });
+        // console.log(work.value);
     }
 };
 
 function preSave(f) {
     shiTempSave = (f==0) ? true : false;
+}
+
+function uploadFile(step) {
+    if (step > preUploadFiles.length-1) {
+        console.log(work.value);
+    } else {
+        let workItem = preUploadFiles[step].bean;
+        workItem.createDate = work.value.createDate;
+        workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${preUploadFiles[step].file.name}`;
+        if (workItem.mediaType==0) {
+            workItem.exifInfo = JSON.stringify(preUploadFiles[step].exifInfo);
+        }
+        workItem.mediaFields = {name:preUploadFiles[step].file.name,size:preUploadFiles[step].file.size,type:preUploadFiles[step].file.type};
+        oss.uploadFileWithClient(
+            preUploadFiles[step].file,
+            workItem.path,
+            (res) => {
+                work.value.tempMap.workItemList.push(workItem);
+                uploadFile(step+1);
+            },
+            (er) => {
+                dialog.toastError(er);
+            }
+        );
+    }
 }
 
 async function onFileSelect(event) {
