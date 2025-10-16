@@ -52,11 +52,11 @@
                         <label for="myMeanDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品理念</label>
                         <Textarea name="myMeanDescription" v-model="work.myMeanDescription" autoResize rows="8" class="w-full" />
                     </FloatLabel>
-                    <FloatLabel variant="on" v-for="(item,index) in work.hangyeFields" :key="index">
+                    <FloatLabel variant="on" v-for="(item,index) in work.hangyeFields?.data" :key="index">
                         <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
                         <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
                     </FloatLabel>
-                    <FloatLabel variant="on" v-for="(item,index) in work.otherFields" :key="index">
+                    <FloatLabel variant="on" v-for="(item,index) in work.otherFields?.data" :key="index">
                         <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
                         <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
                     </FloatLabel>
@@ -153,7 +153,7 @@ const resolver = ({ values }) => {
             if (v.checkExif) {
                 lodash.forEach(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}),(cv)=>{
                     if (!cv.exifInfo.Make || lodash.includes(["ps","photoshop"],lodash.toLower(cv.exifInfo.Software))) {
-                        errors.imageVaild.push({type:"error",message:`${v.title}${cv.file.name}不符合规定`});
+                        // errors.imageVaild.push({type:"error",message:`${v.title}${cv.file.name}不符合规定`});
                     }
                 });
             }
@@ -179,7 +179,7 @@ const resolver = ({ values }) => {
             if (v.checkExif) {
                 lodash.forEach(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}),(cv)=>{
                     if (!cv.exifInfo.Make || lodash.includes(["ps","photoshop"],lodash.toLower(cv.exifInfo.Software))) {
-                        errors.imageVaild.push({type:"error",message:`${v.title}${cv.file.name}不符合规定`});
+                        // errors.imageVaild.push({type:"error",message:`${v.title}${cv.file.name}不符合规定`});
                     }
                 });
             }
@@ -236,10 +236,15 @@ function preSave(f) {
 function uploadFile(step) {
     if (step > preUploadFiles.length-1) {
         console.log(work.value);
+        workRest.updateBuyerWork({work:work.value},(res)=>{
+            if (res.status=="OK") {
+                dialog.alert(shiTempSave ? "您的作品已经保存" : "您的作品已成功提交");
+            }
+        });
     } else {
         let workItem = preUploadFiles[step].bean;
         workItem.createDate = work.value.createDate;
-        workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${preUploadFiles[step].file.name}`;
+        workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${workItem.id}_${preUploadFiles[step].file.name}`;
         if (workItem.mediaType==0) {
             workItem.exifInfo = JSON.stringify(preUploadFiles[step].exifInfo);
         }
@@ -249,6 +254,7 @@ function uploadFile(step) {
             workItem.path,
             (res) => {
                 work.value.tempMap.workItemList.push(workItem);
+                dialog.toastSuccess(`文件${workItem.mediaFields.name}成功上传`);
                 uploadFile(step+1);
             },
             (er) => {
@@ -289,24 +295,24 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.appId = host;
         work.value.buyer = Beans.buyer();
         work.value.buyer.phone = obj.userId;
-        work.value.hangyeFields = masterCompetition.value.tempMap.setupFields.data;
-        work.value.otherFields = masterCompetition.value.setupFields.data;
+        work.value.hangyeFields = masterCompetition.value.tempMap.setupFields;
+        work.value.otherFields = masterCompetition.value.setupFields;
         work.value.createDate = new Date().getTime();
         work.value.workItemList = [];
         workImageItems.value = [];
         workVideoItems.value = [];
         errors = null;
+        lodash.forEach(obj.uploadRule.workType.image,(v)=>{
+            for(let i=0;i<v.showCount;i++) {
+                workImageItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,checkExif:v.checkExif,bean:buildWorkItem(v.mediaType,v.type)});
+            }
+        });
+        lodash.forEach(obj.uploadRule.workType.video,(v)=>{
+            for(let i=0;i<v.showCount;i++) {
+                workVideoItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,bean:buildWorkItem(v.mediaType,v.type)});
+            }
+        });
     }
-    lodash.forEach(obj.uploadRule.workType.image,(v)=>{
-        for(let i=0;i<v.showCount;i++) {
-            workImageItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,checkExif:v.checkExif,bean:buildWorkItem(v.mediaType,v.type)});
-        }
-    });
-    lodash.forEach(obj.uploadRule.workType.video,(v)=>{
-        for(let i=0;i<v.showCount;i++) {
-            workVideoItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,bean:buildWorkItem(v.mediaType,v.type)});
-        }
-    });
 }
 
 defineExpose({init});

@@ -2,7 +2,7 @@
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
             <div v-if="workList.length>0">
-                asdfgasdf
+
             </div>
             <div v-else class="center grid gap-4">
                 <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>

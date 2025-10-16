@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil
 import cn.hutool.core.io.FileUtil
 import cn.hutool.core.io.file.FileWriter
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.Judge
@@ -12,6 +13,7 @@ import com.weavict.competition.entity.OrgHuman
 import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
+import com.weavict.competition.entity.WorkItem
 import com.weavict.competition.module.WorkService
 import com.weavict.website.common.OtherUtils
 import jakarta.servlet.http.HttpServletRequest
@@ -22,6 +24,7 @@ import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.TransactionDefinition
 import org.springframework.web.bind.annotation.RequestBody
 
 @Path("/work")
@@ -345,14 +348,16 @@ class WorkRest extends BaseRest
         try
         {
             List<Competition> competitionList = this.objToBean(query.competitionList,List.class,null);
-            for (Competition competition in competitionList)
-            {
-                workService.updateTheObject(competition);
-                for (GuiGe guiGe in competition.tempMap.guiGeList)
+            workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                for (Competition competition in competitionList)
                 {
-                    workService.updateTheObject(guiGe);
+                    workService.updateObject(competition);
+                    for (GuiGe guiGe in competition.tempMap.guiGeList)
+                    {
+                        workService.updateObject(guiGe);
+                    }
                 }
-            }
+            });
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -479,6 +484,43 @@ class WorkRest extends BaseRest
                         return masterCompetition;
                     }).call()
             ]));
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateBuyerWork")
+    String updateBuyerWork(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            Work work = this.objToBean(query.work,Work.class,null);
+               workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                workService.updateObject(work);
+
+                for (def w in work.tempMap.workItemList)
+                {
+                    w.createDate = work.createDate;
+//                    WorkItem workItem = new WorkItem();
+//                    workItem.id = w.id;
+//                    workItem.createDate = work.createDate;
+//                    workItem.exifInfo = w.exifInfo;
+//                    workItem.mediaFields = w.mediaFields;
+//                    workItem.mediaType = w.mediaType;
+//                    workItem.path = w.path;
+//                    workItem.type = w.type;
+//                    workItem.work = new Work();
+//                    workItem.work.id = work.id;
+                    workService.updateObject(w as WorkItem);
+                }
+            });
             return """{"status":"OK"}""";
         }
         catch (Exception e)
