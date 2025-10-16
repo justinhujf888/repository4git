@@ -1,8 +1,8 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
-            <div v-if="workList.length>0">
-
+            <div v-if="workList.length>0" class="center col">
+                <Button v-for="work of workList" class="!text-3xl !p-5 w-full md:w-3/5" :label="work.name" severity="secondary" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
             </div>
             <div v-else class="center grid gap-4">
                 <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>
@@ -66,13 +66,6 @@ let host = inject("domain");
 let masterCompetition = null;
 
 onMounted(async () => {
-    workRest.qyWorks({appId:host,userId:userId.value,masterCompetitionId:"localhost"},(res)=>{
-        if (res.status=="OK") {
-            if (res.data!=null) {
-                workList.value = res.data;
-            }
-        }
-    });
     // workRest.qyCompetitionList({appId:host,masterCompetitionId:"localhost",shiQyGuiGeList:true},(res)=>{
     //     if (res.status=="OK") {
     //         if (res.data!=null) {
@@ -82,6 +75,13 @@ onMounted(async () => {
     // });
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     competitionList.value = masterCompetition.competitionList;
+    workRest.qyWorks({appId:host,userId:userId.value,masterCompetitionId:masterCompetition.id,shiWorkItemList:true},(res)=>{
+        if (res.status=="OK") {
+            if (res.data!=null) {
+                workList.value = res.data;
+            }
+        }
+    });
 });
 
 function showCompetitionList(event) {
@@ -93,6 +93,8 @@ function showCompetitionList(event) {
 }
 
 function returnFunction(obj) {
+    let work = lodash.find(workList.value,(o)=>{return o.id==obj.work.id});
+    work.workItemList = obj.work.tempMap.workItemList;
     forceUpdateKey.value++;
 }
 </script>

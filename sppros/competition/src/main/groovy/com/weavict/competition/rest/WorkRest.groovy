@@ -426,6 +426,18 @@ class WorkRest extends BaseRest
                          for(Work work in workList)
                          {
                              work.cancelLazyEr();
+                             if (query.shiWorkItemList==true)
+                             {
+                                 work.workItemList = workService.newQueryUtils(false).masterTable(WorkItem.class.simpleName,null,null)
+                                 .where("work.id = :workId",["workId":work.id],null,{return true})
+                                 .orderBy("mediaType,type")
+                                 .buildSql().run().content;
+                                 for(WorkItem workItem in work.workItemList)
+                                 {
+                                     workItem.cancelLazyEr();
+                                     workItem.work = null;
+                                 }
+                             }
                          }
                          return workList;
                      }).call()

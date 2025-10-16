@@ -5,10 +5,14 @@
         <div class="start overflow-hidden">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">
-                    <FloatLabel variant="on">
+                    <FloatLabel variant="on" v-if="process=='c'">
                         <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
                         <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid placeholder="选择分组"/>
                     </FloatLabel>
+                    <IftaLabel variant="on" v-if="process=='u'">
+                        <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium">选择分组</label>
+                        <InputText name="guige" class="w-full md:w-[30rem]" :value="work.guiGe?.name" disabled/>
+                    </IftaLabel>
                     <FloatLabel variant="on">
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品名称</label>
                         <InputText name="name" class="w-full md:w-[30rem]" v-model="work.name" />
@@ -95,6 +99,7 @@ const workImageItems = ref([]);
 const workVideoItems = ref([]);
 const imageVaild = ref(false);
 const videoVaild = ref(false);
+const process = ref(null);
 
 let item = null;
 let shiTempSave = true;
@@ -205,6 +210,7 @@ const resolver = ({ values }) => {
 const onFormSubmit = ({ valid }) => {
     if (valid) {
         // console.log(workImageItems.value,workVideoItems.value);
+        dialog.openLoading("");
         work.value.guiGeId = work.value.guiGe.id;
         work.value.status = shiTempSave ? 0 : 1;
         work.value.workItemList = null;
@@ -235,32 +241,41 @@ function preSave(f) {
 
 function uploadFile(step) {
     if (step > preUploadFiles.length-1) {
-        console.log(work.value);
+        // console.log(work.value);
+        dialog.closeLoading();
         workRest.updateBuyerWork({work:work.value},(res)=>{
             if (res.status=="OK") {
-                dialog.alert(shiTempSave ? "您的作品已经保存" : "您的作品已成功提交");
+                dialog.alertBack(shiTempSave ? "您的作品已经保存" : "您的作品已成功提交",()=>{
+                    obj.work = work.value;
+                    obj.returnFunction(obj);
+                    mePage.close(mainPage);
+                });
             }
         });
     } else {
-        let workItem = preUploadFiles[step].bean;
-        workItem.createDate = work.value.createDate;
-        workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${workItem.id}_${preUploadFiles[step].file.name}`;
-        if (workItem.mediaType==0) {
-            workItem.exifInfo = JSON.stringify(preUploadFiles[step].exifInfo);
-        }
-        workItem.mediaFields = {name:preUploadFiles[step].file.name,size:preUploadFiles[step].file.size,type:preUploadFiles[step].file.type};
-        oss.uploadFileWithClient(
-            preUploadFiles[step].file,
-            workItem.path,
-            (res) => {
-                work.value.tempMap.workItemList.push(workItem);
-                dialog.toastSuccess(`文件${workItem.mediaFields.name}成功上传`);
-                uploadFile(step+1);
-            },
-            (er) => {
-                dialog.toastError(er);
+        if (!preUploadFiles[step].uploaded) {
+            let workItem = preUploadFiles[step].bean;
+            workItem.createDate = work.value.createDate;
+            workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${workItem.id}_${preUploadFiles[step].file.name}`;
+            if (workItem.mediaType==0) {
+                workItem.exifInfo = JSON.stringify(preUploadFiles[step].exifInfo);
             }
-        );
+            workItem.mediaFields = {name:preUploadFiles[step].file.name,size:preUploadFiles[step].file.size,type:preUploadFiles[step].file.type};
+            oss.uploadFileWithClient(
+                preUploadFiles[step].file,
+                workItem.path,
+                (res) => {
+                    work.value.tempMap.workItemList.push(workItem);
+                    dialog.toastSuccess(`文件${workItem.mediaFields.name}成功上传`);
+                    uploadFile(step+1);
+                },
+                (er) => {
+                    dialog.toastError(er);
+                }
+            );
+        } else {
+            uploadFile(step+1);
+        }
     }
 }
 
@@ -280,6 +295,7 @@ async function onFileSelect(event) {
     } else {
         item.src = URL.createObjectURL(item.file);
     }
+    item.uploaded = false;
     // item.fileUrl = URL.createObjectURL(new Blob([await event.files[0].arrayBuffer()],{type:"video/mp4"}));
 }
 
@@ -287,8 +303,24 @@ const init = (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
     obj = lodash.cloneDeep(_obj);
+    process.value = obj.process;
     competition.value = obj.data;
     masterCompetition.value = obj.masterCompetition;
+
+    workImageItems.value = [];
+    workVideoItems.value = [];
+    errors = null;
+    lodash.forEach(obj.uploadRule.workType.image,(v)=>{
+        for(let i=0;i<v.showCount;i++) {
+            workImageItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,checkExif:v.checkExif,bean:buildWorkItem(v.mediaType,v.type)});
+        }
+    });
+    lodash.forEach(obj.uploadRule.workType.video,(v)=>{
+        for(let i=0;i<v.showCount;i++) {
+            workVideoItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,bean:buildWorkItem(v.mediaType,v.type)});
+        }
+    });
+
     if (obj.process=="c") {
         work.value = Beans.work();
         work.value.id = Beans.buildPId(obj.userId.substring(7));
@@ -299,18 +331,22 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.otherFields = masterCompetition.value.setupFields;
         work.value.createDate = new Date().getTime();
         work.value.workItemList = [];
-        workImageItems.value = [];
-        workVideoItems.value = [];
-        errors = null;
-        lodash.forEach(obj.uploadRule.workType.image,(v)=>{
-            for(let i=0;i<v.showCount;i++) {
-                workImageItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,checkExif:v.checkExif,bean:buildWorkItem(v.mediaType,v.type)});
-            }
+    } else if (obj.process=="u") {
+        work.value = obj.work;
+        lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
+            let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
+            item.file = workItem.mediaFields;
+            item.path = workItem.path;
+            item.exifInfo = workItem.exifInfo;
+            item.src = oss.buildImgPath(item.path);
+            item.uploaded = true;
         });
-        lodash.forEach(obj.uploadRule.workType.video,(v)=>{
-            for(let i=0;i<v.showCount;i++) {
-                workVideoItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,bean:buildWorkItem(v.mediaType,v.type)});
-            }
+        lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1}),(workItem)=>{
+            let item = lodash.find(workVideoItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
+            item.file = workItem.mediaFields;
+            item.path = workItem.path;
+            item.src = oss.buildPath(item.path);
+            item.uploaded = true;
         });
     }
 }
