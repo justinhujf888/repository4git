@@ -94,7 +94,7 @@ function showCompetitionList(event) {
 
 function returnFunction(obj) {
     let work = lodash.find(workList.value,(o)=>{return o.id==obj.work.id});
-    work.workItemList = obj.work.tempMap.workItemList;
+    work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList);
     forceUpdateKey.value++;
 }
 </script>

@@ -15,7 +15,7 @@
                     </IftaLabel>
                     <FloatLabel variant="on">
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品名称</label>
-                        <InputText name="name" class="w-full md:w-[30rem]" v-model="work.name" />
+                        <InputText name="name" class="w-full md:w-[30rem]" v-model="work.name" :readonly="work.status==1"/>
                     </FloatLabel>
                     <Fieldset legend="作品照片">
                         <InputText v-model="imageVaild" name="imageVaild" class="hidden"/>
@@ -50,25 +50,26 @@
                     </FloatLabel>
                     <FloatLabel variant="on">
                         <label for="gousiDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品介绍</label>
-                        <Textarea name="gousiDescription" v-model="work.gousiDescription" autoResize rows="8" class="w-full" />
+                        <Textarea name="gousiDescription" v-model="work.gousiDescription" autoResize rows="8" class="w-full" :readonly="work.status==1"/>
                     </FloatLabel>
                     <FloatLabel variant="on">
                         <label for="myMeanDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品理念</label>
-                        <Textarea name="myMeanDescription" v-model="work.myMeanDescription" autoResize rows="8" class="w-full" />
+                        <Textarea name="myMeanDescription" v-model="work.myMeanDescription" autoResize rows="8" class="w-full" :readonly="work.status==1"/>
                     </FloatLabel>
                     <FloatLabel variant="on" v-for="(item,index) in work.hangyeFields?.data" :key="index">
                         <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
-                        <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
+                        <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" :readonly="work.status==1"/>
                     </FloatLabel>
                     <FloatLabel variant="on" v-for="(item,index) in work.otherFields?.data" :key="index">
                         <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
-                        <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" />
+                        <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" :readonly="work.status==1"/>
                     </FloatLabel>
-                    <div class="row mt-12 center gap-4">
+                    <div class="row mt-12 center gap-4" v-if="work.status<1">
                         <Button type="submit" severity="warn" label="暂时保存" class="px-8" @click="preSave(0)"></Button>
                         <Button type="submit" label="提交" class="px-8" _as="router-link" _to="/" @click="preSave(1)"></Button>
                     </div>
                 </Form>
+                <priviewImage ref="refPriviewImage" v-if="work" :files="work" :shiShowImgGrid="false" _class="hidden"/>
             </div>
         </div>
     </div>
@@ -87,6 +88,7 @@ import userRest from "@/api/dbs/userRest";
 import dialog from "@/api/uniapp/dialog";
 import lodash from "lodash-es";
 import exifr from 'exifr';
+import priviewImage from "@/components/my/priviewImage.vue";
 
 const imageFileUpload = useTemplateRef("imageFileUpload");
 const videoFileUpload = useTemplateRef("videoFileUpload");
@@ -101,6 +103,8 @@ const imageVaild = ref(false);
 const videoVaild = ref(false);
 const process = ref(null);
 
+const refPriviewImage = useTemplateRef("refPriviewImage");
+
 let item = null;
 let shiTempSave = true;
 let preUploadFiles = [];
@@ -112,7 +116,7 @@ let obj = null;
 
 onMounted(() => {
     menuItems.value = [
-        {label:'返回我的参赛作品',click:()=>{obj.returnFunction(obj);mePage.close(mainPage);}}
+        {label:'返回我的参赛作品',click:()=>{mePage.close(mainPage);}}
     ];
     // workImageItems.value = [
     //     {title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",file:null,bean:buildWorkItem(0,0)},
@@ -128,11 +132,20 @@ onMounted(() => {
 
 function uploadButtonClick(_item) {
     item = _item;
-    if (item.mediaType==0) {
-        imageFileUpload.value.choose();
-    } else {
-        videoFileUpload.value.choose();
+    if (work.value.status<1 && !item.file) {
+        if (item.mediaType==0) {
+            imageFileUpload.value.choose();
+        } else {
+            videoFileUpload.value.choose();
+        }
+    } else if (item.file) {
+        if (item.mediaType==0) {
+
+        } else {
+
+        }
     }
+
 }
 
 function buildWorkItem(mediaType,type) {
@@ -255,6 +268,7 @@ function uploadFile(step) {
     } else {
         if (!preUploadFiles[step].uploaded) {
             let workItem = preUploadFiles[step].bean;
+            workItem.work.id = work.value.id;
             workItem.createDate = work.value.createDate;
             workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${workItem.id}_${preUploadFiles[step].file.name}`;
             if (workItem.mediaType==0) {
@@ -333,6 +347,7 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.workItemList = [];
     } else if (obj.process=="u") {
         work.value = obj.work;
+        console.log(work.value);
         lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
             let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
             item.file = workItem.mediaFields;
