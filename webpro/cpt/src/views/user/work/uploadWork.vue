@@ -22,7 +22,7 @@
                         <Message v-for="er of $form.imageVaild?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
                         <FileUpload v-show="false" ref="imageFileUpload" mode="basic" accept="image/*" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                         <div class="row flex-wrap gap-2">
-                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workImageItems" :key="index" @click="uploadButtonClick(item)">
+                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workImageItems" :key="index" @click="uploadButtonClick(item,index)">
                                 <img v-show="item.src" :alt="item.src" :src="item.src" class="absolute top-0 left-0 z-10 w-full h-32 object-cover object-center"/>
                                 <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
                                     <span class="text-xl">{{item.title}}</span>
@@ -36,8 +36,8 @@
                         <FileUpload v-show="false" ref="videoFileUpload" mode="basic" accept="video/*" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                         <Message v-for="er of $form.videoVaild?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
                         <div class="row flex-wrap gap-2">
-                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workVideoItems" :key="index" @click="uploadButtonClick(item)">
-                                <video :src="item.src" class="absolute top-0 left-0 z-10 object-center"/>
+                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workVideoItems" :key="index" @click="uploadButtonClick(item,index)">
+                                <videoInfo ref="refVideoInfo" v-if="item.src" :src="item.src" class="absolute top-0 left-0 z-10 object-center"/>
                                 <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
                                     <span class="text-xl">{{item.title}}</span>
                                     <span class="text-sm">{{item.text}}</span>
@@ -89,9 +89,11 @@ import dialog from "@/api/uniapp/dialog";
 import lodash from "lodash-es";
 import exifr from 'exifr';
 import priviewImage from "@/components/my/priviewImage.vue";
+import videoInfo from "@/components/my/videoInfo.vue";
 
 const imageFileUpload = useTemplateRef("imageFileUpload");
 const videoFileUpload = useTemplateRef("videoFileUpload");
+const refVideoInfo = useTemplateRef("refVideoInfo");
 
 const masterCompetition = ref(Beans.masterCompetition());
 const competition = ref(Beans.competition());
@@ -130,7 +132,7 @@ onMounted(() => {
     // ];
 });
 
-function uploadButtonClick(_item) {
+function uploadButtonClick(_item,index) {
     item = _item;
     if (work.value.status<1 && !item.file) {
         if (item.mediaType==0) {
@@ -140,9 +142,9 @@ function uploadButtonClick(_item) {
         }
     } else if (item.file) {
         if (item.mediaType==0) {
-
+            refPriviewImage.value.imagesShow(lodash.filter(workImageItems.value,(o)=>{return o.tempMap?.imgPath}),index);
         } else {
-
+            console.log(refVideoInfo.value[index].getVideoInfo());
         }
     }
 
@@ -275,6 +277,9 @@ function uploadFile(step) {
                 workItem.exifInfo = JSON.stringify(preUploadFiles[step].exifInfo);
             }
             workItem.mediaFields = {name:preUploadFiles[step].file.name,size:preUploadFiles[step].file.size,type:preUploadFiles[step].file.type};
+            if (workItem.mediaType==1) {
+                workItem.mediaFields.duration = refVideoInfo.value[step].getVideoInfo().duration;
+            }
             oss.uploadFileWithClient(
                 preUploadFiles[step].file,
                 workItem.path,
@@ -355,6 +360,8 @@ const init = (_mainPage,_mePage,_obj)=>{
             item.exifInfo = workItem.exifInfo;
             item.src = oss.buildImgPath(item.path);
             item.uploaded = true;
+            item.tempMap = {};
+            item.tempMap.imgPath = item.src;
         });
         lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1}),(workItem)=>{
             let item = lodash.find(workVideoItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});

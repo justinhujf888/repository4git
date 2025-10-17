@@ -1,8 +1,9 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
-            <div v-if="workList.length>0" class="center col">
+            <div v-if="workList.length>0" class="center col gap-2">
                 <Button v-for="work of workList" class="!text-3xl !p-5 w-full md:w-3/5" :label="work.name" severity="secondary" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
+                <Button v-for="wIndex of uploadRule.maxWorkCount-workList.length" class="!text-4xl !p-5 w-full md:w-3/5" label="+" severity="secondary" @click="showCompetitionList($event)"/>
             </div>
             <div v-else class="center grid gap-4">
                 <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>
@@ -14,7 +15,7 @@
                 <div class="flex flex-col items-center w-full gap-4 p-4 mb-4 pb-0">
                     <!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
                     <div class="grid gap-2">
-                        <div v-for="(competition,index) in competitionList" :key="index">
+                        <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return lodash.findIndex(workList,(w)=>{return w.guiGe.competition.id==o.id})<0})" :key="index">
                             <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
                         </div>
                     </div>
@@ -75,6 +76,10 @@ onMounted(async () => {
     // });
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     competitionList.value = masterCompetition.competitionList;
+    loadWorksByUser();
+});
+
+function loadWorksByUser() {
     workRest.qyWorks({appId:host,userId:userId.value,masterCompetitionId:masterCompetition.id,shiWorkItemList:true},(res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
@@ -82,7 +87,7 @@ onMounted(async () => {
             }
         }
     });
-});
+}
 
 function showCompetitionList(event) {
     confirm.require({
@@ -93,8 +98,13 @@ function showCompetitionList(event) {
 }
 
 function returnFunction(obj) {
-    let work = lodash.find(workList.value,(o)=>{return o.id==obj.work.id});
-    work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList);
+    // let work = lodash.find(workList.value,(o)=>{return o.id==obj.work.id});
+    // if (!work) {
+    //     workList.value.push(obj.work);
+    //     work = obj.work;
+    // }
+    // work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList);
+    loadWorksByUser();
     forceUpdateKey.value++;
 }
 </script>
