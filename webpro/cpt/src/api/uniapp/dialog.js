@@ -25,7 +25,7 @@ export default class Dialog {
         // const confirmPopup = useConfirm();
         Dialog.confirmPopup.require({
             model: true,
-            header: "    ",
+            header: 'Confirmation',
             message: msgtxt,
             icon: 'pi pi-exclamation-triangle',
             acceptProps: {

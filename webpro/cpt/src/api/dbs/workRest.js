@@ -133,4 +133,7 @@ export default {
     updateBuyerWork(ds,onfun) {
         Http.callHttpFunction('/r/work/updateBuyerWork',ds,onfun);
     },
+    deleteWorkItem(ds,onfun) {
+        Http.callHttpFunction('/r/work/deleteWorkItem',ds,onfun);
+    },
 }

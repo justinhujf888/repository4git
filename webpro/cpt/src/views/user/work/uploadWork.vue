@@ -28,6 +28,9 @@
                                     <span class="text-xl">{{item.title}}</span>
                                     <span class="text-sm">{{item.text}}</span>
                                 </div>
+                                <div class="row absolute bottom-2 right-2 z-20">
+                                    <Tag v-if="item.src && work.status<1" severity="danger" value="删除" class="" @click.stop="deleteFile(item)"></Tag>
+                                </div>
                             </Button>
                         </div>
                     </Fieldset>
@@ -38,9 +41,12 @@
                         <div class="row flex-wrap gap-2">
                             <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workVideoItems" :key="index" @click="uploadButtonClick(item,index)">
                                 <videoInfo ref="refVideoInfo" v-if="item.src" :src="item.src" class="absolute top-0 left-0 z-10 object-center"/>
-                                <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
+                                <div class="mix-blend-difference text-white col absolute wcenter z-10 w-full">
                                     <span class="text-xl">{{item.title}}</span>
                                     <span class="text-sm">{{item.text}}</span>
+                                </div>
+                                <div class="row absolute bottom-2 right-2 z-20">
+                                    <Tag v-if="item.src && work.status<1" severity="danger" value="删除" class="" @click.stop="deleteFile(item)"></Tag>
                                 </div>
                             </Button>
                         </div>
@@ -142,7 +148,8 @@ function uploadButtonClick(_item,index) {
         }
     } else if (item.file) {
         if (item.mediaType==0) {
-            refPriviewImage.value.imagesShow(lodash.filter(workImageItems.value,(o)=>{return o.tempMap?.imgPath}),index);
+            let l = lodash.filter(workImageItems.value,(o)=>{return o.tempMap?.imgPath});
+            refPriviewImage.value.imagesShow(l,lodash.findIndex(l,(o)=>{return o.bean.id==item.bean.id}));
         } else {
             console.log(refVideoInfo.value[index].getVideoInfo());
         }
@@ -166,19 +173,6 @@ const resolver = ({ values }) => {
             {val:work.value.guiGe.id,name:"guige"},
             // {val:src.value,name:"headImg",label:"照片"}
         ]);
-        errors.imageVaild = [];
-        errors.videoVaild = [];
-
-        lodash.forEach(obj.uploadRule.workType.image,(v)=>{
-            if (v.checkExif) {
-                lodash.forEach(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}),(cv)=>{
-                    if (!cv.exifInfo.Make || lodash.includes(["ps","photoshop"],lodash.toLower(cv.exifInfo.Software))) {
-                        // errors.imageVaild.push({type:"error",message:`${v.title}${cv.file.name}不符合规定`});
-                    }
-                });
-            }
-        });
-
     } else {
         errors = primeUtil.checkFormRequiredValid([
             {val:work.value.name,name:"name"},
@@ -187,9 +181,6 @@ const resolver = ({ values }) => {
             {val:work.value.gousiDescription,name:"gousiDescription"},
             // {val:src.value,name:"headImg",label:"照片"}
         ]);
-
-        errors.imageVaild = [];
-        errors.videoVaild = [];
 
         lodash.forEach(obj.uploadRule.workType.image,(v)=>{
             const count = lodash.size(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}));
@@ -212,6 +203,39 @@ const resolver = ({ values }) => {
             }
         });
     }
+
+    //不区分暂存与提交的公共部分判断
+    errors.imageVaild = [];
+    errors.videoVaild = [];
+
+    lodash.forEach(obj.uploadRule.workType.image,(v)=>{
+        if (v.rule) {
+            lodash.forEach(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}),(cv,index)=>{
+                if (v.rule.size) {
+                    if (cv.file.size>v.rule.size) {
+                        errors.imageVaild.push({type:"error",message:`${v.title}${cv.file.name}文件太大，需小于${v.rule.size/1024/1024}MB`});
+                    }
+                }
+            });
+        }
+    });
+
+    lodash.forEach(obj.uploadRule.workType.video,(v)=>{
+        if (v.rule) {
+            lodash.forEach(lodash.filter(workVideoItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}),(cv,index)=>{
+                if (v.rule.size) {
+                    if (cv.file.size>v.rule.size) {
+                        errors.videoVaild.push({type:"error",message:`${v.title}${cv.file.name}文件太大，需小于${v.rule.size/1024/1024}MB`});
+                    }
+                }
+                if (v.rule.duration) {
+                    if (refVideoInfo.value[index].getVideoInfo().duration>v.rule.duration) {
+                        errors.videoVaild.push({type:"error",message:`${v.title}${cv.file.name}视频时间长度太长，需小于${v.rule.duration}秒`});
+                    }
+                }
+            });
+        }
+    });
 
     // primeUtil.buildFormValidError(errors.videoVaild,"error","上传视频",()=>{
     //     workVideoItems.value
@@ -314,8 +338,27 @@ async function onFileSelect(event) {
     } else {
         item.src = URL.createObjectURL(item.file);
     }
+    item.tempMap = {};
+    item.tempMap.imgPath = item.src;
     item.uploaded = false;
     // item.fileUrl = URL.createObjectURL(new Blob([await event.files[0].arrayBuffer()],{type:"video/mp4"}));
+}
+
+function deleteFile(ele) {
+    if (ele.uploaded) {
+        dialog.confirm("是否确认删除这个文件？",()=>{
+            workRest.deleteWorkItem({id:ele.bean.id},(res)=>{
+                if (res.status=="OK") {
+                    oss.deleteFile(ele.bean.path);
+                    ele.file = null;
+                    ele.src = null;
+                }
+            });
+        },null);
+    } else {
+        ele.file = null;
+        ele.src = null;
+    }
 }
 
 const init = (_mainPage,_mePage,_obj)=>{
@@ -352,22 +395,24 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.workItemList = [];
     } else if (obj.process=="u") {
         work.value = obj.work;
-        console.log(work.value);
+        // console.log(work.value);
         lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
             let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
             item.file = workItem.mediaFields;
             item.path = workItem.path;
             item.exifInfo = workItem.exifInfo;
-            item.src = oss.buildImgPath(item.path);
+            item.src = oss.buildImgPath(workItem.path);
             item.uploaded = true;
             item.tempMap = {};
             item.tempMap.imgPath = item.src;
+            item.bean = workItem;
         });
         lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1}),(workItem)=>{
             let item = lodash.find(workVideoItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
             item.file = workItem.mediaFields;
             item.path = workItem.path;
-            item.src = oss.buildPath(item.path);
+            item.src = oss.buildPath(workItem.path);
+            item.bean = workItem;
             item.uploaded = true;
         });
     }

@@ -541,4 +541,22 @@ class WorkRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deleteWorkItem")
+    String deleteWorkItem (@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.deleteTheObject8Fields(WorkItem.class.name,"id=:id",["id":query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

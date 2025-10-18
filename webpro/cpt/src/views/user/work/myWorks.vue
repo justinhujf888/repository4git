@@ -52,13 +52,13 @@ const uploadRule = ref({
     maxWorkCount: 3,
     workType:{
         image:[
-            {type:0,mediaType:0,showCount:1,maxCount:1,checkExif:true,title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容"},
-            {type:1,mediaType:0,showCount:1,maxCount:1,checkExif:false,title:"上传作品全景图主图",text:""},
-            {type:2,mediaType:0,showCount:2,maxCount:2,checkExif:false,title:"上传作品全景图其他角度",text:""},
-            {type:3,mediaType:0,showCount:4,maxCount:2,checkExif:false,title:"上传作品其他细节至少2张",text:""}
+            {type:0,mediaType:0,showCount:1,maxCount:1,checkExif:true,title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:2*1024*1024}},
+            {type:1,mediaType:0,showCount:1,maxCount:1,checkExif:false,title:"上传作品全景图主图",text:"",rule:{size:2*1024*1024}},
+            {type:2,mediaType:0,showCount:2,maxCount:2,checkExif:false,title:"上传作品全景图其他角度",text:"",rule:{size:2*1024*1024}},
+            {type:3,mediaType:0,showCount:4,maxCount:2,checkExif:false,title:"上传作品其他细节至少2张",text:"",rule:{size:2*1024*1024}}
         ],
         video:[
-            {type:4,mediaType:1,showCount:1,maxCount:1,title:"上传视频",text:""}
+            {type:4,mediaType:1,showCount:1,maxCount:1,title:"上传视频",text:"",rule:{duration:20,size:20*1024*1024}}
         ]
     }
 });
@@ -98,13 +98,24 @@ function showCompetitionList(event) {
 }
 
 function returnFunction(obj) {
-    // let work = lodash.find(workList.value,(o)=>{return o.id==obj.work.id});
-    // if (!work) {
-    //     workList.value.push(obj.work);
-    //     work = obj.work;
-    // }
-    // work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList);
-    loadWorksByUser();
+    let work = null;
+    if (obj.process=="c") {
+        work = obj.work;
+        workList.value.push(work);
+    } else {
+        work = lodash.find(workList.value,(o)=>{return o.id==obj.work.id});
+    }
+    if (!work.workItemList) {
+        work.workItemList = [];
+    }
+    if (!work.tempMap?.workItemList) {
+        if (!work.tempMap) {
+            work.tempMap = {};
+        }
+        work.tempMap.workItemList = [];
+    }
+    work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList);
+    // loadWorksByUser();
     forceUpdateKey.value++;
 }
 </script>
