@@ -417,6 +417,7 @@ class WorkRest extends BaseRest
                      "data":({
                          List<Work> workList = workService.newQueryUtils(false).masterTable(Work.class.simpleName,null,null)
                                  .where("appId = :appId",["appId":query.appId],null,{return true})
+                                .where("id = :workId",["workId":query.workId],"and",{return !(query.workId in [null,""])})
                                  .where("guiGe.id = :guiGeId",["guiGeId":query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
                                  .where("guiGeId = :guiGeJsonId",["guiGeJsonId":query.guiGeJsonId],"and",{return !(query.guiGeJsonId in [null,""])})
                                     .where("buyer.phone=:userId",["userId":query.userId],"and",{return !(query.userId in [null,""])})

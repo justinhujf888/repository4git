@@ -173,6 +173,8 @@ const resolver = ({ values }) => {
             {val:work.value.guiGe.id,name:"guige"},
             // {val:src.value,name:"headImg",label:"照片"}
         ]);
+        errors.imageVaild = [];
+        errors.videoVaild = [];
     } else {
         errors = primeUtil.checkFormRequiredValid([
             {val:work.value.name,name:"name"},
@@ -181,7 +183,8 @@ const resolver = ({ values }) => {
             {val:work.value.gousiDescription,name:"gousiDescription"},
             // {val:src.value,name:"headImg",label:"照片"}
         ]);
-
+        errors.imageVaild = [];
+        errors.videoVaild = [];
         lodash.forEach(obj.uploadRule.workType.image,(v)=>{
             const count = lodash.size(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}));
             if (count < v.maxCount) {
@@ -205,9 +208,6 @@ const resolver = ({ values }) => {
     }
 
     //不区分暂存与提交的公共部分判断
-    errors.imageVaild = [];
-    errors.videoVaild = [];
-
     lodash.forEach(obj.uploadRule.workType.image,(v)=>{
         if (v.rule) {
             lodash.forEach(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}),(cv,index)=>{
@@ -352,6 +352,7 @@ function deleteFile(ele) {
                     oss.deleteFile(ele.bean.path);
                     ele.file = null;
                     ele.src = null;
+                    work.value.workItemList.splice(lodash.findIndex(work.value.workItemList,(o)=>{return o.id==ele.bean.id}),1);
                 }
             });
         },null);
@@ -394,26 +395,32 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.createDate = new Date().getTime();
         work.value.workItemList = [];
     } else if (obj.process=="u") {
-        work.value = obj.work;
         // console.log(work.value);
-        lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
-            let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
-            item.file = workItem.mediaFields;
-            item.path = workItem.path;
-            item.exifInfo = workItem.exifInfo;
-            item.src = oss.buildImgPath(workItem.path);
-            item.uploaded = true;
-            item.tempMap = {};
-            item.tempMap.imgPath = item.src;
-            item.bean = workItem;
-        });
-        lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1}),(workItem)=>{
-            let item = lodash.find(workVideoItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
-            item.file = workItem.mediaFields;
-            item.path = workItem.path;
-            item.src = oss.buildPath(workItem.path);
-            item.bean = workItem;
-            item.uploaded = true;
+        workRest.qyWorks({appId:host,userId:obj.userId,workId:obj.work.id,masterCompetitionId:obj.masterCompetition.id,shiWorkItemList:true},(res)=>{
+            if (res.status=="OK") {
+                if (res.data!=null) {
+                    work.value = res.data[0];
+                    lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
+                        let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
+                        item.file = workItem.mediaFields;
+                        item.path = workItem.path;
+                        item.exifInfo = workItem.exifInfo;
+                        item.src = oss.buildImgPath(workItem.path);
+                        item.uploaded = true;
+                        item.tempMap = {};
+                        item.tempMap.imgPath = item.src;
+                        item.bean = workItem;
+                    });
+                    lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1}),(workItem)=>{
+                        let item = lodash.find(workVideoItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
+                        item.file = workItem.mediaFields;
+                        item.path = workItem.path;
+                        item.src = oss.buildPath(workItem.path);
+                        item.bean = workItem;
+                        item.uploaded = true;
+                    });
+                }
+            }
         });
     }
 }

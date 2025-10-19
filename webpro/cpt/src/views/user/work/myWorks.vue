@@ -1,10 +1,45 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
-            <div v-if="workList.length>0" class="center col gap-2">
-                <Button v-for="work of workList" class="!text-3xl !p-5 w-full md:w-3/5" :label="work.name" severity="secondary" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
-                <Button v-for="wIndex of uploadRule.maxWorkCount-workList.length" class="!text-4xl !p-5 w-full md:w-3/5" label="+" severity="secondary" @click="showCompetitionList($event)"/>
+            <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);">
+                    <template #header>
+                        <img v-if="work.workItemList?.length>0" :src="work.workItemList[0].tempMap.imgPath" class="h-48 w-full object-cover object-center"/>
+                        <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
+                    </template>
+                    <template #title>{{work.name}}</template>
+                    <template #subtitle>
+                        <span class="text-md mx-3 font-semibold">{{work.guiGe.competition.name}}</span>
+                        <span class="text-md">{{work.guiGe.name}}</span>
+                    </template>
+                    <template #content>
+                        <p class="m-0">
+
+                        </p>
+                    </template>
+                </Card>
+                <Card class="overflow-hidden cursor-pointer" v-for="wIndex of uploadRule.maxWorkCount-workList.length" @click="showCompetitionList($event)">
+                    <template #header>
+<!--                        <img src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />-->
+                        <div class="w-full h-48 bg-gray-500 content-center">
+                            <h1 class="center text-white">+</h1>
+                        </div>
+                    </template>
+                    <template #title>新增一个作品</template>
+                    <template #subtitle>
+
+                    </template>
+                    <template #content>
+                        <p class="m-0">
+
+                        </p>
+                    </template>
+                </Card>
             </div>
+<!--            <div v-if="workList.length>0" class="center col gap-2">-->
+<!--                <Button v-for="work of workList" class="!text-3xl !p-5 w-full md:w-3/5" :class="{'!border-3 !border-solid !border-green-600':work.status==1,'!border-3 !border-solid !border-orange-600':work.status<1}" :label="work.name" severity="secondary" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>-->
+<!--                <Button v-for="wIndex of uploadRule.maxWorkCount-workList.length" class="!text-4xl !p-5 w-full md:w-3/5" label="+" severity="secondary" @click="showCompetitionList($event)"/>-->
+<!--            </div>-->
             <div v-else class="center grid gap-4">
                 <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>
                 <Button class="!text-4xl" label="+" severity="secondary" @click="showCompetitionList($event)"/>
@@ -38,6 +73,7 @@ import {useStorage} from "@vueuse/core";
 import { useConfirm } from "primevue/useconfirm";
 import uploadWork from "@/views/user/work/uploadWork.vue";
 import lodash from "lodash-es";
+import oss from "@/api/oss";
 
 const confirm = useConfirm();
 const mainPage = useTemplateRef("mainPage");
@@ -84,6 +120,11 @@ function loadWorksByUser() {
         if (res.status=="OK") {
             if (res.data!=null) {
                 workList.value = res.data;
+                lodash.forEach(workList.value,(work)=>{
+                    lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
+                        workItem.tempMap = {imgPath:oss.buildImgPath(workItem.path)};
+                    })
+                });
             }
         }
     });
@@ -103,7 +144,9 @@ function returnFunction(obj) {
         work = obj.work;
         workList.value.push(work);
     } else {
-        work = lodash.find(workList.value,(o)=>{return o.id==obj.work.id});
+        let wIndex = lodash.findIndex(workList.value,(o)=>{return o.id==obj.work.id});
+        workList.value[wIndex] = obj.work;
+        work = workList.value[wIndex];
     }
     if (!work.workItemList) {
         work.workItemList = [];
@@ -115,6 +158,11 @@ function returnFunction(obj) {
         work.tempMap.workItemList = [];
     }
     work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList);
+    lodash.forEach(workList.value,(work)=>{
+        lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
+            workItem.tempMap = {imgPath:oss.buildImgPath(workItem.path)};
+        })
+    });
     // loadWorksByUser();
     forceUpdateKey.value++;
 }
