@@ -44,6 +44,16 @@ export const Http = {
                 }
                 // dialog.alert("系统错误，请通知系统管理员或者客服；谢谢！");
                 console.log(error);
+                if (error.response) {
+                    // 请求已发出，服务器回复状态码非 2xx
+                    console.error('服务器返回错误：', error.response.status);
+                } else if (error.request) {
+                    // 请求已发出，但没有收到响应
+                    console.error('没有收到响应：', error.request);
+                } else {
+                    // 其他错误（例如，配置错误）
+                    console.error('请求配置错误：', error.message);
+                }
             });
     },
 
