@@ -82,13 +82,13 @@ class CorsFilter implements ContainerResponseFilter {
             //浏览器会先通过options请求来确认服务器是否可以正常访问，此时应放行
             c.setStatus(HttpServletResponse.SC_OK);
         }
-        if (request.getHeaderString("origin") in ["http://localhost:5173","https://localhost:5173","https://192.168.1.46:5173","https://image.arkydesign.cn"])
+        if (request.getHeaderString("origin") in ["http://localhost:5173","https://localhost:5173","https://192.168.64.1:5173","https://image.arkydesign.cn"])
         {
             c.getHeaders().add("Access-Control-Allow-Origin", request.getHeaderString("origin"));
         }
 //        c.getHeaders().add("Access-Control-Allow-Origin", "*");
 
-        c.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorizationk, self");
+        c.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, self");
         c.getHeaders().add("Access-Control-Allow-Credentials", "true");
 
         c.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");

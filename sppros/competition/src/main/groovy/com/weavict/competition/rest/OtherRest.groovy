@@ -317,7 +317,7 @@ class OtherRest extends BaseRest
     }
 
 
-    @POST
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/test")
@@ -343,19 +343,7 @@ class OtherRest extends BaseRest
         return objectMapper.writeValueAsString(
                 ["status":"OK",
                  "datas":({
-                     List<Work> workList = redisApi.userBean.newQueryUtils(true,true).masterTable("work","work",[
-                             [sf:"id",bf:"id"],
-                             [sf:"otherfields",bf:"otherFields",convertType:"json"]
-                     ])
-                             .beanSetup(Work.class,null,null)
-                             .where("otherfields->>'name' = 'iuy'",null,null,null)
-                             .buildSql().run().content;
-                     for(Work work in workList)
-                     {
-                         println work?.id;
-                         println work?.otherFields;
-                     }
-                     return workList;
+                     return new Buyer();
                  }).call()
                 ]);
 

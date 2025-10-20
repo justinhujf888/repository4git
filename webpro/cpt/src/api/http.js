@@ -13,7 +13,7 @@ export const Http = {
         });
     },
     httpclient_json(url, method, ds, ptype, returnfun, errorfun, loading) {
-        // console.log(ds);
+        // console.log(ds,Config.apiBaseURL,url);
         if (loading) {
             dialog?.openLoading("处理中");
         }
@@ -24,6 +24,7 @@ export const Http = {
         ds.loginState = null; //login.getLoginState();
         ds.appId = util.getDomainFromUrl(window.location);
         ds.vstr = str;
+        // console.log(util.encryptStoreInfo(encodeURIComponent(JSON.stringify(ds))));
         axios({
             baseURL: Config.apiBaseURL,
             url: url,
@@ -55,6 +56,7 @@ export const Http = {
                     console.error('请求配置错误：', error.message);
                 }
             });
+
     },
 
     callHttpFunction(url,ds,onfun) {
