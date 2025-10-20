@@ -317,7 +317,7 @@ class OtherRest extends BaseRest
     }
 
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/test")

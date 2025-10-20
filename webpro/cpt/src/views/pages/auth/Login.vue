@@ -2,6 +2,7 @@
 <!--    <FloatingConfigurator />-->
     <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
+<!--            <Button label="test" @click="test"/>-->
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
                     <div class="text-center mb-8">
@@ -50,6 +51,8 @@ import Page from "@/api/uniapp/page";
 import dialog from '@/api/uniapp/dialog';
 import checker from "@/api/check/checker";
 import { useStorage } from '@vueuse/core';
+import axios from "axios";
+import util from "@/api/util";
 
 const buyer = ref(Beans.buyer());
 const password = ref('');
@@ -94,6 +97,34 @@ const onFormSubmit = ({ valid }) => {
     }
 };
 
+function test() {
+    axios({
+        baseURL: "http://localhost:8091/cpt",
+        url: "/r/other/test",
+        method: "post", // header: {timestamp:jsEncrypt.encrypt(str),createTime:str,nonceStr:util.encryptStoreInfo(str)},
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: util.encryptStoreInfo(encodeURIComponent(JSON.stringify({appId:"abcde"})))
+    })
+        .then((res) => {
+            console.log(res);
+        })
+        .catch((error) => {
+            // dialog.alert("系统错误，请通知系统管理员或者客服；谢谢！");
+            console.log(error);
+            if (error.response) {
+                // 请求已发出，服务器回复状态码非 2xx
+                console.error('服务器返回错误：', error.response.status);
+            } else if (error.request) {
+                // 请求已发出，但没有收到响应
+                console.error('没有收到响应：', error.request);
+            } else {
+                // 其他错误（例如，配置错误）
+                console.error('请求配置错误：', error.message);
+            }
+        });
+}
 </script>
 
 <style scoped>
