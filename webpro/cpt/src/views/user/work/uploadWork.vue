@@ -124,7 +124,7 @@ let obj = null;
 
 onMounted(() => {
     menuItems.value = [
-        {label:'返回我的参赛作品',click:()=>{mePage.close(mainPage);}}
+        {label:'返回我的参赛作品',click:()=>{obj.refreashUpdateKey();mePage.close(mainPage);}}
     ];
     // workImageItems.value = [
     //     {title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",file:null,bean:buildWorkItem(0,0)},
@@ -305,7 +305,8 @@ function uploadFile(step) {
             }
             workItem.mediaFields = {name:preUploadFiles[step].file.name,size:preUploadFiles[step].file.size,type:preUploadFiles[step].file.type};
             if (workItem.mediaType==1) {
-                workItem.mediaFields.duration = refVideoInfo.value[step].getVideoInfo().duration;
+                // let l = lodash.filter(workVideoItems.value,(o)=>{return o.file});
+                workItem.mediaFields.duration = refVideoInfo.value[lodash.findIndex(workVideoItems.value,(o)=>{return o.bean.id==workItem.id})].getVideoInfo().duration;
             }
             oss.uploadFileWithClient(
                 preUploadFiles[step].file,
@@ -336,7 +337,7 @@ async function onFileSelect(event) {
             } else {
                 item.exifInfo = {Make:null,Software:null};
             }
-            console.log(output);
+            // console.log(output);
         })
     } else {
         item.src = URL.createObjectURL(item.file);

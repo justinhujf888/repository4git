@@ -5,6 +5,15 @@ import HeroWidget from '@/components/landing/HeroWidget.vue';
 import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
 import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
+import {inject, onMounted} from "vue";
+import workRest from '@/api/dbs/workRest';
+
+let host = inject("domain");
+
+onMounted(async () => {
+    console.log(await workRest.gainCache8MasterCompetitionInfo(host));
+    console.log(await workRest.gainCache8SiteInfo(host));
+});
 </script>
 
 <template>

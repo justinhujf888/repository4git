@@ -2,9 +2,9 @@
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
             <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);">
+                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);">
                     <template #header>
-                        <img v-if="work.workItemList?.length>0" :src="work.workItemList[0].tempMap.imgPath" class="h-48 w-full object-cover object-center"/>
+                        <img v-if="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})[0].tempMap.imgPath" class="h-48 w-full object-cover object-center"/>
                         <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
                     </template>
                     <template #title>{{work.name}}</template>
@@ -51,7 +51,7 @@
                     <!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
                     <div class="grid gap-2">
                         <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return lodash.findIndex(workList,(w)=>{return w.guiGe.competition.id==o.id})<0})" :key="index">
-                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction});confirm.close();updateWorkPage.open(mainPage);"/>
+                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);"/>
                         </div>
                     </div>
                     <p>{{ slotProps.message.message }}</p>
@@ -164,6 +164,10 @@ function returnFunction(obj) {
         })
     });
     // loadWorksByUser();
+    forceUpdateKey.value++;
+}
+
+function refreashUpdateKey() {
     forceUpdateKey.value++;
 }
 </script>
