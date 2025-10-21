@@ -252,8 +252,8 @@ const onFormSubmit = ({ valid }) => {
         dialog.openLoading("");
         work.value.guiGeId = work.value.guiGe.id;
         work.value.status = shiTempSave ? 0 : 1;
+        work.value.tempMap = {workItemList:[],upedItemList:work.value.workItemList};
         work.value.workItemList = null;
-        work.value.tempMap = {workItemList:[]};
 
         preUploadFiles = lodash.filter(lodash.concat(workImageItems.value,workVideoItems.value),(o)=>{return o.src});
         uploadFile(0);
@@ -294,6 +294,9 @@ function uploadFile(step) {
     } else {
         if (!preUploadFiles[step].uploaded) {
             let workItem = preUploadFiles[step].bean;
+            if (!workItem.work) {
+                workItem.work = Beans.work();
+            }
             workItem.work.id = work.value.id;
             workItem.createDate = work.value.createDate;
             workItem.path = `cpt/${host}/work/${obj.masterCompetition.name}/${obj.userId}/${work.value.id}/${workItem.id}_${preUploadFiles[step].file.name}`;

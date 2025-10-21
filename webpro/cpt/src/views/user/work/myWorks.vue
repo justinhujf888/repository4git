@@ -157,7 +157,7 @@ function returnFunction(obj) {
         }
         work.tempMap.workItemList = [];
     }
-    work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList);
+    work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList,obj.work.tempMap.upedItemList);
     lodash.forEach(workList.value,(work)=>{
         lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
             workItem.tempMap = {imgPath:oss.buildImgPath(workItem.path)};
