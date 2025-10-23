@@ -172,6 +172,10 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> setupFields;
 
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> judgeSetup;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date cptDate;
 
@@ -202,7 +206,7 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
 
 @Table
 @Entity
-//分组赛事
+//类别赛事
 class Competition extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;
@@ -239,7 +243,7 @@ class Competition extends BEntity implements Serializable, IEntity
 
 @Table
 @Entity
-//规格
+//分组
 class GuiGe extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;

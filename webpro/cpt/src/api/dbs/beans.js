@@ -137,6 +137,7 @@ export const Beans = {
             name: "",
             pxBiaozun: "",
             setupFields: null,
+            judgeSetup: null,
             cptDate: null,
             beginDate: null,
             pingShenDate: null,

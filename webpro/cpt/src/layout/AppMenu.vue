@@ -24,7 +24,7 @@ onMounted(() => {
                             { label: '创建子赛事', icon: '', to: '/manage/cpt/master/masterCptSetup' }
                         ]
                     },
-                    { label: '评委管理', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' },
+                    { label: '评委资料库', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' },
                     { label: '发布赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' }
                 ]
             },
