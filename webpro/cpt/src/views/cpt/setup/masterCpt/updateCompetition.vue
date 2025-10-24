@@ -2,7 +2,7 @@
     <div class="card">
         <div class="flex flex-wrap items-center justify-between">
             <div>
-                <span class="text-base">赛事类别设置</span>
+                <span class="text-base">赛事分组设置</span>
             </div>
             <div class="row end gap-4">
 <!--                <span class="text-sm text-red-600">可拖拽排序</span>-->
