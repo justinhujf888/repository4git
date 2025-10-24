@@ -41,6 +41,31 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: '/manage/cpt/site/siteBase',
+                    name: 'siteBase',
+                    component: () => import('@/views/cpt/setup/siteCpt/coms/siteBase.vue')
+                },
+                {
+                    path: '/manage/cpt/site/siteZhuTi',
+                    name: 'siteZhuTi',
+                    component: () => import('@/views/cpt/setup/siteCpt/coms/siteZhuTi.vue')
+                },
+                {
+                    path: '/manage/cpt/site/siteWorkItem',
+                    name: 'siteWorkItem',
+                    component: () => import('@/views/cpt/setup/siteCpt/coms/siteWorkItem.vue')
+                },
+                {
+                    path: '/manage/cpt/site/siteOrgHuman',
+                    name: 'siteOrgHuman',
+                    component: () => import('@/views/cpt/setup/siteCpt/coms/siteOrgHuman.vue')
+                },
+                {
+                    path: '/manage/cpt/site/siteFields',
+                    name: 'siteFields',
+                    component: () => import('@/views/cpt/setup/siteCpt/coms/siteFields.vue')
+                },
+                {
                     path: '/manage/cpt/site/updateSiteCpt',
                     name: 'updateSiteCpt',
                     component: () => import('@/views/cpt/setup/siteCpt/updateSiteCpt.vue'),

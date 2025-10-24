@@ -1,6 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { computed, ref, watch, onMounted } from 'vue';
+import {computed, ref, watch, onMounted, provide, inject} from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
@@ -9,6 +9,7 @@ import LightRays from "@/bit-blocks/Backgrounds/LightRays/LightRays.vue";
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
+
 
 onMounted(() => {
 

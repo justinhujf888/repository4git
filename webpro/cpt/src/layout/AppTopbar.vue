@@ -1,10 +1,11 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
-import { getCurrentInstance } from 'vue';
+import {getCurrentInstance, inject, watch} from 'vue';
 import page from '@/api/uniapp/page';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+
 </script>
 
 <template>

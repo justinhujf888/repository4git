@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-8 z-40">
+    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">设置系列赛事作品</span>
@@ -28,7 +28,7 @@
         </div>
     </animationPage>
 
-    <animationPage ref="updateSiteZuoPingWorkitemPage" class="w-full absolute top-8 z-40">
+    <animationPage ref="updateSiteZuoPingWorkitemPage" class="w-full absolute top-0 z-40">
         <updateSiteWorkitem ref="refUpdateSiteWorkitem" :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
     </animationPage>
 </template>

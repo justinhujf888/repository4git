@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-8 z-40">
+    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">设置作品字段信息</span>
@@ -13,7 +13,7 @@
         </div>
     </animationPage>
 
-    <animationPage ref="updateFieldsPage" class="w-full absolute top-8 z-40">
+    <animationPage ref="updateFieldsPage" class="w-full absolute top-0 z-40">
         <updateFields ref="refUpdateFields"/>
     </animationPage>
 </template>

@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-8 z-40">
+    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">设置组委会成员信息</span>
@@ -40,7 +40,7 @@
         </div>
     </animationPage>
 
-    <animationPage ref="orgHumanUpdatePage" class="w-full absolute top-8 z-40">
+    <animationPage ref="orgHumanUpdatePage" class="w-full absolute top-0 z-40">
         <orgHumanUpdate ref="refOrgHumanUpdate" @callClose="backOrgHumanUpdateClose"/>
     </animationPage>
 </template>

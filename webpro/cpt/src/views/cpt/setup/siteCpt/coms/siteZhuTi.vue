@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-8 z-40">
+    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">设置赛事主题图</span>
@@ -9,7 +9,7 @@
         </div>
     </animationPage>
 
-    <animationPage ref="updateSiteZhuTiWorkitemPage" class="w-full absolute top-8 z-40">
+    <animationPage ref="updateSiteZhuTiWorkitemPage" class="w-full absolute top-0 z-40">
         <updateSiteWorkitem ref="refUpdateSiteWorkitem" :files="siteZhuTiWorkItemList" :sourceId="host" :sourceType="0" :type="0" :filePreKey="`cpt/${host}/zhuti`" :maxFileSize="2097152" :fileLimit="5" @callClose="updateSiteZhiTiWorkitemDialogClose"/>
     </animationPage>
 </template>

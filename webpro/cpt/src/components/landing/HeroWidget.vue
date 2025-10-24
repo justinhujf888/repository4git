@@ -36,7 +36,7 @@
                         通过生态造景这个独特的载体，以艺术的手段,呈现世界各地的生态表现，
                         让每一件作品都成为跨越语言的“生命赞歌
                     </p>
-                    <a class="text-gray-600 text-2xl">关于{{siteDatas?.siteInfo.siteCompetition.name}}</a>
+                    <a class="text-gray-600 text-2xl">关于{{Config.appName}}</a>
 <!--                    <img src="/demo/images/landing/peak-logo.svg" class="mt-6" alt="Company logo" />-->
                 </div>
             </div>
@@ -51,7 +51,7 @@ import {inject, onMounted, watch} from "vue";
 
 const siteDatas = inject("siteDatas");
 watch(siteDatas,(newValue)=>{
-    console.log(newValue);
+    // console.log(newValue);
 });
 
 onMounted(async () => {
