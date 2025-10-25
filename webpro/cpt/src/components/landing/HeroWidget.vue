@@ -51,7 +51,7 @@ import {inject, onMounted, watch} from "vue";
 
 const siteDatas = inject("siteDatas");
 watch(siteDatas,(newValue)=>{
-    // console.log(newValue);
+    console.log(newValue);
 });
 
 onMounted(async () => {

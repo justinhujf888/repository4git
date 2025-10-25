@@ -10,10 +10,10 @@ const model = ref([]);
 onMounted(() => {
     if (lodash.includes(window.location.href,"/manage/")) {
         model.value = [
-            {
-                label: '',
-                items: [{ label: '首页', icon: 'pi pi-fw pi-home', to: '/manage/index' }]
-            },
+            // {
+            //     label: '',
+            //     items: [{ label: '首页', icon: 'pi pi-fw pi-home', to: '/manage/index' }]
+            // },
             {
                 label: '',
                 items: [

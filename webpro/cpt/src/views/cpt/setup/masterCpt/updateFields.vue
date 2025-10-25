@@ -139,7 +139,16 @@ function save() {
         }
     });
     if (!shiEmpty) {
-        dialog.toastError("有字段名称没有输入");
+        dialog.toastError("作品字段有字段名称没有输入");
+        return;
+    }
+    lodash.forEach(selMasterCompetition.value.setupFields.pingshen,(v)=>{
+        if (!v.name || !v.fen) {
+            shiEmpty = false;
+        }
+    });
+    if (!shiEmpty) {
+        dialog.toastError("评审字段有字段名称或者分数没有输入");
         return;
     }
     workRest.updateMasterCompetitionSetupFields({id:selMasterCompetition.value.id,setupFields:selMasterCompetition.value.setupFields},(res)=>{

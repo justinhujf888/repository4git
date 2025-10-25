@@ -3,6 +3,7 @@ import FeaturesWidget from '@/components/landing/FeaturesWidget.vue';
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import HeroWidget from '@/components/landing/HeroWidget.vue';
 import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
+import orgHumans from "@/components/landing/orgHumans.vue";
 import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import {inject, onMounted, provide, ref} from "vue";
@@ -34,7 +35,8 @@ onMounted(async () => {
             </div>
             <HeroWidget />
             <FeaturesWidget />
-            <HighlightsWidget />
+            <orgHumans/>
+<!--            <HighlightsWidget />-->
             <PricingWidget />
             <FooterWidget />
         </div>

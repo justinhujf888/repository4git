@@ -1,8 +1,8 @@
 <template>
     <div id="highlights" class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
         <div class="text-center">
-            <div class="text-surface-900 dark:text-surface-0 font-normal mb-2 text-4xl">Powerful Everywhere</div>
-            <span class="text-muted-color text-2xl">Amet consectetur adipiscing elit...</span>
+            <div class="text-surface-900 dark:text-surface-0 font-normal mb-2 text-4xl">组委会成员</div>
+<!--            <span class="text-muted-color text-2xl">Amet consectetur adipiscing elit...</span>-->
         </div>
 
         <div class="grid grid-cols-12 gap-4 mt-20 pb-2 md:pb-20">
