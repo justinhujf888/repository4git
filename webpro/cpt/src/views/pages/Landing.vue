@@ -33,11 +33,17 @@ onMounted(async () => {
             <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
                 <TopbarWidget />
             </div>
-            <HeroWidget />
-            <FeaturesWidget />
-            <orgHumans/>
+            <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2024/12/iaplc2025_cover_01.jpg')] bg-fixed bg-repeat-round">
+                <HeroWidget/>
+            </div>
+            <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2021/02/about.png')]">
+                <FeaturesWidget />
+            </div>
+            <div class="bg-[url('https://iaplc.com/assets_jp/img/top/background_black.jpg')] bg-fixed py-12">
+                <orgHumans/>
+                <PricingWidget />
+            </div>
 <!--            <HighlightsWidget />-->
-            <PricingWidget />
             <FooterWidget />
         </div>
     </div>
