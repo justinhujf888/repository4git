@@ -452,6 +452,9 @@ class CompetitionJudgePK implements Serializable
     String competitionId;
 
     @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String guiGeId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
     String judgeId;
 
     @Column(nullable=false, insertable=false, updatable=false,length = 2)
@@ -459,9 +462,10 @@ class CompetitionJudgePK implements Serializable
 
     CompetitionJudgePK() {}
 
-    CompetitionJudgePK(String competitionId,String judgeId,byte competitionStatus)
+    CompetitionJudgePK(String competitionId,String guiGeId,String judgeId,byte competitionStatus)
     {
         this.competitionId = competitionId;
+        this.guiGeId = guiGeId;
         this.judgeId = judgeId;
         this.competitionStatus = competitionStatus;
     }
@@ -475,6 +479,10 @@ class CompetitionJudge extends BEntity implements Serializable, IEntity
 
     @EmbeddedId
     CompetitionJudgePK competitionJudgePK;
+
+    @Column(length=1000,columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> pingShenFields;
 
     void cancelLazyEr()
     {

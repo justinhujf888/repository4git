@@ -34,7 +34,7 @@
                     <div class="text-gray-900 mb-2 text-3xl">汇聚全球技艺与智慧的国际生态缸造景大赛</div>
                     <p class="text-gray-900 sm:line-height-2 md:line-height-4 text-xl mt-6" style="max-width: 800px">
                         通过生态造景这个独特的载体，以艺术的手段,呈现世界各地的生态表现，
-                        让每一件作品都成为跨越语言的“生命赞歌
+                        让每一件作品都成为跨越语言的生命赞歌
                     </p>
                     <a class="text-gray-600 text-2xl">关于{{Config.appName}}</a>
 <!--                    <img src="/demo/images/landing/peak-logo.svg" class="mt-6" alt="Company logo" />-->

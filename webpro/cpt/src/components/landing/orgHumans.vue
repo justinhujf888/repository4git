@@ -5,8 +5,8 @@
             <!--            <span class="text-muted-color text-2xl">Amet consectetur adipiscing elit...</span>-->
         </div>
 
-        <div class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card class="overflow-hidden cursor-pointer" v-for="man of orgHumanList">
+        <div class="center grid xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
+            <Card class="overflow-hidden" v-for="man of orgHumanList">
                 <template #header>
                     <img :src="man.tempMap.img" class="h-48 w-full object-cover object-center"/>
                 </template>
@@ -16,7 +16,7 @@
 <!--                    <span class="text-md">{{work.guiGe.name}}</span>-->
 <!--                </template>-->
                 <template #content>
-                    <p class="m-0">
+                    <p class="m-0 py-2 h-14 overflow-hidden text-ellipsis _truncate">
                         {{man.description}}
                     </p>
                 </template>
