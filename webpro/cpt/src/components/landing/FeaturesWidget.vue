@@ -3,8 +3,8 @@
     <div id="features" class="py-6 px-6 lg:px-20 mt-8 mx-0 lg:mx-20">
         <div class="grid grid-cols-12 gap-4 justify-center">
             <div class="col-span-12 text-center mt-10 mb-6">
-                <div class="text-surface-900 dark:text-surface-0 font-normal mb-8 text-4xl">奖金及奖品</div>
-                <span class="text-muted-color text-xl">最高奖1、金奖1、银奖2、铜奖3 、优秀奖前30奖牌、奖状、入围奖状、奖牌</span>
+                <div class="mix-blend-difference text-white font-normal mb-8 text-4xl">奖金及奖品</div>
+                <span class="text-white mix-blend-difference text-xl">最高奖1、金奖1、银奖2、铜奖3 、优秀奖前30奖牌、奖状、入围奖状、奖牌</span>
             </div>
 
             <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0" v-for="jiang of jiangList">
