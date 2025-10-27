@@ -110,7 +110,8 @@ export default {
     },
     buildPath(imgPath) {
         if (client) {
-            return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600});
+            // return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600});
+            return client.signatureUrl(imgPath,{expires: _tokenExpiredTime});
         } else {
             return null;
         }

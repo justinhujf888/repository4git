@@ -44,6 +44,9 @@ onMounted(async () => {
             </div>
             <div class="bg-[url('https://iaplc.com/assets_jp/img/top/background_black.jpg')] bg-fixed py-12">
                 <FeaturesWidget />
+                <div class="py-14 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
+                    <Divider/>
+                </div>
                 <orgHumans/>
                 <PricingWidget />
             </div>

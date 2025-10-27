@@ -6,15 +6,14 @@
                 <div class="mix-blend-difference text-white font-normal mb-8 text-4xl">奖金及奖品</div>
                 <span class="text-white mix-blend-difference text-xl">最高奖1、金奖1、银奖2、铜奖3 、优秀奖前30奖牌、奖状、入围奖状、奖牌</span>
             </div>
-
-            <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0" v-for="jiang of jiangList">
-                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2)), linear-gradient(180deg, rgba(253, 228, 165, 0.2), rgba(187, 199, 205, 0.2))">
-                    <div class="p-4 h-full center col" :class="jiang.class" style="border-radius: 8px">
+            <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0" v-for="(jiang) of jiangList" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 animate-duration-1000 zoom-in-50' }">
+                <div style="height: 160px; padding: 2px; border-radius: 10px;">
+                    <div class="p-4 h-full center col border-4 border-double border-yellow-500/75" style="border-radius: 8px">
 <!--                        <div class="flex items-center justify-center mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px" :class="jiang.class">-->
 <!--                            <i class="pi pi-fw pi-users !text-2xl text-yellow-700"></i>-->
 <!--                        </div>-->
-                        <h5 class="mb-2 text-surface-900 dark:text-surface-0">{{jiang.title}}</h5>
-                        <span class="text-surface-600 dark:text-surface-200">{{jiang.desc}}</span>
+                        <h5 class="mb-2 text-white mix-blend-difference text-2xl">{{jiang.title}}</h5>
+                        <span class="text-white mix-blend-difference">{{jiang.desc}}</span>
                     </div>
                 </div>
             </div>
@@ -68,12 +67,12 @@ const jiangList = ref(null);
 const siteDatas = inject("siteDatas");
 watch(siteDatas,(newValue)=>{
     jiangList.value = [
-        {title:"金奖 每组1名",desc:"冠军奖杯,奖牌（排名数字）奖状",class:"bg-yellow-200"},
-        {title:"银奖 每组2名",desc:"冠军奖杯,奖牌（排名数字）奖状",class:"bg-cyan-200"},
-        {title:"铜奖 每组3名",desc:"冠军奖杯,奖牌（排名数字）奖状",class:"bg-indigo-200"},
-        {title:"优异奖 每组4名",desc:"奖牌(排名数字),奖状",class:"bg-slate-200"},
-        {title:"创新奖 每组2名",desc:"奖牌(排名数字),奖状",class:"bg-orange-200"},
-        {title:"入选奖 每组38名",desc:"奖牌(排名数字),奖状",class:"bg-pink-200"}
+        {title:"金奖 每组1名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
+        {title:"银奖 每组2名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
+        {title:"铜奖 每组3名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
+        {title:"优异奖 每组4名",desc:"奖牌(排名数字),奖状"},
+        {title:"创新奖 每组2名",desc:"奖牌(排名数字),奖状"},
+        {title:"入选奖 每组38名",desc:"奖牌(排名数字),奖状"}
     ];
 });
 
