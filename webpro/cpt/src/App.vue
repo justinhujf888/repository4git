@@ -22,7 +22,6 @@ var source = null;
 onMounted(() => {
     oss.checkToken();
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
-    Config.getConfig();
     if (typeof (EventSource) !== "undefined") {return;
         source = new EventSource(Config.apiBaseURL + "/r/notifications");
         // 当通往服务器的连接被打开

@@ -52,7 +52,7 @@ onMounted(() => {
 
 const updateSiteCptDialogClose = (shiSubmit)=>{
     if (shiSubmit) {
-        Config.getConfig();
+        // Config.getConfig();
         window.location = window.location.href;
     }
     updateSiteCptPage.value.close(mainPage.value);

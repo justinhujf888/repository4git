@@ -18,7 +18,6 @@
                 </div>
             </div>
 
-
 <!--            <div class="col-span-12 md:col-span-12 lg:col-span-4 p-0 lg:pr-8 mt-6 lg:mt-0">-->
 <!--                <div style="height: 160px; padding: 2px; border-radius: 10px; background: linear-gradient(90deg, rgba(145, 210, 204, 0.2), rgba(160, 210, 250, 0.2)), linear-gradient(180deg, rgba(187, 199, 205, 0.2), rgba(145, 210, 204, 0.2))">-->
 <!--                    <div class="p-4 bg-surface-0 dark:bg-surface-900 h-full" style="border-radius: 8px">-->
@@ -56,6 +55,13 @@
 <!--            </div>-->
 
 
+        </div>
+        <div class="center">
+            <div class="text-xl p-1 mt-10 boderbtn">
+                <a class="center px-12 py-2 bg-gray-900 text-white subbg">
+                    在线报名
+                </a>
+            </div>
         </div>
     </div>
 </template>

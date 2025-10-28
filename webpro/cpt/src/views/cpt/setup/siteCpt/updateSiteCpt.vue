@@ -94,12 +94,12 @@ const onFormSubmit = ({ valid }) => {
                 });
             });
 
-            await new Promise(resolve => {
-                util.intoStorgeCry("siteCpt",JSON.stringify(siteCompetition.value));
+            // await new Promise(resolve => {
+                // util.intoStorgeCry("siteCpt",JSON.stringify(siteCompetition.value));
                 // localStorage.setItem("siteCpt",util.encryptStoreInfo(JSON.stringify(siteCompetition.value)));
                 // useStorage("siteCpt",util.encryptStoreInfo(JSON.stringify(siteCompetition.value)));
-                resolve();
-            });
+                // resolve();
+            // });
 
             await new Promise(resolve => {
                 dialog.alertBack("赛事基础信息已设置",()=>{

@@ -11,7 +11,16 @@
                         通过生态造景这个独特的载体，以艺术的手段,呈现世界各地的生态表现，
                         让每一件作品都成为跨越语言的生命赞歌
                     </p>
-                    <a class="text-gray-600 text-2xl text-white mix-blend-difference mt-16">关于{{Config.appName}}</a>
+                    <div class="text-2xl p-1 mt-10 boderbtn">
+                        <a class="center px-12 py-2 bg-white hover:text-white subbg">
+                            关于{{siteDatas?.siteInfo.siteCompetition.name}}
+                        </a>
+                    </div>
+<!--                    <div class="border-box center">-->
+<!--                        <div class="content">-->
+<!--                            Lorem ipsum-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <!--                    <img src="/demo/images/landing/peak-logo.svg" class="mt-6" alt="Company logo" />-->
                 </div>
             </div>
@@ -20,5 +29,32 @@
 </template>
 
 <script setup>
-import { Config } from "@/api/config";
+import {inject, watch} from "vue";
+// import {Config} from "@/api/config";
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue.siteInfo,Config.appName);
+});
 </script>
+<style scoped>
+.border-box {
+    border: 4px solid transparent;
+    border-radius: 16px;
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+    background-image: linear-gradient(to right, #ffffff, #ffffff), linear-gradient(90deg, #8F41E9, #0be4c3);
+}
+
+.border-box {
+    width: 300px;
+    height: 200px;
+    margin: 25px 0;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    height: 100%;
+}
+</style>/

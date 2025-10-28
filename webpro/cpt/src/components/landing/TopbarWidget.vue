@@ -1,6 +1,6 @@
 <template>
     <a class="row items-center" href="#">
-        <span class="text-surface-900 dark:text-surface-0 sm:text-2xl md:text-4xl font-bold leading-normal mr-20">{{Config.appName}}</span>
+        <span class="text-surface-900 dark:text-surface-0 sm:text-2xl md:text-4xl font-bold leading-normal mr-20">{{siteDatas?.siteInfo.siteCompetition.name}}</span>
     </a>
 
     <div id="mis" class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static right-0 top-full px-12 lg:px-0 py-4 z-20 rounded-border">
@@ -84,12 +84,18 @@
 </template>
 
 <script setup>
-import {Config} from "@/api/config";
 import { useStorage } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
+import {inject, watch} from "vue";
 
 const userId = useStorage("userId");
+
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue.siteInfo);
+});
+
 function smoothScroll(id) {
     document.body.click();
     const element = document.getElementById(id);
