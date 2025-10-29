@@ -6,9 +6,9 @@
         </div>
 
         <div class="grid xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
-            <Card class="overflow-hidden" v-for="man of orgHumanList" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 slide-in-from-t-20 animate-duration-1000' }">
+            <Card class="overflow-hidden" v-for="man of orgHumanList" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 slide-in-from-t-20 animate-duration-1000' }" :pt="{body:{class:'bg-gray-900 text-white'}}">
                 <template #header>
-                    <img :src="man.tempMap.img" class="h-48 w-full object-cover object-center"/>
+                    <img :src="man.tempMap.img" class="h-60 w-full object-cover object-center"/>
                 </template>
                 <template #title>{{man.name}}</template>
 <!--                <template #subtitle>-->
