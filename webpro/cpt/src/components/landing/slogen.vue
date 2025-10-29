@@ -11,8 +11,8 @@
                         通过生态造景这个独特的载体，以艺术的手段,呈现世界各地的生态表现，
                         让每一件作品都成为跨越语言的生命赞歌
                     </p>
-                    <div class="text-2xl p-1 mt-10 boderbtn">
-                        <a class="center px-12 py-2 bg-white hover:text-white subbg">
+                    <div class="text-base p-1 mt-10 boderbtn">
+                        <a class="center px-20 py-3 bg-white hover:text-white subbg">
                             关于{{siteDatas?.siteInfo.siteCompetition.name}}
                         </a>
                     </div>

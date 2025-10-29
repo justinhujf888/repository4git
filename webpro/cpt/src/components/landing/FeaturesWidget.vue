@@ -1,10 +1,20 @@
 <!--奖金及奖品-->
 <template>
     <div id="features" class="py-6 px-6 lg:px-20 mt-8 mx-0 lg:mx-20">
-        <div class="grid grid-cols-12 gap-4 justify-center">
+        <div class="grid grid-cols-12 gap-4 justify-center relative">
             <div class="col-span-12 text-center mt-10 mb-6">
-                <div class="mix-blend-difference text-white font-normal mb-8 text-4xl">奖金及奖品</div>
+                <GradientText
+                    text="奖金及奖品"
+                    :colors="['#40ffaa', '#4079ff', '#40ffaa', '#4079ff', '#40ffaa']"
+                    :animation-speed="8"
+                    :show-border="false"
+                    class-name="mix-blend-difference text-white font-normal mb-8 text-4xl"
+                />
+<!--                <div class="mix-blend-difference text-white font-normal mb-8 text-4xl">奖金及奖品</div>-->
                 <span class="text-white mix-blend-difference text-xl">最高奖1、金奖1、银奖2、铜奖3 、优秀奖前30奖牌、奖状、入围奖状、奖牌</span>
+            </div>
+            <div class="absolute w-full h-[300px] -top-20">
+                <Orb :hoverIntensity="0.5" :rotateOnHover="true" :hue="0" :forceHoverState="false" />
             </div>
             <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0" v-for="(jiang) of jiangList" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 animate-duration-1000 zoom-in-50' }">
                 <div style="height: 160px; padding: 2px; border-radius: 10px;">
@@ -57,8 +67,8 @@
 
         </div>
         <div class="center">
-            <div class="text-xl p-1 mt-10 boderbtn">
-                <a class="center px-12 py-2 bg-gray-900 text-white subbg">
+            <div class="text-base p-1 mt-10 boderbtn">
+                <a class="center px-20 py-3 bg-gray-900 text-white subbg">
                     在线报名
                 </a>
             </div>
@@ -67,8 +77,8 @@
 </template>
 <script setup>
 import {inject, onMounted, watch, ref} from "vue";
-import lodash from "lodash-es";
-import oss from "@/api/oss";
+import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
+import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
 const jiangList = ref(null);
 const siteDatas = inject("siteDatas");
 watch(siteDatas,(newValue)=>{
