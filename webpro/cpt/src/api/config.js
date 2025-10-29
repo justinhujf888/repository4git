@@ -18,14 +18,15 @@ export const Config = {
     txMapKey: 'OWYBZ-QUQ6F-MU6J4-JYBLN-LL7E7-CNBE6',
 
     pageSize: 30,
+    siteJson: 'http://localhost/json',
 
-    getConfig() {
-        if (useStorage("siteCpt").value) {
-            let siteInfo = JSON.parse(util.decryptStoreInfo(useStorage("siteCpt").value));
-            console.log("siteInfo",siteInfo);
-            this.appId = siteInfo.id;
-            this.appName = siteInfo.name;
-            this.domain = siteInfo.domain;
-        }
-    }
+    // getConfig() {
+    //     if (useStorage("siteCpt").value) {
+    //         let siteInfo = JSON.parse(util.decryptStoreInfo(useStorage("siteCpt").value));
+    //         console.log("siteInfo",siteInfo);
+    //         this.appId = siteInfo.id;
+    //         this.appName = siteInfo.name;
+    //         this.domain = siteInfo.domain;
+    //     }
+    // }
 };
