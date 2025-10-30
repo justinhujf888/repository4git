@@ -13,9 +13,9 @@
 <!--                <div class="mix-blend-difference text-white font-normal mb-8 text-4xl">奖金及奖品</div>-->
                 <span class="text-white mix-blend-difference text-xl">最高奖1、金奖1、银奖2、铜奖3 、优秀奖前30奖牌、奖状、入围奖状、奖牌</span>
             </div>
-            <div class="absolute w-full h-[300px] -top-20">
-                <Orb :hoverIntensity="0.5" :rotateOnHover="true" :hue="0" :forceHoverState="false" />
-            </div>
+<!--            <div class="absolute w-full h-[300px] -top-20">-->
+<!--                <Orb :hoverIntensity="0.5" :rotateOnHover="true" :hue="0" :forceHoverState="false" />-->
+<!--            </div>-->
             <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0" v-for="(jiang) of jiangList" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 animate-duration-1000 zoom-in-50' }">
                 <div style="height: 160px; padding: 2px; border-radius: 10px;">
                     <div class="p-4 h-full center col border-4 border-double border-yellow-500/75" style="border-radius: 8px">
@@ -68,9 +68,7 @@
         </div>
         <div class="center">
             <div class="text-base p-1 mt-10 border-btn">
-                <a class="center px-20 py-3 bg-gray-900 text-white sub-bg">
-                    在线报名
-                </a>
+                <a class="center px-20 py-3 bg-gray-900 text-white sub-bg">在线报名</a>
             </div>
         </div>
     </div>

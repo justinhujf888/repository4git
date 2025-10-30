@@ -4,7 +4,6 @@ import {computed, ref, watch, onMounted, provide, inject} from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
-import LightRays from "@/bit-blocks/Backgrounds/LightRays/LightRays.vue";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
@@ -67,20 +66,6 @@ function isOutsideClicked(event) {
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
             <div id="app_container" styleClass="layout-main" class="layout-main relative">
-                <div class="absolute top-0 left-0 w-dvw h-dvh opacity-20 z-0">
-                    <LightRays
-                        rays-origin="top-center"
-                        rays-color="#00ffff"
-                        :rays-speed="2"
-                        :light-spread="0.8"
-                        :ray-length="5"
-                        :follow-mouse="true"
-                        :mouse-influence="0.1"
-                        :noise-amount="0.1"
-                        :distortion="0.05"
-                        class-name="custom-rays"
-                    />
-                </div>
                 <router-view/>
             </div>
             <app-footer></app-footer>

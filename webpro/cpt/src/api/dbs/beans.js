@@ -196,5 +196,15 @@ export const Beans = {
         return {
             competitionJudgePK: this.competitionJudgePK()
         }
+    },
+
+
+
+    workStatus() {
+        return [
+            {id:0,name:"未提交"},
+            {id:1,name:"已提交"},
+            {id:9,name:"驳回"}
+        ]
     }
 }

@@ -7,7 +7,13 @@ import slogen from "@/components/landing/slogen.vue";
 import orgHumans from "@/components/landing/orgHumans.vue";
 import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
-import {inject, onMounted, provide, ref} from "vue";
+import {onMounted} from "vue";
+import oss from "@/api/oss";
+import LightRays from "@/bit-blocks/Backgrounds/LightRays/LightRays.vue";
+
+(async ()=>{
+    await oss.genClient();
+})();
 
 onMounted(async () => {
     // console.log(await workRest.gainCache8MasterCompetitionInfo(host));
@@ -18,23 +24,35 @@ onMounted(async () => {
 <template>
     <div class="bg-surface-0 dark:bg-surface-900">
         <div id="home" class="landing-wrapper overflow-hidden">
-            <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
-                <TopbarWidget />
-            </div>
+            <TopbarWidget />
             <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2024/12/iaplc2025_cover_01.jpg')] bg-center bg-cover bg-center">
                 <HeroWidget/>
             </div>
             <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2021/02/about.png')]">
                 <slogen />
             </div>
-            <div class="bg-[url('https://iaplc.com/assets_jp/img/top/background_black.jpg')] bg-fixed py-12">
+            <div class="bg-[url('https://iaplc.com/assets_jp/img/top/background_black.jpg')] bg-fixed py-12 relative">
+                <div class="absolute top-0 left-0 w-dvw h-dvh opacity-20 z-0">
+                    <LightRays
+                        rays-origin="top-center"
+                        rays-color="#00ffff"
+                        :rays-speed="2"
+                        :light-spread="0.8"
+                        :ray-length="5"
+                        :follow-mouse="true"
+                        :mouse-influence="0.1"
+                        :noise-amount="0.1"
+                        :distortion="0.05"
+                        class-name="custom-rays"
+                    />
+                </div>
                 <FeaturesWidget />
                 <div class="py-14 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
                     <Divider/>
                 </div>
                 <orgHumans/>
-                <PricingWidget />
             </div>
+            <PricingWidget />
 <!--            <HighlightsWidget />-->
             <FooterWidget />
         </div>

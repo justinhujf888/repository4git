@@ -7,7 +7,12 @@
                         <img v-if="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})[0].tempMap.imgPath" class="h-48 w-full object-cover object-center"/>
                         <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
                     </template>
-                    <template #title>{{work.name}}</template>
+                    <template #title>
+                        <div class="between items-center">
+                            <span>{{work.name}}</span>
+                            <span class="text-sm" :class="{'text-green-600':work.status==1,'text-red-600':work.status==9}">{{work.tempMap.status}}</span>
+                        </div>
+                    </template>
                     <template #subtitle>
                         <span class="text-md mx-3 font-semibold">{{work.guiGe.competition.name}}</span>
                         <span class="text-md">{{work.guiGe.name}}</span>
@@ -74,6 +79,7 @@ import { useConfirm } from "primevue/useconfirm";
 import uploadWork from "@/views/user/work/uploadWork.vue";
 import lodash from "lodash-es";
 import oss from "@/api/oss";
+import {Beans} from "@/api/dbs/beans";
 
 const confirm = useConfirm();
 const mainPage = useTemplateRef("mainPage");
@@ -123,7 +129,9 @@ function loadWorksByUser() {
                 lodash.forEach(workList.value,(work)=>{
                     lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
                         workItem.tempMap = {imgPath:oss.buildImgPath(workItem.path)};
-                    })
+                    });
+                    work.tempMap = {};
+                    work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
                 });
             }
         }
