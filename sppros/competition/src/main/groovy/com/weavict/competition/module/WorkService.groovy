@@ -8,9 +8,9 @@ import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
-import static org.jooq.impl.DSL.*;
-import org.jooq.*;
-import org.jooq.impl.*;
+//import static org.jooq.impl.DSL.*;
+//import org.jooq.*;
+//import org.jooq.impl.*;
 import org.springframework.stereotype.Service
 
 @Service("workService")

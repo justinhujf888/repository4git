@@ -4,7 +4,7 @@
     </a>
 
     <div id="mis" class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static right-0 top-full px-12 lg:px-0 py-4 z-20 rounded-border">
-        <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8 text-base lg:text-xl">
+        <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8 text-base lg:text-lg">
             <li>
                 <a @click="smoothScroll('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                     <span>关于</span>
@@ -87,14 +87,15 @@
 import { useStorage } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
-import {inject, watch} from "vue";
+import {getCurrentInstance, ref} from "vue";
+import useGlobal from "@/api/hooks/useGlobal";
 
 const userId = useStorage("userId");
 
-const siteDatas = inject("siteDatas");
-watch(siteDatas,(newValue)=>{
-    // console.log(newValue.siteInfo);
-});
+const siteDatas = ref(null);
+(async ()=>{
+    siteDatas.value = await useGlobal.siteDatas();
+})();
 
 function smoothScroll(id) {
     document.body.click();

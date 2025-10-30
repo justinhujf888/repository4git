@@ -67,8 +67,8 @@
 
         </div>
         <div class="center">
-            <div class="text-base p-1 mt-10 boderbtn">
-                <a class="center px-20 py-3 bg-gray-900 text-white subbg">
+            <div class="text-base p-1 mt-10 border-btn">
+                <a class="center px-20 py-3 bg-gray-900 text-white sub-bg">
                     在线报名
                 </a>
             </div>
@@ -76,12 +76,14 @@
     </div>
 </template>
 <script setup>
-import {inject, onMounted, watch, ref} from "vue";
+import {inject, onMounted, watch, ref, getCurrentInstance} from "vue";
 import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
 import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
 const jiangList = ref(null);
-const siteDatas = inject("siteDatas");
-watch(siteDatas,(newValue)=>{
+const siteDatas = ref(null);
+const {proxy} = getCurrentInstance();
+(async ()=>{
+    siteDatas.value = await proxy.$getSiteDatas();
     jiangList.value = [
         {title:"金奖 每组1名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
         {title:"银奖 每组2名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
@@ -90,7 +92,7 @@ watch(siteDatas,(newValue)=>{
         {title:"创新奖 每组2名",desc:"奖牌(排名数字),奖状"},
         {title:"入选奖 每组38名",desc:"奖牌(排名数字),奖状"}
     ];
-});
+})();
 
 onMounted(() => {
 

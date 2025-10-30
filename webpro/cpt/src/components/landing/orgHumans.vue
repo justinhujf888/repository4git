@@ -25,18 +25,19 @@
     </div>
 </template>
 <script setup>
-import {inject, onMounted, watch, ref} from "vue";
+import {onMounted, watch, ref, getCurrentInstance} from "vue";
 import lodash from "lodash-es";
 import oss from "@/api/oss";
 const orgHumanList = ref(null);
-const siteDatas = inject("siteDatas");
-watch(siteDatas,(newValue)=>{
-    // console.log(newValue.siteInfo.siteOrgHumanList);
-    lodash.forEach(newValue.siteInfo.siteOrgHumanList,(v)=>{
+const siteDatas = ref(null);
+const {proxy} = getCurrentInstance();
+(async ()=>{
+    siteDatas.value = await proxy.$getSiteDatas();
+    lodash.forEach(siteDatas.value.siteInfo.siteOrgHumanList,(v)=>{
         v.tempMap = {img:oss.buildImgPath(v.headImgUrl)};
     });
-    orgHumanList.value = newValue.siteInfo?.siteOrgHumanList;
-});
+    orgHumanList.value = siteDatas.value.siteInfo?.siteOrgHumanList;
+})();
 
 onMounted(() => {
 

@@ -1,12 +1,12 @@
 <template>
 <!--    <FloatingConfigurator />-->
 <!--    <Button label="test" @click="test"/>-->
-    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div class="bg-surface-500 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
-            <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-                <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+            <div _style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+                <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20 bg-surface-900" _style="border-radius: 53px">
                     <div class="text-center mb-8">
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">{{Config.appName}}</div>
+                        <div class="text-surface-50 dark:text-surface-0 text-3xl font-medium mb-4">{{siteDatas?.siteInfo.siteCompetition.name}}</div>
                         <span class="text-muted-color font-medium">重置密码</span>
                     </div>
 
@@ -61,12 +61,17 @@ import userRest from "@/api/dbs/userRest";
 import otherRest from "@/api/dbs/otherRest";
 import primeUtil from "@/api/prime/util";
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import { ref,shallowRef,onMounted } from 'vue';
+import {ref, shallowRef, onMounted, getCurrentInstance} from 'vue';
 import { useCountdown,useStorage } from '@vueuse/core';
 import Page from "@/api/uniapp/page";
 import util from "@/api/util";
 import checker from "@/api/check/checker";
 
+const siteDatas = ref(null);
+const {proxy} = getCurrentInstance();
+(async ()=>{
+    siteDatas.value = await proxy.$getSiteDatas();
+})();
 const remaining = ref(0);
 const buyer = ref(Beans.buyer());
 const password = ref('');

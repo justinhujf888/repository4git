@@ -11,8 +11,8 @@
                         通过生态造景这个独特的载体，以艺术的手段,呈现世界各地的生态表现，
                         让每一件作品都成为跨越语言的生命赞歌
                     </p>
-                    <div class="text-base p-1 mt-10 boderbtn">
-                        <a class="center px-20 py-3 bg-white hover:text-white subbg">
+                    <div class="text-base p-1 mt-10 border-btn">
+                        <a class="center px-20 py-3 bg-white hover:text-white sub-bg">
                             关于{{siteDatas?.siteInfo.siteCompetition.name}}
                         </a>
                     </div>
@@ -29,12 +29,13 @@
 </template>
 
 <script setup>
-import {inject, watch} from "vue";
+import {getCurrentInstance, ref} from "vue";
 // import {Config} from "@/api/config";
-const siteDatas = inject("siteDatas");
-watch(siteDatas,(newValue)=>{
-    // console.log(newValue.siteInfo,Config.appName);
-});
+const siteDatas = ref(null);
+const {proxy} = getCurrentInstance();
+(async ()=>{
+    siteDatas.value = await proxy.$getSiteDatas();
+})();
 </script>
 <style scoped>
 .border-box {

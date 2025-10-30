@@ -16,8 +16,8 @@
             <!--                :step-duration="0.8"-->
             <!--            />-->
             <h2 class="text-center mix-blend-difference text-white">每件作品都是一首生命的赞歌</h2>
-            <h1 class="font-bold font-stretch-extra-condensed text-center mix-blend-difference text-white text-6xl">{{siteDatas?.siteInfo.siteCompetition.name}} {{siteDatas?.cptInfo.masterCompetitionInfo.name}}</h1>
-            <h5 class="text-center mix-blend-difference text-white">{{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.beginDate}} — {{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.endDate}}</h5>
+            <h1 class="font-bold font-stretch-extra-condensed text-center bg-gradient-to-r from-blue-600 via-purple-500 to-pink-600 bg-clip-text text-transparent text-6xl">{{siteDatas?.siteInfo.siteCompetition.name}} {{siteDatas?.cptInfo.masterCompetitionInfo.name}}</h1>
+            <h5 class="text-center mix-blend-difference text-white text-2xl">{{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.beginDate}} — {{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.endDate}}</h5>
             <Button label="Get Started" as="router-link" to="/manage/index" rounded clas s="!text-xl mt-8 !px-4"></Button>
         </div>
         <div class="flex justify-center md:justify-end hidden">
@@ -29,12 +29,13 @@
 <script setup>
 import { Config } from "@/api/config";
 // import BlurText from "@/bit-blocks/TextAnimations/BlurText/BlurText.vue";
-import {inject, onMounted, watch} from "vue";
+import {getCurrentInstance, inject, onMounted, ref, watch} from "vue";
 
-const siteDatas = inject("siteDatas");
-watch(siteDatas,(newValue)=>{
-    console.log(newValue);
-});
+const siteDatas = ref(null);
+const {proxy} = getCurrentInstance();
+(async ()=>{
+    siteDatas.value = await proxy.$getSiteDatas();
+})();
 
 onMounted(async () => {
 

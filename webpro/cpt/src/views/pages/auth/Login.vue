@@ -1,12 +1,12 @@
 <template>
 <!--    <FloatingConfigurator />-->
-    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div class="bg-surface-500 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
 <!--            <Button label="test" @click="test"/>-->
-            <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-                <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+            <div _style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+                <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto dark:bg-surface-900 py-20 px-8 sm:px-20 bg-surface-900" _style="border-radius: 53px">
                     <div class="text-center mb-8">
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">{{Config.appName}}</div>
+                        <div class="text-surface-50 dark:text-surface-0 text-3xl font-medium mb-4">{{siteDatas?.siteInfo.siteCompetition.name}}</div>
                         <span class="text-muted-color font-medium">登录</span>
                     </div>
 
@@ -27,7 +27,7 @@
                             </div>
                         </IftaLabel>
 
-                        <div class="row mt-12">
+                        <div class="row mt-12 !border-btn">
                             <Button type="submit" label="登录" class="w-full" _as="router-link" _to="/"></Button>
                         </div>
                         <div class="row mt-4">
@@ -42,7 +42,7 @@
 
 <script setup>
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import { ref } from 'vue';
+import { ref,getCurrentInstance } from 'vue';
 import {Config} from "@/api/config";
 import {Beans} from "@/api/dbs/beans";
 import userRest from "@/api/dbs/userRest";
@@ -56,6 +56,11 @@ import util from "@/api/util";
 
 const buyer = ref(Beans.buyer());
 const password = ref('');
+const siteDatas = ref(null);
+const {proxy} = getCurrentInstance();
+(async ()=>{
+    siteDatas.value = await proxy.$getSiteDatas();
+})();
 
 let errors = [];
 
@@ -78,7 +83,6 @@ const resolver = ({ values }) => {
         errors
     };
 };
-
 const onFormSubmit = ({ valid }) => {
     if (valid) {
         userRest.buyerLogin(buyer.value.phone,buyer.value.password,(data)=>{

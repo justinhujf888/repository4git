@@ -8,21 +8,6 @@ import orgHumans from "@/components/landing/orgHumans.vue";
 import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import {inject, onMounted, provide, ref} from "vue";
-import workRest from '@/api/dbs/workRest';
-import dayjs from "dayjs";
-import oss from "@/api/oss";
-
-let host = inject("domain");
-
-const siteDatas = ref(null);
-
-(async ()=>{
-    await oss.genClient();
-    siteDatas.value = {cptInfo:await workRest.gainCache8MasterCompetitionInfo(host),siteInfo:await workRest.gainCache8SiteInfo(host)};
-    siteDatas.value.cptInfo.masterCompetitionInfo.tempMap.beginDate = dayjs(siteDatas.value.cptInfo.masterCompetitionInfo.beginDate).format("YYYY-MM-DD");
-    siteDatas.value.cptInfo.masterCompetitionInfo.tempMap.endDate = dayjs(siteDatas.value.cptInfo.masterCompetitionInfo.endDate).format("YYYY-MM-DD");
-})();
-provide("siteDatas",siteDatas);
 
 onMounted(async () => {
     // console.log(await workRest.gainCache8MasterCompetitionInfo(host));
