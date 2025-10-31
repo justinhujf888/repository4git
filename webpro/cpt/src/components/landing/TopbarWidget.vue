@@ -1,9 +1,9 @@
 <template>
     <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
         <a class="row items-center" href="#">
-            <span class="text-surface-900 dark:text-surface-0 sm:text-2xl md:text-4xl font-bold leading-normal mr-20">{{siteDatas?.siteInfo.siteCompetition.name}}</span>
+            <router-link :to="{name:'landing'}" class="text-3xl md:text-4xl font-bold leading-normal mr-20 text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
         </a>
-        <div id="mis" class="items-center bg-surface-0 dark:bg-surface-900 grow justify-between hidden lg:flex absolute lg:static right-0 top-full px-12 lg:px-0 py-4 z-20 rounded-border">
+        <div id="mis" class="items-center grow justify-between hidden lg:flex absolute lg:static right-0 top-full px-12 lg:px-0 py-4 z-20 rounded-border bg-surface-0 dark:bg-surface-900 lg:bg-transparent">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8 text-base lg:text-lg">
                 <li>
                     <a @click="smoothScroll('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
@@ -41,7 +41,17 @@
         <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 absolute right-10 top-20 px-12 py-4 z-20 rounded-border hidden">
             <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base">
                 <li>
-                    <a @click="page.navigateTo('forgotpw',null)" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="userBarClick('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                        <span>我的作品</span>
+                    </a>
+                </li>
+                <li>
+                    <a @click="userBarClick('myMessages')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                        <span>我的消息</span>
+                    </a>
+                </li>
+                <li>
+                    <a @click="userBarClick('forgotpw')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                         <span>修改密码</span>
                     </a>
                 </li>
@@ -65,7 +75,7 @@
                 <!--            <button type="button" class="text-xl w-10 h-10">-->
                 <!--                <i class="pi pi-inbox"></i>-->
                 <!--            </button>-->
-                <Button severity="success" variant="outlined" class="rounded-full text-xl w-10 h-10 border !border-green-500 border-solid !border-2" rounded
+                <Button severity="success" variant="outlined" class="rounded-full text-xl w-10 h-10 !border-green-500 border-solid !border-2" rounded
                         v-styleclass="{ selector: '#usermenu', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }">
                     <i class="pi pi-user font-semibold"></i>
                     <!--                        <span>{{userId}}</span>-->
@@ -107,6 +117,11 @@ function smoothScroll(id) {
             block: 'start'
         });
     }
+}
+
+function userBarClick(pathName) {
+    document.body.click();
+    page.navigateTo(pathName,null)
 }
 
 function logout() {

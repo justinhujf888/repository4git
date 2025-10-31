@@ -1,6 +1,7 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import AppConfigurator from './AppConfigurator.vue';
+import AppConfigurator from '../AppConfigurator.vue';
+import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import {ref} from 'vue';
 import page from '@/api/uniapp/page';
 import useGlobal from "@/api/hooks/useGlobal";
@@ -13,7 +14,7 @@ const siteDatas = ref(null);
 </script>
 
 <template>
-    <div class="layout-topbar">
+    <div class="layout-topbar _bg-[url('https://iaplc.com/assets_jp/img/top/background_black.jpg')]">
         <div class="layout-topbar-logo-container">
             <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>

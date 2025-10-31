@@ -29,7 +29,7 @@
 <script setup>
 import { Config } from "@/api/config";
 // import BlurText from "@/bit-blocks/TextAnimations/BlurText/BlurText.vue";
-import {getCurrentInstance, inject, onMounted, ref, watch} from "vue";
+import {getCurrentInstance, onMounted, ref} from "vue";
 
 const siteDatas = ref(null);
 const {proxy} = getCurrentInstance();

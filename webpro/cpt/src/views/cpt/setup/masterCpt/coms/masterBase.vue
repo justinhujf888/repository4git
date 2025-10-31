@@ -392,7 +392,7 @@ const returnFunction = (obj)=>{
 const descriptionReturnFunction = (obj)=>{
     // console.log(obj);
     masterCompetitionList.value[obj.index].description = obj.data.description;
-    dialog.toastSuccess(`${obj.data.name}年份赛事简介已更新`);
+    dialog.toastSuccess(`${obj.data.name}${obj.title}已更新`);
 }
 
 const fieldsReturnFunction = (obj)=>{

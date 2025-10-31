@@ -1,4 +1,5 @@
 import AppLayout from '@/layout/AppLayout.vue';
+import userLayout from '@/layout/userlayout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import lodash from 'lodash-es';
 
@@ -8,17 +9,23 @@ const router = createRouter({
     routes: [
         {
             path: '/user',
-            component: AppLayout,
+            component: userLayout,
             children: [
                 {
                     path: '/user/myWorks',
                     name: 'myWorks',
-                    component: () => import('@/views/user/work/myWorks.vue')
+                    component: () => import('@/views/user/work/myWorks.vue'),
+                    meta:{
+                        name: "我的作品"
+                    }
                 },
                 {
                     path: '/user/messages',
                     name: 'myMessages',
-                    component: () => import('@/views/user/messages.vue')
+                    component: () => import('@/views/user/messages.vue'),
+                    meta:{
+                        name: "我的消息"
+                    }
                 },
             ]
         },
@@ -191,7 +198,10 @@ const router = createRouter({
         {
             path: '/',
             name: 'landing',
-            component: () => import('@/views/pages/Landing.vue')
+            component: () => import('@/views/pages/Landing.vue'),
+            meta:{
+                name: "首页"
+            }
         },
         {
             path: '/pages/notfound',

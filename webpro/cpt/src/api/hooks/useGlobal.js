@@ -7,5 +7,12 @@ export default {
             return await instance.proxy.$getSiteDatas();
         }
         return {};
+    },
+    getRouteInfo() {
+        const instance = getCurrentInstance();
+        if (instance) {
+            return instance.proxy.$route;
+        }
+        return {};
     }
 }

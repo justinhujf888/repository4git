@@ -26,10 +26,10 @@
         </div>
         <div class="center mt-10">
             <div class="text-base p-1 border-btn">
-                <a class="center px-20 py-3 bg-gray-900 text-white sub-bg">评委</a>
+                <a class="center px-5 lg:px-20 py-3 bg-gray-900 text-white sub-bg">评委</a>
             </div>
             <div class="text-base p-1 border-btn ml-10">
-                <a class="center px-20 py-3 bg-gray-900 text-white sub-bg">评审标准</a>
+                <a class="center px-5 lg:px-20 py-3 bg-gray-900 text-white sub-bg">评审标准</a>
             </div>
         </div>
     </div>

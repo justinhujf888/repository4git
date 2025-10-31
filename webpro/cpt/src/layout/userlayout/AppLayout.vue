@@ -1,14 +1,15 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import {computed, ref, watch, onMounted} from 'vue';
-import AppFooter from './AppFooter.vue';
-import AppSidebar from './AppSidebar.vue';
+import AppFooter from '../AppFooter.vue';
+import AppMenu from '../AppMenu.vue';
 import AppTopbar from './AppTopbar.vue';
+import TopbarWidget from "@/components/landing/TopbarWidget.vue";
+import useGlobal from "@/api/hooks/useGlobal";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
-
 
 onMounted(() => {
 
@@ -62,11 +63,21 @@ function isOutsideClicked(event) {
 
 <template>
     <div class="layout-wrapper" :class="containerClass">
-        <app-topbar></app-topbar>
-        <app-sidebar></app-sidebar>
-        <div class="layout-main-container">
-            <div id="app_container" styleClass="layout-main" class="layout-main relative">
-                <router-view/>
+<!--        <app-topbar></app-topbar>-->
+        <div class="w-full h-80">
+            <TopbarWidget/>
+            <div class="w-full h-48 bg-[url('https://iaplc.com/assets_jp/img/judges/top_main.jpg')] bg-center center">
+                <h2 class="-text-surface-0 mix-blend-difference">{{useGlobal.getRouteInfo().meta.name}}</h2>
+            </div>
+        </div>
+        <div class="layout-main-container !ml-5 !pt-1">
+            <div class="row">
+                <div class="_layout-sidebar !top-80 w-64 h-dvh mr-5 bg-surface-0 hidden md:block">
+                    <app-menu></app-menu>
+                </div>
+                <div id="app_container" styleClass="layout-main" class="layout-main relative">
+                    <router-view/>
+                </div>
             </div>
             <app-footer></app-footer>
         </div>
