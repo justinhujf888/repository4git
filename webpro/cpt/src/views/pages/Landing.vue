@@ -12,7 +12,7 @@ import oss from "@/api/oss";
 import LightRays from "@/bit-blocks/Backgrounds/LightRays/LightRays.vue";
 
 (async ()=>{
-    await oss.genClient();
+    await oss.buildAliOssAccessInfo();
 })();
 
 onMounted(async () => {

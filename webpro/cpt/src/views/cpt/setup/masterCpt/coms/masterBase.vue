@@ -45,10 +45,24 @@
                         <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
-                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[0].command()"/>
+                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[5].command()"/>
                                 </div>
                                 <div class="mt-10">
-                                    <p>{{slotProps.data.pxBiaozun}}</p>
+                                    <DataView :value="slotProps.data.pxBiaozun?.data" :pt="{
+                                        emptyMessage:{
+                                            class:'opacity-0'
+                                        }
+                                    }">
+                                        <template #list="slotProps">
+                                            <div class="col">
+                                                <div v-for="(item,index) in slotProps.items" :key="index">
+                                                    <Panel :header="item.title">
+                                                        <p>{{item.description}}</p>
+                                                    </Panel>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </DataView>
                                 </div>
                             </div>
                         </ScrollPanel>
@@ -66,6 +80,7 @@
                             </div>
                         </ScrollPanel>
                     </Fieldset>
+
                     <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true" :collapsed="true">
                         <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
@@ -246,7 +261,7 @@ const getSplitItems = (data,index)=>{
                 zuTiPage.value.open(mainPage.value);
             }},
         {label:"设置简介",command:()=>{
-                refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFunction});
+                refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFunction,id:"masterCompetition.description",title:"赛事描述标题内容设置"});
                 updateDescriptionPage.value.open(mainPage.value);
             }},
         {label:"设置字段",command:()=>{
@@ -256,7 +271,11 @@ const getSplitItems = (data,index)=>{
         {label:"设置类别",command:()=>{
                 refUpdateCompetition.value.init(mainPage.value,updateCompetitionPage.value,{data:data,index:index,returnFunction:competitionReturnFunction});
                 updateCompetitionPage.value.open(mainPage.value);
-            }}
+            }},
+        {label:"设置评审标准",command:()=>{
+                refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFunction,id:"masterCompetition.pxBiaozun",title:"评审标准标题内容设置"});
+                updateDescriptionPage.value.open(mainPage.value);
+            }},
     ];
 }
 

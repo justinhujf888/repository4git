@@ -5,7 +5,7 @@
                 <IftaLabel>
                     <label for="cptDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">赛事年份</label>
                     <InputText name="cptDate" v-model="masterCompetition.cptDate" class="hidden"/>
-                    <DatePicker v-model="masterCompetition.cptDate" view="year" dateFormat="yy" showIcon placeholder="请输入赛事年份" class="w-full mb-4"/>
+                    <DatePicker v-model="masterCompetition.name" dateFormat="yy" view="year" showIcon placeholder="请输入赛事年份" class="w-full mb-4"/>
                 </IftaLabel>
                 <IftaLabel>
                     <label for="beginDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">报名时间</label>
@@ -18,10 +18,6 @@
                 <IftaLabel>
                     <label for="endDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">结果公布时间</label>
                     <DatePicker name="endDate" v-model="masterCompetition.endDate" dateFormat="yy-mm-dd" showIcon placeholder="请输入结果公布时间" class="w-full mb-4"/>
-                </IftaLabel>
-                <IftaLabel>
-                    <label for="pxBiaozun" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">评选标准</label>
-                    <Textarea name="pxBiaozun" v-model="masterCompetition.pxBiaozun" autoResize rows="8" class="w-full" placeholder="请输入评选标准"/>
                 </IftaLabel>
 
                 <div class="row mt-12 center gap-4">
@@ -46,7 +42,7 @@ import util from "@/api/util";
 import dayjs from "dayjs";
 
 const masterCompetition = ref(Beans.masterCompetition());
-const date = ref();
+const date = ref(null);
 let mainPage = null;
 let mePage = null;
 let obj = null;
@@ -68,7 +64,6 @@ onMounted(() => {
 const resolver = ({ values }) => {
     errors = primeUtil.checkFormRequiredValid([
         { val: masterCompetition.value.cptDate, name: "cptDate" },
-        { val: masterCompetition.value.pxBiaozun, name: "pxBiaozun" },
         { val: masterCompetition.value.beginDate, name: "beginDate" },
         { val: masterCompetition.value.pingShenDate, name: "pingShenDate" },
         { val: masterCompetition.value.endDate, name: "endDate" }
@@ -85,12 +80,16 @@ const onFormSubmit = ({ valid }) => {
 
         if (obj.process=="c") {
             masterCompetition.value.id = Beans.buildPId("");
-            masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).year();
+            // masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).year();
+            masterCompetition.value.cptDate = dayjs(masterCompetition.value.name).format("YYYY-MM-DD");
+            masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).format("YYYY");
             masterCompetition.value.createDate = new Date().getTime();
             masterCompetition.value.appId = host;
             masterCompetition.value.siteCompetition.id = host;
         } else if (obj.process=="u") {
-            masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).year();
+            // masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).year();
+            masterCompetition.value.cptDate = dayjs(masterCompetition.value.name).format("YYYY-MM-DD");
+            masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).format("YYYY");
         }
 
         let mc = lodash.cloneDeep(masterCompetition.value);

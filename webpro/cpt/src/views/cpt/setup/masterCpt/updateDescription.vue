@@ -2,14 +2,14 @@
     <div class="card">
         <div class="flex flex-wrap items-center justify-between">
             <div>
-                <span class="text-base">赛事描述标题内容设置</span>
+                <span class="text-base">{{obj?.title}}</span>
             </div>
             <div class="row end gap-4">
-                <span class="text-sm text-red-600">可拖拽排序</span>
+                <span class="text-sm text-red-500 dark:text-red-300">可拖拽排序</span>
                 <Button label="新增标题内容" @click="addItem"/>
             </div>
         </div>
-        <DataView :value="selMasterCompetition.description?.data" :pt="{
+        <DataView :value="datas?.data" :pt="{
                                         emptyMessage:{
                                             class:'opacity-0'
                                         }
@@ -70,22 +70,23 @@ import draggable from 'vuedraggable';
 import { Beans } from '@/api/dbs/beans';
 
 const selMasterCompetition = ref({});
+const datas = ref({});
 
 let mainPage = null;
 let mePage = null;
 let obj = null;
 
 function addItem() {
-    selMasterCompetition.value.description.data.push({id:Beans.buildPId(""),title:"",description:""});
+    datas.value.data.push({id:Beans.buildPId(""),title:"",description:""});
 }
 
 function deleteItem(index) {
-    if (selMasterCompetition.value.description.data[index].title!="" && selMasterCompetition.value.description.data[index].description!="") {
+    if (datas.value.data[index].title!="" && datas.value.data[index].description!="") {
         dialog.confirm("是否删除这个项目？",()=>{
-            selMasterCompetition.value.description.data.splice(index,1);
+            datas.value.data.splice(index,1);
         },null);
     } else {
-        selMasterCompetition.value.description.data.splice(index,1);
+        datas.value.data.splice(index,1);
     }
 }
 
@@ -94,7 +95,13 @@ function cancel() {
 }
 
 function save() {
-    workRest.updateMasterCompetitionDescription({id:selMasterCompetition.value.id,description:selMasterCompetition.value.description},(res)=>{
+    let typeId = null;
+    if (obj.id=="masterCompetition.description") {
+        typeId = "description";
+    } else if (obj.id=="masterCompetition.pxBiaozun") {
+        typeId = "pxBiaozun";
+    }
+    workRest.updateMasterCompetitionDescription({id:selMasterCompetition.value.id,typeId:typeId,data:datas.value},(res)=>{
         if (res.status=="OK") {
             obj.returnFunction(obj);
             mePage.close(mainPage);
@@ -107,9 +114,18 @@ const init = (_mainPage,_mePage,_obj)=>{
     mePage = _mePage;
     obj = _obj;
     selMasterCompetition.value = obj.data;
-    if (!selMasterCompetition.value.description) {
-        selMasterCompetition.value.description = {template:"001",data:[]};
+    if (obj.id=="masterCompetition.description") {
+        if (!selMasterCompetition.value.description) {
+            selMasterCompetition.value.description = {template:"001",data:[]};
+        }
+        datas.value = selMasterCompetition.value.description;
+    } else if (obj.id=="masterCompetition.pxBiaozun") {
+        if (!selMasterCompetition.value.pxBiaozun) {
+            selMasterCompetition.value.pxBiaozun = {template:"001",data:[]};
+        }
+        datas.value = selMasterCompetition.value.pxBiaozun;
     }
+
     // console.log(selMasterCompetition.value.description);
 }
 

@@ -275,7 +275,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", [description:query.description],["id":query.id],false);
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", ["${query.typeId}":query.data],["id":query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)

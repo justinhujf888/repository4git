@@ -66,15 +66,15 @@
 
 
         </div>
-        <div class="center">
-            <div class="text-base p-1 mt-10 border-btn">
+        <div class="center mt-20">
+            <div class="text-base p-1 border-btn">
                 <a class="center px-20 py-3 bg-gray-900 text-white sub-bg">在线报名</a>
             </div>
         </div>
     </div>
 </template>
 <script setup>
-import {inject, onMounted, watch, ref, getCurrentInstance} from "vue";
+import {onMounted, ref, getCurrentInstance} from "vue";
 import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
 import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
 const jiangList = ref(null);
