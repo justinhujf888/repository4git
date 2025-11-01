@@ -43,10 +43,10 @@ const siteDatas = ref(null);
 const {proxy} = getCurrentInstance();
 (async ()=>{
     siteDatas.value = await proxy.$getSiteDatas();
-    lodash.forEach(siteDatas.value.siteInfo.siteOrgHumanList,(v)=>{
+    lodash.forEach(siteDatas.value.siteInfo.siteJudgeList,(v)=>{
         v.tempMap = {img:oss.buildImgPath(v.headImgUrl)};
     });
-    orgHumanList.value = siteDatas.value.siteInfo?.siteOrgHumanList;
+    orgHumanList.value = siteDatas.value.siteInfo?.siteJudgeList;
 })();
 
 onMounted(() => {

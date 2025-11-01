@@ -24,8 +24,8 @@ onMounted(async () => {
 <template>
     <div class="bg-surface-0 dark:bg-surface-900">
         <div id="home" class="landing-wrapper overflow-hidden">
-            <TopbarWidget :key="0"/>
-            <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2024/12/iaplc2025_cover_01.jpg')] bg-center bg-cover bg-center">
+            <TopbarWidget/>
+            <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2024/12/iaplc2025_cover_01.jpg')] bg-center bg-cover">
                 <HeroWidget/>
             </div>
             <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2021/02/about.png')]">

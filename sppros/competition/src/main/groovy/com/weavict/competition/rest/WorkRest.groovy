@@ -14,6 +14,7 @@ import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
+import com.weavict.competition.module.UserBean
 import com.weavict.competition.module.WorkService
 import com.weavict.website.common.OtherUtils
 import jakarta.servlet.http.HttpServletRequest
@@ -35,6 +36,9 @@ class WorkRest extends BaseRest
 
     @Autowired
     WorkService workService;
+
+    @Autowired
+    UserBean userService;
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -474,6 +478,9 @@ class WorkRest extends BaseRest
                     }).call(),
                     siteOrgHumanList:({
                         return workService.qyOrgHumanList(appId:query.appId,sourceType: 0 as byte,sourceId: query.appId);
+                    }).call(),
+                    siteJudgeList:({
+                        return userService.queryJudgeList(appId:query.appId,pageSize:10,currentPage:0).content;
                     }).call()
             ]));
 

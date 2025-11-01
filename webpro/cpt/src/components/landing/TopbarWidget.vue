@@ -1,11 +1,23 @@
 <template>
     <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
-        <a class="row items-center" href="#">
-            <router-link :to="{name:'landing'}" class="text-3xl md:text-4xl font-bold leading-normal mr-20 text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
-        </a>
-        <div id="mis" class="items-center grow justify-between hidden lg:flex absolute lg:static right-0 top-full px-12 lg:px-0 py-4 z-20 rounded-border bg-surface-0 dark:bg-surface-900 lg:bg-transparent">
+        <div class="row gap-4">
+            <Button v-if="shiShowButton" id="tagmismenu"
+                    class="lg:!hidden"
+                    text
+                    severity="secondary"
+                    rounded
+                    v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')"
+            >
+                <i class="pi pi-bars !text-2xl"></i>
+            </Button>
+            <a class="row items-center" href="#">
+                <router-link :to="{name:'landing'}" class="text-3xl md:text-4xl font-bold leading-normal mr-20 text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
+            </a>
+        </div>
+        <div id="mis" class="items-center grow justify-between hidden lg:flex absolute lg:static left-10 top-full px-12 lg:px-0 py-4 z-50 rounded-border bg-surface-0 dark:bg-surface-900 lg:bg-transparent shadow-2xl lg:shadow-none">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8 text-base lg:text-lg">
                 <li>
+<!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
                     <a @click="smoothScroll('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                         <span>关于</span>
                     </a>
@@ -38,7 +50,7 @@
             </ul>
         </div>
 
-        <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 absolute right-10 top-20 px-12 py-4 z-20 rounded-border hidden">
+        <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 shadow-2xl absolute right-10 top-20 px-12 py-4 z-50 rounded-border hidden">
             <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base">
                 <li>
                     <a @click="userBarClick('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
@@ -81,15 +93,6 @@
                     <!--                        <span>{{userId}}</span>-->
                 </Button>
             </div>
-            <Button v-if="shiShowButton" id="tagmismenu"
-                class="lg:!hidden"
-                text
-                severity="secondary"
-                rounded
-                v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')"
-            >
-                <i class="pi pi-bars !text-2xl"></i>
-            </Button>
 <!--            <Button label="test" @click="shiShowButton=true"/>-->
         </div>
     </div>
@@ -115,7 +118,7 @@ onMounted(() => {
     let timer = setTimeout(() => {
         shiShowButton.value = true;
         clearTimeout(timer);
-    },1000);
+    },100);
 });
 
 // document.addEventListener('click', (event)=>{

@@ -65,12 +65,12 @@ function isOutsideClicked(event) {
     <div class="layout-wrapper" :class="containerClass">
 <!--        <app-topbar></app-topbar>-->
         <div class="w-full h-80">
-            <TopbarWidget :key="1"/>
+            <TopbarWidget/>
             <div class="w-full h-48 bg-[url('https://iaplc.com/assets_jp/img/judges/top_main.jpg')] bg-center center">
                 <h2 class="-text-surface-0 mix-blend-difference">{{useGlobal.getRouteInfo().meta.name}}</h2>
             </div>
         </div>
-        <div class="layout-main-container !ml-5 !pt-1">
+        <div class="layout-main-container lg:!ml-5 !pt-1">
             <div class="row">
                 <div class="_layout-sidebar !top-80 w-64 h-dvh mr-5 bg-surface-0 hidden md:block">
                     <app-menu></app-menu>

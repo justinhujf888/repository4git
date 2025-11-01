@@ -81,6 +81,7 @@ class GlobalCorsFilter {
 		//支持域
 //		config.addAllowedOriginPattern("*");
 		config.addAllowedOrigin("http://localhost:5173");
+		config.addAllowedOrigin("https://cpt.arkydesign.cn");
 		//是否发送Cookie
 		config.setAllowCredentials(true);
 		//支持请求方式

@@ -134,13 +134,7 @@ class UserRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         userBean.newQueryUtils(false).masterTable("Judge",null,null)
-                                 .where("appId = :appId",["appId":query.appId],null,{return true})
-                                .where("name like :name",["name":"%${query.name}%".toString()],"and",{return !(query.name in [null,""])})
-                                 .where("engName like :engName",["engName":"%${query.engName}%".toString()],"and",{return !(query.engName in [null,""])})
-                                 .where("phone like :phone",["phone":"%${query.phone}%".toString()],"and",{return !(query.phone in [null,""])})
-                                .orderBy("createDate desc")
-                                .pageLimit(query.pageSize as int,query.currentPage as int,"id").buildSql().run();
+                         return userBean.queryJudgeList(query);
                      }).call()
                     ]);
         }
