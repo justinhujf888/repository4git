@@ -75,21 +75,22 @@
                 <!--            <button type="button" class="text-xl w-10 h-10">-->
                 <!--                <i class="pi pi-inbox"></i>-->
                 <!--            </button>-->
-                <Button severity="success" variant="outlined" class="rounded-full text-xl w-10 h-10 !border-green-500 border-solid !border-2" rounded
-                        v-styleclass="{ selector: '#usermenu', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }">
+                <Button v-if="shiShowButton" id="tagusermenu" severity="success" variant="outlined" class="rounded-full text-xl w-10 h-10 !border-green-500 border-solid !border-2" rounded
+                        v-styleclass="{ selector: '#usermenu', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }" click="barButtonClick('usermenu')">
                     <i class="pi pi-user font-semibold"></i>
                     <!--                        <span>{{userId}}</span>-->
                 </Button>
             </div>
-            <Button
+            <Button v-if="shiShowButton" id="tagmismenu"
                 class="lg:!hidden"
                 text
                 severity="secondary"
                 rounded
-                v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
+                v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')"
             >
                 <i class="pi pi-bars !text-2xl"></i>
             </Button>
+<!--            <Button label="test" @click="shiShowButton=true"/>-->
         </div>
     </div>
 </template>
@@ -98,15 +99,50 @@
 import { useStorage } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import useGlobal from "@/api/hooks/useGlobal";
+import lodash from "lodash-es";
 
+const shiShowButton = ref(false);
 const userId = useStorage("userId");
 
 const siteDatas = ref(null);
 (async ()=>{
     siteDatas.value = await useGlobal.siteDatas();
 })();
+
+onMounted(() => {
+    let timer = setTimeout(() => {
+        shiShowButton.value = true;
+        clearTimeout(timer);
+    },1000);
+});
+
+// document.addEventListener('click', (event)=>{
+//     // console.log(event.target);
+//     let cDom = document.querySelector("#tagusermenu");
+//     let tDom = event.target;
+//     if (cDom == tDom || cDom.contains(tDom)) {
+//
+//     } else {
+//         if (lodash.findIndex(document.getElementById("usermenu").classList,(o)=>{return o=="hidden"})<0) {
+//             document.getElementById("usermenu").classList.toggle("hidden");
+//         }
+//     }
+// });
+//
+// document.addEventListener('click', (event)=>{
+//     // console.log(event.target);
+//     let cDom = document.querySelector("#tagmismenu");
+//     let tDom = event.target;
+//     if (cDom == tDom || cDom.contains(tDom)) {
+//
+//     } else {
+//         if (lodash.findIndex(document.getElementById("mis").classList,(o)=>{return o=="hidden"})<0) {
+//             document.getElementById("mis").classList.toggle("hidden");
+//         }
+//     }
+// });
 
 function smoothScroll(id) {
     document.body.click();
@@ -122,6 +158,13 @@ function smoothScroll(id) {
 function userBarClick(pathName) {
     document.body.click();
     page.navigateTo(pathName,null)
+}
+
+function barButtonClick(id) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.classList.toggle("hidden");
+    }
 }
 
 function logout() {
