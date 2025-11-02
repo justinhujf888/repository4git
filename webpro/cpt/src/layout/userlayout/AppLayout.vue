@@ -3,7 +3,6 @@ import { useLayout } from '@/layout/composables/layout';
 import {computed, ref, watch, onMounted} from 'vue';
 import AppFooter from '../AppFooter.vue';
 import AppMenu from '../AppMenu.vue';
-import AppTopbar from './AppTopbar.vue';
 import TopbarWidget from "@/components/landing/TopbarWidget.vue";
 import useGlobal from "@/api/hooks/useGlobal";
 
@@ -64,7 +63,7 @@ function isOutsideClicked(event) {
 <template>
     <div class="layout-wrapper" :class="containerClass">
 <!--        <app-topbar></app-topbar>-->
-        <div class="w-full h-80">
+        <div class="w-full h-80 bg-surface-0 dark:!bg-surface-900">
             <TopbarWidget/>
             <div class="w-full h-48 bg-[url('https://iaplc.com/assets_jp/img/judges/top_main.jpg')] bg-center center">
                 <h2 class="-text-surface-0 mix-blend-difference">{{useGlobal.getRouteInfo().meta.name}}</h2>
