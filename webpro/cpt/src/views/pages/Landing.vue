@@ -1,4 +1,5 @@
 <script setup>
+import {ref} from 'vue';
 import FeaturesWidget from '@/components/landing/FeaturesWidget.vue';
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import HeroWidget from '@/components/landing/HeroWidget.vue';
@@ -11,8 +12,11 @@ import {onMounted} from "vue";
 import oss from "@/api/oss";
 import LightRays from "@/bit-blocks/Backgrounds/LightRays/LightRays.vue";
 
+const shiShowPage = ref(false);
+
 (async ()=>{
     await oss.buildAliOssAccessInfo();
+    shiShowPage.value = true;
 })();
 
 onMounted(async () => {
@@ -22,7 +26,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="bg-surface-0 dark:bg-surface-900">
+    <div v-if="shiShowPage" class="bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn duration-75">
         <div id="home" class="landing-wrapper overflow-hidden">
             <TopbarWidget/>
             <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2024/12/iaplc2025_cover_01.jpg')] bg-center bg-cover">

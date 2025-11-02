@@ -3,7 +3,7 @@
         <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12 md:col-span-2">
                 <a class="flex flex-wrap items-center justify-center md:justify-start md:mb-0 mb-4 cursor-pointer">
-                    <h4 class="font-medium text-base text-surface-900 dark:text-surface-0">{{Config.appName}}</h4>
+                    <h4 class="font-medium text-base text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</h4>
                 </a>
             </div>
 
@@ -11,6 +11,7 @@
                 <div class="grid grid-cols-12 gap-8 text-center md:text-left">
                     <div class="col-span-12 md:col-span-3">
                         <h4 class="font-medium text-2xl leading-normal mb-4 text-surface-900 dark:text-surface-0">Company</h4>
+                        <router-link to="/manage/index" class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100">Manager Control</router-link>
                         <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100">About Us</a>
                         <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100">News</a>
                         <a class="leading-normal text-xl block cursor-pointer mb-2 text-surface-700 dark:text-surface-100">Investor Relations</a>
@@ -48,4 +49,11 @@
 <script setup>
 import {Config} from "@/api/config";
 import Page from '@/api/uniapp/page';
+import {ref} from "vue";
+import useGlobal from "@/api/hooks/useGlobal";
+
+const siteDatas = ref(null);
+(async ()=>{
+    siteDatas.value = await useGlobal.siteDatas();
+})();
 </script>
