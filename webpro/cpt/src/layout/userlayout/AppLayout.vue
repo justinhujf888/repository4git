@@ -63,7 +63,7 @@ function isOutsideClicked(event) {
 </script>
 
 <template>
-    <div class="layout-wrapper animate__animated animate__fadeIn duration-75" :class="containerClass" v-if="shiShowPage">
+    <div class="layout-wrapper animate__animated animate__fadeIn duration-75" :class="containerClass">
 <!--        <app-topbar></app-topbar>-->
         <div class="w-full h-80 bg-surface-0 dark:!bg-surface-900">
             <TopbarWidget/>
@@ -83,6 +83,7 @@ function isOutsideClicked(event) {
             <app-footer></app-footer>
         </div>
         <div class="layout-mask animate-fadein"></div>
+        <ScrollTop />
     </div>
 </template>
 

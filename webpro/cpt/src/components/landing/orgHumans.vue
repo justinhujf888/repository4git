@@ -1,7 +1,7 @@
 <template>
     <div id="highlights" class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
         <div class="text-center">
-            <div class="_text-surface-900 _dark:text-surface-0 font-normal mb-2 text-4xl mix-blend-difference text-white">组委会成员</div>
+            <div class="_text-surface-900 _dark:text-surface-0 font-normal mb-2 text-4xl mix-blend-difference text-white">评委</div>
             <!--            <span class="text-muted-color text-2xl">Amet consectetur adipiscing elit...</span>-->
         </div>
 

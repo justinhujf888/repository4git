@@ -16,7 +16,10 @@ const shiShowPage = ref(false);
 
 (async ()=>{
     await oss.buildAliOssAccessInfo();
-    shiShowPage.value = true;
+    let timer = setTimeout(() => {
+        shiShowPage.value = true;
+        clearTimeout(timer);
+    },500);
 })();
 
 onMounted(async () => {
@@ -26,7 +29,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-if="shiShowPage" class="bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn duration-75">
+    <div v-show="shiShowPage" class="bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn duration-75">
         <div id="home" class="landing-wrapper overflow-hidden">
             <TopbarWidget/>
             <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2024/12/iaplc2025_cover_01.jpg')] bg-center bg-cover">
@@ -59,6 +62,7 @@ onMounted(async () => {
             <PricingWidget />
 <!--            <HighlightsWidget />-->
             <FooterWidget />
+            <ScrollTop />
         </div>
     </div>
 </template>

@@ -10,7 +10,9 @@
             >
                 <i class="pi pi-bars !text-2xl"></i>
             </Button>
-            <a class="row items-center" href="#">
+            <div v-else class="w-12"></div>
+<!--            <ProgressSpinner v-else strokeWidth="4" fill="transparent" animationDuration=".5s" class="!w-12 !h-12 lg:!hidden"/>-->
+            <a class="row items-center">
                 <router-link :to="{name:'landing'}" class="text-3xl md:text-4xl font-bold leading-normal mr-20 text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
             </a>
         </div>
@@ -87,11 +89,12 @@
                 <!--            <button type="button" class="text-xl w-10 h-10">-->
                 <!--                <i class="pi pi-inbox"></i>-->
                 <!--            </button>-->
-                <Button v-if="shiShowButton" id="tagusermenu" severity="success" variant="outlined" class="rounded-full text-xl w-10 h-10 !border-green-500 border-solid !border-2" rounded
+                <Button v-if="shiShowButton" id="tagusermenu" severity="success" variant="outlined" class="rounded-full text-xl w-10 h-10 !border-green-500 border-solid !border-2 animate__animated animate__fadeIn duration-300" rounded
                         v-styleclass="{ selector: '#usermenu', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }" click="barButtonClick('usermenu')">
                     <i class="pi pi-user font-semibold"></i>
                     <!--                        <span>{{userId}}</span>-->
                 </Button>
+                <ProgressSpinner v-else strokeWidth="4" fill="transparent" animationDuration=".5s" class="!w-12 !h-12"/>
             </div>
 <!--            <Button label="test" @click="shiShowButton=true"/>-->
         </div>
@@ -118,7 +121,7 @@ onMounted(() => {
     let timer = setTimeout(() => {
         shiShowButton.value = true;
         clearTimeout(timer);
-    },100);
+    },1500);
 });
 
 // document.addEventListener('click', (event)=>{
