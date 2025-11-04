@@ -78,13 +78,13 @@ onUnmounted(() => {
     <myDialog ref="mydRef"></myDialog>
     <Toast />
 <!--    <router-view/>-->
-    <keep-alive>
+<!--    <keep-alive>-->
         <router-view v-slot="{ Component }">
             <transition name="fade">
                 <component :is="Component" />
             </transition>
         </router-view>
-    </keep-alive>
+<!--    </keep-alive>-->
 </template>
 
 <style>
