@@ -3,10 +3,11 @@ import {ref} from 'vue';
 import FeaturesWidget from '@/components/landing/FeaturesWidget.vue';
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import HeroWidget from '@/components/landing/HeroWidget.vue';
-import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
+// import HighlightsWidget from '@/components/landing/HighlightsWidget.vue';
 import slogen from "@/components/landing/slogen.vue";
 import orgHumans from "@/components/landing/orgHumans.vue";
-import PricingWidget from '@/components/landing/PricingWidget.vue';
+import Works from '@/components/landing/works.vue';
+// import PricingWidget from '@/components/landing/PricingWidget.vue';
 import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import {onMounted} from "vue";
 import oss from "@/api/oss";
@@ -59,7 +60,7 @@ onMounted(async () => {
                 </div>
                 <orgHumans/>
             </div>
-            <PricingWidget />
+            <Works />
 <!--            <HighlightsWidget />-->
             <FooterWidget />
             <ScrollTop />

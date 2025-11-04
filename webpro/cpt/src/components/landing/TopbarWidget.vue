@@ -16,7 +16,7 @@
                 <router-link :to="{name:'landing'}" class="text-3xl md:text-4xl font-bold leading-normal mr-20 text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
             </a>
         </div>
-        <div id="mis" class="items-center grow justify-between hidden lg:flex absolute lg:static left-10 top-full px-12 lg:px-0 py-4 z-50 rounded-border bg-surface-0 dark:bg-surface-900 lg:bg-transparent shadow-2xl lg:shadow-none">
+        <div id="mis" class="items-center grow justify-between hidden lg:flex absolute lg:static left-10 top-full px-12 lg:px-0 py-4 z-50 bg-surface-0 dark:bg-surface-900 bg-transparent border-solid border-2 border-gray-200 lg:border-0 rounded-border shadow-2xl lg:shadow-none">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8 text-base lg:text-lg">
                 <li>
 <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
@@ -52,7 +52,7 @@
             </ul>
         </div>
 
-        <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 shadow-2xl absolute right-10 top-20 px-12 py-4 z-50 rounded-border hidden">
+        <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 border-solid border-2 border-gray-200 rounded-border shadow-2xl absolute right-10 top-20 px-12 py-4 z-50 hidden">
             <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base">
                 <li>
                     <a @click="userBarClick('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
