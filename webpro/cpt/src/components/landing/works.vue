@@ -4,11 +4,11 @@
             <div class="_text-surface-900 _dark:text-surface-0 font-normal mb-2 text-4xl mix-blend-difference text-white">获奖作品</div>
         </div>
         <div class="mt-20 w-full">
-            <div class="box w-full" style="height: 45rem;">
+            <div class="box w-full" style="height: 35rem;">
                 <div class="imgList left-0">
                     <div class="col">
                         <div class="row h-80 w-auto"><img v-for="img of imgList[0]" :src="img" class="flex-1 h-full object-cover object-center"/></div>
-                        <div class="row h-80 w-auto"><img v-for="img of imgList[1]" :src="img" class="flex-1 h-full object-cover object-center"/></div>
+                        <div class="row h-64 w-auto"><img v-for="img of imgList[1]" :src="img" class="flex-1 h-full object-cover object-center"/></div>
                     </div>
                 </div>
             </div>

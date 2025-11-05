@@ -24,11 +24,11 @@
                 </template>
             </Card>
         </div>
-        <div class="center mt-10">
-            <div class="text-base p-1 border-btn">
+        <div class="center mt-10 grid sm:grid-cols-6 grid-cols-1 gap-8">
+            <div class="text-base p-1 border-btn sm:col-start-2 sm:col-span-2">
                 <a class="center px-5 lg:px-20 py-3 bg-gray-900 text-white sub-bg">评委</a>
             </div>
-            <div class="text-base p-1 border-btn ml-10">
+            <div class="text-base p-1 border-btn sm:col-start-4 sm:col-span-2">
                 <a class="center px-5 lg:px-20 py-3 bg-gray-900 text-white sub-bg">评审标准</a>
             </div>
         </div>
