@@ -74,14 +74,12 @@
     </div>
 </template>
 <script setup>
-import {onMounted, ref, getCurrentInstance} from "vue";
-import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
+import { inject, onMounted, ref, watch } from 'vue';
+// import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
 import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
 const jiangList = ref(null);
-const siteDatas = ref(null);
-const {proxy} = getCurrentInstance();
+
 (async ()=>{
-    siteDatas.value = await proxy.$getSiteDatas();
     jiangList.value = [
         {title:"金奖 每组1名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
         {title:"银奖 每组2名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
@@ -91,6 +89,11 @@ const {proxy} = getCurrentInstance();
         {title:"入选奖 每组38名",desc:"奖牌(排名数字),奖状"}
     ];
 })();
+
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue);
+});
 
 onMounted(() => {
 

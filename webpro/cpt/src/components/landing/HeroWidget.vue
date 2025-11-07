@@ -17,7 +17,7 @@
             <!--            />-->
             <h2 class="text-center mix-blend-difference text-white">每件作品都是一首生命的赞歌</h2>
             <h1 class="font-bold font-stretch-extra-condensed text-center bg-gradient-to-r from-gray-800 via-purple-700 to-gray-800 bg-clip-text text-transparent text-6xl">{{siteDatas?.siteInfo.siteCompetition.name}} {{siteDatas?.cptInfo.masterCompetitionInfo.name}}</h1>
-            <h5 class="text-center mix-blend-difference text-white text-2xl">{{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.beginDate}} — {{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.endDate}}</h5>
+            <h5 class="text-center mix-blend-difference text-white text-xl lg:text-3xl">{{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.beginDate}} — {{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.endDate}}</h5>
         </div>
         <div class="flex justify-center md:justify-end hidden">
             <img src="https://iaplc.com/c/wp-content/uploads/sites/3/2021/03/2011_grand_.jpg" alt="Hero Image" class="w-9/12 md:w-auto" />
@@ -26,15 +26,13 @@
 </template>
 
 <script setup>
-import { Config } from "@/api/config";
 // import BlurText from "@/bit-blocks/TextAnimations/BlurText/BlurText.vue";
-import {getCurrentInstance, onMounted, ref} from "vue";
+import { inject, onMounted, watch } from 'vue';
 
-const siteDatas = ref(null);
-const {proxy} = getCurrentInstance();
-(async ()=>{
-    siteDatas.value = await proxy.$getSiteDatas();
-})();
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue);
+});
 
 onMounted(async () => {
 

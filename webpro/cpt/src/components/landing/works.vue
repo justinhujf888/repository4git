@@ -30,16 +30,17 @@
 </template>
 
 <script setup>
-import useGlobal from '@/api/hooks/useGlobal';
-import { ref } from 'vue';
+import { inject, ref, watch } from 'vue';
 import lodash from 'lodash-es';
 import oss from '@/api/oss';
 // import Masonry from '@/bit-blocks/Components/Masonry/Masonry.vue';
 // import DomeGallery from "@/bit-blocks/Components/DomeGallery/DomeGallery.vue";
 
 const imgList = ref([[],[]]);
-(async ()=>{
-    let siteDatas = await useGlobal.siteDatas();
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue);
+    let siteDatas = newValue;
     lodash.forEach(siteDatas.siteInfo.siteOrgHumanList,(v)=>{
         imgList.value[0].push(oss.buildImgPath(v.headImgUrl));
     });
@@ -48,7 +49,9 @@ const imgList = ref([[],[]]);
     });
     imgList.value[0] = lodash.concat(imgList.value[0],imgList.value[1]);
     imgList.value[1] = lodash.concat(imgList.value[1],imgList.value[0]);
-})();
+});
+
+
 </script>
 
 <style scoped lang="scss">

@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue';
+import {ref,provide} from 'vue';
 import FeaturesWidget from '@/components/landing/FeaturesWidget.vue';
 import FooterWidget from '@/components/landing/FooterWidget.vue';
 import HeroWidget from '@/components/landing/HeroWidget.vue';
@@ -12,16 +12,21 @@ import TopbarWidget from '@/components/landing/TopbarWidget.vue';
 import {onMounted} from "vue";
 import oss from "@/api/oss";
 import LightRays from "@/bit-blocks/Backgrounds/LightRays/LightRays.vue";
+import useGlobal from "@/api/hooks/useGlobal";
 
+const siteDatas = ref(null);
 const shiShowPage = ref(false);
 
 (async ()=>{
     await oss.buildAliOssAccessInfo();
+    siteDatas.value = await useGlobal.siteDatas();
     let timer = setTimeout(() => {
         shiShowPage.value = true;
         clearTimeout(timer);
     },500);
 })();
+
+provide("siteDatas",siteDatas);
 
 onMounted(async () => {
     // console.log(await workRest.gainCache8MasterCompetitionInfo(host));

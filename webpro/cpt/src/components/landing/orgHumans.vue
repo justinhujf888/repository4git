@@ -24,30 +24,31 @@
                 </template>
             </Card>
         </div>
-        <div class="center mt-10 grid sm:grid-cols-6 grid-cols-1 gap-8">
-            <div class="text-base p-1 border-btn sm:col-start-2 sm:col-span-2">
-                <a class="center px-5 lg:px-20 py-3 bg-gray-900 text-white sub-bg">评委</a>
+        <div class="center mt-10 sm:row col gap-8">
+            <div class="text-base p-1 border-btn">
+                <a class="center w-48 py-3 bg-gray-900 text-white sub-bg">评委</a>
             </div>
-            <div class="text-base p-1 border-btn sm:col-start-4 sm:col-span-2">
-                <a class="center px-5 lg:px-20 py-3 bg-gray-900 text-white sub-bg">评审标准</a>
+            <div class="text-base p-1 border-btn">
+                <a class="center w-48 py-3 bg-gray-900 text-white sub-bg">评审标准</a>
             </div>
         </div>
     </div>
 </template>
 <script setup>
-import {onMounted, ref, getCurrentInstance} from "vue";
+import { inject, onMounted, ref, watch } from 'vue';
 import lodash from "lodash-es";
 import oss from "@/api/oss";
+
 const orgHumanList = ref(null);
-const siteDatas = ref(null);
-const {proxy} = getCurrentInstance();
-(async ()=>{
-    siteDatas.value = await proxy.$getSiteDatas();
-    lodash.forEach(siteDatas.value.siteInfo.siteJudgeList,(v)=>{
+
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue);
+    lodash.forEach(newValue.siteInfo.siteJudgeList,(v)=>{
         v.tempMap = {img:oss.buildImgPath(v.headImgUrl)};
     });
-    orgHumanList.value = siteDatas.value.siteInfo?.siteJudgeList;
-})();
+    orgHumanList.value = newValue.siteInfo?.siteJudgeList;
+});
 
 onMounted(() => {
 

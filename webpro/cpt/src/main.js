@@ -19,24 +19,10 @@ const app = createApp(App);
 app.directive('styleclass', StyleClass);
 app.provide("domain",util.getDomainFromUrl(window.location));
 
-let siteDatas = null;
-
 const routerParams = ()=>{
     return JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));
 };
 
-const getSiteDatas = async ()=>{
-    if (siteDatas) {
-        return siteDatas;
-    } else {
-        siteDatas = {cptInfo:await workRest.gainCache8MasterCompetitionInfo(util.getDomainFromUrl(window.location)),siteInfo:await workRest.gainCache8SiteInfo(util.getDomainFromUrl(window.location))};
-        siteDatas.cptInfo.masterCompetitionInfo.tempMap.beginDate = dayjs(siteDatas.cptInfo.masterCompetitionInfo.beginDate).format("YYYY-MM-DD");
-        siteDatas.cptInfo.masterCompetitionInfo.tempMap.endDate = dayjs(siteDatas.cptInfo.masterCompetitionInfo.endDate).format("YYYY-MM-DD");
-        return siteDatas;
-    }
-};
-
-app.config.globalProperties.$getSiteDatas = getSiteDatas;
 app.config.globalProperties.$router = router;
 app.config.globalProperties.$routerParams = routerParams;
 app.config.globalProperties.$config = Config;

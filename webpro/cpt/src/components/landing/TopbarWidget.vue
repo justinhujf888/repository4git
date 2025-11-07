@@ -1,5 +1,5 @@
 <template>
-    <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between relative lg:static">
+    <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between lg:static relative">
         <div class="row gap-4">
             <Button v-if="shiShowButton" id="tagmismenu"
                     class="lg:!hidden"
@@ -105,17 +105,15 @@
 import { useStorage } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
-import {onMounted, ref} from "vue";
-import useGlobal from "@/api/hooks/useGlobal";
-import lodash from "lodash-es";
+import { inject, onMounted, ref, watch } from 'vue';
 
 const shiShowButton = ref(false);
 const userId = useStorage("userId");
 
-const siteDatas = ref(null);
-(async ()=>{
-    siteDatas.value = await useGlobal.siteDatas();
-})();
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue);
+});
 
 onMounted(() => {
     let timer = setTimeout(() => {

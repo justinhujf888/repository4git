@@ -1,10 +1,10 @@
 <template>
     <div class="py-6 px-6 mx-0 mt-10 lg:mx-20">
         <div class="center">
-            <router-link class="cursor-pointer font-bold text-surface-900 dark:text-surface-0 text-4xl" to="/">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
+            <router-link class="cursor-pointer font-bold text-surface-900 dark:text-surface-0 text-4xl" to="/manage/index">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
         </div>
         <div id="footmenu" class="center mt-5">
-            <ul class="grid sm:grid-cols-6 grid-cols-1 gap-4">
+            <ul class="col sm:row gap-4">
                 <li>
                     <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
                     <a @click="navPage('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
@@ -82,18 +82,15 @@
 </template>
 
 <script setup>
-import {Config} from "@/api/config";
 import Page from '@/api/uniapp/page';
-import {ref} from "vue";
-import useGlobal from "@/api/hooks/useGlobal";
-import page from '@/api/uniapp/page';
+import { inject,watch } from 'vue';
 import { useStorage } from '@vueuse/core';
 
 const userId = useStorage("userId");
-const siteDatas = ref(null);
-(async ()=>{
-    siteDatas.value = await useGlobal.siteDatas();
-})();
+const siteDatas = inject("siteDatas");
+watch(siteDatas,(newValue)=>{
+    // console.log(newValue);
+});
 
 function navPage(pageName) {
     Page.navigateTo(pageName,null)
@@ -119,6 +116,7 @@ function navPage(pageName) {
         @media (max-width: 576px) {
             li::after {
                 content: "";
+                padding-left: 0rem;
             }
         }
         li:last-child::after {
