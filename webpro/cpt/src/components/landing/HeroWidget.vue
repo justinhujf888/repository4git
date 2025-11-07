@@ -15,8 +15,8 @@
             <!--                root-margin="0px"-->
             <!--                :step-duration="0.8"-->
             <!--            />-->
-            <h2 class="text-center mix-blend-difference text-white">每件作品都是一首生命的赞歌</h2>
-            <h1 class="font-bold font-stretch-extra-condensed text-center bg-gradient-to-r from-gray-800 via-purple-700 to-gray-800 bg-clip-text text-transparent text-6xl">{{siteDatas?.siteInfo.siteCompetition.name}} {{siteDatas?.cptInfo.masterCompetitionInfo.name}}</h1>
+            <h3 class="text-center mix-blend-difference text-white">每件作品都是一首生命的赞歌</h3>
+            <h1 class="font-bold font-stretch-extra-condensed text-center bg-gradient-to-r from-gray-800 via-purple-700 to-gray-800 bg-clip-text text-transparent text-8xl scale-x-75">{{siteDatas?.siteInfo.siteCompetition.name}} {{siteDatas?.cptInfo.masterCompetitionInfo.name}}</h1>
             <h5 class="text-center mix-blend-difference text-white text-xl lg:text-3xl">{{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.beginDate}} — {{siteDatas?.cptInfo.masterCompetitionInfo.tempMap.endDate}}</h5>
         </div>
         <div class="flex justify-center md:justify-end hidden">

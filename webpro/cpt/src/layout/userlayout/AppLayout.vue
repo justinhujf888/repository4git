@@ -1,19 +1,27 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import {computed, ref, watch, onMounted} from 'vue';
+import { computed, ref, watch, onMounted, provide } from 'vue';
 import AppFooter from '../AppFooter.vue';
 import AppMenu from '../AppMenu.vue';
 import TopbarWidget from "@/components/landing/TopbarWidget.vue";
 import useGlobal from "@/api/hooks/useGlobal";
+import oss from '@/api/oss';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
 
 const shiShowPage = ref(false);
+const siteDatas = ref(null);
+(async ()=>{
+    siteDatas.value = await useGlobal.siteDatas();
+    shiShowPage.value = true;
+})();
+
+provide("siteDatas",siteDatas);
 
 onMounted(() => {
-    shiShowPage.value = true;
+
 });
 
 watch(isSidebarActive, (newVal) => {
