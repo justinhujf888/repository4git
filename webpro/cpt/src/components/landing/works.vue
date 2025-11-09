@@ -61,7 +61,8 @@ watch(siteDatas,(newValue)=>{
     position: relative;
 
     .imgList {
-        animation:rolling 30s linear infinite;
+        -webkit-animation:linear rolling 80s infinite;
+        animation:linear rolling 80s infinite;
         position: absolute;
     }
 }
@@ -75,5 +76,4 @@ watch(siteDatas,(newValue)=>{
         transform: translateX(-50%);
     }
 }
-
 </style>
