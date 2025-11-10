@@ -7,32 +7,32 @@
             <ul class="col sm:row gap-4">
                 <li>
                     <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
-                    <a @click="navPage('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="navPage('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
                         <span>关于</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="navPage('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="navPage('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
                         <span>报名参赛</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="navPage('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="navPage('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
                         <span>评委</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
                         <span>评审标准</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
                         <span>获奖作品</span>
                     </a>
                 </li>
                 <li v-if="userId">
-                    <a @click="navPage('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="navPage('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
                         <span>用户中心</span>
                     </a>
                 </li>

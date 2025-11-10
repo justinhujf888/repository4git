@@ -58,17 +58,17 @@ import {Beans} from "@/api/dbs/beans";
 import userRest from "@/api/dbs/userRest";
 import otherRest from "@/api/dbs/otherRest";
 import primeUtil from "@/api/prime/util";
-import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import {ref, shallowRef, onMounted, getCurrentInstance} from 'vue';
+// import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
+import {ref, shallowRef, onMounted} from 'vue';
 import { useCountdown,useStorage } from '@vueuse/core';
 import Page from "@/api/uniapp/page";
 import util from "@/api/util";
 import checker from "@/api/check/checker";
+import useGlobal from "@/api/hooks/useGlobal";
 
 const siteDatas = ref(null);
-const {proxy} = getCurrentInstance();
 (async ()=>{
-    siteDatas.value = await proxy.$getSiteDatas();
+    siteDatas.value = await useGlobal.siteDatas();
 })();
 const remaining = ref(0);
 const buyer = ref(Beans.buyer());

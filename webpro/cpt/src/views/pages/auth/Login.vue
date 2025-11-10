@@ -42,7 +42,7 @@
 
 <script setup>
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
-import { ref,getCurrentInstance } from 'vue';
+import { ref } from 'vue';
 import {Config} from "@/api/config";
 import {Beans} from "@/api/dbs/beans";
 import userRest from "@/api/dbs/userRest";
@@ -53,13 +53,13 @@ import checker from "@/api/check/checker";
 import { useStorage } from '@vueuse/core';
 import axios from "axios";
 import util from "@/api/util";
+import useGlobal from "@/api/hooks/useGlobal";
 
 const buyer = ref(Beans.buyer());
 const password = ref('');
 const siteDatas = ref(null);
-const {proxy} = getCurrentInstance();
 (async ()=>{
-    siteDatas.value = await proxy.$getSiteDatas();
+    siteDatas.value = await useGlobal.siteDatas();
 })();
 
 let errors = [];
