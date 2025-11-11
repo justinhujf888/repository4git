@@ -1,20 +1,21 @@
 <template>
     <div class="py-6 px-6 mx-0 md:mx-12 lg:mx-20 lg:px-20 flex items-center justify-between lg:static relative">
         <div class="row gap-4">
-            <Button v-if="shiShowButton" id="tagmismenu"
-                    class="lg:!hidden"
-                    text
-                    severity="secondary"
-                    rounded
-                    v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')"
-            >
-                <i class="pi pi-bars !text-2xl"></i>
-            </Button>
-            <div v-else class="w-12"></div>
+            <div class="w-12">
+                <Button v-if="shiShowButton" id="tagmismenu"
+                        class="lg:!hidden"
+                        text
+                        severity="secondary"
+                        rounded
+                        v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')"
+                >
+                    <i class="pi pi-bars !text-2xl"></i>
+                </Button>
+            </div>
 <!--            <ProgressSpinner v-else strokeWidth="4" fill="transparent" animationDuration=".5s" class="!w-12 !h-12 lg:!hidden"/>-->
-            <a class="row items-center">
+            <div class="row items-center">
                 <router-link :to="{name:'landing'}" class="text-3xl md:text-4xl font-bold leading-normal mr-20 text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
-            </a>
+            </div>
         </div>
         <div id="mis" class="items-center grow justify-between hidden lg:flex absolute lg:static left-10 top-full px-12 lg:px-0 py-4 z-50 bg-surface-0 dark:bg-surface-900 _bg-transparent border-solid border-2 border-gray-200 lg:border-0 rounded-border shadow-2xl lg:shadow-none">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none flex-col lg:flex-row cursor-pointer gap-8 text-base lg:text-lg text-center">
