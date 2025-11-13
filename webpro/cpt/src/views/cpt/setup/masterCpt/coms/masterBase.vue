@@ -146,7 +146,7 @@
                         </ScrollPanel>
                     </Fieldset>
 
-                    <Fieldset class="text-wrap text-start" legend="分组设置" :toggleable="true" :collapsed="true">
+                    <Fieldset class="text-wrap text-start" legend="分组及评委设置" :toggleable="true" :collapsed="true">
                         <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">

@@ -1,6 +1,9 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
-        <div class="card">
+        <div class="center">
+            <h1>Building...</h1>
+        </div>
+        <div class="card hidden">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">设置系列赛事作品</span>
                 <Button label="系列赛事作品设置" @click="refUpdateSiteWorkitem.init(siteZuoPingWorkItemList);updateSiteZuoPingWorkitemPage.open(mainPage)"/>
