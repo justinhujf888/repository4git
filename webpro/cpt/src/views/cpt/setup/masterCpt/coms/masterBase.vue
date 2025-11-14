@@ -241,7 +241,7 @@ onMounted(() => {
         if (res.status=="OK") {
             if (res.data) {
                 masterCompetitionList.value = res.data;
-                // console.log(masterCompetitionList.value);
+                // console.log("masterCompetitionList",masterCompetitionList.value);
             }
         }
     });
@@ -308,8 +308,8 @@ const onRowExpand = (event) => {
             workRest.qyCompetitionList({masterCompetitionId:selMasterCompetition.value.id,shiQyGuiGeList:true},(res)=>{
                 if (res.status=="OK") {
                     if (res.data!=null) {
-                        let competitionList = res.data;
-                        selMasterCompetition.value.competitionList = competitionList;
+                        selMasterCompetition.value.competitionList = res.data;
+                        // console.log("onRowExpand",selMasterCompetition.value.competitionList)
                     } else {
                         selMasterCompetition.value.competitionList = [];
                     }
