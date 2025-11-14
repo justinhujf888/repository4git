@@ -106,4 +106,12 @@ class WorkService extends ModuleBean
         }
         return competitionList;
     }
+
+    Map qyPingShenFlow(Map query) {
+        return [flow:[
+                [sort:0,id:0,name:"作品初筛"],
+                [sort:1,id:1,name:"作品第一轮评分"],
+                [sort:2,id:2,name:"作品第二轮评分"]
+        ]];
+    }
 }

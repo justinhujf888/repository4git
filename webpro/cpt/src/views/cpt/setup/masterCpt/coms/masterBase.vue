@@ -150,27 +150,31 @@
                         <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
-                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[4].command()"/>
+                                    <Button label="设置组别" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[4].command()"/>
                                 </div>
-                                <div class="mt-10">
-                                    <DataView :value="slotProps.data.competitionList" :pt="{
-                                        emptyMessage:{
-                                            class:'opacity-0'
-                                        }
-                                    }">
-                                        <template #list="slotProps">
-                                            <DataTable :value="slotProps.items">
-                                                <Column field="name" header="类别名称" class="w-32"></Column>
-                                                <Column header="分组">
-                                                    <template #body="slotProps">
-                                                        <div class="row flex-wrap gap-x-2">
-                                                            <Chip v-for="(gg,index) in slotProps.data.guiGeList" :key="index" :label="gg.name" class="!bg-sky-100 !border-2 !border-sky-200 !border-solid !text-gray-800"/>
-                                                        </div>
-                                                    </template>
-                                                </Column>
-                                            </DataTable>
-                                        </template>
-                                    </DataView>
+                                <div class="mt-10 row">
+                                    <Tree v-model:selectionKeys="selectedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
+                                    <div class="flex-1 p-2">
+
+                                    </div>
+<!--                                    <DataView :value="slotProps.data.competitionList" :pt="{-->
+<!--                                        emptyMessage:{-->
+<!--                                            class:'opacity-0'-->
+<!--                                        }-->
+<!--                                    }">-->
+<!--                                        <template #list="slotProps">-->
+<!--                                            <DataTable :value="slotProps.items">-->
+<!--                                                <Column field="name" header="类别名称" class="w-32"></Column>-->
+<!--                                                <Column header="分组">-->
+<!--                                                    <template #body="slotProps">-->
+<!--                                                        <div class="row flex-wrap gap-x-2">-->
+<!--                                                            <Chip v-for="(gg,index) in slotProps.data.guiGeList" :key="index" :label="gg.name" class="!bg-sky-100 !border-2 !border-sky-200 !border-solid !text-gray-800"/>-->
+<!--                                                        </div>-->
+<!--                                                    </template>-->
+<!--                                                </Column>-->
+<!--                                            </DataTable>-->
+<!--                                        </template>-->
+<!--                                    </DataView>-->
                                 </div>
                             </div>
                         </ScrollPanel>
@@ -232,6 +236,7 @@ const refUpdateCompetition = useTemplateRef("refUpdateCompetition");
 const masterCompetitionList = ref([]);
 const expandedRows = ref({});
 const selMasterCompetition = ref(null);
+const selectedTreeNodeKey = ref(null);
 
 let host = inject("domain");
 let selIndex = -1;
@@ -309,7 +314,15 @@ const onRowExpand = (event) => {
                 if (res.status=="OK") {
                     if (res.data!=null) {
                         selMasterCompetition.value.competitionList = res.data;
-                        // console.log("onRowExpand",selMasterCompetition.value.competitionList)
+                        // console.log("onRowExpand",selMasterCompetition.value.competitionList);
+                        selMasterCompetition.value.tempMap = {comTree:[]};
+                        lodash.forEach(selMasterCompetition.value.competitionList,(c)=>{
+                            let competition = {key:c.id,label:c.name,data:{...c,type:0},children:[]};
+                            lodash.forEach(c.guiGeList,(g)=>{
+                                competition.children.push({key:g.id,label:g.name,data:{...g,type:1}});
+                            });
+                            selMasterCompetition.value.tempMap.comTree.push(competition);
+                        });
                     } else {
                         selMasterCompetition.value.competitionList = [];
                     }
@@ -374,6 +387,10 @@ const deleteFile = (file,index,obj)=>{
         dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
     }
 }
+
+const onNodeSelect = (node) => {
+    console.log(node);
+};
 
 const returnFunction = (obj)=>{
     obj.masterCompetition.beginDate = dayjs(obj.masterCompetition.beginDate).format("YYYY-MM-DD");
