@@ -20,12 +20,12 @@ const shiShowPage = ref(false);
 (async ()=>{
     await oss.buildAliOssAccessInfo();
     siteDatas.value = await useGlobal.siteDatas();
+    let timer = setTimeout(() => {
+        shiShowPage.value = true;
+        clearTimeout(timer);
+    },500);
 })();
 
-let timer = setTimeout(() => {
-    shiShowPage.value = true;
-    clearTimeout(timer);
-},500);
 
 provide("siteDatas",siteDatas);
 

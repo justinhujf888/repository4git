@@ -155,7 +155,9 @@
                                 <div class="mt-10 row">
                                     <Tree v-model:selectionKeys="selectedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
                                     <div class="flex-1 p-2">
-
+                                        <div v-for="flow of pingShenflow.flow">
+                                            <span>{{flow.name}}</span>
+                                        </div>
                                     </div>
 <!--                                    <DataView :value="slotProps.data.competitionList" :pt="{-->
 <!--                                        emptyMessage:{-->
@@ -220,6 +222,7 @@ import lodash from 'lodash-es';
 import dayjs from "dayjs";
 import oss from '@/api/oss';
 import { Beans } from '@/api/dbs/beans';
+import systemRest from "@/api/dbs/systemRest";
 
 const mainPage = useTemplateRef("mainPage");
 const updateMasterCptPage = useTemplateRef("updateMasterCptPage");
@@ -237,6 +240,7 @@ const masterCompetitionList = ref([]);
 const expandedRows = ref({});
 const selMasterCompetition = ref(null);
 const selectedTreeNodeKey = ref(null);
+const pingShenflow = ref(null);
 
 let host = inject("domain");
 let selIndex = -1;
@@ -250,6 +254,11 @@ onMounted(() => {
             }
         }
     });
+    systemRest.pingShenFlow({},(res)=>{
+        if (res.status=="OK") {
+            pingShenflow.value = res.data;
+        }
+    })
 });
 
 const getSplitItems = (data,index)=>{
@@ -315,7 +324,10 @@ const onRowExpand = (event) => {
                     if (res.data!=null) {
                         selMasterCompetition.value.competitionList = res.data;
                         // console.log("onRowExpand",selMasterCompetition.value.competitionList);
-                        selMasterCompetition.value.tempMap = {comTree:[]};
+                        if (!selMasterCompetition.value.tempMap) {
+                            selMasterCompetition.value.tempMap = {};
+                        }
+                        selMasterCompetition.value.tempMap.comTree = [];
                         lodash.forEach(selMasterCompetition.value.competitionList,(c)=>{
                             let competition = {key:c.id,label:c.name,data:{...c,type:0},children:[]};
                             lodash.forEach(c.guiGeList,(g)=>{
