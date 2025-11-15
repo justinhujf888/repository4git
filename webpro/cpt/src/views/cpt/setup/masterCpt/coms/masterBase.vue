@@ -154,9 +154,14 @@
                                 </div>
                                 <div class="mt-10 row">
                                     <Tree v-model:selectionKeys="selectedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
-                                    <div class="flex-1 p-2">
-                                        <div v-for="flow of pingShenflow.flow">
-                                            <span>{{flow.name}}</span>
+                                    <div v-if="slotProps.data.tempMap.judgeData?.id" class="flex-1 p-2">
+                                        <div v-if="slotProps.data.tempMap.judgeData?.data">
+                                            <div v-for="flow of pingShenflow.flow">
+                                                <span>{{flow.name}}</span>
+                                            </div>
+                                        </div>
+                                        <div v-else class="hwcenter">
+                                            <button class="bg-blue-800 text-xs h-6 px-2 text-white rounded-2xl place-self-start">评委设置</button>
                                         </div>
                                     </div>
 <!--                                    <DataView :value="slotProps.data.competitionList" :pt="{-->
@@ -329,9 +334,9 @@ const onRowExpand = (event) => {
                         }
                         selMasterCompetition.value.tempMap.comTree = [];
                         lodash.forEach(selMasterCompetition.value.competitionList,(c)=>{
-                            let competition = {key:c.id,label:c.name,data:{...c,type:0},children:[]};
+                            let competition = {key:c.id,label:c.name,data:{bean:c,type:0,masterCompetitionId:selMasterCompetition.value.id},children:[]};
                             lodash.forEach(c.guiGeList,(g)=>{
-                                competition.children.push({key:g.id,label:g.name,data:{...g,type:1}});
+                                competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,masterCompetitionId:selMasterCompetition.value.id}});
                             });
                             selMasterCompetition.value.tempMap.comTree.push(competition);
                         });
@@ -401,7 +406,12 @@ const deleteFile = (file,index,obj)=>{
 }
 
 const onNodeSelect = (node) => {
-    console.log(node);
+    // console.log(node,selectedTreeNodeKey);
+    let masterCompetition = lodash.find(masterCompetitionList.value,(mc)=>{return mc.id==node.data.masterCompetitionId});
+    // console.log(judgeSetup);
+    if (!masterCompetition.judgeSetup) {
+        masterCompetition.tempMap.judgeData = {id:node.key};
+    }
 };
 
 const returnFunction = (obj)=>{
