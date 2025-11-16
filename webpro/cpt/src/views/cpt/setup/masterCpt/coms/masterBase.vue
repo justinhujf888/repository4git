@@ -161,7 +161,7 @@
                                             </div>
                                         </div>
                                         <div v-else class="hwcenter">
-                                            <button class="bg-blue-800 text-xs h-6 px-2 text-white rounded-2xl place-self-start">评委设置</button>
+                                            <button class="bg-blue-800 text-xs h-6 px-2 text-white rounded-2xl place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</button>
                                         </div>
                                     </div>
 <!--                                    <DataView :value="slotProps.data.competitionList" :pt="{-->
@@ -210,6 +210,10 @@
     <animationPage ref="updateCompetitionPage">
         <updateCompetition ref="refUpdateCompetition"/>
     </animationPage>
+
+    <animationPage ref="updateJudgeSetupPage">
+        <updateJudgeSetup ref="refUpdateJudgeSetup"/>
+    </animationPage>
 </template>
 
 <script setup>
@@ -221,6 +225,7 @@ import updateMasterCpt from "@/views/cpt/setup/masterCpt/updateMasterCpt.vue";
 import updateDescription from "@/views/cpt/setup/masterCpt/updateDescription.vue";
 import updateFields from "@/views/cpt/setup/masterCpt/updateFields.vue";
 import updateCompetition from "@/views/cpt/setup/masterCpt/updateCompetition.vue";
+import updateJudgeSetup from "@/views/cpt/setup/masterCpt/updateJudgeSetup.vue";
 import myFileUpload from "@/components/my/myFileUpload.vue";
 import priviewImage from "@/components/my/priviewImage.vue";
 import lodash from 'lodash-es';
@@ -240,6 +245,8 @@ const updateFieldsPage = useTemplateRef("updateFieldsPage");
 const refUpdateFields = useTemplateRef("refUpdateFields");
 const updateCompetitionPage = useTemplateRef("updateCompetitionPage");
 const refUpdateCompetition = useTemplateRef("refUpdateCompetition");
+const updateJudgeSetupPage = useTemplateRef("updateJudgeSetupPage");
+const refUpdateJudgeSetup = useTemplateRef("refUpdateJudgeSetup");
 
 const masterCompetitionList = ref([]);
 const expandedRows = ref({});
@@ -263,7 +270,7 @@ onMounted(() => {
         if (res.status=="OK") {
             pingShenflow.value = res.data;
         }
-    })
+    });
 });
 
 const getSplitItems = (data,index)=>{
@@ -295,6 +302,10 @@ const getSplitItems = (data,index)=>{
                 refUpdateDescription.value.init(mainPage.value,updateDescriptionPage.value,{data:data,index:index,returnFunction:descriptionReturnFunction,id:"masterCompetition.pxBiaozun",title:"评审标准标题内容设置"});
                 updateDescriptionPage.value.open(mainPage.value);
             }},
+        {label:"设置评委",command:()=>{
+                refUpdateJudgeSetup.value.init(mainPage.value,updateJudgeSetupPage.value,{data:data,index:index,returnFunction:judgeSetupReturnFunction});
+                updateJudgeSetupPage.value.open(mainPage.value);
+            }}
     ];
 }
 
@@ -442,6 +453,10 @@ const fieldsReturnFunction = (obj)=>{
 const competitionReturnFunction = (obj)=>{
     masterCompetitionList.value[obj.index].competitionList = obj.data.competitionList;
     dialog.toastSuccess(`${obj.data.name}年份赛事类别已更新`);
+}
+
+const judgeSetupReturnFunction = (obj)=>{
+
 }
 
 const expandAll = () => {
