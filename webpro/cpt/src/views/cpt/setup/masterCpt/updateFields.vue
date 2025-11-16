@@ -89,7 +89,7 @@
             </DataView>
         </Panel>
         <div class="row mt-12 center gap-4">
-            <Button label="保存设置" class="px-8" _as="router-link" _to="/"  @click="save()"></Button>
+            <Button label="保存设置" class="px-8" _as="router-link" _to="/" @click="save()"></Button>
             <Button severity="warn" label="取消" class="px-8" @click="cancel()"></Button>
         </div>
     </div>

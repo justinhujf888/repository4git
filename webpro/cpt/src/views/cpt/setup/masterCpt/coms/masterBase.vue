@@ -154,14 +154,14 @@
                                 </div>
                                 <div class="mt-10 row">
                                     <Tree v-model:selectionKeys="selectedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
-                                    <div v-if="slotProps.data.tempMap.judgeData?.id" class="flex-1 p-2">
-                                        <div v-if="slotProps.data.tempMap.judgeData?.data">
+                                    <div class="flex-1 p-2">
+                                        <div v-if="slotProps.data.tempMap.judgeData?.competitionId">
                                             <div v-for="flow of pingShenflow.flow">
                                                 <span>{{flow.name}}</span>
                                             </div>
-                                        </div>
-                                        <div v-else class="hwcenter">
-                                            <button class="bg-blue-800 text-xs h-6 px-2 text-white rounded-2xl place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</button>
+                                            <div class="hwcenter mt-5">
+                                                <button class="bg-blue-800 text-xs h-6 px-2 text-white rounded-2xl place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</button>
+                                            </div>
                                         </div>
                                     </div>
 <!--                                    <DataView :value="slotProps.data.competitionList" :pt="{-->
@@ -417,12 +417,39 @@ const deleteFile = (file,index,obj)=>{
 }
 
 const onNodeSelect = (node) => {
-    // console.log(node,selectedTreeNodeKey);
+    // console.log(node);
     let masterCompetition = lodash.find(masterCompetitionList.value,(mc)=>{return mc.id==node.data.masterCompetitionId});
     // console.log(judgeSetup);
     if (!masterCompetition.judgeSetup) {
-        masterCompetition.tempMap.judgeData = {id:node.key};
+        masterCompetition.tempMap.judgeData = {id:node.key,type:node.data.type,name:node.label};
+        if (node.data.type==0) {
+            masterCompetition.tempMap.judgeData.competitionId = node.data.bean.id;
+            masterCompetition.tempMap.judgeData.guiGeList = [];
+        } else if (node.data.type==1) {
+            masterCompetition.tempMap.judgeData.competitionId = node.data.bean.competition.id;
+        }
+        masterCompetition.tempMap.judgeData.data = pingShenflow.value.flow;
+    } else {
+        if (node.data.type==0) {
+            masterCompetition.tempMap.judgeData = lodash.find(masterCompetition.judgeSetup,(c)=>{return c.id==node.key});
+        } else if (node.data.type==1) {
+            let ct = lodash.find(masterCompetition.judgeSetup,(c)=>{return c.id==node.data.competitionId});
+            if (ct) {
+                masterCompetition.tempMap.judgeData = lodash.find(ct.guiGeList,(g)=>{return g.id==node.key});
+            }
+        }
+        if (!masterCompetition.tempMap.judgeData) {
+            asterCompetition.tempMap.judgeData = {id:node.key,type:node.data.type,name:node.label};
+            if (node.data.type==0) {
+                masterCompetition.tempMap.judgeData.competitionId = node.data.bean.id;
+                masterCompetition.tempMap.judgeData.guiGeList = [];
+            } else if (node.data.type==1) {
+                masterCompetition.tempMap.judgeData.competitionId = node.data.bean.competition.id;
+            }
+            masterCompetition.tempMap.judgeData.data = pingShenflow.value.flow;
+        }
     }
+    // console.log(masterCompetition);
 };
 
 const returnFunction = (obj)=>{
