@@ -159,7 +159,7 @@
                                             <div v-for="flow of pingShenflow.flow">
                                                 <span>{{flow.name}}</span>
                                             </div>
-                                            <div class="hwcenter mt-5">
+                                            <div class="mt-5">
                                                 <button class="bg-blue-800 text-xs h-6 px-2 text-white rounded-2xl place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</button>
                                             </div>
                                         </div>

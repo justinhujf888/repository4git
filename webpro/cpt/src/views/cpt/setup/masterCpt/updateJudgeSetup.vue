@@ -8,25 +8,32 @@
         <Panel class="mt-10">
             <div v-for="flow of selMasterCompetition.tempMap?.judgeData?.data">
                 <Fieldset :legend="flow.name" class="!relative">
-                    <Button size="small" label="新增评委" class="!absolute top-0 right-2" @click="toggle"/>
-                    <div v-if="flow.type==0" class="min-h-24">
-                        <Chip v-for="ju of flow.setupData" :label="ju.name" :image="ju.tempImg" />
-                    </div>
-                    <div v-if="flow.type==1" class="min-h-24">
-                        <DataTable :value="flow.setupData" class="mt-12">
-                            <Column header="姓名" class="w-32">
-                                <template #body="slotProps">
-                                    <Chip :label="slotProps.data.name" :image="slotProps.data.tempImg" />
-                                </template>
-                            </Column>
-                            <Column header="字段">
-                                <template #body="slotProps">
-                                    <div class="row flex-wrap gap-x-2">
-                                        <Chip v-for="(f,index) in slotProps.data.fields" :key="index" :label="f.name" class="!bg-sky-100 !border-2 !border-sky-200 !border-solid !text-gray-800"/>
-                                    </div>
-                                </template>
-                            </Column>
-                        </DataTable>
+                    <Button size="small" label="新增评委" class="!absolute top-0 right-2" @click="toggle($event,flow)"/>
+                    <div class="mt-5">
+                        <div v-if="flow.type==0" class="min-h-24">
+                            <Chip v-for="ju of flow.setupData" :label="ju.name" :image="ju.tempImg" removable/>
+                        </div>
+                        <div v-if="flow.type==1" class="min-h-24">
+                            <DataTable :value="flow.setupData" class="mt-12">
+                                <Column header="姓名" class="w-48">
+                                    <template #body="slotProps">
+                                        <Chip :label="slotProps.data.name" :image="slotProps.data.tempImg" />
+                                    </template>
+                                </Column>
+                                <Column header="字段">
+                                    <template #body="slotProps">
+                                        <div class="row flex-wrap gap-x-2">
+                                            <Chip v-for="(f,index) in slotProps.data.fields" :key="index" :label="f.name" removable @remove="removeChip($event,slotProps.index,flow,f,index)"/>
+                                        </div>
+                                    </template>
+                                </Column>
+                                <Column class="w-16 !text-end">
+                                    <template #body="{ data,index }">
+                                        <Button icon="pi pi-trash" @click="deleteJudge(data,index)" severity="secondary" rounded></Button>
+                                    </template>
+                                </Column>
+                            </DataTable>
+                        </div>
                     </div>
                 </Fieldset>
             </div>
@@ -37,11 +44,11 @@
         </div>
 
         <Popover ref="op">
-            <div class="col w-[25rem]">
-                <Select v-model="selJudge" :options="judgeList" optionLabel="name" placeholder="选择评审" filter>
+            <div class="col w-[30rem] gap-4">
+                <Select v-if="!shiMulti" v-model="selJudge" :options="judgeList" optionLabel="name" placeholder="选择评审" filter>
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center gap-4">
-                            <Avatar :alt="slotProps.value.name" :image="slotProps.value?.tempMap?.headImgUrl" size="large" shape="circle"/>
+                            <Avatar :alt="slotProps.value.name" :image="slotProps.value?.tempImg" size="large" shape="circle"/>
                             <div>{{ slotProps.value.name }}</div>
                         </div>
                         <span v-else>
@@ -50,7 +57,7 @@
                     </template>
                     <template #option="slotProps">
                         <div class="flex items-center gap-4">
-                            <Avatar :alt="slotProps.option.name" :image="slotProps.option?.tempMap?.headImgUrl" size="large" shape="circle"/>
+                            <Avatar :alt="slotProps.option.name" :image="slotProps.option?.tempImg" size="large" shape="circle"/>
                             <div>{{ slotProps.option.name }}</div>
                         </div>
                     </template>
@@ -58,7 +65,25 @@
                         <i class="pi pi-map" />
                     </template>
                 </Select>
-
+                <MultiSelect v-else v-model="selJudgeList" :options="judgeList" optionLabel="name" placeholder="选择评审" filter display="chip">
+                    <template #option="slotProps">
+                        <div class="flex items-center gap-4">
+                            <Avatar :alt="slotProps.option.name" :image="slotProps.option?.tempImg" size="large" shape="circle"/>
+                            <div>{{ slotProps.option.name }}</div>
+                        </div>
+                    </template>
+                    <template #dropdownicon>
+                        <i class="pi pi-map" />
+                    </template>
+                    <template #filtericon>
+                        <i class="pi pi-map-marker" />
+                    </template>
+                </MultiSelect>
+                <MultiSelect v-if="!shiMulti" v-model="selFields" :options="selMasterCompetition.setupFields?.pingshen" optionLabel="name" placeholder="请选择评审字段" _maxSelectedLabels="3" />
+                <div class="row mt-5 center gap-4">
+                    <Button label="保存设置" size="small" class="px-8" _as="router-link" _to="/" @click="savePop()"></Button>
+                    <Button severity="warn" size="small" label="取消" class="px-8" @click="cancelPop()"></Button>
+                </div>
             </div>
         </Popover>
     </div>
@@ -73,12 +98,17 @@ import userRest from "@/api/dbs/userRest";
 import {Config} from "@/api/config";
 import lodash from "lodash-es";
 import oss from "@/api/oss";
+import dialog from '@/api/uniapp/dialog';
 
 const op = useTemplateRef("op")
 const selMasterCompetition = ref({});
-const judgeList = ref(null);
+const judgeList = ref([]);
 const selJudge = ref(null);
+const selJudgeList = ref([]);
+const selFields = ref([]);
+const shiMulti = ref(false);
 
+let flow = null;
 let mainPage = null;
 let mePage = null;
 let obj = null;
@@ -87,22 +117,68 @@ onMounted(()=>{
     userRest.queryJudgeList({pageSize:50,currentPage:0},(res)=>{
         if (res.status=="OK") {
             if (res.data.content!=null) {
-                judgeList.value = res.data.content;
-                lodash.forEach(judgeList.value,(j)=>{
-                    j.tempMap = {};
-                    j.tempMap.headImgUrl = oss.buildImgPath(j.headImgUrl);
+                lodash.forEach(res.data.content,(j)=>{
+                    let jj = {};
+                    jj.id = j.id;
+                    jj.name = j.name;
+                    jj.phone = j.phone;
+                    jj.engName = j.engName;
+                    jj.headImgUrl = j.headImgUrl;
+                    jj.tempImg = oss.buildImgPath(j.headImgUrl);
+                    judgeList.value.push(jj);
                 });
             }
         }
     });
 });
 
-const toggle = (event) => {
-    op.value.toggle(event);
+const toggle = (event,_flow) => {
+    flow = _flow;
+    shiMulti.value = flow.type==0;
+    selJudge.value = null;
+    selFields.value = [];
+    selJudgeList.value = [];
+    op.value.show(event);
+    // console.log(_flow,shiMulti.value);
+}
+
+function savePop() {
+    // console.log(selJudgeList.value,selJudge.value,selFields.value);
+    if (!flow.setupData) {
+        flow.setupData = [];
+    }
+    if (flow.type==0) {
+        flow.setupData = selJudgeList.value;
+        for(let j of selJudgeList.value) {
+            if (lodash.findIndex(flow.setupData,(o)=>{return o.id==j.id})<0) {
+                flow.setupData.push(j);
+            }
+        }
+    } else if (flow.type==1) {
+        flow.setupData.push({...selJudge.value,fields:selFields.value});
+    }
+    op.value.hide();
+}
+
+function cancelPop() {
+    op.value.hide();
+}
+
+function removeChip(event,judgeIndex,_flow,field,fieldIndex) {
+    console.log(field.name);
+    let ay = lodash.remove(_flow.setupData[judgeIndex].fields,(o)=>{return o.id==field.id});
+    console.log(ay,_flow.setupData[judgeIndex].fields);
+    // _flow.setupData[judgeIndex].fields.splice(fieldIndex,1);
+}
+
+function deleteJudge(data,index) {
+    dialog.confirm("是否删除？",()=>{
+        flow.setupData.splice(index,1);
+    },null);
 }
 
 function save() {
-
+    console.log(selMasterCompetition.value.tempMap.judgeData);
 }
 
 function cancel() {
