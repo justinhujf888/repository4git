@@ -178,7 +178,9 @@ function deleteJudge(data,index) {
 }
 
 function save() {
-    console.log(selMasterCompetition.value.tempMap.judgeData);
+    // console.log(selMasterCompetition.value.tempMap.judgeData);
+    obj.returnFunction(obj);
+    mePage.close(mainPage);
 }
 
 function cancel() {
@@ -188,10 +190,10 @@ function cancel() {
 const init = (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
-    obj = _obj;
+    obj = lodash.cloneDeep(_obj);
     selMasterCompetition.value = obj.data;
 
-    console.log(selMasterCompetition.value);
+    // console.log(selMasterCompetition.value);
 }
 
 defineExpose({init});

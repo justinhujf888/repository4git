@@ -433,13 +433,13 @@ const onNodeSelect = (node) => {
         if (node.data.type==0) {
             masterCompetition.tempMap.judgeData = lodash.find(masterCompetition.judgeSetup,(c)=>{return c.id==node.key});
         } else if (node.data.type==1) {
-            let ct = lodash.find(masterCompetition.judgeSetup,(c)=>{return c.id==node.data.competitionId});
+            let ct = lodash.find(masterCompetition.judgeSetup,(c)=>{return c.competitionId==node.data.bean.competition.id});
             if (ct) {
                 masterCompetition.tempMap.judgeData = lodash.find(ct.guiGeList,(g)=>{return g.id==node.key});
             }
         }
         if (!masterCompetition.tempMap.judgeData) {
-            asterCompetition.tempMap.judgeData = {id:node.key,type:node.data.type,name:node.label};
+            masterCompetition.tempMap.judgeData = {id:node.key,type:node.data.type,name:node.label};
             if (node.data.type==0) {
                 masterCompetition.tempMap.judgeData.competitionId = node.data.bean.id;
                 masterCompetition.tempMap.judgeData.guiGeList = [];
@@ -449,7 +449,7 @@ const onNodeSelect = (node) => {
             masterCompetition.tempMap.judgeData.data = pingShenflow.value.flow;
         }
     }
-    // console.log(masterCompetition);
+    console.log(masterCompetition.judgeSetup);
 };
 
 const returnFunction = (obj)=>{
@@ -483,7 +483,30 @@ const competitionReturnFunction = (obj)=>{
 }
 
 const judgeSetupReturnFunction = (obj)=>{
+    // console.log(obj);
+    // masterCompetitions是子组件深拷贝的，realMasterCompetition则是引用的
+    let masterCompetition = obj.data;
+    let realMasterCompetition = lodash.find(masterCompetitionList.value,(mc)=>{return mc.id==masterCompetition.id});
 
+    if (!realMasterCompetition.judgeSetup) {realMasterCompetition.judgeSetup=[];}
+    let ct = lodash.find(realMasterCompetition.judgeSetup,(c)=>{return c.competitionId==masterCompetition.tempMap.judgeData.competitionId});
+    if (masterCompetition.tempMap.judgeData.type==0) {
+        if (!ct) {
+            ct = masterCompetition.tempMap.judgeData;
+            realMasterCompetition.judgeSetup.push(ct);
+        } else {
+            ct.data = masterCompetition.tempMap.judgeData.data;
+        }
+    } else if (masterCompetition.tempMap.judgeData.type==1) {
+        if (!ct) {
+            ct = {id:masterCompetition.tempMap.judgeData.competitionId,competitionId:masterCompetition.tempMap.judgeData.competitionId,name:masterCompetition.tempMap.judgeData.name,type:0,data:null,guiGeList:[{...masterCompetition.tempMap.judgeData}]};
+            realMasterCompetition.judgeSetup.push(ct);
+        } else {
+            if (!ct.guiGeList) {ct.guiGeList=[];}
+            ct.guiGeList.push(masterCompetition.tempMap.judgeData);
+        }
+    }
+    // console.log(masterCompetitionList.value);
 }
 
 const expandAll = () => {
