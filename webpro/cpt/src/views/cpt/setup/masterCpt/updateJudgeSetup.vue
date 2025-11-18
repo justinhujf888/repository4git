@@ -43,8 +43,8 @@
             <Button severity="warn" label="取消" class="px-8" @click="cancel()"></Button>
         </div>
 
-        <Popover ref="op">
-            <div class="col w-[30rem] gap-4">
+        <Dialog v-model:visible="dialogVisible" ref="op" modal position="right" pt:root:class="!border-0 !bg-transparent" pt:mask:class="backdrop-blur-sm">
+            <div class="col w-[38rem] gap-4 dark:bg-gray-900 p-2">
                 <Select v-if="!shiMulti" v-model="selJudge" :options="judgeList" optionLabel="name" placeholder="选择评审" filter>
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center gap-4">
@@ -85,7 +85,7 @@
                     <Button severity="warn" size="small" label="取消" class="px-8" @click="cancelPop()"></Button>
                 </div>
             </div>
-        </Popover>
+        </Dialog>
     </div>
 </template>
 
@@ -107,6 +107,7 @@ const selJudge = ref(null);
 const selJudgeList = ref([]);
 const selFields = ref([]);
 const shiMulti = ref(false);
+const dialogVisible = ref(false);
 
 let flow = null;
 let mainPage = null;
@@ -138,7 +139,8 @@ const toggle = (event,_flow) => {
     selJudge.value = null;
     selFields.value = [];
     selJudgeList.value = [];
-    op.value.show(event);
+    dialogVisible.value = true;
+    op.value.maximize();
     // console.log(_flow,shiMulti.value);
 }
 
@@ -157,11 +159,11 @@ function savePop() {
     } else if (flow.type==1) {
         flow.setupData.push({...selJudge.value,fields:selFields.value});
     }
-    op.value.hide();
+    op.value.close();
 }
 
 function cancelPop() {
-    op.value.hide();
+    op.value.close();
 }
 
 function removeChip(event,judgeIndex,_flow,field,fieldIndex) {

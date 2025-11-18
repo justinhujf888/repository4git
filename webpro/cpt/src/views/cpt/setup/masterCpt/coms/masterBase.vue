@@ -147,20 +147,45 @@
                     </Fieldset>
 
                     <Fieldset class="text-wrap text-start" legend="分组及评委设置" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-80 sm:w-full">
+                        <ScrollPanel class="w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
                                     <Button label="设置组别" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[4].command()"/>
                                 </div>
-                                <div class="mt-10 row">
+                                <div class="mt-10 col md:row w-full">
                                     <Tree v-model:selectionKeys="selectedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
                                     <div class="flex-1 p-2">
                                         <div v-if="slotProps.data.tempMap.judgeData?.competitionId">
-                                            <div v-for="flow of pingShenflow.flow">
-                                                <span>{{flow.name}}</span>
+                                            <div class="center">
+                                                <span class="text-base font-semibold">{{slotProps.data.tempMap?.judgeData?.type==0 ? '类别' : '组别'}}{{slotProps.data.tempMap?.judgeData?.name}}评委</span>
                                             </div>
-                                            <div class="mt-5">
-                                                <button class="bg-blue-800 text-xs h-6 px-2 text-white rounded-2xl place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</button>
+                                            <div v-for="flow of slotProps.data.tempMap?.judgeData?.data">
+                                                <Fieldset :legend="flow.name" class="!relative">
+                                                    <div class="mt-5">
+                                                        <div v-if="flow.type==0" class="min-h-24">
+                                                            <Chip v-for="ju of flow.setupData" :label="ju.name" :image="ju.tempImg"/>
+                                                        </div>
+                                                        <div v-if="flow.type==1" class="min-h-24">
+                                                            <DataTable :value="flow.setupData" class="mt-12">
+                                                                <Column header="姓名" class="w-48">
+                                                                    <template #body="slotProps">
+                                                                        <Chip :label="slotProps.data.name" :image="slotProps.data.tempImg" />
+                                                                    </template>
+                                                                </Column>
+                                                                <Column header="字段">
+                                                                    <template #body="slotProps">
+                                                                        <div class="row flex-wrap gap-x-2">
+                                                                            <Chip v-for="(f,index) in slotProps.data.fields" :key="index" :label="f.name"/>
+                                                                        </div>
+                                                                    </template>
+                                                                </Column>
+                                                            </DataTable>
+                                                        </div>
+                                                    </div>
+                                                </Fieldset>
+                                            </div>
+                                            <div class="mt-5 center">
+                                                <Button class="!bg-blue-800 !text-white !rounded-2xl !text-base place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</Button>
                                             </div>
                                         </div>
                                     </div>
@@ -431,9 +456,9 @@ const onNodeSelect = (node) => {
         masterCompetition.tempMap.judgeData.data = pingShenflow.value.flow;
     } else {
         if (node.data.type==0) {
-            masterCompetition.tempMap.judgeData = lodash.find(masterCompetition.judgeSetup,(c)=>{return c.id==node.key});
+            masterCompetition.tempMap.judgeData = lodash.find(masterCompetition.judgeSetup.datas,(c)=>{return c.id==node.key});
         } else if (node.data.type==1) {
-            let ct = lodash.find(masterCompetition.judgeSetup,(c)=>{return c.competitionId==node.data.bean.competition.id});
+            let ct = lodash.find(masterCompetition.judgeSetup.datas,(c)=>{return c.competitionId==node.data.bean.competition.id});
             if (ct) {
                 masterCompetition.tempMap.judgeData = lodash.find(ct.guiGeList,(g)=>{return g.id==node.key});
             }
@@ -449,7 +474,7 @@ const onNodeSelect = (node) => {
             masterCompetition.tempMap.judgeData.data = pingShenflow.value.flow;
         }
     }
-    console.log(masterCompetition.judgeSetup);
+    // console.log(masterCompetition.judgeSetup);
 };
 
 const returnFunction = (obj)=>{
@@ -487,26 +512,45 @@ const judgeSetupReturnFunction = (obj)=>{
     // masterCompetitions是子组件深拷贝的，realMasterCompetition则是引用的
     let masterCompetition = obj.data;
     let realMasterCompetition = lodash.find(masterCompetitionList.value,(mc)=>{return mc.id==masterCompetition.id});
+    lodash.forEach(masterCompetition.tempMap.judgeData?.data,(v)=>{
+        lodash.forEach(v.setupData,(j)=>{
+            j.tempImg = null;
+        });
+    });
 
-    if (!realMasterCompetition.judgeSetup) {realMasterCompetition.judgeSetup=[];}
-    let ct = lodash.find(realMasterCompetition.judgeSetup,(c)=>{return c.competitionId==masterCompetition.tempMap.judgeData.competitionId});
+    if (!realMasterCompetition.judgeSetup) {realMasterCompetition.judgeSetup={datas:[]};}
+    let ct = lodash.find(realMasterCompetition.judgeSetup.datas,(c)=>{return c.competitionId==masterCompetition.tempMap.judgeData.competitionId});
     if (masterCompetition.tempMap.judgeData.type==0) {
         if (!ct) {
             ct = masterCompetition.tempMap.judgeData;
-            realMasterCompetition.judgeSetup.push(ct);
+            realMasterCompetition.judgeSetup.datas.push(ct);
         } else {
             ct.data = masterCompetition.tempMap.judgeData.data;
         }
     } else if (masterCompetition.tempMap.judgeData.type==1) {
         if (!ct) {
             ct = {id:masterCompetition.tempMap.judgeData.competitionId,competitionId:masterCompetition.tempMap.judgeData.competitionId,name:masterCompetition.tempMap.judgeData.name,type:0,data:null,guiGeList:[{...masterCompetition.tempMap.judgeData}]};
-            realMasterCompetition.judgeSetup.push(ct);
+            realMasterCompetition.judgeSetup.datas.push(ct);
         } else {
-            if (!ct.guiGeList) {ct.guiGeList=[];}
-            ct.guiGeList.push(masterCompetition.tempMap.judgeData);
+            if (!ct.guiGeList) {
+                ct.guiGeList=[];
+                ct.guiGeList.push(masterCompetition.tempMap.judgeData);
+            } else {
+                let ggData = lodash.find(ct.guiGeList,(o)=>{return o.id==masterCompetition.tempMap.judgeData.id});
+                if (ggData) {
+                    ggData.data = masterCompetition.tempMap.judgeData.data;
+                } else {
+                    ct.guiGeList.push(masterCompetition.tempMap.judgeData);
+                }
+            }
         }
     }
     // console.log(masterCompetitionList.value);
+    workRest.updateJudgeSetup({id:realMasterCompetition.id,judgeSetup:realMasterCompetition.judgeSetup},(res)=>{
+        if (res.status=="OK") {
+            dialog.toastSuccess("评委设置已更新");
+        }
+    });
 }
 
 const expandAll = () => {

@@ -136,4 +136,7 @@ export default {
     deleteWorkItem(ds,onfun) {
         Http.callHttpFunction('/r/work/deleteWorkItem',ds,onfun);
     },
+    updateJudgeSetup(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateJudgeSetup',ds,onfun);
+    }
 }
