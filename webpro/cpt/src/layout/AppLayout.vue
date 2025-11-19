@@ -4,14 +4,21 @@ import {computed, ref, watch, onMounted} from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
+import Login from "./login.vue";
+import {useStorage} from "@vueuse/core";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
+const managerId = useStorage("managerId");
+const visible = ref(false);
 
 
 onMounted(() => {
-
+    // console.log("managerId", managerId.value);
+    if (!managerId.value) {
+        visible.value = true;
+    }
 });
 
 watch(isSidebarActive, (newVal) => {
@@ -62,6 +69,11 @@ function isOutsideClicked(event) {
 
 <template>
     <div class="layout-wrapper" :class="containerClass">
+        <Dialog v-model:visible="visible" pt:root:class="!border-0 !bg-transparent" pt:mask:class="backdrop-blur-sm">
+            <template #container="{ closeCallback }">
+                <Login></Login>
+            </template>
+        </Dialog>
         <app-topbar></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">

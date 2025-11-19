@@ -6,6 +6,8 @@ import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.BuyerAppInfo
 import com.weavict.competition.entity.BuyerAppInfoPK
 import com.weavict.competition.entity.Judge
+import com.weavict.competition.entity.Manager
+import com.weavict.competition.entity.ManagerPK
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.module.UserBean
 import jakarta.ws.rs.Consumes
@@ -160,6 +162,45 @@ class UserRest extends BaseRest
             }
             userBean.updateTheObject(judge);
             return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/managerLogin")
+    String managerLogin(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            Manager manager = userBean.findObjectById(Manager.class,new ManagerPK(query.appId,query.managerId));
+            if (manager==null)
+            {
+                return """{"status":"ER_NOHAS"}""";
+            }
+            if (!userBean.buildPasswordCode(query.password).equals(manager.password))
+            {
+                return """{"status":"ER_PW"}""";
+            }
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "manager":({
+                         return manager;
+                     }).call(),
+                     "loginToken":({
+                         //redis
+//                         redisUtil.hPut("buyer_${buyer.phone}","token",MathUtil.getPNewId());
+//                         return redisUtil.hGet("buyer_${buyer.phone}","token");
+                         //redis end
+                         return IdUtil.randomUUID();
+                     }).call()
+                    ]);
         }
         catch (Exception e)
         {

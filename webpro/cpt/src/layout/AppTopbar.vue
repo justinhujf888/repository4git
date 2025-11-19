@@ -53,14 +53,14 @@ const siteDatas = ref(null);
 <!--                        <i class="pi pi-calendar"></i>-->
 <!--                        <span>Calendar</span>-->
 <!--                    </button>-->
-                    <button type="button" class="layout-topbar-action" @click="page.redirectTo('landing',null)">
-                        <i class="pi pi-home"></i>
-                        <span>Home</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
+<!--                    <button type="button" class="layout-topbar-action" @click="page.redirectTo('landing',null)">-->
+<!--                        <i class="pi pi-home"></i>-->
+<!--                        <span>Home</span>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="layout-topbar-action">-->
+<!--                        <i class="pi pi-inbox"></i>-->
+<!--                        <span>Messages</span>-->
+<!--                    </button>-->
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-user"></i>
                         <span>Profile</span>
