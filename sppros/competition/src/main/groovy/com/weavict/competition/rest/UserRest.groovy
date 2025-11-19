@@ -83,6 +83,7 @@ class UserRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "buyerAppInfo":({
+                         buyerAppInfo.password = "";
                          return buyerAppInfo;
                      }).call(),
                      "loginToken":({
@@ -191,6 +192,7 @@ class UserRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "manager":({
+                         manager.password = "";
                          return manager;
                      }).call(),
                      "loginToken":({

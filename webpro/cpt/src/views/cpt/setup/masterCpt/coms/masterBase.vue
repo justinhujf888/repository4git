@@ -185,7 +185,7 @@
                                                 </Fieldset>
                                             </div>
                                             <div class="mt-5 center">
-                                                <Button class="!bg-blue-800 !text-white !rounded-2xl !text-base place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</Button>
+                                                <Button class="!bg-blue-800 !text-white !rounded-2xl !text-base place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置 Building...</Button>
                                             </div>
                                         </div>
                                     </div>

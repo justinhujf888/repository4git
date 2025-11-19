@@ -93,9 +93,9 @@ const onFormSubmit = ({ valid }) => {
                     Page.redirectTo("landing",null);
                 });
             } else if (data.status=="ER_NOHAS") {
-                dialog.toastError("您输入的账号不存在");
+                dialog.toastError("您输入的账号或密码错误");
             } else if (data.status=="ER_PW") {
-                dialog.toastError("您输入的密码错误");
+                dialog.toastError("您输入的账号或密码错误");
             }
         });
     }

@@ -1,4 +1,4 @@
-import CryptoJS from 'crypto-es'
+ import CryptoJS from 'crypto-es'
 // import CryptoJS from 'CryptoJS';
 import {Config} from '@/api/config.js';
 // const a = require()

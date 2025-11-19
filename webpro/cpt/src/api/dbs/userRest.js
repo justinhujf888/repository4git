@@ -66,5 +66,8 @@ export default {
     },
     updateJudge(ds, onfun) {
         Http.callHttpFunction('/r/user/updateJudge',ds,onfun);
+    },
+    managerLogin(ds,onfun) {
+        Http.callHttpFunction('/r/user/managerLogin',ds,onfun);
     }
 };

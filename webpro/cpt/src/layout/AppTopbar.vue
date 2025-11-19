@@ -4,12 +4,22 @@ import AppConfigurator from './AppConfigurator.vue';
 import {ref} from 'vue';
 import page from '@/api/uniapp/page';
 import useGlobal from "@/api/hooks/useGlobal";
+import dialog from "@/api/uniapp/dialog";
 
+const emit = defineEmits(["afterLogout"]);
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 const siteDatas = ref(null);
 (async ()=>{
     siteDatas.value = await useGlobal.siteDatas();
 })();
+
+function logout() {
+    dialog.confirm("确定要登出账号吗？",()=>{
+        localStorage.removeItem("managerId");
+        localStorage.removeItem("managerInfo");
+        emit("afterLogout");
+    },null);
+}
 </script>
 
 <template>
@@ -61,9 +71,9 @@ const siteDatas = ref(null);
 <!--                        <i class="pi pi-inbox"></i>-->
 <!--                        <span>Messages</span>-->
 <!--                    </button>-->
-                    <button type="button" class="layout-topbar-action">
+                    <button type="button" class="layout-topbar-action" @click="logout">
                         <i class="pi pi-user"></i>
-                        <span>Profile</span>
+                        <span>登出</span>
                     </button>
                 </div>
             </div>

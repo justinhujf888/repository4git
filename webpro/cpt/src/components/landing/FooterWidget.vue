@@ -1,7 +1,7 @@
 <template>
     <div class="py-6 px-6 mx-0 mt-10 lg:mx-20">
         <div class="center">
-            <router-link class="cursor-pointer font-bold text-surface-900 dark:text-surface-0 text-4xl" to="/manage/index">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
+            <router-link class="cursor-pointer font-bold text-surface-900 dark:text-surface-0 text-4xl" to="/">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
         </div>
         <div id="footmenu" class="center mt-5">
             <ul class="col sm:row gap-4">

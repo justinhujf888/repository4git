@@ -6,17 +6,19 @@ import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 import Login from "./login.vue";
 import {useStorage} from "@vueuse/core";
+import dialog from "@/api/uniapp/dialog";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
 const managerId = useStorage("managerId");
+const managerInfo = useStorage("managerInfo");
 const visible = ref(false);
 
 
 onMounted(() => {
     // console.log("managerId", managerId.value);
-    if (!managerId.value) {
+    if (!managerId.value || !managerInfo) {
         visible.value = true;
     }
 });
@@ -65,16 +67,26 @@ function isOutsideClicked(event) {
 
     return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
 }
+
+function afterLogin(manager) {
+    visible.value = false;
+    dialog.toastSuccess("您已成功登录系统");
+}
+
+function afterLogout() {
+    visible.value = true;
+}
 </script>
 
 <template>
-    <div class="layout-wrapper" :class="containerClass">
+    <div class="layout-wrapper relative" :class="containerClass">
+        <div v-if="visible" class="w-dvw h-dvh bg-gray-900 opacity-50 absolute top-0 left-0" style="z-index: 1000"></div>
         <Dialog v-model:visible="visible" pt:root:class="!border-0 !bg-transparent" pt:mask:class="backdrop-blur-sm">
             <template #container="{ closeCallback }">
-                <Login></Login>
+                <Login @afterLogin="afterLogin"></Login>
             </template>
         </Dialog>
-        <app-topbar></app-topbar>
+        <app-topbar @afterLogout="afterLogout"></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
             <div id="app_container" styleClass="layout-main" class="layout-main relative">
