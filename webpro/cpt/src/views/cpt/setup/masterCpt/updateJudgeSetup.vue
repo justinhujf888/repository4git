@@ -8,22 +8,32 @@
         <Panel class="mt-10">
             <div v-for="flow of selMasterCompetition.tempMap?.judgeData?.data">
                 <Fieldset :legend="flow.name" class="!relative">
-                    <Button size="small" label="新增评委" class="!absolute top-0 right-2" @click="toggle($event,flow)"/>
+                    <Button v-if="flow.type==0" size="small" label="新增评委" class="!absolute top-0 right-2" @click="toggle($event,flow)"/>
+                    <Button v-else-if="flow.type==1" size="small" label="新增评委/字段" class="!absolute top-0 right-2" @click="toggle($event,flow)"/>
                     <div class="mt-5">
-                        <div v-if="flow.type==0" class="min-h-24">
-                            <Chip v-for="ju of flow.setupData" :label="ju.name" :image="ju.tempImg" removable/>
+                        <div v-if="flow.type==0" class="row pt-10">
+<!--                            <Chip v-for="ju of flow.setupData" :label="ju.name" :image="ju.tempImg" removable/>-->
+                            <div v-for="ju of flow.setupData" class="row center mx-2 py-2 px-4 bg-surface-800 rounded-2xl">
+                                <span class="mr-1">{{ju.name}}</span>
+                                <span class="pi pi-times-circle"></span>
+                            </div>
                         </div>
                         <div v-if="flow.type==1" class="min-h-24">
                             <DataTable :value="flow.setupData" class="mt-12">
                                 <Column header="姓名" class="w-48">
                                     <template #body="slotProps">
-                                        <Chip :label="slotProps.data.name" :image="slotProps.data.tempImg" />
+<!--                                        <Chip :label="slotProps.data.name" :image="slotProps.data.tempImg" />-->
+                                        <span>{{slotProps.data.name}}</span>
                                     </template>
                                 </Column>
                                 <Column header="字段">
                                     <template #body="slotProps">
                                         <div class="row flex-wrap gap-x-2">
-                                            <Chip v-for="(f,index) in slotProps.data.fields" :key="index" :label="f.name" removable @remove="removeChip($event,slotProps.index,flow,f,index)"/>
+<!--                                            <Chip v-for="(f,index) in slotProps.data.fields" :key="index" :label="f.name" removable @remove="removeChip($event,slotProps.index,flow,f,index)"/>-->
+                                            <div v-for="(f,index) in slotProps.data.fields" :key="index" class="row center mx-2 p-2 bg-surface-800 rounded-2xl">
+                                                <span class="mr-1">{{f.name}}</span>
+                                                <span class="pi pi-times-circle" @click="removeChip($event,slotProps.index,flow,f,index)"></span>
+                                            </div>
                                         </div>
                                     </template>
                                 </Column>
@@ -43,7 +53,7 @@
             <Button severity="warn" label="取消" class="px-8" @click="cancel()"></Button>
         </div>
 
-        <Dialog v-model:visible="dialogVisible" ref="op" modal position="right" pt:root:class="!border-0 !bg-transparent" pt:mask:class="backdrop-blur-sm">
+        <Dialog v-model:visible="dialogVisible" ref="op" modal _position="right" _pt:root:class="!border-0 !bg-transparent" _pt:mask:class="backdrop-blur-sm">
             <div class="col w-[38rem] gap-4 dark:bg-gray-900 p-2">
                 <Select v-if="!shiMulti" v-model="selJudge" :options="judgeList" optionLabel="name" placeholder="选择评审" filter>
                     <template #value="slotProps">
@@ -157,7 +167,16 @@ function savePop() {
             }
         }
     } else if (flow.type==1) {
-        flow.setupData.push({...selJudge.value,fields:selFields.value});
+        let judgeData = lodash.find(flow.setupData,(o)=>{return o.id==selJudge.value.id});
+        if (!judgeData) {
+            flow.setupData.push({...selJudge.value,fields:selFields.value});
+        } else {
+            lodash.forEach(selFields.value,(v)=>{
+                if (lodash.findIndex(judgeData.fields,(o)=>{return o.id==v.id})<0) {
+                    judgeData.fields.push(v);
+                }
+            });
+        }
     }
     op.value.close();
 }
@@ -167,10 +186,10 @@ function cancelPop() {
 }
 
 function removeChip(event,judgeIndex,_flow,field,fieldIndex) {
-    console.log(field.name);
-    let ay = lodash.remove(_flow.setupData[judgeIndex].fields,(o)=>{return o.id==field.id});
-    console.log(ay,_flow.setupData[judgeIndex].fields);
-    // _flow.setupData[judgeIndex].fields.splice(fieldIndex,1);
+    // console.log(field.name);
+    // let ay = lodash.remove(_flow.setupData[judgeIndex].fields,(o)=>{return o.id==field.id});
+    // console.log(ay,_flow.setupData[judgeIndex].fields);
+    _flow.setupData[judgeIndex].fields.splice(fieldIndex,1);
 }
 
 function deleteJudge(data,index) {

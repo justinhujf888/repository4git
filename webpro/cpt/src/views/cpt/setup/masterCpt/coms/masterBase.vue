@@ -153,7 +153,7 @@
                                     <Button label="设置组别" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[4].command()"/>
                                 </div>
                                 <div class="mt-10 col md:row w-full">
-                                    <Tree v-model:selectionKeys="selectedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
+                                    <Tree v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
                                     <div class="flex-1 p-2">
                                         <div v-if="slotProps.data.tempMap.judgeData?.competitionId">
                                             <div class="center">
@@ -277,6 +277,7 @@ const masterCompetitionList = ref([]);
 const expandedRows = ref({});
 const selMasterCompetition = ref(null);
 const selectedTreeNodeKey = ref(null);
+const expandedTreeNodeKey = ref(null);
 const pingShenflow = ref(null);
 
 let host = inject("domain");
