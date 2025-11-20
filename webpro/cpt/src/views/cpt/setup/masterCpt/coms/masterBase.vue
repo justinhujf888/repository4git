@@ -157,7 +157,7 @@
                                     <div class="flex-1 p-2">
                                         <div v-if="slotProps.data.tempMap.judgeData?.competitionId">
                                             <div class="center">
-                                                <span class="text-base font-semibold">{{slotProps.data.tempMap?.judgeData?.type==0 ? '类别' : '组别'}}{{slotProps.data.tempMap?.judgeData?.name}}评委</span>
+                                                <span class="text-base font-semibold">{{slotProps.data.tempMap?.judgeData?.type==0 ? '类别' : '组别'}} {{slotProps.data.tempMap?.judgeData?.name}} 评委</span>
                                             </div>
                                             <div v-for="flow of slotProps.data.tempMap?.judgeData?.data">
                                                 <Fieldset :legend="flow.name" class="!relative">
@@ -185,7 +185,7 @@
                                                 </Fieldset>
                                             </div>
                                             <div class="mt-5 center">
-                                                <Button class="!bg-blue-800 !text-white !rounded-2xl !text-base place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置 Building...</Button>
+                                                <Button class="!bg-blue-800 !text-white !rounded-2xl !text-sm place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</Button>
                                             </div>
                                         </div>
                                     </div>
@@ -442,7 +442,7 @@ const deleteFile = (file,index,obj)=>{
 }
 
 const onNodeSelect = (node) => {
-    // console.log(node);
+    // console.log(selMasterCompetition.value.tempMap.comTree,node);
     let masterCompetition = lodash.find(masterCompetitionList.value,(mc)=>{return mc.id==node.data.masterCompetitionId});
     // console.log(judgeSetup);
     if (!masterCompetition.judgeSetup) {
@@ -461,6 +461,10 @@ const onNodeSelect = (node) => {
             let ct = lodash.find(masterCompetition.judgeSetup.datas,(c)=>{return c.competitionId==node.data.bean.competition.id});
             if (ct) {
                 masterCompetition.tempMap.judgeData = lodash.find(ct.guiGeList,(g)=>{return g.id==node.key});
+            } else {
+                masterCompetition.tempMap.judgeData = {id:node.key,type:node.data.type,name:node.label};
+                masterCompetition.tempMap.judgeData.competitionId = node.data.bean.competition.id;
+                masterCompetition.tempMap.judgeData.data = pingShenflow.value.flow;
             }
         }
         if (!masterCompetition.tempMap.judgeData) {
@@ -529,7 +533,9 @@ const judgeSetupReturnFunction = (obj)=>{
         }
     } else if (masterCompetition.tempMap.judgeData.type==1) {
         if (!ct) {
-            ct = {id:masterCompetition.tempMap.judgeData.competitionId,competitionId:masterCompetition.tempMap.judgeData.competitionId,name:masterCompetition.tempMap.judgeData.name,type:0,data:null,guiGeList:[{...masterCompetition.tempMap.judgeData}]};
+            ct = {id:masterCompetition.tempMap.judgeData.competitionId,competitionId:masterCompetition.tempMap.judgeData.competitionId,type:0,guiGeList:[{...masterCompetition.tempMap.judgeData}]};
+            ct.name = lodash.find(realMasterCompetition.tempMap.comTree,(o)=>{return o.key==masterCompetition.tempMap.judgeData.competitionId})?.label;
+            ct.data = pingShenflow.value.flow;
             realMasterCompetition.judgeSetup.datas.push(ct);
         } else {
             if (!ct.guiGeList) {
@@ -549,6 +555,7 @@ const judgeSetupReturnFunction = (obj)=>{
     workRest.updateJudgeSetup({id:realMasterCompetition.id,judgeSetup:realMasterCompetition.judgeSetup},(res)=>{
         if (res.status=="OK") {
             dialog.toastSuccess("评委设置已更新");
+            realMasterCompetition.tempMap.judgeData = masterCompetition.tempMap.judgeData;
         }
     });
 }

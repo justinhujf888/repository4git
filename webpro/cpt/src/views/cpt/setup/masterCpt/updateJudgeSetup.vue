@@ -48,7 +48,7 @@
                 <Select v-if="!shiMulti" v-model="selJudge" :options="judgeList" optionLabel="name" placeholder="选择评审" filter>
                     <template #value="slotProps">
                         <div v-if="slotProps.value" class="flex items-center gap-4">
-                            <Avatar :alt="slotProps.value.name" :image="slotProps.value?.tempImg" size="large" shape="circle"/>
+<!--                            <Avatar :alt="slotProps.value.name" :image="slotProps.value?.tempImg" size="large" shape="circle"/>-->
                             <div>{{ slotProps.value.name }}</div>
                         </div>
                         <span v-else>
@@ -57,7 +57,7 @@
                     </template>
                     <template #option="slotProps">
                         <div class="flex items-center gap-4">
-                            <Avatar :alt="slotProps.option.name" :image="slotProps.option?.tempImg" size="large" shape="circle"/>
+<!--                            <Avatar :alt="slotProps.option.name" :image="slotProps.option?.tempImg" size="large" shape="circle"/>-->
                             <div>{{ slotProps.option.name }}</div>
                         </div>
                     </template>
@@ -68,7 +68,7 @@
                 <MultiSelect v-else v-model="selJudgeList" :options="judgeList" optionLabel="name" placeholder="选择评审" filter display="chip">
                     <template #option="slotProps">
                         <div class="flex items-center gap-4">
-                            <Avatar :alt="slotProps.option.name" :image="slotProps.option?.tempImg" size="large" shape="circle"/>
+<!--                            <Avatar :alt="slotProps.option.name" :image="slotProps.option?.tempImg" size="large" shape="circle"/>-->
                             <div>{{ slotProps.option.name }}</div>
                         </div>
                     </template>
@@ -125,7 +125,7 @@ onMounted(()=>{
                     jj.phone = j.phone;
                     jj.engName = j.engName;
                     jj.headImgUrl = j.headImgUrl;
-                    jj.tempImg = oss.buildImgPath(j.headImgUrl);
+                    // jj.tempImg = oss.buildImgPath(j.headImgUrl);
                     judgeList.value.push(jj);
                 });
             }
