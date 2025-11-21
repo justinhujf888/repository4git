@@ -151,18 +151,20 @@ function save() {
         dialog.toastError("评审字段有字段名称或者分数没有输入");
         return;
     }
-    workRest.updateMasterCompetitionSetupFields({id:selMasterCompetition.value.id,setupFields:selMasterCompetition.value.setupFields},(res)=>{
-        if (res.status=="OK") {
-            obj.returnFunction(obj);
-            mePage.close(mainPage);
-        }
-    });
+    dialog.confirm("如果您修改了评审字段并之前已经进行了评委设置，请进入评委设置检查相应的修改。点击确定按钮提交修改，放弃修改请点击取消按钮。",()=>{
+        workRest.updateMasterCompetitionSetupFields({id:selMasterCompetition.value.id,setupFields:selMasterCompetition.value.setupFields},(res)=>{
+            if (res.status=="OK") {
+                obj.returnFunction(obj);
+                mePage.close(mainPage);
+            }
+        });
+    },null);
 }
 
 const init = (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
-    obj = _obj;
+    obj = lodash.cloneDeep(_obj);
     selMasterCompetition.value = obj.data;
     if (!selMasterCompetition.value.setupFields) {
         selMasterCompetition.value.setupFields = {data:[],pingshen:[]};
