@@ -62,6 +62,8 @@ onMounted(() => {
 });
 
 const resolver = ({ values }) => {
+    masterCompetition.value.cptDate = dayjs(masterCompetition.value.name).format("YYYY-MM-DD");
+
     errors = primeUtil.checkFormRequiredValid([
         { val: masterCompetition.value.cptDate, name: "cptDate" },
         { val: masterCompetition.value.beginDate, name: "beginDate" },
