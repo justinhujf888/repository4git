@@ -22,7 +22,7 @@
 <!--                        <div class="flex items-center justify-center mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px" :class="jiang.class">-->
 <!--                            <i class="pi pi-fw pi-users !text-2xl text-yellow-700"></i>-->
 <!--                        </div>-->
-                        <h5 class="mb-2 text-white mix-blend-difference text-2xl">{{jiang.title}}</h5>
+                        <jb-text class="mb-2 text-2xl font-semibold">{{jiang.title}}</jb-text>
                         <span class="text-white mix-blend-difference">{{jiang.desc}}</span>
                     </div>
                 </div>
@@ -77,6 +77,7 @@
 import { inject, onMounted, ref, watch } from 'vue';
 // import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
 import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
+import JbText from "@/components/my/form/jbText.vue";
 const jiangList = ref(null);
 
 (async ()=>{
