@@ -18,7 +18,7 @@ onMounted(() => {
                 label: '',
                 items: [
                     {
-                        label: "系列赛事设置",icon: 'pi pi-fw pi-bars',
+                        label: "赛事设置",icon: 'pi pi-fw pi-bars',
                         items: [
                             // { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
                             { label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase' },

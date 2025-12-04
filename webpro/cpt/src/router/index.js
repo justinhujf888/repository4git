@@ -103,6 +103,11 @@ const router = createRouter({
                     component: () => import('@/views/cpt/setup/system/buildCache.vue')
                 },
                 {
+                    path: '/manage/cpt/system/mediaFiels',
+                    name: 'mediaFiles',
+                    component: () => import('@/views/cpt/setup/system/mediaFiles.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

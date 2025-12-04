@@ -72,7 +72,7 @@ class SiteWorkItem extends BEntity implements Serializable, IEntity
     String path;
 
     @Column(length=1)
-    //	0:site；1:年份赛事；
+    //	0:site；1:年份赛事；8:页面图库;9:新闻图库
     byte sourceType;
 
     @Column(length=30)
