@@ -103,7 +103,7 @@ const router = createRouter({
                     component: () => import('@/views/cpt/setup/system/buildCache.vue')
                 },
                 {
-                    path: '/manage/cpt/system/mediaFiels',
+                    path: '/manage/cpt/system/mediaFiles',
                     name: 'mediaFiles',
                     component: () => import('@/views/cpt/setup/system/mediaFiles.vue')
                 },

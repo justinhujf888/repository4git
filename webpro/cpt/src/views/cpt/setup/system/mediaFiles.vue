@@ -1,9 +1,26 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
-        <div class="p-2 card w-full h-auto relative">
-
-            <!--        <Button label="退出" severity="danger" class="!absolute !right-2 !top-2 !rounded-2xl" @click="callClose"/>-->
-        </div>
+        <Tabs v-model:value="tabIndex">
+            <TabList>
+                <Tab value="8">页面</Tab>
+                <Tab value="9">新闻</Tab>
+            </TabList>
+            <TabPanels>
+                <Button label="设置" severity="danger" class="!absolute !right-2 !top-2 !rounded-2xl" @click="openUpdate"/>
+                <TabPanel value="8">
+                    <p class="m-0">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </TabPanel>
+                <TabPanel value="9">
+                    <p class="m-0">
+                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
+                        ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
+                    </p>
+                </TabPanel>
+            </TabPanels>
+        </Tabs>
     </animationPage>
 
     <animationPage ref="updatePage">
@@ -23,6 +40,7 @@ import workRest from '@/api/dbs/workRest';
 import oss from "@/api/oss";
 
 const mainPage = useTemplateRef("mainPage");
+const updatePage = useTemplateRef("updatePage");
 const refFileUpload = useTemplateRef("refFileUpload");
 
 const files = ref(null);
@@ -32,6 +50,7 @@ let sourceId = "";//无实际意义
 const filePreKey = ref("");
 const maxFileSize = ref( 2097152);
 const fileLimit = ref(20);
+const tabIndex = ref("8");
 
 let host = inject("domain");
 
@@ -85,14 +104,15 @@ function deleteFile(file, index, obj) {
 }
 
 function cancelUpload() {
-
+    updatePage.value.close(mainPage.value);
 }
 
 function openUpdate() {
-    refFileUpload.value.init(files.value, null, null, null, null, {});
+    // console.log(`cpt/${host}/mediaFiles/${tabIndex.value}/`,parseInt(tabIndex.value));
+    files.value = [];
+    refFileUpload.value.init(files.value, null, null, null, `cpt/${host}/mediaFiles/${tabIndex.value}/`, {sourceType:parseInt(tabIndex.value)});
+    updatePage.value.open(mainPage.value);
 }
-
-defineExpose({ init });
 </script>
 
 <style scoped lang="scss">
