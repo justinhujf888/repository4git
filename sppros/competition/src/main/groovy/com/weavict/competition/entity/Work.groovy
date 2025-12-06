@@ -79,7 +79,7 @@ class SiteWorkItem extends BEntity implements Serializable, IEntity
     String sourceId;
 
     @Column(length=1)
-    //	0:主题；1:历届作品；
+    //	0:主题；1:历届作品；9:素材库
     byte type;
 
     @Column(length=1)

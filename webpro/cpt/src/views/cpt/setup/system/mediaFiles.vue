@@ -8,16 +8,14 @@
             <TabPanels>
                 <Button label="设置" severity="danger" class="!absolute !right-2 !top-2 !rounded-2xl" @click="openUpdate"/>
                 <TabPanel value="8">
-                    <p class="m-0">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
+                    <div class="mt-10">
+                        <priviewImage v-model="files[8]"/>
+                    </div>
                 </TabPanel>
                 <TabPanel value="9">
-                    <p class="m-0">
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
-                        ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
-                    </p>
+                    <div class="mt-10">
+                        <priviewImage v-model="files[9]"/>
+                    </div>
                 </TabPanel>
             </TabPanels>
         </Tabs>
@@ -35,6 +33,7 @@ import lodash from "lodash-es";
 import dayjs from "dayjs";
 import dialog from '@/api/uniapp/dialog';
 import myFileUpload from "@/components/my/myFileUpload.vue";
+import priviewImage from "@/components/my/priviewImage.vue";
 import { Beans } from '@/api/dbs/beans';
 import workRest from '@/api/dbs/workRest';
 import oss from "@/api/oss";
@@ -42,25 +41,49 @@ import oss from "@/api/oss";
 const mainPage = useTemplateRef("mainPage");
 const updatePage = useTemplateRef("updatePage");
 const refFileUpload = useTemplateRef("refFileUpload");
+const files = ref({8:[],9:[]});
 
-const files = ref(null);
+let host = inject("domain");
 let sourceType = 8;
-let type = 0;//无实际意义
-let sourceId = "";//无实际意义
 const filePreKey = ref("");
 const maxFileSize = ref( 2097152);
 const fileLimit = ref(20);
 const tabIndex = ref("8");
 
-let host = inject("domain");
-
 onMounted(() => {
-
+    workRest.qySiteWorkItemList({sourceType:8,sourceId:host,type:9},(res)=>{
+        if (res.status=="OK") {
+            if (res.data) {
+                lodash.forEach(res.data,(v)=>{
+                    v.tempMap = {};
+                    v.tempMap.size = v.fileFields.size;
+                    v.tempMap.name = v.fileFields.name;
+                    v.tempMap.type = v.fileFields.type;
+                    v.tempMap.imgPath = oss.buildImgPath(v.path);
+                    files.value[v.sourceType].push(v);
+                });
+            }
+        }
+    });
+    workRest.qySiteWorkItemList({sourceType:9,sourceId:host,type:9},(res)=>{
+        if (res.status=="OK") {
+            if (res.data) {
+                lodash.forEach(res.data,(v)=>{
+                    v.tempMap = {};
+                    v.tempMap.size = v.fileFields.size;
+                    v.tempMap.name = v.fileFields.name;
+                    v.tempMap.type = v.fileFields.type;
+                    v.tempMap.imgPath = oss.buildImgPath(v.path);
+                    files.value[v.sourceType].push(v);
+                });
+            }
+        }
+    });
 });
 
-function filesUpload(files, obj) {
+function filesUpload(_files, obj) {
     dialog.alertBack(`文件上传完成！`, () => {
-
+        updatePage.value.close(mainPage.value);
     });
 }
 
@@ -68,9 +91,9 @@ function theFileUpload(file, index, obj) {
     let siteWorkItem = Beans.siteWorkItem();
     siteWorkItem.id = Beans.buildPId(sourceType == 8 ? "page" : "news");
     siteWorkItem.path = file.fileKey;
-    siteWorkItem.type = type;
-    siteWorkItem.sourceType = sourceType;
-    siteWorkItem.sourceId = sourceId;
+    siteWorkItem.type = 9;
+    siteWorkItem.sourceType = parseInt(tabIndex.value);
+    siteWorkItem.sourceId = host;
     siteWorkItem.mediaType = obj.mediaType;
     siteWorkItem.createDate = dayjs().valueOf();
     siteWorkItem.appId = obj.appId;
@@ -82,7 +105,7 @@ function theFileUpload(file, index, obj) {
             siteWorkItem.tempMap.name = siteWorkItem.fileFields.name;
             siteWorkItem.tempMap.type = siteWorkItem.fileFields.type;
             siteWorkItem.tempMap.imgPath = oss.buildImgPath(siteWorkItem.path);
-            files.value.push(siteWorkItem);
+            files.value[parseInt(tabIndex.value)].push(siteWorkItem);
             dialog.toastSuccess(`文件${file.name}已上传`);
         }
     });
@@ -93,12 +116,12 @@ function deleteFile(file, index, obj) {
         workRest.deleteSiteWorkItem({ id: file.id }, (res) => {
             if (res.status == "OK") {
                 oss.deleteFile(file.path);
-                files.value.splice(index, 1);
+                files.value[parseInt(tabIndex.value)].splice(index, 1);
                 dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
             }
         });
     } else {
-        files.value.splice(index, 1);
+        files.value[parseInt(tabIndex.value)].splice(index, 1);
         dialog.toastSuccess(`文件${file.tempMap.name}已删除`);
     }
 }
@@ -109,8 +132,7 @@ function cancelUpload() {
 
 function openUpdate() {
     // console.log(`cpt/${host}/mediaFiles/${tabIndex.value}/`,parseInt(tabIndex.value));
-    files.value = [];
-    refFileUpload.value.init(files.value, null, null, null, `cpt/${host}/mediaFiles/${tabIndex.value}/`, {sourceType:parseInt(tabIndex.value)});
+    refFileUpload.value.init(files.value[parseInt(tabIndex.value)], null, null, null, `cpt/${host}/mediaFiles/${tabIndex.value}/`, {sourceType:parseInt(tabIndex.value),appId:host});
     updatePage.value.open(mainPage.value);
 }
 </script>

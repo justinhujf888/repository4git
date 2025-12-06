@@ -47,7 +47,8 @@ class WorkService extends ModuleBean
     List<SiteWorkItem> qySiteWorkItemList(Map query)
     {
         this.newQueryUtils(false).masterTable("SiteWorkItem",null,null)
-                .where("sourceId=:sourceId",["sourceId":query.sourceId],null,{return true})
+                .where("appId=:appId",["appId":query.appId],null,{return true})
+                .where("sourceId=:sourceId",["sourceId":query.sourceId],"and",{return true})
                 .where("sourceType=:sourceType",["sourceType":query.sourceType as byte],"and",{return true})
                 .where("type=:type",["type":query.type as byte],"and",{return true})
                 .orderBy("createDate")
