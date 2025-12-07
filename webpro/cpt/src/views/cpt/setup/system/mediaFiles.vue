@@ -2,11 +2,11 @@
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
         <Tabs v-model:value="tabIndex">
             <TabList>
-                <Tab value="8">页面</Tab>
-                <Tab value="9">新闻</Tab>
+                <Tab value="8">页面素材</Tab>
+                <Tab value="9">新闻素材</Tab>
             </TabList>
             <TabPanels>
-                <Button label="设置" severity="danger" class="!absolute !right-2 !top-2 !rounded-2xl" @click="openUpdate"/>
+                <Button label="设置" severity="warn" class="!absolute !right-2 !top-2 !rounded-2xl" @click="openUpdate"/>
                 <TabPanel value="8">
                     <div class="mt-10">
                         <priviewImage v-model="files[8]"/>
