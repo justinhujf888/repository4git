@@ -22,7 +22,7 @@ onMounted(() => {
                         items: [
                             // { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
                             { label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase' },
-                            { label: '主题图', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteZhuTi' },
+                            // { label: '主题图', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteZhuTi' },
                             { label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem' },
                             { label: '组委会成员', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteOrgHuman' },
                             { label: '作品字段', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteFields' },

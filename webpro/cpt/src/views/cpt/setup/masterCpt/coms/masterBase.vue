@@ -68,18 +68,18 @@
                         </ScrollPanel>
                     </Fieldset>
 
-                    <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-80 sm:w-full">
-                            <div class="!relative w-full">
-                                <div class="absolute -top-10 right-1 z-100">
-                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[1].command()"/>
-                                </div>
-                                <div class="mt-10">
-                                    <priviewImage v-model="slotProps.data.tempMap.masterZhuTiWorkItemList"/>
-                                </div>
-                            </div>
-                        </ScrollPanel>
-                    </Fieldset>
+<!--                    <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true" :collapsed="true">-->
+<!--                        <ScrollPanel class="w-80 sm:w-full">-->
+<!--                            <div class="!relative w-full">-->
+<!--                                <div class="absolute -top-10 right-1 z-100">-->
+<!--                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[1].command()"/>-->
+<!--                                </div>-->
+<!--                                <div class="mt-10">-->
+<!--                                    <priviewImage v-model="slotProps.data.tempMap.masterZhuTiWorkItemList"/>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </ScrollPanel>-->
+<!--                    </Fieldset>-->
 
                     <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true" :collapsed="true">
                         <ScrollPanel class="w-80 sm:w-full">
@@ -149,8 +149,9 @@
                     <Fieldset class="text-wrap text-start" legend="分组及评委设置" :toggleable="true" :collapsed="true">
                         <ScrollPanel class="w-full">
                             <div class="!relative w-full">
-                                <div class="absolute -top-10 right-1 z-100">
+                                <div class="absolute -top-10 right-1 z-100 row gap-x-2">
                                     <Button label="设置组别" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[4].command()"/>
+                                    <Button v-if="slotProps.data.tempMap.judgeData?.competitionId" label="评委设置" class="!bg-blue-800 !border-blue-800 !text-white !rounded-2xl !text-sm" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()"/>
                                 </div>
                                 <div class="mt-10 col md:row w-full">
                                     <Tree v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" :value="slotProps.data.tempMap.comTree" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
@@ -183,9 +184,6 @@
                                                         </div>
                                                     </div>
                                                 </Fieldset>
-                                            </div>
-                                            <div class="mt-5 center">
-                                                <Button class="!bg-blue-800 !text-white !rounded-2xl !text-sm place-self-start" @click="getSplitItems(slotProps.data,slotProps.index)[6].command()">评委设置</Button>
                                             </div>
                                         </div>
                                     </div>
