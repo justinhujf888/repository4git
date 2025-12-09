@@ -160,7 +160,7 @@ function savePop() {
         flow.setupData = [];
     }
     if (flow.type==0) {
-        flow.setupData = selJudgeList.value;
+        // flow.setupData = selJudgeList.value;新增后保存会覆盖已有的数据，经过检查是这一行的问题，注释掉，如果测试不再有其他BUG，这一行就可以删除掉
         for(let j of selJudgeList.value) {
             if (lodash.findIndex(flow.setupData,(o)=>{return o.id==j.id})<0) {
                 flow.setupData.push(j);
