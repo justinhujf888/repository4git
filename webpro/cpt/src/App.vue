@@ -1,6 +1,4 @@
 <script setup>
-import oss from "@/api/oss";
-import lodash from "lodash-es";
 import dialog from '@/api/uniapp/dialog';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
@@ -20,7 +18,6 @@ const myLoading = useTemplateRef("myLoading");
 
 var source = null;
 onMounted(() => {
-    oss.checkToken();
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
     if (typeof (EventSource) !== "undefined") {return;
         source = new EventSource(Config.apiBaseURL + "/r/notifications");

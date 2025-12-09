@@ -116,6 +116,34 @@ export default {
             return null;
         }
     },
+    async buildPathAsync(path,hasProcess,process) {
+        if (!client) {
+            await this.genClient();
+        }
+        if (Date.now() >= _tokenExpiredTime && client) {
+            const info = await this.access();
+            client.options.stsToken = info.securityToken;
+            client.options.accessKeyId = info.accessId;
+            client.options.accessKeySecret =  info.accessKey;
+            _tokenExpiredTime = new Date(info.expiration).getTime();
+            console.log("async checkToken update token",_tokenExpiredTime);
+        }
+        if (hasProcess) {
+            if (process==null) {
+                return new Promise(resolve => {
+                    resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'}));
+                });
+            } else {
+                return new Promise(resolve => {
+                    resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': process}));
+                });
+            }
+        } else {
+            return new Promise(resolve => {
+                resolve(client.signatureUrl(path,{expires: _tokenExpiredTime}));
+            });
+        }
+    },
     uploadFileWithReq(file,key,okfun,erfun) {
         Http.uploadFileOss(
             file,

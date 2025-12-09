@@ -70,9 +70,9 @@ onMounted(() => {
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteOrgHumanList.value = res.data;
-                lodash.forEach(siteOrgHumanList.value,(v)=>{
+                lodash.forEach(siteOrgHumanList.value,async (v)=>{
                     v.tempMap = {};
-                    v.tempMap.headImgUrl = oss.buildImgPath(v.headImgUrl);
+                    v.tempMap.headImgUrl = await oss.buildPathAsync(v.headImgUrl,true,null);
                     v.tempMap.imgPath = v.tempMap.headImgUrl;
                 });
             }

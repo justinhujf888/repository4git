@@ -93,6 +93,11 @@ const router = createRouter({
                     component: () => import('@/views/cpt/setup/masterCpt/masterCptSetup.vue')
                 },
                 {
+                    path: '/manage/cpt/masterCpt/pageSetup/index',
+                    name: 'pageSetupIndex',
+                    component: () => import('@/views/cpt/setup/masterCpt/pageSetup/index/tp0.vue')
+                },
+                {
                     path: '/manage/judge/judgeList',
                     name: 'judgeList',
                     component: () => import('@/views/cpt/judge/judgeList.vue')

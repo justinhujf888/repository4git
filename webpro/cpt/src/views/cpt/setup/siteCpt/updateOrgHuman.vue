@@ -51,10 +51,10 @@ const src = ref(null);
 let errors = [];
 let host = inject("domain");
 
-onMounted(() => {
+onMounted(async () => {
     nextTick();
     if (orgHuman?.value?.headImgUrl) {
-        src.value = oss.buildImgPath(orgHuman.value.headImgUrl);
+        src.value = await oss.buildPathAsync(orgHuman.value.headImgUrl,true,null);
     }
 });
 
@@ -101,10 +101,10 @@ const onFormSubmit = ({ valid }) => {
                 file.value,
                 headImgUrl,
                 (res) => {
-                    workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
+                    workRest.updateOrgHuman({orgHuman:orgHuman.value},async (res)=>{
                         if (res.status=="OK") {
                             orgHuman.value.tempMap = {};
-                            orgHuman.value.tempMap.headImgUrl = oss.buildImgPath(orgHuman.value.headImgUrl);
+                            orgHuman.value.tempMap.headImgUrl = await oss.buildPathAsync(orgHuman.value.headImgUrl,true,null);
                             orgHuman.value.tempMap.imgPath = orgHuman.value.tempMap.headImgUrl;
                             callClose(orgHuman.value,obj.value);
                             file.value = null;
@@ -117,10 +117,10 @@ const onFormSubmit = ({ valid }) => {
                 }
             );
         } else {
-            workRest.updateOrgHuman({orgHuman:orgHuman.value},(res)=>{
+            workRest.updateOrgHuman({orgHuman:orgHuman.value},async (res)=>{
                 if (res.status=="OK") {
                     orgHuman.value.tempMap = {};
-                    orgHuman.value.tempMap.headImgUrl = oss.buildImgPath(orgHuman.value.headImgUrl);
+                    orgHuman.value.tempMap.headImgUrl = await oss.buildPathAsync(orgHuman.value.headImgUrl,true,null);
                     orgHuman.value.tempMap.imgPath = orgHuman.value.tempMap.headImgUrl;
                     callClose(orgHuman.value,obj.value);
                     file.value = null;
@@ -150,13 +150,13 @@ const callClose = (orgHuman,obj)=>{
     emit("callClose",orgHuman,obj);
 };
 
-const init = (og,o)=>{
+const init = async (og,o)=>{
     file.value = null;
     src.value = null;
     if (og) {
         orgHuman.value = og;
         if (orgHuman?.value?.headImgUrl) {
-            src.value = oss.buildImgPath(orgHuman.value.headImgUrl);
+            src.value = await oss.buildPathAsync(orgHuman.value.headImgUrl,true,null);
         }
     } else {
         orgHuman.value = Beans.orgHuman();

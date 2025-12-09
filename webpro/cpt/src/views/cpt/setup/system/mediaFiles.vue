@@ -54,12 +54,12 @@ onMounted(() => {
     workRest.qySiteWorkItemList({sourceType:8,sourceId:host,type:9},(res)=>{
         if (res.status=="OK") {
             if (res.data) {
-                lodash.forEach(res.data,(v)=>{
+                lodash.forEach(res.data,async (v)=>{
                     v.tempMap = {};
                     v.tempMap.size = v.fileFields.size;
                     v.tempMap.name = v.fileFields.name;
                     v.tempMap.type = v.fileFields.type;
-                    v.tempMap.imgPath = oss.buildImgPath(v.path);
+                    v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
                     files.value[v.sourceType].push(v);
                 });
             }
@@ -68,12 +68,12 @@ onMounted(() => {
     workRest.qySiteWorkItemList({sourceType:9,sourceId:host,type:9},(res)=>{
         if (res.status=="OK") {
             if (res.data) {
-                lodash.forEach(res.data,(v)=>{
+                lodash.forEach(res.data,async (v)=>{
                     v.tempMap = {};
                     v.tempMap.size = v.fileFields.size;
                     v.tempMap.name = v.fileFields.name;
                     v.tempMap.type = v.fileFields.type;
-                    v.tempMap.imgPath = oss.buildImgPath(v.path);
+                    v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
                     files.value[v.sourceType].push(v);
                 });
             }
@@ -98,13 +98,13 @@ function theFileUpload(file, index, obj) {
     siteWorkItem.createDate = dayjs().valueOf();
     siteWorkItem.appId = obj.appId;
     siteWorkItem.fileFields = { name: file.name, size: file.size, type: file.type };
-    workRest.updateSiteWorkItem({ siteWorkItem: siteWorkItem }, (res) => {
+    workRest.updateSiteWorkItem({ siteWorkItem: siteWorkItem }, async (res) => {
         if (res.status == "OK") {
             siteWorkItem.tempMap = {};
             siteWorkItem.tempMap.size = siteWorkItem.fileFields.size;
             siteWorkItem.tempMap.name = siteWorkItem.fileFields.name;
             siteWorkItem.tempMap.type = siteWorkItem.fileFields.type;
-            siteWorkItem.tempMap.imgPath = oss.buildImgPath(siteWorkItem.path);
+            siteWorkItem.tempMap.imgPath = await oss.buildPathAsync(siteWorkItem.path,true,null);
             files.value[parseInt(tabIndex.value)].push(siteWorkItem);
             dialog.toastSuccess(`文件${file.name}已上传`);
         }
