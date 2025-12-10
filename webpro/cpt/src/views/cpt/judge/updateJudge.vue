@@ -58,9 +58,9 @@ let mainPage = null;
 let mePage = null;
 let obj = null;
 
-onMounted(() => {
+onMounted(async () => {
     if (judge?.value?.headImgUrl) {
-        src.value = oss.buildImgPath(judge.value.headImgUrl);
+        src.value = await oss.buildPathAsync(judge.value.headImgUrl,true,null);
     }
 });
 
@@ -109,10 +109,10 @@ const onFormSubmit = ({ valid }) => {
                 file.value,
                 headImgUrl,
                 (res) => {
-                    userRest.updateJudge({judge:judge.value},(res)=>{
+                    userRest.updateJudge({judge:judge.value},async (res)=>{
                         if (res.status=="OK") {
                             judge.value.tempMap = {};
-                            judge.value.tempMap.headImgUrl = oss.buildImgPath(judge.value.headImgUrl);
+                            judge.value.tempMap.headImgUrl = await oss.buildPathAsync(judge.value.headImgUrl,true,null);
                             judge.value.tempMap.imgPath = judge.value.tempMap.headImgUrl;
                             obj.data = judge.value;
                             obj.returnFunction(obj);
@@ -127,10 +127,10 @@ const onFormSubmit = ({ valid }) => {
                 }
             );
         } else {
-            userRest.updateJudge({judge:judge.value},(res)=>{
+            userRest.updateJudge({judge:judge.value},async (res)=>{
                 if (res.status=="OK") {
                     judge.value.tempMap = {};
-                    judge.value.tempMap.headImgUrl = oss.buildImgPath(judge.value.headImgUrl);
+                    judge.value.tempMap.headImgUrl = await oss.buildPathAsync(judge.value.headImgUrl,true,null);
                     judge.value.tempMap.imgPath = judge.value.tempMap.headImgUrl;
                     obj.data = judge.value;
                     obj.returnFunction(obj);
@@ -161,7 +161,7 @@ function cancel() {
     mePage.close(mainPage);
 }
 
-const init = (_mainPage,_mePage,_obj)=>{
+const init = async (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
     obj = _obj;
@@ -173,7 +173,7 @@ const init = (_mainPage,_mePage,_obj)=>{
         judge.value = obj.data;
         console.log(judge.value);
         if (judge?.value?.headImgUrl) {
-            src.value = oss.buildImgPath(judge.value.headImgUrl);
+            src.value = await oss.buildPathAsync(judge.value.headImgUrl,true,null);
         }
     }
 }

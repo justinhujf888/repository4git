@@ -66,15 +66,15 @@ const siteOrgHumanList = ref([]);
 const host = ref(inject("domain"));
 
 onMounted(() => {
-    workRest.qyOrgHumanList({appId:host.value,sourceType:0,sourceId:host.value},(res)=>{
+    workRest.qyOrgHumanList({appId:host.value,sourceType:0,sourceId:host.value},async (res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteOrgHumanList.value = res.data;
-                lodash.forEach(siteOrgHumanList.value,async (v)=>{
+                for (let v of siteOrgHumanList.value) {
                     v.tempMap = {};
                     v.tempMap.headImgUrl = await oss.buildPathAsync(v.headImgUrl,true,null);
                     v.tempMap.imgPath = v.tempMap.headImgUrl;
-                });
+                }
             }
         }
     });

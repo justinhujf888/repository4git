@@ -51,31 +51,31 @@ const fileLimit = ref(20);
 const tabIndex = ref("8");
 
 onMounted(() => {
-    workRest.qySiteWorkItemList({sourceType:8,sourceId:host,type:9},(res)=>{
+    workRest.qySiteWorkItemList({sourceType:8,sourceId:host,type:9},async (res)=>{
         if (res.status=="OK") {
             if (res.data) {
-                lodash.forEach(res.data,async (v)=>{
+                for(let v of res.data) {
                     v.tempMap = {};
                     v.tempMap.size = v.fileFields.size;
                     v.tempMap.name = v.fileFields.name;
                     v.tempMap.type = v.fileFields.type;
                     v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
                     files.value[v.sourceType].push(v);
-                });
+                }
             }
         }
     });
-    workRest.qySiteWorkItemList({sourceType:9,sourceId:host,type:9},(res)=>{
+    workRest.qySiteWorkItemList({sourceType:9,sourceId:host,type:9},async (res)=>{
         if (res.status=="OK") {
             if (res.data) {
-                lodash.forEach(res.data,async (v)=>{
+                for(let v of res.data) {
                     v.tempMap = {};
                     v.tempMap.size = v.fileFields.size;
                     v.tempMap.name = v.fileFields.name;
                     v.tempMap.type = v.fileFields.type;
                     v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
                     files.value[v.sourceType].push(v);
-                });
+                }
             }
         }
     });

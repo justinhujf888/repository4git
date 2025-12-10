@@ -22,7 +22,7 @@
                     <Column field="headImgUrl" header="" class="w-10">
                         <template #body="{ data,index }">
                             <div class="center w-16">
-                                <img :alt="data.name" :src="data.tempMap.imgPath" class="rounded-full w-16 h-16 object-content" @click="refPriviewImage.imagesShow(judgePageUtil.content,index)"/>
+                                <img :alt="data.name" :src="data.tempMap?.imgPath" class="rounded-full w-16 h-16 object-content" @click="refPriviewImage.imagesShow(judgePageUtil.content,index)"/>
                             </div>
                         </template>
                     </Column>
@@ -68,19 +68,19 @@ const refPriviewImage = useTemplateRef("refPriviewImage");
 const judgePageUtil = ref({});
 const currentPage = ref(0);
 
-onMounted(() => {
-    loadDatas();
+onMounted(async () => {
+    await loadDatas();
 });
 
-function loadDatas() {
-    userRest.queryJudgeList({pageSize:Config.pageSize,currentPage:currentPage.value},(res)=>{
+async function loadDatas() {
+    userRest.queryJudgeList({pageSize:Config.pageSize,currentPage:currentPage.value},async (res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 judgePageUtil.value = res.data;
-                lodash.forEach(judgePageUtil.value.content,(v)=>{
+                for(let v of judgePageUtil.value.content) {
                     v.tempMap = {};
-                    v.tempMap.imgPath = oss.buildImgPath(v.headImgUrl);
-                });
+                    v.tempMap.imgPath = await oss.buildPathAsync(v.headImgUrl,true,null);
+                }
                 // console.log(judgePageUtil.value);
             }
         }
