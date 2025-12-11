@@ -1,5 +1,7 @@
 <template>
-
+    <div>
+        adsfasdf
+    </div>
 </template>
 
 <script setup>

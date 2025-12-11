@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" :value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" _containerStyle="max-width: 640px" :pt="{
+        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" v-model:value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" _containerStyle="max-width: 640px" :pt="{
             root: {
                 class: [{ 'flex flex-col': fullScreen }]
             },

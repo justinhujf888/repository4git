@@ -206,5 +206,14 @@ export const Beans = {
             {id:1,name:"已提交"},
             {id:9,name:"驳回"}
         ]
+    },
+    menuTreeDatas() {
+        return [
+            {key:"index",label:"首页",route:""},
+            {key:"userCenter",label:"用户中心",route:"",items:[
+                    {key:"userWork",label:"上传作品",route:""},
+                    {key:"userMsg",label:"我的消息",route:""}
+                ]}
+        ]
     }
 }

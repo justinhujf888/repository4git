@@ -209,6 +209,10 @@
                             </div>
                         </ScrollPanel>
                     </Fieldset>
+
+                    <Fieldset class="text-wrap text-start" legend="页面设置" :toggleable="true" :collapsed="true">
+                        <pageSetup></pageSetup>
+                    </Fieldset>
                 </template>
             </DataTable>
         </div>
@@ -250,12 +254,13 @@ import updateFields from "@/views/cpt/setup/masterCpt/updateFields.vue";
 import updateCompetition from "@/views/cpt/setup/masterCpt/updateCompetition.vue";
 import updateJudgeSetup from "@/views/cpt/setup/masterCpt/updateJudgeSetup.vue";
 import myFileUpload from "@/components/my/myFileUpload.vue";
-import priviewImage from "@/components/my/priviewImage.vue";
 import lodash from 'lodash-es';
 import dayjs from "dayjs";
 import oss from '@/api/oss';
 import { Beans } from '@/api/dbs/beans';
 import systemRest from "@/api/dbs/systemRest";
+
+import pageSetup from "@/views/cpt/setup/masterCpt/pageSetup/setup.vue";
 
 const mainPage = useTemplateRef("mainPage");
 const updateMasterCptPage = useTemplateRef("updateMasterCptPage");

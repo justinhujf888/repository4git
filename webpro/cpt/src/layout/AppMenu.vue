@@ -32,12 +32,12 @@ onMounted(() => {
                     { label: '评委资料库', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' },
                     { label: '发布赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' },
                     { label: '素材库', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/mediaFiles' },
-                    {
-                        label: "页面设置",icon: 'pi pi-fw pi-bars',
-                        items: [
-                            { label: '首页', icon: 'pi pi-fw pi-file', to: '/manage/cpt/masterCpt/pageSetup/index' },
-                        ]
-                    }
+                    // {
+                    //     label: "页面设置",icon: 'pi pi-fw pi-bars',
+                    //     items: [
+                    //         { label: '首页', icon: 'pi pi-fw pi-file', to: '/manage/cpt/masterCpt/pageSetup/index' },
+                    //     ]
+                    // }
                 ]
             },
             // {
