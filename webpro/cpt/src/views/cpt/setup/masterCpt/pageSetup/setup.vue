@@ -7,7 +7,7 @@
             <div class="mt-10 col md:row w-full">
                 <Tree v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" :value="treeDatas" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
                 <div class="flex-1 p-2">
-                    <component :is="pageSetupList[pageSetupComponent]"></component>
+                    <component v-if="componentIndex>-1" :is="pageComponentMap[componentIndex].component"></component>
                 </div>
             </div>
         </div>
@@ -15,19 +15,19 @@
 </template>
 
 <script setup>
-
-
-import { onMounted, ref } from 'vue';
-import pageSetupIndex from '@/views/cpt/setup/masterCpt/pageSetup/index/tp0.vue';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
 import {Beans} from '@/api/dbs/beans';
 import lodash from 'lodash-es';
 
-
-const pageSetupComponent = ref("pageSetupIndex");
-const pageSetupList = {pageSetupIndex};
 const treeDatas = ref([]);
 const selectedTreeNodeKey = ref(null);
 const expandedTreeNodeKey = ref(null);
+const componentIndex = ref(-1);
+let a = "tp0";
+let pageComponentMap = [
+    {key:"index",component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
+    {key:"pingWei",component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
+];
 
 onMounted(()=>{
     treeDatas.value = [];
@@ -47,7 +47,12 @@ onMounted(()=>{
 });
 
 const onNodeSelect = (node) => {
-
+    // console.log(node);
+    if (!node.children || node.children.length<1) {
+        componentIndex.value = lodash.findIndex(pageComponentMap,(o)=>{return o.key==node.key});
+    } else {
+        componentIndex.value = -1;
+    }
 };
 
 </script>
