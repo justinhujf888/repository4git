@@ -30,10 +30,19 @@ const selectedTreeNodeKey = ref(null);
 const expandedTreeNodeKey = ref(null);
 
 onMounted(()=>{
-    treeDatas.value = Beans.menuTreeDatas();
-    lodash.forEach(treeDatas.value,(v)=>{
-        v.children = v.items;
-        v.items = null;
+    treeDatas.value = [];
+    lodash.forEach(Beans.menuTreeDatas(),(v)=>{
+        if (v.isUserSetup) {
+            let chs = [];
+            lodash.forEach(v.items,(c)=>{
+                if (c.isUserSetup) {
+                    chs.push(c);
+                }
+            });
+            v.children = chs;
+            v.items = null;
+            treeDatas.value.push(v);
+        }
     });
 });
 

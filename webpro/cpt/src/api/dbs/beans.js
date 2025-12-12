@@ -209,11 +209,20 @@ export const Beans = {
     },
     menuTreeDatas() {
         return [
-            {key:"index",label:"首页",route:""},
-            {key:"userCenter",label:"用户中心",route:"",items:[
-                    {key:"userWork",label:"上传作品",route:""},
-                    {key:"userMsg",label:"我的消息",route:""}
-                ]}
+            {key:"index",label:"首页",menuType:0,isUserSetup:true,route:""},
+            {key:"userCenter",label:"用户中心",menuType:0,route:"",isUserSetup:false,items:[
+                {key:"userWork",label:"上传作品",route:""},
+                {key:"userMsg",label:"我的消息",route:""}
+            ]},
+            {key:"pingJiang",label:"评奖",menuType:1,route:"",isUserSetup:true,items:[
+                {key:"pingWei",label:"评委",isUserSetup:true,route:""},
+                {key:"pingShenBiaoZun",label:"评审标准",isUserSetup:true,route:""}
+            ]},
+            {key:"huoJiangWork",label:"获奖作品",menuType:1,route:"",isUserSetup:true,items:[
+                {key:"storyWork",label:"历届获奖作品",isUserSetup:true,route:""},
+                {key:"theWork",label:"本次获奖作品",isUserSetup:true,route:""}
+            ]},
+            {key:"news",label:"新闻",menuType:0,route:""}
         ]
     }
 }
