@@ -39,7 +39,7 @@ onMounted(() => {
         if (res.status=="OK") {
             if (res.data!=null) {
                 siteCompetition.value = res.data;
-                console.log(siteCompetition.value);
+                // console.log(siteCompetition.value);
             }
         }
     });
