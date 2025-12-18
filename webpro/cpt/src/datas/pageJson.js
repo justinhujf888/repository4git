@@ -22,14 +22,14 @@ export default {
             bannerArea:{
                 name:"轮播区域",
                 setup:{
-                    banner:{type:"box",pre:"设置轮播",value:[],eltTypes:[{type:"image",pre:"图片"},{type:"text",pre:"URL"},{type:"title",pre:"Title"},{type:"text",pre:"内容"}]},
-                    mImg:{type:"image",src:"",pre:"中间信息图片"}
+                    banner:{type:"box",pre:"设置轮播",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"URL"},{type:"title",pre:"Title"},{type:"text",pre:"内容"}]},
+                    mImg:{type:"image",value:"",pre:"中间信息图片"}
                 }
             },
             sloganArea:{
                 name:"广告语区域",
                 setup:{
-                    bgImg:{type:"image",src:"",pre:"背景图"},
+                    bgImg:{type:"image",value:"",pre:"背景图"},
                     title:{type:"text",value:"",pre:"标题"},
                     subtitle:{type:"text",value:"",pre:"副标题"}
                 }
@@ -52,28 +52,28 @@ export default {
                 name:"往届获奖作品",
                 setup:{
                     title:{type:"headTitle",value:"往届获奖作品",pre:"标题名称"},
-                    mImg:{type:"image",src:"",pre:"滚动图片"}
+                    mImg:{type:"image",value:"",pre:"滚动图片"}
                 }
             },
             newsArea:{
                 name:"最新动态",
                 setup:{
                     title:{type:"headTitle",value:"最新动态",pre:"标题名称"},
-                    newsItems:{type:"box",pre:"设置最新动态",value:[],eltTypes:[{type:"image",pre:"图片"},{type:"text",pre:"名称"},{type:"date",pre:"日期",format:"yyyy-mm-dd"}]}
+                    newsItems:{type:"box",pre:"设置最新动态",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"名称"},{type:"date",pre:"日期",format:"yy-mm-dd"}]}
                 }
             },
             orgArea:{
                 name:"联合主办机构",
                 setup:{
                     title:{type:"headTitle",value:"联合主办机构",pre:"标题名称"},
-                    orgItems:{type:"box",pre:"设置联合主办机构",value:[],eltTypes:[{type:"image",pre:"图片"},{type:"text",pre:"URL"}]}
+                    orgItems:{type:"box",pre:"设置联合主办机构",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"URL"}]}
                 }
             },
             boundArea:{
                 name:"赞助品牌",
                 setup:{
                     title:{type:"headTitle",value:"赞助品牌",pre:"标题名称"},
-                    boundItems:{type:"box",pre:"设置赞助品牌",value:[],eltTypes:[{type:"image",pre:"图片"},{type:"text",pre:"URL"}]}
+                    boundItems:{type:"box",pre:"设置赞助品牌",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"URL"}]}
                 }
             }
         }

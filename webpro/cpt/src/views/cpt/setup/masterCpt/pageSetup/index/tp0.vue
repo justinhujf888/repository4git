@@ -1,14 +1,73 @@
 <template>
     <div>
-        <pageUIEdit :pageJson="pageJson" :read-only="true"/>
+        <div v-for="pageEls of pageJson">
+            <Fieldset :legend="pageEls.name" class="!mt-5" :pt="{legendLabel:{class:'text-orange-300'}}">
+                <div v-for="element of pageEls.setup">
+                    <div v-if="element.type=='box'" class="p-2 ml-8">
+                        <div class="between">
+                            <span class="text-green-600 text-sm">{{element.pre}}</span>
+                            <Button label="新增" size="small" @click="openDialog(element)"/>
+                        </div>
+                        <Divider/>
+                        <DataTable :value="element.value">
+                            <Column v-for="col of element.eltTypes" :field="col.pre" :header="col.pre"></Column>
+                        </DataTable>
+                    </div>
+                    <div v-else>
+                        <buildUIElement v-if="readOnly" :element="element" />
+                        <pageUIEdit v-else :element="element"/>
+                    </div>
+                </div>
+            </Fieldset>
+        </div>
+        <Dialog v-model:visible="showDialog" modal>
+            <pageUIEdit v-for="boxItem of element.eltTypes" :element="boxItem"/>
+            <div class="center gap-4">
+                <Button label="新增" size="small" @click="saveelm"/>
+                <Button severity="warn" label="取消" size="small" @click="cancelelm"/>
+            </div>
+        </Dialog>
+        <Popover ref="op">
+
+        </Popover>
     </div>
 </template>
 
 <script setup>
-import {ref} from "vue";
 import pageUIEdit from "@/views/cpt/setup/masterCpt/pageSetup/pageUIEdit.vue";
+import buildUIElement from "@/views/cpt/setup/masterCpt/pageSetup/buildUIElement.vue";
+import {ref, useTemplateRef} from "vue";
+import lodash from "lodash-es";
 const pageJson = defineModel("pageJson",{default:{}});
+const readOnly = defineModel("readOnly",{default:true});
+const eltTypes = ref([]);
+const element = ref({});
+const showDialog = ref(false);
+const op = useTemplateRef("op");
 
+function openDialog(_element) {
+    element.value = _element;
+    showDialog.value = true;
+}
+function openPop(event,_elsTypes) {
+    eltTypes.value = _elsTypes;
+    op.value.toggle(event);
+}
+function saveelm() {
+    if (!element.value.value) {
+        element.value.value = [];
+    }
+    let obj = {};
+    lodash.forEach(element.value.eltTypes,(v)=>{
+        obj[v.pre] = v.value ? v.value : "";
+    });
+    element.value.value.push(obj);
+    console.log(element.value.eltTypes,element.value);
+    showDialog.value = false;
+}
+function cancelelm() {
+    showDialog.value = false;
+}
 </script>
 
 <style scoped lang="scss">
