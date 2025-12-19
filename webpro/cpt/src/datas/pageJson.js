@@ -45,7 +45,7 @@ export default {
                 name:"评委",
                 setup:{
                     title:{type:"headTitle",value:"评委",pre:"标题名称"},
-                    judgeItems:{type:"box",yeWuType:"juid",pre:"设置评委信息",value:[],eltTypes:[{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"}]}
+                    judgeItems:{type:"box",yeWuType:"judge",pre:"设置评委信息",value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:""},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"}]}
                 }
             },
             workStoreArea:{

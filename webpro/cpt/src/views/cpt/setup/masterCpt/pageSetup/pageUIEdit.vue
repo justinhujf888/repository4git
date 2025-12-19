@@ -1,9 +1,17 @@
 <template>
-    <div v-if="element.type=='box'" class="p-2 ml-8">
-        <span class="text-green-600 text-sm">{{element.pre}}</span>
-        <Divider/>
+    <div v-if="element.type=='box'" class="p-2">
         <DataTable :value="element.value">
-            <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre"></Column>
+            <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre">
+                <template #body="{data,index}">
+                    <Image v-if="col.type=='image'" class="rounded w-16 h-16 object-cover" :src="data.tempMap.imgPath" style="max-width: 300px;" preview_ :pt="{image:{class:'!w-16 !h-16 !object-cover'}}"/>
+                    <span v-else>{{data[col.key]}}</span>
+                </template>
+            </Column>
+            <Column class="w-24">
+                <template #body="{data,index}">
+                    <Button icon="pi pi-trash" rounded @click="deleteRow(data,index)" severity="secondary"/>
+                </template>
+            </Column>
         </DataTable>
     </div>
     <IftaLabel v-else-if="element.type=='headTitle' || element.type=='text' || element.type=='title'">
@@ -21,8 +29,14 @@
 
 <script setup>
 import priviewImage from "@/components/my/priviewImage.vue";
+import oss from "@/api/oss";
 const element = defineModel("element");
 const mediaFiles = defineModel("mediaFiles",{default:[]});
+
+function deleteRow(data,index) {
+    // console.log(element.value.value,data,index);
+    element.value.value.splice(index, 1);
+}
 </script>
 
 <style scoped lang="scss">
