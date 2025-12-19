@@ -22,7 +22,7 @@ export default {
             bannerArea:{
                 name:"轮播区域",
                 setup:{
-                    banner:{type:"box",pre:"设置轮播",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"URL"},{type:"title",pre:"Title"},{type:"text",pre:"内容"}]},
+                    banner:{type:"box",pre:"设置轮播",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"},{key:"title",type:"title",pre:"Title"},{key:"content",type:"text",pre:"内容"}]},
                     mImg:{type:"image",value:"",pre:"中间信息图片"}
                 }
             },
@@ -38,14 +38,14 @@ export default {
                 name:"奖项",
                 setup:{
                     title:{type:"headTitle",value:"奖项",pre:"标题名称"},
-                    jiangItems:{type:"box",pre:"设置各奖项",value:[],eltTypes:[{type:"jbText",pre:"名称",props:{}},{type:"text",pre:"得奖数量文字(如：每组1名)"},{type:"text",pre:"奖金奖杯文字(如：奖金2000元)"},{type:"text",pre:"奖品文字(如：某品牌生态照明设备)"}]}
+                    jiangItems:{type:"box",pre:"设置各奖项",value:[],eltTypes:[{key:"name",type:"jbText",pre:"名称",props:{}},{key:"jiangCount",type:"text",pre:"得奖数量文字(如：每组1名)"},{key:"jiangJing",type:"text",pre:"奖金奖杯文字(如：奖金2000元)"},{key:"jiangPing",type:"text",pre:"奖品文字(如：某品牌生态照明设备)"}]}
                 }
             },
             judgeArea:{
                 name:"评委",
                 setup:{
                     title:{type:"headTitle",value:"评委",pre:"标题名称"},
-                    judgeItems:{type:"box",pre:"设置评委信息",value:[],eltTypes:[{type:"text",pre:"姓名"},{type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{type:"text",pre:"职位(如：xxx协会秘书长)"}]}
+                    judgeItems:{type:"box",yeWuType:"juid",pre:"设置评委信息",value:[],eltTypes:[{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"}]}
                 }
             },
             workStoreArea:{
@@ -59,21 +59,21 @@ export default {
                 name:"最新动态",
                 setup:{
                     title:{type:"headTitle",value:"最新动态",pre:"标题名称"},
-                    newsItems:{type:"box",pre:"设置最新动态",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"名称"},{type:"date",pre:"日期",format:"yy-mm-dd"}]}
+                    newsItems:{type:"box",pre:"设置最新动态",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"name",type:"text",pre:"名称"},{key:"date",type:"date",pre:"日期",format:"yy-mm-dd"}]}
                 }
             },
             orgArea:{
                 name:"联合主办机构",
                 setup:{
                     title:{type:"headTitle",value:"联合主办机构",pre:"标题名称"},
-                    orgItems:{type:"box",pre:"设置联合主办机构",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"URL"}]}
+                    orgItems:{type:"box",pre:"设置联合主办机构",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"}]}
                 }
             },
             boundArea:{
                 name:"赞助品牌",
                 setup:{
                     title:{type:"headTitle",value:"赞助品牌",pre:"标题名称"},
-                    boundItems:{type:"box",pre:"设置赞助品牌",value:[],eltTypes:[{type:"image",pre:"图片",value:""},{type:"text",pre:"URL"}]}
+                    boundItems:{type:"box",pre:"设置赞助品牌",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"}]}
                 }
             }
         }

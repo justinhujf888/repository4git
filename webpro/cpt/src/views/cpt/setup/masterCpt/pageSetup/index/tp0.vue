@@ -3,15 +3,13 @@
         <div v-for="pageEls of pageJson">
             <Fieldset :legend="pageEls.name" class="!mt-5" :pt="{legendLabel:{class:'text-orange-300'}}">
                 <div v-for="element of pageEls.setup">
-                    <div v-if="element.type=='box'" class="p-2 ml-8">
+                    <div v-if="element.type=='box'" class="p-2">
                         <div class="between">
                             <span class="text-green-600 text-sm">{{element.pre}}</span>
-                            <Button label="新增" size="small" @click="openDialog(element)"/>
+                            <Button v-if="!readOnly" label="新增" size="small" @click="openDialog(element)"/>
                         </div>
                         <Divider/>
-                        <DataTable :value="element.value">
-                            <Column v-for="col of element.eltTypes" :field="col.pre" :header="col.pre"></Column>
-                        </DataTable>
+                        <buildUIElement :element="element" />
                     </div>
                     <div v-else>
                         <buildUIElement v-if="readOnly" :element="element" />
@@ -21,9 +19,9 @@
             </Fieldset>
         </div>
         <Dialog v-model:visible="showDialog" modal>
-            <pageUIEdit v-for="boxItem of element.eltTypes" :element="boxItem"/>
+            <pageUIEdit v-for="boxItem of eltTypes" :element="boxItem"/>
             <div class="center gap-4">
-                <Button label="新增" size="small" @click="saveelm"/>
+                <Button label="确定" size="small" @click="saveelm"/>
                 <Button severity="warn" label="取消" size="small" @click="cancelelm"/>
             </div>
         </Dialog>
@@ -47,10 +45,11 @@ const op = useTemplateRef("op");
 
 function openDialog(_element) {
     element.value = _element;
+    eltTypes.value = lodash.cloneDeep(element.value.eltTypes);
     showDialog.value = true;
 }
-function openPop(event,_elsTypes) {
-    eltTypes.value = _elsTypes;
+function openPop(event,_eltTypes) {
+    eltTypes.value = _eltTypes;
     op.value.toggle(event);
 }
 function saveelm() {
@@ -58,11 +57,11 @@ function saveelm() {
         element.value.value = [];
     }
     let obj = {};
-    lodash.forEach(element.value.eltTypes,(v)=>{
-        obj[v.pre] = v.value ? v.value : "";
+    lodash.forEach(eltTypes.value,(v)=>{
+        obj[v.key] = v.value ? v.value : "";
     });
     element.value.value.push(obj);
-    console.log(element.value.eltTypes,element.value);
+    eltTypes.value = {};
     showDialog.value = false;
 }
 function cancelelm() {

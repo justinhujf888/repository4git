@@ -10,6 +10,11 @@
     <div v-else-if="element.type=='images'">
         <priview-image v-model:files="element.value"/>
     </div>
+    <div v-else-if="element.type=='box'">
+        <DataTable :value="element.value">
+            <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre"></Column>
+        </DataTable>
+    </div>
 </template>
 
 <script setup>

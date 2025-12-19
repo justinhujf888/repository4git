@@ -2,7 +2,9 @@
     <div v-if="element.type=='box'" class="p-2 ml-8">
         <span class="text-green-600 text-sm">{{element.pre}}</span>
         <Divider/>
-        <buildUIElement v-for="boxItem of element.eltTypes" :element="boxItem" />
+        <DataTable :value="element.value">
+            <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre"></Column>
+        </DataTable>
     </div>
     <IftaLabel v-else-if="element.type=='headTitle' || element.type=='text' || element.type=='title'">
         <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">{{element.pre}}</label>
@@ -19,7 +21,6 @@
 
 <script setup>
 import priviewImage from "@/components/my/priviewImage.vue";
-import buildUIElement from "@/views/cpt/setup/masterCpt/pageSetup/buildUIElement.vue";
 const element = defineModel("element");
 const mediaFiles = defineModel("mediaFiles",{default:[]});
 </script>
