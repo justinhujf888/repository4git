@@ -13,13 +13,12 @@
                         <pageUIEdit v-else :element="element"/>
                     </div>
                     <div v-else-if="element.type=='image'" class="p-2">
-                        <div class="between">
-                            <span class="text-green-600 text-sm">{{element.pre}}</span>
-                            <Button v-if="!readOnly" label="选择图片" size="small" @click="openDialog(element)"/>
-                        </div>
+<!--                        <div class="between">-->
+<!--                            <span class="text-green-600 text-sm">{{element.pre}}</span>-->
+<!--                            <Button v-if="!readOnly" label="选择图片" size="small" @click="openDialog(element)"/>-->
+<!--                        </div>-->
                         <buildUIElement v-if="readOnly" :element="element" />
-                        <pageUIEdit v-else :element="element"/>
-                        <Divider/>
+                        <pageUIEdit v-else :element="element" v-model:mediaFiles="allMediaFiles"/>
                     </div>
                     <div v-else>
                         <buildUIElement v-if="readOnly" :element="element" />
@@ -29,21 +28,34 @@
             </Fieldset>
         </div>
         <Dialog v-model:visible="showDialog" modal>
-            <div v-if="!element.yeWuType">
-                <pageUIEdit v-for="boxItem of eltTypes" :element="boxItem"/>
-            </div>
-            <div v-else-if="element.yeWuType=='media'">
-                <image-grid :mediaFiles="mediaFiles[0].value" :selFiles="element.value" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
-            </div>
-            <div v-else-if="element.yeWuType=='judge'">
-                <image-grid :mediaFiles="judgeList" :selFiles="element.value" :selCount="element.count" :funCheckHasIndex="imageGridCheckHas4Judge">
-                    <template #content="slotProps">
-                        <div class="w-full h-12 center">
-                            <span>{{slotProps.file.name}}</span>
-                        </div>
-                    </template>
-                </image-grid>
-            </div>
+            <ScrollPanel class="w-full h-96" :dt="{
+                bar: {
+                    background: '{primary.color}'
+                }
+
+            }">
+                <div v-if="!element.yeWuType">
+                    <div v-for="boxItem of eltTypes" class="col gap-4">
+                        <pageUIEdit :element="boxItem" v-model:mediaFiles="allMediaFiles"/>
+                    </div>
+                </div>
+                <div v-else-if="element.yeWuType=='media'">
+                    <span>{{mediaFiles[0].name}}</span>
+                    <image-grid :mediaFiles="mediaFiles[0].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
+                    <Divider/>
+                    <span class="mt-10">{{mediaFiles[1].name}}</span>
+                    <image-grid :mediaFiles="mediaFiles[1].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
+                </div>
+                <div v-else-if="element.yeWuType=='judge'">
+                    <image-grid :mediaFiles="judgeList" :selFiles="element.value" :selCount="element.count" :funCheckHasIndex="imageGridCheckHas4Judge">
+                        <template #content="slotProps">
+                            <div class="w-full h-12 center">
+                                <span>{{slotProps.file.name}}</span>
+                            </div>
+                        </template>
+                    </image-grid>
+                </div>
+            </ScrollPanel>
             <div class="center gap-4 mt-5">
                 <Button label="确定" size="small" @click="saveelm"/>
                 <Button severity="warn" label="取消" size="small" @click="cancelelm"/>
@@ -74,59 +86,65 @@ const element = ref({});
 const showDialog = ref(false);
 const op = useTemplateRef("op");
 const mediaFiles = ref([{sourceType:8,name:"页面素材",value:[]},{sourceType:9,name:"新闻素材",value:[]}]);
+const allMediaFiles = ref([]);
 const judgeList = ref([]);
 
 let host = inject("domain");
+
+(async ()=>{
+    mediaFiles.value = [{sourceType:8,name:"页面素材",value:[]},{sourceType:9,name:"新闻素材",value:[]}];
+    await (async ()=>{
+        await new Promise(resolve => {
+            workRest.qySiteWorkItemList({sourceType:8,sourceId:host,type:9},async (res)=>{
+                if (res.status=="OK") {
+                    if (res.data) {
+                        for(let v of res.data) {
+                            v.tempMap = {};
+                            v.tempMap.size = v.fileFields.size;
+                            v.tempMap.name = v.fileFields.name;
+                            v.tempMap.type = v.fileFields.type;
+                            v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
+                            v.img = v.path;
+                            let mfs = lodash.find(mediaFiles.value,(o)=>{return o.sourceType==8});
+                            mfs.value.push(v);
+                        }
+                        resolve();
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+        await new Promise(resolve => {
+            workRest.qySiteWorkItemList({sourceType:9,sourceId:host,type:9},async (res)=>{
+                if (res.status=="OK") {
+                    if (res.data) {
+                        for(let v of res.data) {
+                            v.tempMap = {};
+                            v.tempMap.size = v.fileFields.size;
+                            v.tempMap.name = v.fileFields.name;
+                            v.tempMap.type = v.fileFields.type;
+                            v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
+                            v.img = v.path;
+                            let mfs = lodash.find(mediaFiles.value,(o)=>{return o.sourceType==9});
+                            mfs.value.push(v);
+                        }
+                        allMediaFiles.value = lodash.concat(mediaFiles.value[0].value,mediaFiles.value[1].value);
+                        resolve();
+                    } else {
+                        resolve();
+                    }
+                }
+            });
+        });
+    })();
+})();
 
 async function openDialog(_element) {
     element.value = _element;
     eltTypes.value = lodash.cloneDeep(element.value.eltTypes);
     if (element.value.yeWuType=="media") {
-        mediaFiles.value = [{sourceType:8,name:"页面素材",value:[]},{sourceType:9,name:"新闻素材",value:[]}];
-        await (async ()=>{
-            await new Promise(resolve => {
-                workRest.qySiteWorkItemList({sourceType:8,sourceId:host,type:9},async (res)=>{
-                    if (res.status=="OK") {
-                        if (res.data) {
-                            for(let v of res.data) {
-                                v.tempMap = {};
-                                v.tempMap.size = v.fileFields.size;
-                                v.tempMap.name = v.fileFields.name;
-                                v.tempMap.type = v.fileFields.type;
-                                v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
-                                v.img = v.path;
-                                let mfs = lodash.find(mediaFiles.value,(o)=>{return o.sourceType==8});
-                                mfs.value.push(v);
-                            }
-                            resolve();
-                        } else {
-                            resolve();
-                        }
-                    }
-                });
-            });
-            await new Promise(resolve => {
-                workRest.qySiteWorkItemList({sourceType:9,sourceId:host,type:9},async (res)=>{
-                    if (res.status=="OK") {
-                        if (res.data) {
-                            for(let v of res.data) {
-                                v.tempMap = {};
-                                v.tempMap.size = v.fileFields.size;
-                                v.tempMap.name = v.fileFields.name;
-                                v.tempMap.type = v.fileFields.type;
-                                v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
-                                v.img = v.path;
-                                let mfs = lodash.find(mediaFiles.value,(o)=>{return o.sourceType==9});
-                                mfs.value.push(v);
-                            }
-                            resolve();
-                        } else {
-                            resolve();
-                        }
-                    }
-                });
-            });
-        })();
+
     }
 
     if (element.value.yeWuType=="judge") {
@@ -154,12 +172,16 @@ async function openDialog(_element) {
     }
     showDialog.value = true;
 }
-const imageGridCheckHas4Judge = (file,mediaFiles,selFiles)=>{
+const imageGridCheckHas4Judge = (file,mediaFiles,selFiles,selCount)=>{
     return lodash.findIndex(selFiles,(o)=>{return o.id==file.id});
 }
-const imageGridCheckHas4Media = (file,mediaFiles,selFiles)=>{
-    console.log("selFiles",selFiles,"file",file);
-    return lodash.findIndex(selFiles,(o)=>{return o.id==file.id});
+const imageGridCheckHas4Media = (file,mediaFiles,selFiles,selCount)=>{
+    // console.log("selFiles",selFiles,"file",file);
+    if (selCount>1) {
+        return lodash.findIndex(selFiles,(o)=>{return o.id==file.id});
+    } else {
+        return selFiles.id==file.id ? 0 : -1;
+    }
 }
 
 function openPop(event,_eltTypes) {
@@ -167,7 +189,7 @@ function openPop(event,_eltTypes) {
     op.value.toggle(event);
 }
 function saveelm() {
-    if (element.value.yeWuType!="media") {
+    if (element.value.yeWuType!="judge") {
         if (!element.value.value) {
             element.value.value = [];
         }

@@ -13,23 +13,40 @@
 import {ref} from "vue";
 import oss from "@/api/oss";
 const mediaFiles = defineModel("mediaFiles", {default:[]});
-const selFiles = defineModel("selFiles", {default:[]});
+const selFiles = defineModel("selFiles");
 const props = defineProps({
     funCheckHasIndex: Function,
     selCount: {type: Number, default: 1},
 });
 const checkHas = (file)=>{
-    return props.funCheckHasIndex(file,mediaFiles.value,selFiles.value)>=0;
+    return props.funCheckHasIndex(file,mediaFiles.value,selFiles.value,props.selCount)>=0;
 }
 const choiceFile = (file)=>{
     if (!selFiles.value) {
-        selFiles.value = [];
+        if (props.selCount>1) {
+            selFiles.value = [];
+        } else {
+            selFiles.value = {};
+        }
     }
-    let index = props.funCheckHasIndex(file,mediaFiles.value,selFiles.value);
+    let index = props.funCheckHasIndex(file,mediaFiles.value,selFiles.value,props.selCount);
     if (index>=0) {
-        selFiles.value.splice(index,1);
+        if (props.selCount>1) {
+            selFiles.value.splice(index,1);
+        } else {
+            selFiles.value.id = "";
+            selFiles.value.img = "";
+            selFiles.value.tempMap = {};
+        }
     } else {
-        selFiles.value.push(file);
+        if (props.selCount>1) {
+            selFiles.value.push(file);
+        } else {
+            selFiles.value.id = file.id;
+            selFiles.value.img = file.path;
+            selFiles.value.tempMap = {};
+            selFiles.value.tempMap.imgPath = file.tempMap.imgPath;
+        }
     }
 }
 </script>
