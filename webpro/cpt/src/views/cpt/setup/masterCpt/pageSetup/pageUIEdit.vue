@@ -3,7 +3,9 @@
         <DataTable :value="element.value">
             <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre">
                 <template #body="{data,index}">
-                    <Image v-if="col.type=='image'" class="rounded w-16 h-16 object-cover" :src="data.tempMap.imgPath" style="max-width: 300px;" preview_ :pt="{image:{class:'!w-16 !h-16 !object-cover'}}"/>
+                    <div v-if="col.type=='image'" class="center w-16">
+                        <img :src="data.tempMap?.imgPath" class="rounded-full w-16 h-16 object-content"/>
+                    </div>
                     <span v-else>{{data[col.key]}}</span>
                 </template>
             </Column>

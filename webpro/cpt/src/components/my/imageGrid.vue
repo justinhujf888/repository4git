@@ -15,19 +15,22 @@ import oss from "@/api/oss";
 const mediaFiles = defineModel("mediaFiles", {default:[]});
 const selFiles = defineModel("selFiles", {default:[]});
 const props = defineProps({
-    funCheckHasIndex: Function
+    funCheckHasIndex: Function,
+    selCount: {type: Number, default: 1},
 });
 const checkHas = (file)=>{
     return props.funCheckHasIndex(file,mediaFiles.value,selFiles.value)>=0;
 }
 const choiceFile = (file)=>{
+    if (!selFiles.value) {
+        selFiles.value = [];
+    }
     let index = props.funCheckHasIndex(file,mediaFiles.value,selFiles.value);
     if (index>=0) {
         selFiles.value.splice(index,1);
     } else {
         selFiles.value.push(file);
     }
-    // console.log(selFiles.value.length);
 }
 </script>
 

@@ -12,6 +12,15 @@
                         <buildUIElement v-if="readOnly" :element="element" />
                         <pageUIEdit v-else :element="element"/>
                     </div>
+                    <div v-else-if="element.type=='image'" class="p-2">
+                        <div class="between">
+                            <span class="text-green-600 text-sm">{{element.pre}}</span>
+                            <Button v-if="!readOnly" label="选择图片" size="small" @click="openDialog(element)"/>
+                        </div>
+                        <buildUIElement v-if="readOnly" :element="element" />
+                        <pageUIEdit v-else :element="element"/>
+                        <Divider/>
+                    </div>
                     <div v-else>
                         <buildUIElement v-if="readOnly" :element="element" />
                         <pageUIEdit v-else :element="element"/>
@@ -23,8 +32,11 @@
             <div v-if="!element.yeWuType">
                 <pageUIEdit v-for="boxItem of eltTypes" :element="boxItem"/>
             </div>
+            <div v-else-if="element.yeWuType=='media'">
+                <image-grid :mediaFiles="mediaFiles[0].value" :selFiles="element.value" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
+            </div>
             <div v-else-if="element.yeWuType=='judge'">
-                <image-grid :mediaFiles="judgeList" :selFiles="element.value" :funCheckHasIndex="imageGridCheckHas4Judge">
+                <image-grid :mediaFiles="judgeList" :selFiles="element.value" :selCount="element.count" :funCheckHasIndex="imageGridCheckHas4Judge">
                     <template #content="slotProps">
                         <div class="w-full h-12 center">
                             <span>{{slotProps.file.name}}</span>
@@ -145,13 +157,17 @@ async function openDialog(_element) {
 const imageGridCheckHas4Judge = (file,mediaFiles,selFiles)=>{
     return lodash.findIndex(selFiles,(o)=>{return o.id==file.id});
 }
+const imageGridCheckHas4Media = (file,mediaFiles,selFiles)=>{
+    console.log("selFiles",selFiles,"file",file);
+    return lodash.findIndex(selFiles,(o)=>{return o.id==file.id});
+}
 
 function openPop(event,_eltTypes) {
     eltTypes.value = _eltTypes;
     op.value.toggle(event);
 }
 function saveelm() {
-    if (!element.value.yeWuType) {
+    if (element.value.yeWuType!="media") {
         if (!element.value.value) {
             element.value.value = [];
         }
@@ -161,6 +177,8 @@ function saveelm() {
         });
         element.value.value.push(obj);
         eltTypes.value = {};
+    } else {
+
     }
     showDialog.value = false;
 }

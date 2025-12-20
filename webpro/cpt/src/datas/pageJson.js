@@ -22,14 +22,14 @@ export default {
             bannerArea:{
                 name:"轮播区域",
                 setup:{
-                    banner:{type:"box",pre:"设置轮播",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"},{key:"title",type:"title",pre:"Title"},{key:"content",type:"text",pre:"内容"}]},
-                    mImg:{type:"image",value:"",pre:"中间信息图片"}
+                    banner:{type:"box",pre:"设置轮播",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"},{key:"title",type:"title",pre:"Title"},{key:"content",type:"text",pre:"内容"}]},
+                    mImg:{type:"image",yeWuType:"media",value:[],pre:"中间信息图片"}
                 }
             },
             sloganArea:{
                 name:"广告语区域",
                 setup:{
-                    bgImg:{type:"image",value:"",pre:"背景图"},
+                    bgImg:{type:"image",yeWuType:"media",value:[],pre:"背景图"},
                     title:{type:"text",value:"",pre:"标题"},
                     subtitle:{type:"text",value:"",pre:"副标题"}
                 }
@@ -45,35 +45,35 @@ export default {
                 name:"评委",
                 setup:{
                     title:{type:"headTitle",value:"评委",pre:"标题名称"},
-                    judgeItems:{type:"box",yeWuType:"judge",pre:"设置评委信息",value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:""},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"}]}
+                    judgeItems:{type:"box",yeWuType:"judge",pre:"设置评委信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:""},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"}]}
                 }
             },
             workStoreArea:{
                 name:"往届获奖作品",
                 setup:{
                     title:{type:"headTitle",value:"往届获奖作品",pre:"标题名称"},
-                    mImg:{type:"image",value:"",pre:"滚动图片"}
+                    mImg:{type:"image",yeWuType:"media",value:[],pre:"滚动图片"}
                 }
             },
             newsArea:{
                 name:"最新动态",
                 setup:{
                     title:{type:"headTitle",value:"最新动态",pre:"标题名称"},
-                    newsItems:{type:"box",pre:"设置最新动态",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"name",type:"text",pre:"名称"},{key:"date",type:"date",pre:"日期",format:"yy-mm-dd"}]}
+                    newsItems:{type:"box",pre:"设置最新动态",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:""},{key:"name",type:"text",pre:"名称"},{key:"date",type:"date",pre:"日期",format:"yy-mm-dd"}]}
                 }
             },
             orgArea:{
                 name:"联合主办机构",
                 setup:{
                     title:{type:"headTitle",value:"联合主办机构",pre:"标题名称"},
-                    orgItems:{type:"box",pre:"设置联合主办机构",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"}]}
+                    orgItems:{type:"box",pre:"设置联合主办机构",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"}]}
                 }
             },
             boundArea:{
                 name:"赞助品牌",
                 setup:{
                     title:{type:"headTitle",value:"赞助品牌",pre:"标题名称"},
-                    boundItems:{type:"box",pre:"设置赞助品牌",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"}]}
+                    boundItems:{type:"box",yeWuType:"media",pre:"设置赞助品牌",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:""},{key:"url",type:"text",pre:"URL"}]}
                 }
             }
         }
