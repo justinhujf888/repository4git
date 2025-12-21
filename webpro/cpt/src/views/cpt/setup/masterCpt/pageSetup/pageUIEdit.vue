@@ -35,7 +35,10 @@
         <DatePicker class="w-full md:w-[30rem] mb-4" v-model="element.value" :dateFormat="element.format"/>
     </IftaLabel>
     <div v-else-if="element.type=='jbText'" class="col">
-        <updateJBText></updateJBText>
+        <span>渐变文字</span>
+        <Divider/>
+        <updateJBText v-model:colors="element.value.colors" v-model:text="element.value.text" v-model:des="element.value.des"></updateJBText>
+        <Divider/>
     </div>
 
     <Popover ref="op">
@@ -55,7 +58,7 @@ import priviewImage from "@/components/my/priviewImage.vue";
 import oss from "@/api/oss";
 import imageGrid from "@/components/my/imageGrid.vue";
 import lodash from "lodash-es";
-import {useTemplateRef} from "vue";
+import {ref, useTemplateRef} from "vue";
 import updateJBText from "@/components/my/form/updateJBText.vue";
 const element = defineModel("element");
 const mediaFiles = defineModel("mediaFiles");

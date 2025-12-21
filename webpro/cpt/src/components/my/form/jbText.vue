@@ -3,34 +3,29 @@
 </template>
 
 <script setup>
-import {onMounted, ref, watch} from "vue";
+import {ref, watch} from "vue";
 
-const props = defineProps({
-    fromto: { type: String, default: "to right" },
-    colors: { type: Array, default: [] }
-});
+const colors = defineModel("colors",{default:[]});
+const fromto = defineModel("fromto",{default:"to right"});
 
 const colorStr = ref("");
 const jbStyleStr = ref("");
 
 function buildTextStyle(colors) {
+    colorStr.value = "";
     for(let i = 0; i < colors.length; i++) {
         colorStr.value += colors[i];
         if (i<colors.length - 1) {
             colorStr.value += ",";
         }
+
     }
-    jbStyleStr.value = `background: linear-gradient(${props.fromto}, ${colorStr.value});-webkit-background-clip: text;-webkit-text-fill-color: transparent;`;
+    jbStyleStr.value = `background: linear-gradient(${fromto.value}, ${colorStr.value});-webkit-background-clip: text;-webkit-text-fill-color: transparent;`;
 }
 
-onMounted(()=>{
-    if (props.colors) {
-        buildTextStyle(props.colors);
-    }
-})
-
-watch(props,(newValue)=>{
-    buildTextStyle(newValue.colors);
+watch(colors,(newValue)=>{
+    buildTextStyle(newValue);
+    // console.log(jbStyleStr.value);
 })
 </script>
 

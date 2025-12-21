@@ -38,7 +38,7 @@ export default {
                 name:"奖项",
                 setup:{
                     title:{type:"headTitle",value:"奖项",pre:"标题名称"},
-                    jiangItems:{type:"box",pre:"设置各奖项",value:[],eltTypes:[{key:"name",type:"jbText",pre:"名称",value:{}},{key:"jiangCount",type:"text",pre:"得奖数量文字(如：每组1名)",value:""},{key:"jiangJing",type:"text",pre:"奖金奖杯文字(如：奖金2000元)",value:""},{key:"jiangPing",type:"text",pre:"奖品文字(如：某品牌生态照明设备)",value:""}]}
+                    jiangItems:{type:"box",pre:"设置各奖项",value:[],eltTypes:[{key:"name",type:"jbText",pre:"名称",value:{text:"",des:0,colors:[]}},{key:"jiangCount",type:"text",pre:"得奖数量文字(如：每组1名)",value:""},{key:"jiangJing",type:"text",pre:"奖金奖杯文字(如：奖金2000元)",value:""},{key:"jiangPing",type:"text",pre:"奖品文字(如：某品牌生态照明设备)",value:""}]}
                 }
             },
             judgeArea:{
