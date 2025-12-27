@@ -1,5 +1,9 @@
 <template>
-    <span :style="jbStyleStr"><slot></slot></span>
+<!--    <span :style="jbStyleStr"><slot></slot></span>-->
+    <div>
+<!--        {{jbStyleStr}}-->
+        <span :style="jbStyleStr"><slot></slot></span>
+    </div>
 </template>
 
 <script setup>
@@ -12,6 +16,7 @@ const colorStr = ref("");
 const jbStyleStr = ref("");
 
 function buildTextStyle(colors) {
+    // console.log(colors);
     colorStr.value = "";
     for(let i = 0; i < colors.length; i++) {
         colorStr.value += colors[i];
@@ -25,7 +30,7 @@ function buildTextStyle(colors) {
 
 watch(colors,(newValue)=>{
     buildTextStyle(newValue);
-    // console.log(jbStyleStr.value);
+    // console.log("newValue",jbStyleStr.value);
 })
 </script>
 

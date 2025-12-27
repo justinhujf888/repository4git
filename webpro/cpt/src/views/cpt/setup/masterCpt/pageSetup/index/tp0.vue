@@ -1,16 +1,17 @@
 <template>
     <div>
+<!--        <span style="background: linear-gradient(9deg, #f0002c,#242ebf);-webkit-background-clip: text;-webkit-text-fill-color: transparent; ">aaa</span>-->
         <div v-for="pageEls of pageJson">
             <Fieldset :legend="pageEls.name" class="!mt-5" :pt="{legendLabel:{class:'text-orange-300'}}">
                 <div v-for="element of pageEls.setup">
                     <div v-if="element.type=='box'" class="p-2">
                         <div class="between">
                             <span class="text-green-600 text-sm">{{element.pre}}</span>
-                            <Button v-if="!readOnly" label="新增" size="small" @click="openDialog(element)"/>
+                            <Button v-if="!readOnly" label="新增" size="small" @click="process=-1;openDialog(element)"/>
                         </div>
                         <Divider/>
                         <buildUIElement v-if="readOnly" :element="element" />
-                        <pageUIEdit v-else :element="element"/>
+                        <pageUIEdit v-else :element="element" @deleteRow="deleteRow" @updateRow="updateRow"/>
                     </div>
                     <div v-else-if="element.type=='image'" class="p-2">
 <!--                        <div class="between">-->
@@ -90,6 +91,7 @@ const allMediaFiles = ref([]);
 const judgeList = ref([]);
 
 let host = inject("domain");
+let process = -1;
 
 (async ()=>{
     mediaFiles.value = [{sourceType:8,name:"页面素材",value:[]},{sourceType:9,name:"新闻素材",value:[]}];
@@ -141,8 +143,11 @@ let host = inject("domain");
 })();
 
 async function openDialog(_element) {
-    element.value = _element;
+    element.value = _element;console.log(element.value);
     eltTypes.value = lodash.cloneDeep(element.value.eltTypes);
+    if (element.value.type=="box") {
+
+    }
     if (element.value.yeWuType=="media") {
 
     }
@@ -189,7 +194,9 @@ function openPop(event,_eltTypes) {
     op.value.toggle(event);
 }
 function saveelm() {
-    if (element.value.yeWuType!="judge") {
+    if (element.value.yeWuType=="judge") {
+
+    } else {
         if (!element.value.value) {
             element.value.value = [];
         }
@@ -197,15 +204,42 @@ function saveelm() {
         lodash.forEach(eltTypes.value,(v)=>{
             obj[v.key] = v.value ? v.value : "";
         });
-        element.value.value.push(obj);
-        eltTypes.value = {};
-    } else {
+        if (process==-1) {
+            element.value.value.push(obj);
+        } else if (process>-1) {
+            element.value.value[process] = obj;
+        }
 
+        eltTypes.value = {};
     }
     showDialog.value = false;
 }
 function cancelelm() {
     showDialog.value = false;
+}
+
+function deleteRow(element,data,index) {
+    // console.log(element,data,index);
+    element.value.splice(index, 1);
+}
+function updateRow(element,data,index) {
+    // console.log(element,data);
+    process = index;
+    eltTypes.value = element.eltTypes;
+    lodash.forEach(data,(v,k)=>{
+        lodash.forEach(eltTypes.value,(ev)=>{
+            // console.log(ev.key,k);
+            if (ev.key==k) {
+                ev.value = v;
+            }
+        });
+    })
+    // let obj = {};
+    // lodash.forEach(eltTypes.value,(v)=>{
+    //     obj[v.key] = v.value ? v.value : "";
+    // });
+    // element.value.value.push(obj);
+    openDialog(element);
 }
 </script>
 

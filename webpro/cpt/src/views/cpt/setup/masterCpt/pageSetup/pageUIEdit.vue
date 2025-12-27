@@ -1,4 +1,5 @@
 <template>
+<!--    <jb-text :colors="['#ff000','#ff000']" fromto="68 deg" class="text-5xl siyuansongBold">abc</jb-text>-->
     <div v-if="element.type=='box'" class="p-2">
         <DataTable :value="element.value">
             <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre">
@@ -6,12 +7,16 @@
                     <div v-if="col.type=='image'" class="center w-16">
                         <img :src="data[col.key].tempMap.imgPath" class="rounded-full w-16 h-16 object-content"/>
                     </div>
+                    <div v-else-if="col.type=='jbText'" class="center w-16">
+                        <jb-text v-if="data[col.key].colors.length>0" :colors="buildColors(data[col.key].colors)" :fromto="`${data[col.key].des}deg`" class="text-5xl siyuansongBold">{{data[col.key].text}}</jb-text>
+                    </div>
                     <span v-else>{{data[col.key]}}</span>
                 </template>
             </Column>
             <Column class="w-24">
                 <template #body="{data,index}">
-                    <Button icon="pi pi-trash" rounded @click="deleteRow(data,index)" severity="secondary"/>
+                    <Button icon="pi pi-trash" rounded @click="deleteRow(element,data,index)" severity="secondary"/>
+                    <Button icon="pi pi-pencil" rounded @click="updateRow(element,data,index)" severity="secondary"/>
                 </template>
             </Column>
         </DataTable>
@@ -56,6 +61,7 @@
 <script setup>
 import priviewImage from "@/components/my/priviewImage.vue";
 import oss from "@/api/oss";
+import jbText from "@/components/my/form/jbText.vue";
 import imageGrid from "@/components/my/imageGrid.vue";
 import lodash from "lodash-es";
 import {ref, useTemplateRef} from "vue";
@@ -64,9 +70,16 @@ const element = defineModel("element");
 const mediaFiles = defineModel("mediaFiles");
 const pop = useTemplateRef("op");
 
-function deleteRow(data,index) {
+const emit = defineEmits(["deleteRow","updateRow"]);
+
+function deleteRow(element,data,index) {
     // console.log(element.value.value,data,index);
-    element.value.value.splice(index, 1);
+    emit("deleteRow",element,data,index);
+    // element.value.value.splice(index, 1);
+}
+
+function updateRow(element,data, index) {
+    emit("updateRow",element,data,index);
 }
 
 function openPop(event) {
@@ -80,6 +93,14 @@ const imageGridCheckHas = (file,mediaFiles,selFiles,selCount)=>{
     } else {
         return selFiles.id==file.id ? 0 : -1;
     }
+}
+
+function buildColors(cry) {
+    let ay = [];
+    lodash.forEach(cry,(value,index) => {
+        ay.push("#"+value);
+    });
+    return ay;
 }
 </script>
 

@@ -43,7 +43,7 @@ onMounted(() => {
     }
 });
 
-watch(()=>colors.value,(newValue)=>{
+watch(()=>colors,(newValue)=>{
     for(let i=0;i<newValue.length;i++){
         colorHEX.value[i].use = true;
         colorHEX.value[i].value = newValue[i];
