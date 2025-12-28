@@ -73,7 +73,7 @@ export default {
                 name:"赞助品牌",
                 setup:{
                     title:{type:"headTitle",value:"赞助品牌",pre:"标题名称"},
-                    boundItems:{type:"box",yeWuType:"media",pre:"设置赞助品牌",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"url",type:"text",pre:"URL"}]}
+                    boundItems:{type:"box",pre:"设置赞助品牌",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"url",type:"text",pre:"URL"}]}
                 }
             }
         }

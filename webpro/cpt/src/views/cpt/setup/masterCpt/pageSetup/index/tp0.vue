@@ -143,7 +143,7 @@ let process = -1;
 })();
 
 async function openDialog(_element) {
-    element.value = _element;console.log(element.value);
+    element.value = _element;
     eltTypes.value = lodash.cloneDeep(element.value.eltTypes);
     if (element.value.type=="box") {
 
@@ -159,13 +159,12 @@ async function openDialog(_element) {
                 userRest.queryJudgeList({pageSize:100,currentPage:0},async (res)=>{
                     if (res.status=="OK") {
                         if (res.data!=null) {
-                            judgeList.value = res.data.content;
-                            for(let v of judgeList.value) {
-                                v.tempMap = {};
-                                v.tempMap.imgPath = await oss.buildPathAsync(v.headImgUrl,true,null);
-                                v.img = v.headImgUrl;
+                            judgeList.value = [];
+                            for(let v of res.data.content) {
+                                let judge = {id:v.id,img:{value:v.headImgUrl},name:v.name,subDescription:v.subDescription,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
+                                judge.img.tempMap = {imgPath:judge.tempMap.imgPath};
+                                judgeList.value.push(judge);
                             }
-                            // console.log(judgePageUtil.value);
                             resolve();
                         } else {
                             resolve();
@@ -233,7 +232,7 @@ function updateRow(element,data,index) {
                 ev.value = v;
             }
         });
-    })
+    });
     // let obj = {};
     // lodash.forEach(eltTypes.value,(v)=>{
     //     obj[v.key] = v.value ? v.value : "";

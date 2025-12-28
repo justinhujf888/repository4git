@@ -8,7 +8,7 @@
                 <Tree v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" :value="treeDatas" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
                 <div class="flex-1 p-2">
 <!--                    <component v-if="componentIndex>-1" :is="pageComponentMap[componentIndex].component"></component>-->
-                    <tp :pageJson="pageJson" :read-only="false"></tp>
+                    <tp :pageJson="pageJson" :read-only="true"></tp>
                 </div>
             </div>
         </div>

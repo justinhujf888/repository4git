@@ -13,7 +13,7 @@
                         <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
                     </IftaLabel>
                     <IftaLabel>
-                        <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
+                        <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
                         <div class="col card items-center gap-6">
                             <FileUpload mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                             <Message v-if="!src" severity="error" size="small" variant="simple">{{ $form.headImgUrl?.error?.message}}</Message>
@@ -22,7 +22,15 @@
                         </div>
                     </IftaLabel>
                     <IftaLabel>
-                        <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">简介</label>
+                        <label for="zhiWei" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">职位</label>
+                        <InputText name="zhiWei" placeholder="请输入职位" class="w-full md:w-[30rem] mb-4" v-model="judge.zhiWei" />
+                    </IftaLabel>
+                    <IftaLabel>
+                        <label for="subDescription" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">一句话简介</label>
+                        <InputText name="subDescription" placeholder="请输入一句话简介" class="w-full md:w-[30rem] mb-4" v-model="judge.subDescription" />
+                    </IftaLabel>
+                    <IftaLabel>
+                        <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">具体介绍</label>
                         <Textarea v-model="judge.description" autoResize rows="15" class="w-full" />
                     </IftaLabel>
                     <div class="row mt-12 center gap-4">
@@ -68,7 +76,7 @@ const resolver = ({ values }) => {
     errors = primeUtil.checkFormRequiredValid([
         {val:judge.value.name,name:"name"},
         {val:judge.value.phone,name:"phone"},
-        {val:judge.value.description,name:"description"},
+        {val:judge.value.subDescription,name:"subDescription"},
         // {val:src.value,name:"headImg",label:"照片"}
     ]);
 

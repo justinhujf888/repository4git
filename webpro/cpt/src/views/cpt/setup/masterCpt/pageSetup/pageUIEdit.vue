@@ -5,10 +5,10 @@
             <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre">
                 <template #body="{data,index}">
                     <div v-if="col.type=='image'" class="center w-16">
-                        <img :src="data[col.key].tempMap.imgPath" class="rounded-full w-16 h-16 object-content"/>
+                        <img :src="data[col.key].tempMap?.imgPath" class="rounded-full w-16 h-16 object-content"/>
                     </div>
                     <div v-else-if="col.type=='jbText'" class="center w-16">
-                        <jb-text v-if="data[col.key].colors.length>0" :colors="buildColors(data[col.key].colors)" :fromto="`${data[col.key].des}deg`" class="text-5xl siyuansongBold">{{data[col.key].text}}</jb-text>
+                        <jb-text :colors="buildColors(data[col.key].colors)" :fromto="`${data[col.key].des}deg`" class="text-xl siyuansongBold">{{data[col.key].text}}</jb-text>
                     </div>
                     <span v-else>{{data[col.key]}}</span>
                 </template>

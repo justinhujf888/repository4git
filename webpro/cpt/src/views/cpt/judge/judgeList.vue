@@ -29,9 +29,9 @@
                     <Column field="name" header="姓名" class="w-36"></Column>
                     <Column field="phone" header="手机号码" class="w-36"></Column>
                     <!--            <Column field="engName" header="Eng Name"></Column>-->
-                    <Column header="简介">
+                    <Column header="一句话简介">
                         <template #body="{data}">
-                            <p class="truncate w-full text-start text-wrap">{{data.description}}</p>
+                            <p class="truncate w-full text-start text-wrap">{{data.subDescription}}</p>
                         </template>
                     </Column>
                     <Column class="w-16 !text-end">

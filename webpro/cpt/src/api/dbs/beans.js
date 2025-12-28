@@ -180,7 +180,9 @@ export const Beans = {
             description: "",
             createDate: null,
             appId: "",
-            headImgUrl: ""
+            headImgUrl: "",
+            subDescription: "",
+            zhiWei: ""
         }
     },
 
