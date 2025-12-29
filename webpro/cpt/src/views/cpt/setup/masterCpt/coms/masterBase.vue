@@ -241,10 +241,14 @@
     <animationPage ref="updateJudgeSetupPage">
         <updateJudgeSetup ref="refUpdateJudgeSetup"/>
     </animationPage>
+
+    <div id="updatePageJson">
+
+    </div>
 </template>
 
 <script setup>
-import { inject, onMounted, ref, useTemplateRef } from 'vue';
+import { provide, inject, onMounted, ref, useTemplateRef } from 'vue';
 import dialog from '@/api/uniapp/dialog';
 import animationPage from "@/components/my/animationPage.vue";
 import workRest from '@/api/dbs/workRest';
@@ -282,6 +286,8 @@ const selMasterCompetition = ref(null);
 const selectedTreeNodeKey = ref(null);
 const expandedTreeNodeKey = ref(null);
 const pingShenflow = ref(null);
+
+provide("mainPage",mainPage);
 
 let host = inject("domain");
 let selIndex = -1;

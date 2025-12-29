@@ -1,6 +1,5 @@
 <template>
     <div>
-<!--        <span style="background: linear-gradient(9deg, #f0002c,#242ebf);-webkit-background-clip: text;-webkit-text-fill-color: transparent; ">aaa</span>-->
         <div v-for="pageEls of pageJson">
             <Fieldset :legend="pageEls.name" class="!mt-5" :pt="{legendLabel:{class:'text-orange-300'}}">
                 <div v-for="element of pageEls.setup">
@@ -65,6 +64,7 @@
         <Popover ref="op">
 
         </Popover>
+<!--        <span class="mt-36" style="background: linear-gradient(9deg, #f0002c,#242ebf);-webkit-background-clip: text;-webkit-text-fill-color: transparent; ">aaa</span>-->
     </div>
 </template>
 
