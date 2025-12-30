@@ -459,13 +459,40 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyPageSetup")
+    String qyPageSetup(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.newQueryUtils(false).masterTable(MCPageSetup.class.simpleName,null,null)
+                                 .where("mcPageSetupPK.competitionId = :competitionId",["competitionId":query.competitionId],null,{return true})
+                                 .where("mcPageSetupPK.key = :key",["key":query.key],"and",{return true})
+                                 .buildSql().run().content;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/savePageSetup")
     String savePageSetup(@RequestBody Map<String,Object> query)
     {
         try
         {
-            MCPageSetup mcPageSetup = this.objToBean(query.MCPageSetup, MCPageSetup.class,null);
+            MCPageSetup mcPageSetup = this.objToBean(query.mcPageSetup, MCPageSetup.class,null);
             workService.updateTheObject(mcPageSetup);
+            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {

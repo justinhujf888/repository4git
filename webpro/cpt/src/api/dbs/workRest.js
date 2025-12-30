@@ -141,5 +141,8 @@ export default {
     },
     savePageSetup(ds,onfun) {
         Http.callHttpFunction('/r/work/savePageSetup',ds,onfun);
+    },
+    qyPageSetup(ds,onfun) {
+        Http.callHttpFunction('/r/work/qyPageSetup',ds,onfun);
     }
 }

@@ -211,7 +211,7 @@
                     </Fieldset>
 
                     <Fieldset class="text-wrap text-start" legend="页面设置" :toggleable="true" :collapsed="true">
-                        <pageSetup></pageSetup>
+                        <pageSetup :competitionId="slotProps.data.id"></pageSetup>
                     </Fieldset>
                 </template>
             </DataTable>

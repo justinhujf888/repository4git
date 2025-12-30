@@ -8,7 +8,7 @@
                 <Tree v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" :value="treeDatas" selectionMode="single" class="w-full md:w-1/4 text-sm" @node-select="onNodeSelect"></Tree>
                 <div class="flex-1 p-2">
 <!--                    <component v-if="componentIndex>-1" :is="pageComponentMap[componentIndex].component"></component>-->
-                    <tp :pageJson="pageJson" :read-only="true"></tp>
+                    <tp v-if="delay" :pageJson="pageJson" :read-only="true"></tp>
                 </div>
             </div>
         </div>
@@ -17,7 +17,7 @@
     <Teleport to="#updatePageJson">
         <animationPage ref="updatePage">
             <div class="card">
-                <tp v-model:pageJson="pageJson" :read-only="false"></tp>
+                <tp v-if="delay" v-model:pageJson="pageJson" :read-only="false"></tp>
                 <div class="center gap-4 mt-5">
                     <Button label="确定" size="small" @click="saveJson"/>
                     <Button severity="warn" label="取消" size="small" @click="cancelJson"/>
@@ -33,18 +33,26 @@ import pj from '@/datas/pageJson';
 import lodash from 'lodash-es';
 import tp from "@/views/cpt/setup/masterCpt/pageSetup/index/tp0.vue";
 import animationPage from "@/components/my/animationPage.vue";
+import { Beans } from '@/api/dbs/beans';
+import workRest from '@/api/dbs/workRest';
+import dialog from "@/api/uniapp/dialog";
+
+const props = defineProps({
+    competitionId: {type:String, default:""}
+});
 
 const treeDatas = ref([]);
 const selectedTreeNodeKey = ref(null);
 const expandedTreeNodeKey = ref(null);
 const componentIndex = ref(-1);
-const pageJson = ref({});
+const pageJson = ref(null);
 const mainPage = inject("mainPage");
 const updatePage = useTemplateRef("updatePage");
+const delay = ref(false);
 
 let a = "tp0";
 let pageComponentMap = [
-    {key:"index",component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
+    {key:"index",jsonFun:()=>{return pj.uiIndexJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
     {key:"pingWei",component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
 ];
 
@@ -67,21 +75,45 @@ onMounted(()=>{
 
 const onNodeSelect = (node) => {
     // console.log(node);
-
-    // if (!node.children || node.children.length<1) {
-    //     componentIndex.value = lodash.findIndex(pageComponentMap,(o)=>{return o.key==node.key});
-    // } else {
-    //     componentIndex.value = -1;
-    // }
-    pageJson.value = {};
-    switch (node.key) {
-        case "index":
-            pageJson.value = pj.uiIndexJson();
+    if (!node.children || node.children.length<1) {
+        componentIndex.value = lodash.findIndex(pageComponentMap,(o)=>{return o.key==node.key});
+    } else {
+        componentIndex.value = -1;
+    }
+    pageJson.value = null;
+    if (componentIndex.value > -1) {
+        workRest.qyPageSetup({competitionId:props.competitionId,key:pageComponentMap[componentIndex.value].key},(res)=>{
+            if (res.status=="OK") {
+                if (res.data) {
+                    pageJson.value = pj.preProcessPageJson(res.data[0].setupJson,false);
+                } else {
+                    pageJson.value = pageComponentMap[componentIndex.value].jsonFun();
+                }
+                setTimeout(()=>{
+                    delay.value = true;
+                },1500);
+            }
+        });
     }
 };
 
 function saveJson() {
-    console.log(pj.beforeSaveJson(pageJson.value));
+    // console.log(props.competitionId);
+    delay.value = false;
+    let mcPageSetup = Beans.mcPageSetup();
+    mcPageSetup.mcPageSetupPK = Beans.mcPageSetupPK();
+    mcPageSetup.mcPageSetupPK.competitionId = props.competitionId;
+    mcPageSetup.mcPageSetupPK.key = pageComponentMap[componentIndex.value].key;
+    mcPageSetup.setupJson = pj.preProcessPageJson(lodash.cloneDeep(pageJson.value),true);
+    workRest.savePageSetup({mcPageSetup:mcPageSetup},(res)=>{
+        if (res.status=="OK") {
+            dialog.toastSuccess("页面设置已保存");
+            updatePage.value.close(mainPage.value);
+            setTimeout(()=>{
+                delay.value = true;
+            },1500);
+        }
+    });
 }
 
 function cancelJson() {

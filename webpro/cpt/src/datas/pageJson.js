@@ -1,4 +1,5 @@
 import lodash from 'lodash-es';
+import oss from '@/api/oss';
 
 export default {
     menuTreeDatas() {
@@ -19,20 +20,29 @@ export default {
             {key:"news",label:"新闻",menuType:0,route:""}
         ]
     },
-    beforeSaveJson(pageJson) {
+    preProcessPageJson(pageJson,isBeforeSave) {
         lodash.forEach(pageJson,(v)=>{
-            lodash.forEach(v.setup,(elm)=>{
+            lodash.forEach(v.setup,async (elm)=>{
                 if (elm.type=="image") {
-                    elm.value.tempMap = {};
+                    if (isBeforeSave) {
+                        elm.value.tempMap = {};
+                    } else {
+                        // console.log("elm.value",elm.value);
+                        elm.value.tempMap = {imgPath:await oss.buildPathAsync(elm.value.img,true,null)};
+                    }
                 } else if (elm.type=="box") {
                     lodash.forEach(elm.eltTypes,(ev)=>{
                         if (ev.type=="image") {
-                            lodash.forEach(elm.value,(item)=>{
-                                item[ev.key].tempMap = {};
+                            lodash.forEach(elm.value,async (item)=>{
+                                if (isBeforeSave) {
+                                    item[ev.key].tempMap = {};
+                                } else {
+                                    // console.log("item",item[ev.key]);
+                                    item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].img,true,null)};
+                                }
                             });
                         }
                     });
-
                 }
             });
         });
