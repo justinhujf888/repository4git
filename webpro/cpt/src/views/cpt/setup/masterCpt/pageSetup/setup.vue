@@ -16,7 +16,13 @@
 
     <Teleport to="#updatePageJson">
         <animationPage ref="updatePage">
-            <tp v-model:pageJson="pageJson" :read-only="false"></tp>
+            <div class="card">
+                <tp v-model:pageJson="pageJson" :read-only="false"></tp>
+                <div class="center gap-4 mt-5">
+                    <Button label="确定" size="small" @click="saveJson"/>
+                    <Button severity="warn" label="取消" size="small" @click="cancelJson"/>
+                </div>
+            </div>
         </animationPage>
     </Teleport>
 </template>
@@ -74,6 +80,13 @@ const onNodeSelect = (node) => {
     }
 };
 
+function saveJson() {
+    console.log(pj.beforeSaveJson(pageJson.value));
+}
+
+function cancelJson() {
+    updatePage.value.close(mainPage.value);
+}
 </script>
 
 <style scoped lang="scss">

@@ -138,5 +138,8 @@ export default {
     },
     updateJudgeSetup(ds,onfun) {
         Http.callHttpFunction('/r/work/updateJudgeSetup',ds,onfun);
+    },
+    savePageSetup(ds,onfun) {
+        Http.callHttpFunction('/r/work/savePageSetup',ds,onfun);
     }
 }

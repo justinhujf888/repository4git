@@ -150,6 +150,19 @@ export const Beans = {
         }
 	},
 
+    mcPageSetupPK() {
+        return {
+            competitionId: "",
+            key: ""
+        }
+    },
+    mcPageSetup() {
+        return {
+            mcPageSetupPK: this.mcPageSetupPK(),
+            setupJson: null
+        }
+    },
+
     rule() {
         return {
             id: "",

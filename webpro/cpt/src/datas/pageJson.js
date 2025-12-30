@@ -1,3 +1,5 @@
+import lodash from 'lodash-es';
+
 export default {
     menuTreeDatas() {
         return [
@@ -16,6 +18,25 @@ export default {
                 ]},
             {key:"news",label:"新闻",menuType:0,route:""}
         ]
+    },
+    beforeSaveJson(pageJson) {
+        lodash.forEach(pageJson,(v)=>{
+            lodash.forEach(v.setup,(elm)=>{
+                if (elm.type=="image") {
+                    elm.value.tempMap = {};
+                } else if (elm.type=="box") {
+                    lodash.forEach(elm.eltTypes,(ev)=>{
+                        if (ev.type=="image") {
+                            lodash.forEach(elm.value,(item)=>{
+                                item[ev.key].tempMap = {};
+                            });
+                        }
+                    });
+
+                }
+            });
+        });
+        return pageJson;
     },
     uiIndexJson() {
         return {

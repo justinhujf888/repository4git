@@ -8,6 +8,7 @@ import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.Judge
+import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
 import com.weavict.competition.entity.SiteCompetition
@@ -447,6 +448,24 @@ class WorkRest extends BaseRest
                          return workList;
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/savePageSetup")
+    String savePageSetup(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            MCPageSetup mcPageSetup = this.objToBean(query.MCPageSetup, MCPageSetup.class,null);
+            workService.updateTheObject(mcPageSetup);
         }
         catch (Exception e)
         {

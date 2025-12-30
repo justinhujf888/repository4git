@@ -404,6 +404,46 @@ class WorkLog extends BEntity implements Serializable, IEntity
     }
 }
 
+@Embeddable
+class MCPageSetupPK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String competitionId;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String key;
+
+    MCPageSetupPK() {}
+
+    MCPageSetupPK(String competitionId,String key)
+    {
+        this.competitionId = competitionId;
+        this.key = key;
+    }
+}
+
+@Table
+@Entity
+//类别赛事
+class MCPageSetup extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    MCPageSetupPK mcPageSetupPK;
+
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> setupJson;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
 @Table
 @Entity
 class Judge extends BEntity implements Serializable, IEntity
