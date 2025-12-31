@@ -183,14 +183,15 @@ export default {
             }
         })();
     },
-    deleteFile(path) {
-        (async (c)=>{
-            try {
-                return await c.delete(path);
-            } catch(er) {
-                return null;
-            }
-        })();
-        // client.delete(path);
+    async deleteFile(path) {
+        // (async (c)=>{
+        //     try {
+        //         return await c.delete(path);
+        //     } catch(er) {
+        //         return null;
+        //     }
+        // })();
+        await this.genClient();
+        await client.delete(path);
     },
 };

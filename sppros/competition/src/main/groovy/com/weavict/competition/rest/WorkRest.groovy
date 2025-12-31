@@ -468,10 +468,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return workService.newQueryUtils(false).masterTable(MCPageSetup.class.simpleName,null,null)
-                                 .where("mcPageSetupPK.competitionId = :competitionId",["competitionId":query.competitionId],null,{return true})
-                                 .where("mcPageSetupPK.key = :key",["key":query.key],"and",{return true})
-                                 .buildSql().run().content;
+                         return workService.qyPageSetup(query.competitionId,query.key);
                      }).call()
                     ]);
         }
@@ -550,6 +547,15 @@ class WorkRest extends BaseRest
                         return masterCompetition;
                     }).call()
             ]));
+
+
+            //
+            List<MCPageSetup> mcPageSetupList = workService.qyPageSetup(query.masterCompetitionId,null);
+            for(MCPageSetup mcPageSetup in mcPageSetupList)
+            {
+                writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/${mcPageSetup.mcPageSetupPK.key}.json""".toString(),"utf8");
+                writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString(mcPageSetup.setupJson));
+            }
             return """{"status":"OK"}""";
         }
         catch (Exception e)

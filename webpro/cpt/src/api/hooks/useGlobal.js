@@ -11,6 +11,9 @@ export default {
         siteDatas.cptInfo.masterCompetitionInfo.tempMap.endDate = dayjs(siteDatas.cptInfo.masterCompetitionInfo.endDate).format("YYYY-MM-DD");
         return siteDatas;
     },
+    async pageSetupDatas(key) {
+        return workRest.gainPageSetup(util.getDomainFromUrl(window.location),key);
+    },
     getRouteInfo() {
         const instance = getCurrentInstance();
         if (instance) {

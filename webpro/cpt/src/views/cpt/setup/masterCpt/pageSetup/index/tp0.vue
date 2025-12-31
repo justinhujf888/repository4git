@@ -131,13 +131,17 @@ let process = -1;
                             let mfs = lodash.find(mediaFiles.value,(o)=>{return o.sourceType==9});
                             mfs.value.push(v);
                         }
-                        allMediaFiles.value = lodash.concat(mediaFiles.value[0].value,mediaFiles.value[1].value);
                         resolve();
                     } else {
                         resolve();
                     }
                 }
             });
+        });
+
+        await new Promise(resolve => {
+            allMediaFiles.value = lodash.concat(mediaFiles.value[0].value,mediaFiles.value[1].value);
+            resolve();
         });
     })();
 })();

@@ -16,15 +16,16 @@
 <!--            <div class="absolute w-full h-[300px] -top-20">-->
 <!--                <Orb :hoverIntensity="0.5" :rotateOnHover="true" :hue="0" :forceHoverState="false" />-->
 <!--            </div>-->
-            <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0" v-for="(jiang) of jiangList" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 animate-duration-1000 zoom-in-50' }">
+            <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-4 xl:col-span-4 p-0 lg:pb-8 mt-6 lg:mt-0" v-for="(jiang) of indexDatas?.jiangArea.setup.jiangItems.value" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 animate-duration-1000 zoom-in-50' }">
                 <div style="height: 160px; padding: 2px; border-radius: 10px;">
                     <div class="p-4 h-full center col gap-4" style="border-radius: 8px">
 <!--                        <div class="flex items-center justify-center mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px" :class="jiang.class">-->
 <!--                            <i class="pi pi-fw pi-users !text-2xl text-yellow-700"></i>-->
 <!--                        </div>-->
-                        <jb-text style="font-family: STSong" class="text-3xl font-semibold" :colors="['#1ce319','#b41bde','#1bc1de']" fromto="to left top">{{jiang.title}}</jb-text>
-                        <span class="font-semibold text-xl mix-blend-difference text-white">{{jiang.subTitle}}</span>
-                        <span class="text-white mix-blend-difference">{{jiang.desc}}</span>
+                        <jb-text class="text-4xl font-semibold siyuansongBold" :colors="buildColors(jiang.name.colors)" :fromto="jiang.name.des+'deg'">{{jiang.name.text}}</jb-text>
+                        <span class="font-semibold text-xl mix-blend-difference text-white">{{jiang.jiangCount}}</span>
+                        <span class="text-white mix-blend-difference">{{jiang.jiangJing}}</span>
+                        <span class="text-white mix-blend-difference">{{jiang.jiangPing}}</span>
                     </div>
                 </div>
             </div>
@@ -69,7 +70,7 @@
         </div>
         <div class="center mt-20">
             <div class="text-base p-1 border-btn">
-                <a class="center px-20 py-3 bg-gray-900 text-white sub-bg">在线报名</a>
+                <a class="center px-20 py-3 bg-gray-950 text-white font-semibold sub-bg">在线报名</a>
             </div>
         </div>
     </div>
@@ -79,19 +80,10 @@ import { inject, onMounted, ref, watch } from 'vue';
 // import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
 import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
 import JbText from "@/components/my/form/jbText.vue";
+import lodash from 'lodash-es';
+
+const indexDatas = inject("indexDatas");
 const jiangList = ref(null);
-
-(async ()=>{
-    jiangList.value = [
-        {title:"金奖",subTitle:"每组1名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
-        {title:"银奖",subTitle:"每组2名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
-        {title:"铜奖",subTitle:"每组3名",desc:"冠军奖杯,奖牌（排名数字）奖状"},
-        {title:"优异奖",subTitle:"每组4名",desc:"奖牌(排名数字),奖状"},
-        {title:"创新奖",subTitle:"每组2名",desc:"奖牌(排名数字),奖状"},
-        {title:"入选奖",subTitle:"每组38名",desc:"奖牌(排名数字),奖状"}
-    ];
-})();
-
 const siteDatas = inject("siteDatas");
 watch(siteDatas,(newValue)=>{
     // console.log(newValue);
@@ -100,4 +92,11 @@ watch(siteDatas,(newValue)=>{
 onMounted(() => {
 
 });
+function buildColors(cry) {
+    let ay = [];
+    lodash.forEach(cry,(value,index) => {
+        ay.push("#"+value);
+    });
+    return ay;
+}
 </script>

@@ -112,6 +112,7 @@ function theFileUpload(file, index, obj) {
 }
 
 function deleteFile(file, index, obj) {
+    console.log(file.id,file.path);
     if (file.id) {
         workRest.deleteSiteWorkItem({ id: file.id }, (res) => {
             if (res.status == "OK") {
@@ -132,7 +133,7 @@ function cancelUpload() {
 
 function openUpdate() {
     // console.log(`cpt/${host}/mediaFiles/${tabIndex.value}/`,parseInt(tabIndex.value));
-    refFileUpload.value.init(files.value[parseInt(tabIndex.value)], null, null, null, `cpt/${host}/mediaFiles/${tabIndex.value}/`, {sourceType:parseInt(tabIndex.value),appId:host});
+    refFileUpload.value.init(files.value[parseInt(tabIndex.value)], null, null, null, `cpt/${host}/mediaFiles/${tabIndex.value}`, {sourceType:parseInt(tabIndex.value),appId:host});
     updatePage.value.open(mainPage.value);
 }
 </script>

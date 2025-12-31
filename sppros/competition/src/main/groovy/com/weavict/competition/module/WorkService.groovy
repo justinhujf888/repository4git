@@ -2,6 +2,7 @@ package com.weavict.competition.module
 
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.GuiGe
+import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
 import com.weavict.competition.entity.SiteCompetition
@@ -106,6 +107,19 @@ class WorkService extends ModuleBean
             }
         }
         return competitionList;
+    }
+
+    List<MCPageSetup> qyPageSetup(String competitionId,String key)
+    {
+        List<MCPageSetup> mcPageSetupList = this.newQueryUtils(false).masterTable(MCPageSetup.class.simpleName,null,null)
+                .where("mcPageSetupPK.competitionId = :competitionId",["competitionId":competitionId],null,{return true})
+                .where("mcPageSetupPK.key = :key",["key":key],"and",{return !(key in [null,""])})
+                .buildSql().run().content;
+        for(MCPageSetup mcPageSetup in mcPageSetupList)
+        {
+            mcPageSetup.cancelLazyEr();
+        }
+        return mcPageSetupList;
     }
 
     Map qyPingShenFlow(Map query) {

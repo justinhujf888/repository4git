@@ -130,6 +130,9 @@ export default {
     async gainCache8SiteInfo(host) {
         return Http.fetchJson(`${Config.siteJson}/${host}/siteInfo.json?${Beans.buildPId("")}`);
     },
+    async gainPageSetup(host,key) {
+        return Http.fetchJson(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
+    },
     updateBuyerWork(ds,onfun) {
         Http.callHttpFunction('/r/work/updateBuyerWork',ds,onfun);
     },

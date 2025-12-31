@@ -6,11 +6,13 @@
     </div>
     <div v-else-if="element.type=='image'">
 <!--        <priview-image :files="[element.value]"/>-->
+        <span class="text-green-600 text-sm">{{element.pre}}</span>
         <div v-if="element.value.img" class="w-20 h-20 sm:w-20 sm:h-20 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
             <Image class="rounded w-full h-full object-cover" :src="element.value?.tempMap?.imgPath" style="max-width: 300px;" preview_ :pt="{image:{class:'!w-full !h-full !object-cover'}}"/>
         </div>
     </div>
     <div v-else-if="element.type=='images'">
+        <span class="text-green-600 text-sm">{{element.pre}}</span>
         <priview-image v-model:files="element.value"/>
     </div>
     <div v-else-if="element.type=='box'">

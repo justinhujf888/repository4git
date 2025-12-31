@@ -13,13 +13,19 @@ import {onMounted} from "vue";
 import oss from "@/api/oss";
 import LightRays from "@/bit-blocks/Backgrounds/LightRays/LightRays.vue";
 import useGlobal from "@/api/hooks/useGlobal";
+import pageJson from '@/datas/pageJson';
+import lodash from 'lodash-es';
 
 const siteDatas = ref(null);
+const indexDatas = ref(null);
 const shiShowPage = ref(false);
 
 (async ()=>{
     await oss.buildAliOssAccessInfo();
     siteDatas.value = await useGlobal.siteDatas();
+    indexDatas.value = await useGlobal.pageSetupDatas("index");
+    indexDatas.value.jiangArea.setup.bgImg.value.tempMap = {imgPath:await oss.buildPathAsync(indexDatas.value.jiangArea.setup.bgImg.value.img,true,null)};
+
     let timer = setTimeout(() => {
         shiShowPage.value = true;
         clearTimeout(timer);
@@ -28,6 +34,7 @@ const shiShowPage = ref(false);
 
 
 provide("siteDatas",siteDatas);
+provide("indexDatas",indexDatas);
 
 onMounted(async () => {
     // console.log(await workRest.gainCache8MasterCompetitionInfo(host));
@@ -40,24 +47,10 @@ onMounted(async () => {
         <div id="home" class="landing-wrapper overflow-hidden">
             <TopbarWidget/>
             <HeroWidget/>
-            <div class="bg-[url('https://iaplc.com/c/wp-content/uploads/sites/3/2021/02/about.png')]">
-                <slogen />
-            </div>
-            <div class="bg-[url('https://iaplc.com/assets_jp/img/top/background_black.jpg')] bg-fixed py-12 relative">
-                <div class="absolute top-0 left-0 w-dvw h-dvh opacity-20 z-0">
-                    <LightRays
-                        rays-origin="top-center"
-                        rays-color="#00ffff"
-                        :rays-speed="2"
-                        :light-spread="0.8"
-                        :ray-length="5"
-                        :follow-mouse="true"
-                        :mouse-influence="0.1"
-                        :noise-amount="0.1"
-                        :distortion="0.05"
-                        class-name="custom-rays"
-                    />
-                </div>
+            <slogen />
+
+            <div class="py-12 relative">
+                <img :src="indexDatas?.jiangArea.setup.bgImg.value.tempMap.imgPath" class="w-full h-full absolute left-0 top-0" style="z-index: -1"/>
                 <FeaturesWidget />
                 <div class="py-14 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
                     <Divider/>

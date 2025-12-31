@@ -573,5 +573,43 @@ export default {
         //     url = url.slice(0, dotIndex);
         // }
         // return url;
+    },
+    async forEachAsync(arr, handler, isSerial = true){
+        if( isSerial ) {
+         const result = [];
+         return arr.reduce((acc, val) => {
+             return acc.then(()=>handler(val))
+                 .then(ret=>{
+                     result.push(ret);
+                     return ret;
+                 });
+         }, Promise.resolve())
+             .then(()=>{
+                 return Promise.resolve(result);
+             });
+        }
+        else {
+         return Promise.all(arr.map(handler))
+        }
     }
+    // test - case1
+    // forEachAsync([1,2,3], (item)=>{
+    //      console.log(item);
+    // })
+
+     // test - case2
+     // (
+     //     async ()=>{
+     //         console.log(
+     //             await forEachAsync([1,2,3], async (item)=>{
+     //                 return new Promise((resolve, reject)=>{
+     //                     setTimeout(()=>{
+     //                         // console.log(item);
+     //                         resolve(item);
+     //                     }, Math.random() * 100 )
+     //                 })
+     //             }, false)
+     //         )
+     //     }
+     // )()
 }

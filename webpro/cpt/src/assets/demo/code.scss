@@ -20,6 +20,18 @@ pre.app-code {
 .font-stretch-extra-condensed {font-stretch: extra-condensed;}
 
 .border-btn {
+    background: linear-gradient(90deg, #d09924 0, #adafaf 49.94%, #678e4a 100%);
+    border-radius: 24px;
+    .sub-bg {
+        border-radius: 21px;
+        transition: all .3s ease;
+    }
+    .sub-bg:hover {
+        background: linear-gradient(90deg, #d09924 0, #adafaf 49.94%, #678e4a 100%);
+    }
+}
+
+.border-btn2 {
     background: linear-gradient(90deg, #00b364 0, #003c9f 49.94%, #00007d 100%);
     border-radius: 24px;
     .sub-bg {

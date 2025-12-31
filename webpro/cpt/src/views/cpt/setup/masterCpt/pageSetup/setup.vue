@@ -98,13 +98,14 @@ const onNodeSelect = (node) => {
 };
 
 function saveJson() {
-    // console.log(props.competitionId);
+    // console.log(props.competitionId,pj.preProcessPageJson(lodash.cloneDeep(pageJson.value),true));
     delay.value = false;
     let mcPageSetup = Beans.mcPageSetup();
     mcPageSetup.mcPageSetupPK = Beans.mcPageSetupPK();
     mcPageSetup.mcPageSetupPK.competitionId = props.competitionId;
     mcPageSetup.mcPageSetupPK.key = pageComponentMap[componentIndex.value].key;
     mcPageSetup.setupJson = pj.preProcessPageJson(lodash.cloneDeep(pageJson.value),true);
+    // console.log(mcPageSetup.setupJson);
     workRest.savePageSetup({mcPageSetup:mcPageSetup},(res)=>{
         if (res.status=="OK") {
             dialog.toastSuccess("页面设置已保存");
