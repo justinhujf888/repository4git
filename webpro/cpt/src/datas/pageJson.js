@@ -4,20 +4,25 @@ import oss from '@/api/oss';
 export default {
     menuTreeDatas() {
         return [
-            {key:"index",label:"首页",menuType:0,isUserSetup:true,route:""},
-            {key:"userCenter",label:"用户中心",menuType:0,route:"",isUserSetup:false,items:[
-                    {key:"userWork",label:"上传作品",route:""},
-                    {key:"userMsg",label:"我的消息",route:""}
+            {key:"index",label:"首页",menuType:0,isUserSetup:true,isInPageMenu:false,route:""},
+            {key:"pingJiang",label:"评奖",menuType:1,route:"",isUserSetup:true,isInPageMenu:true,items:[
+                    {key:"shaiZhi",label:"赛制",isUserSetup:true,route:"",isInPageMenu:true},
+                    {key:"pingWei",label:"评委团",isUserSetup:true,route:"",isInPageMenu:true},
+                    {key:"pingShenBiaoZun",label:"评审标准",isUserSetup:true,route:"",isInPageMenu:true}
                 ]},
-            {key:"pingJiang",label:"评奖",menuType:1,route:"",isUserSetup:true,items:[
-                    {key:"pingWei",label:"评委",isUserSetup:true,route:""},
-                    {key:"pingShenBiaoZun",label:"评审标准",isUserSetup:true,route:""}
+            {key:"huoJiangWork",label:"优胜作品",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
+                    {key:"storyWork",label:"往届优胜作品",isUserSetup:true,route:"",isInPageMenu:true},
+                    {key:"theWork",label:"本界优胜作品",isUserSetup:true,route:"",isInPageMenu:true},
+                    {key:"teBie",label:"特别殊荣",isUserSetup:true,route:"",isInPageMenu:true}
                 ]},
-            {key:"huoJiangWork",label:"获奖作品",menuType:1,route:"",isUserSetup:true,items:[
-                    {key:"storyWork",label:"历届获奖作品",isUserSetup:true,route:""},
-                    {key:"theWork",label:"本次获奖作品",isUserSetup:true,route:""}
+            {key:"userCenter",label:"参赛",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
+                    {key:"baoMing",label:"报名入口",route:"",isInPageMenu:true},
+                    {key:"userWork",label:"我的参赛",route:"",isInPageMenu:true},
+                    {key:"userMsg",label:"我的消息",route:"",isInPageMenu:false}
                 ]},
-            {key:"news",label:"新闻",menuType:0,route:""}
+            {key:"about",label:"关于",menuType:0,route:"",isUserSetup:true,isInPageMenu:true},
+            {key:"contact",label:"联系我们",menuType:0,route:"",isUserSetup:true,isInPageMenu:true},
+            {key:"news",label:"新闻",menuType:0,route:"",isInPageMenu:false}
         ]
     },
     preProcessPageJson(pageJson,isBeforeSave) {
@@ -48,6 +53,20 @@ export default {
             });
         });
         return pageJson;
+    },
+    async processPageImageJson(element) {
+        if (element.type=="image") {
+            element.value.tempMap = {imgPath:await oss.buildPathAsync(element.value.img,true,null)};
+        } else if (element.type=="box") {
+            lodash.forEach(element.eltTypes,async (ev)=>{
+                if (ev.type=="image") {
+                    ev.value.tempMap = {};
+                    for (let item of element.value) {
+                        item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].img,true,null)};
+                    }
+                }
+            });
+        }
     },
     uiIndexJson() {
         return {
@@ -107,6 +126,18 @@ export default {
                 setup:{
                     title:{type:"headTitle",value:"赞助品牌",pre:"标题名称"},
                     boundItems:{type:"box",pre:"设置赞助品牌",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"url",type:"text",pre:"URL"}]}
+                }
+            }
+        }
+    },
+    uiFootJson() {
+        return {
+            boundArea:{
+                name:"页眉页脚",
+                setup:{
+                    mImg:{type:"image",yeWuType:"media",value:{},pre:"Logo"},
+                    linkItems:{type:"box",pre:"设置图标链接",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"text",type:"text",pre:"名称",value:""},{key:"url",type:"text",pre:"URL"}]},
+                    footItems:{type:"box",pre:"设置页脚文字链接",value:[],eltTypes:[{key:"text",type:"text",pre:"公司/协会名称",value:""},{key:"url",type:"text",pre:"URL"}]}
                 }
             }
         }

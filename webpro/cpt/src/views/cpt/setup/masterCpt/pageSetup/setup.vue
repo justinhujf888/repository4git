@@ -53,6 +53,7 @@ const delay = ref(false);
 let a = "tp0";
 let pageComponentMap = [
     {key:"index",jsonFun:()=>{return pj.uiIndexJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
+    {key:"foot",jsonFun:()=>{return pj.uiFootJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
     {key:"pingWei",component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
 ];
 
@@ -71,6 +72,7 @@ onMounted(()=>{
             treeDatas.value.push(v);
         }
     });
+    treeDatas.value.push({key:"foot",label:"页眉页脚",menuType:0,isUserSetup:true,route:""});
 });
 
 const onNodeSelect = (node) => {
@@ -85,7 +87,8 @@ const onNodeSelect = (node) => {
         workRest.qyPageSetup({competitionId:props.competitionId,key:pageComponentMap[componentIndex.value].key},(res)=>{
             if (res.status=="OK") {
                 if (res.data) {
-                    pageJson.value = pj.preProcessPageJson(res.data[0].setupJson,false);
+                    // pageJson.value = pj.preProcessPageJson(res.data[0].setupJson,false);
+                    pageJson.value = res.data[0].setupJson;
                 } else {
                     pageJson.value = pageComponentMap[componentIndex.value].jsonFun();
                 }

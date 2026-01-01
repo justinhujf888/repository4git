@@ -1,7 +1,8 @@
 <!--奖金及奖品-->
 <template>
     <div id="features" class="py-6 px-6 lg:px-20 mt-8 mx-0 lg:mx-20">
-        <div class="grid grid-cols-12 gap-4 justify-center relative">
+        <title-text :text="indexDatas?.jiangArea.setup.title.value"/>
+        <div class="grid grid-cols-12 gap-4 justify-center relative mt-20">
 <!--            <div class="col-span-12 text-center mt-10 mb-6">-->
 <!--                <GradientText-->
 <!--                    text="奖金及奖品"-->
@@ -22,7 +23,7 @@
 <!--                        <div class="flex items-center justify-center mb-4" style="width: 3.5rem; height: 3.5rem; border-radius: 10px" :class="jiang.class">-->
 <!--                            <i class="pi pi-fw pi-users !text-2xl text-yellow-700"></i>-->
 <!--                        </div>-->
-                        <jb-text class="text-4xl font-semibold siyuansongBold" :colors="buildColors(jiang.name.colors)" :fromto="jiang.name.des+'deg'">{{jiang.name.text}}</jb-text>
+                        <jbText class="text-4xl webfont" :colors="buildColors(jiang.name.colors)" :fromto="jiang.name.des+'deg'">{{jiang.name.text}}</jbText>
                         <span class="font-semibold text-xl mix-blend-difference text-white">{{jiang.jiangCount}}</span>
                         <span class="text-white mix-blend-difference">{{jiang.jiangJing}}</span>
                         <span class="text-white mix-blend-difference">{{jiang.jiangPing}}</span>
@@ -81,6 +82,7 @@ import { inject, onMounted, ref, watch } from 'vue';
 import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
 import JbText from "@/components/my/form/jbText.vue";
 import lodash from 'lodash-es';
+import TitleText from '@/components/my/form/titleText.vue';
 
 const indexDatas = inject("indexDatas");
 const jiangList = ref(null);

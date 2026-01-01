@@ -1,19 +1,21 @@
 <template>
 <!--    <span :style="jbStyleStr"><slot></slot></span>-->
-    <div>
-<!--        {{jbStyleStr}}-->
+<!--        <span>{{jbStyleStr}}</span>-->
         <span :style="jbStyleStr"><slot></slot></span>
-    </div>
 </template>
 
 <script setup>
-import {ref, watch} from "vue";
+import { onMounted, ref, watch } from 'vue';
 
 const colors = defineModel("colors",{default:[]});
 const fromto = defineModel("fromto",{default:"to right"});
 
 const colorStr = ref("");
 const jbStyleStr = ref("");
+
+onMounted(()=>{
+    buildTextStyle(colors.value);
+});
 
 function buildTextStyle(colors) {
     // console.log(colors);
@@ -23,7 +25,6 @@ function buildTextStyle(colors) {
         if (i<colors.length - 1) {
             colorStr.value += ",";
         }
-
     }
     jbStyleStr.value = `background: linear-gradient(${fromto.value}, ${colorStr.value});-webkit-background-clip: text;-webkit-text-fill-color: transparent;`;
 }

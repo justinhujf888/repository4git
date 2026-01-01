@@ -13,7 +13,7 @@
                             {{indexDatas?.sloganArea.setup.subtitle.value}}
                         </p>
                         <div class="text-base p-1 border-btn mt-10">
-                            <a class="center w-56 py-3 bg-gray-100 font-semibold sub-bg">关于{{siteDatas?.siteInfo.siteCompetition.name}}</a>
+                            <a class="center w-56 py-3 bg-lime-100 font-semibold sub-bg">关于{{siteDatas?.siteInfo.siteCompetition.name}}</a>
                         </div>
                         <!--                    <div class="border-box center">-->
                         <!--                        <div class="content">-->

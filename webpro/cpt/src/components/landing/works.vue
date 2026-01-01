@@ -1,14 +1,13 @@
 <template>
-    <div id="works" class="py-6 mx-0 my-12">
-        <div class="text-center">
-            <div class="_text-surface-900 _dark:text-surface-0 font-normal mb-2 text-4xl mix-blend-difference text-white">获奖作品</div>
+    <div id="works">
+        <div class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
+            <title-text :text="indexDatas?.workStoreArea.setup.title.value" text-class="text-gray-900"/>
         </div>
-        <div class="mt-20 w-full">
-            <div class="box w-full" style="height: 44rem;">
+        <div class="mt-10 w-full py-6 mx-0 my-12">
+            <div class="box w-full" style="height: 26rem;">
                 <div class="imgList left-0">
-                    <div class="col">
-                        <div class="row h-96 w-auto"><img v-for="img of imgList[0]" :src="img" class="flex-1 h-full object-cover object-center"/></div>
-                        <div class="row h-80 w-auto"><img v-for="img of imgList[1]" :src="img" class="flex-1 h-full object-cover object-center"/></div>
+                    <div class="row">
+                        <Image :src="indexDatas?.workStoreArea.setup.mImg.value.tempMap.imgPath"/>
                     </div>
                 </div>
             </div>
@@ -25,6 +24,11 @@
 <!--                image-border-radius="0px"-->
 <!--            />-->
             <!--                overlay-blur-color="#060010" fit-basis="auto"-->
+            <div class="center">
+                <div class="text-base p-1 border-btn">
+                    <a class="center px-20 py-3 bg-lime-100 text-gray-800 font-semibold sub-bg">更多获奖作品</a>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -33,27 +37,31 @@
 import { inject, ref, watch } from 'vue';
 import lodash from 'lodash-es';
 import oss from '@/api/oss';
+import TitleText from '@/components/my/form/titleText.vue';
 // import Masonry from '@/bit-blocks/Components/Masonry/Masonry.vue';
 // import DomeGallery from "@/bit-blocks/Components/DomeGallery/DomeGallery.vue";
 
 const imgList = ref([[],[]]);
 const siteDatas = inject("siteDatas");
+const indexDatas = inject("indexDatas");
 watch(siteDatas,(newValue)=>{
     // console.log(newValue);
-    let siteDatas = newValue;
-    lodash.forEach(siteDatas.siteInfo.siteOrgHumanList,(v)=>{
-        imgList.value[0].push(oss.buildImgPath(v.headImgUrl));
-    });
-    lodash.forEach(siteDatas.siteInfo.siteJudgeList,(v)=>{
-        imgList.value[1].push(oss.buildImgPath(v.headImgUrl));
-    });
-    imgList.value[0] = lodash.concat(imgList.value[0],imgList.value[1]);
-    imgList.value[1] = lodash.concat(imgList.value[1],imgList.value[0]);
+    // let siteDatas = newValue;
+    // lodash.forEach(siteDatas.siteInfo.siteOrgHumanList,(v)=>{
+    //     imgList.value[0].push(oss.buildImgPath(v.headImgUrl));
+    // });
+    // lodash.forEach(siteDatas.siteInfo.siteJudgeList,(v)=>{
+    //     imgList.value[1].push(oss.buildImgPath(v.headImgUrl));
+    // });
+    // imgList.value[0] = lodash.concat(imgList.value[0],imgList.value[1]);
+    // imgList.value[1] = lodash.concat(imgList.value[1],imgList.value[0]);
+});
+watch(indexDatas,async (newValue)=>{
+    // console.log(newValue);
+    newValue.workStoreArea.setup.mImg.value.tempMap = {imgPath:await oss.buildPathAsync(newValue.workStoreArea.setup.mImg.value.img,true,null)};
 });
 
-
 </script>
-
 <style scoped lang="scss">
 .box {
     margin: 0 auto;

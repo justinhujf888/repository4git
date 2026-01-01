@@ -1,42 +1,55 @@
 <template>
     <div class="py-6 px-6 mx-0 mt-10 lg:mx-20">
         <div class="center">
-            <router-link class="cursor-pointer font-bold text-surface-900 dark:text-surface-0 text-4xl" to="/">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>
+            <router-link class="cursor-pointer font-bold text-surface-900 dark:text-surface-0 text-4xl" to="/">
+                <img :src="footDatas?.boundArea.setup.mImg.value.tempMap.imgPath" class="!max-h-12"/>
+            </router-link>
         </div>
-        <div id="footmenu" class="center mt-5">
-            <ul class="col sm:row gap-4">
-                <li>
-                    <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
-                    <a @click="navPage('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
-                        <span>关于</span>
-                    </a>
-                </li>
-                <li>
-                    <a @click="navPage('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
-                        <span>报名参赛</span>
-                    </a>
-                </li>
-                <li>
-                    <a @click="navPage('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
-                        <span>评委</span>
-                    </a>
-                </li>
-                <li>
-                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
-                        <span>评审标准</span>
-                    </a>
-                </li>
-                <li>
-                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
-                        <span>获奖作品</span>
-                    </a>
-                </li>
-                <li v-if="userId">
-                    <a @click="navPage('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">
-                        <span>用户中心</span>
-                    </a>
-                </li>
-            </ul>
+        <span class="center text-xl mt-10">快速链接</span>
+        <div id="footmenu2" class="row sm:row justify-center flex-wrap gap-20 mt-10">
+            <div class="col start" v-for="menu in treeDatas">
+                <div class="col">
+                    <span class="text-xl">{{menu.label}}</span>
+                    <ul v-if="menu.menuType==1">
+                        <li v-for="item of menu.children" class="col my-4">
+                            <span>{{item.label}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+<!--            <ul class="col sm:row gap-4">-->
+<!--                <li>-->
+<!--                    &lt;!&ndash;                    underline underline-offset-8 decoration-sky-600 decoration-4&ndash;&gt;-->
+<!--                    <a @click="navPage('hero')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">-->
+<!--                        <span>关于</span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a @click="navPage('features')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">-->
+<!--                        <span>报名参赛</span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a @click="navPage('highlights')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">-->
+<!--                        <span>评委</span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">-->
+<!--                        <span>评审标准</span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <a @click="navPage('pricing')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">-->
+<!--                        <span>获奖作品</span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li v-if="userId">-->
+<!--                    <a @click="navPage('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium cursor-pointer">-->
+<!--                        <span>用户中心</span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--            </ul>-->
 
 <!--            <div class="col-span-12 md:col-span-10">-->
 <!--                <div class="grid grid-cols-12 gap-8 text-center md:text-left">-->
@@ -74,22 +87,58 @@
 <!--                </div>-->
 <!--            </div>-->
         </div>
+        <div class="mt-10">
+            <div class="row items-center gap-8 flex-wrap center">
+                <a v-for="link of footDatas?.boundArea.setup.linkItems.value">
+                    <img :src="link.img.tempMap.imgPath" class="max-h-6"/>
+                </a>
+            </div>
+        </div>
     </div>
-    <div class="jb-bg-0 col center py-4 text-sm">
-        <span class="text-white">@观赏鱼协会</span>
-        <span class="text-white">@东莞隽捷信息科技有限公司提供技术支持</span>
+    <div class="bg-gray-900 col center py-4 text-sm">
+        <span v-for="item of footDatas?.boundArea.setup.footItems.value" class="text-white">@{{item.text}}</span>
+<!--        <span class="text-white">@东莞隽捷信息科技有限公司提供技术支持</span>-->
     </div>
 </template>
 
 <script setup>
 import Page from '@/api/uniapp/page';
-import { inject,watch } from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import { useStorage } from '@vueuse/core';
+import oss from '@/api/oss';
+import lodash from 'lodash-es';
+import pj from '@/datas/pageJson';
 
 const userId = useStorage("userId");
 const siteDatas = inject("siteDatas");
+const footDatas = inject("footDatas");
+const treeDatas = ref([]);
 watch(siteDatas,(newValue)=>{
     // console.log(newValue);
+});
+watch(footDatas,async (newValue)=>{
+    // console.log(newValue);
+    newValue.boundArea.setup.mImg.value.tempMap = {imgPath:await oss.buildPathAsync(newValue.boundArea.setup.mImg.value.img)}
+    for(let link of newValue.boundArea.setup.linkItems.value) {
+        link.img.tempMap = {imgPath:await oss.buildPathAsync(link.img.img,true,null)};
+    }
+});
+
+onMounted(()=>{
+    treeDatas.value = [];
+    lodash.forEach(pj.menuTreeDatas(),(v)=>{
+        if (v.isInPageMenu) {
+            let chs = [];
+            lodash.forEach(v.items,(c)=>{
+                if (c.isInPageMenu) {
+                    chs.push(c);
+                }
+            });
+            v.children = chs;
+            v.items = null;
+            treeDatas.value.push(v);
+        }
+    });
 });
 
 function navPage(pageName) {

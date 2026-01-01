@@ -8,7 +8,7 @@
 <!--        <priview-image :files="[element.value]"/>-->
         <span class="text-green-600 text-sm">{{element.pre}}</span>
         <div v-if="element.value.img" class="w-20 h-20 sm:w-20 sm:h-20 md:w-28 md:h-28 xl:w-36 xl:h-36 mx-auto">
-            <Image class="rounded w-full h-full object-cover" :src="element.value?.tempMap?.imgPath" style="max-width: 300px;" preview_ :pt="{image:{class:'!w-full !h-full !object-cover'}}"/>
+            <Image class="rounded w-full" :src="element.value?.tempMap?.imgPath" style="max-width: 300px;" preview_ :pt="{image:{class:'!w-full'}}"/>
         </div>
     </div>
     <div v-else-if="element.type=='images'">
@@ -35,7 +35,26 @@
 <script setup>
 import priviewImage from "@/components/my/priviewImage.vue";
 import lodash from 'lodash-es';
+import { onMounted } from 'vue';
+import oss from '@/api/oss';
+import pj from '@/datas/pageJson';
 const element = defineModel("element");
+onMounted(async ()=>{
+    // if (element.value.type=="image") {
+    //     element.value.value.tempMap = {imgPath:await oss.buildPathAsync(element.value.value.img,true,null)};
+    // } else if (element.value.type=="box") {
+    //     lodash.forEach(element.value.eltTypes,async (ev)=>{
+    //         if (ev.type=="image") {
+    //             ev.value.tempMap = {};
+    //             for (let item of element.value.value) {
+    //                 item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].img,true,null)};
+    //             }
+    //         }
+    //     });
+    // }
+    await pj.processPageImageJson(element.value);
+});
+
 function buildColors(cry) {
     let ay = [];
     lodash.forEach(cry,(value,index) => {

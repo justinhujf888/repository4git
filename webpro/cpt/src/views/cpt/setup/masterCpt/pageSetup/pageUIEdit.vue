@@ -1,7 +1,8 @@
 <template>
 <!--    <jb-text :colors="['#ff000','#ff000']" fromto="68 deg" class="text-5xl siyuansongBold">abc</jb-text>-->
     <div v-if="element.type=='box'" class="p-2">
-        <DataTable :value="element.value">
+        <DataTable :value="element.value" :reorderableColumns="true" @rowReorder="onRowReorder">
+            <Column rowReorder headerStyle="width: 3rem" :reorderableColumn="false" />
             <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre">
                 <template #body="{data,index}">
                     <div v-if="col.type=='image'" class="center w-16">
@@ -64,13 +65,18 @@ import oss from "@/api/oss";
 import jbText from "@/components/my/form/jbText.vue";
 import imageGrid from "@/components/my/imageGrid.vue";
 import lodash from "lodash-es";
-import {ref, useTemplateRef} from "vue";
+import { onMounted, ref, useTemplateRef } from 'vue';
 import updateJBText from "@/components/my/form/updateJBText.vue";
+import pj from '@/datas/pageJson';
 const element = defineModel("element");
 const mediaFiles = defineModel("mediaFiles");
 const pop = useTemplateRef("op");
 
 const emit = defineEmits(["deleteRow","updateRow"]);
+
+onMounted(async ()=>{
+    await pj.processPageImageJson(element.value);
+});
 
 function deleteRow(element,data,index) {
     // console.log(element.value.value,data,index);
@@ -102,6 +108,10 @@ function buildColors(cry) {
     });
     return ay;
 }
+
+const onRowReorder = (event) => {
+    element.value.value = event.value;
+};
 </script>
 
 <style scoped lang="scss">

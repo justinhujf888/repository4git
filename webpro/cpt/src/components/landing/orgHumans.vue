@@ -1,10 +1,6 @@
 <template>
     <div id="highlights" class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
-        <div class="text-center">
-            <div class="_text-surface-900 _dark:text-surface-0 font-normal mb-2 text-4xl mix-blend-difference text-white">评委</div>
-            <!--            <span class="text-muted-color text-2xl">Amet consectetur adipiscing elit...</span>-->
-        </div>
-
+        <title-text :text="indexDatas?.judgeArea.setup.title.value"/>
         <div class="grid xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
             <div class="overflow-hidden mt-8" v-for="man of indexDatas?.judgeArea.setup.judgeItems.value" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 slide-in-from-t-20 animate-duration-1000' }" :pt="{body:{class:'bg-transparent'}}">
                 <img :src="man.tempMap.imgPath" class="h-60 w-full object-cover object-center"/>
@@ -44,6 +40,7 @@
 import { inject, onMounted, ref, watch } from 'vue';
 import lodash from "lodash-es";
 import oss from "@/api/oss";
+import TitleText from '@/components/my/form/titleText.vue';
 
 const orgHumanList = ref(null);
 const indexDatas = inject("indexDatas");
