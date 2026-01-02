@@ -1,26 +1,30 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { computed, ref, watch, onMounted, provide } from 'vue';
+import { computed, ref, watch, onMounted, provide, inject } from 'vue';
 import AppFooter from '../AppFooter.vue';
 import AppMenu from '../AppMenu.vue';
 import TopbarWidget from "@/components/landing/TopbarWidget.vue";
 import useGlobal from "@/api/hooks/useGlobal";
 import oss from '@/api/oss';
+import FooterWidget from '@/components/landing/FooterWidget.vue';
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
-
+const footDatas = ref(null);
 const shiShowPage = ref(false);
 const siteDatas = ref(null);
 (async ()=>{
     siteDatas.value = await useGlobal.siteDatas();
+    footDatas.value = await useGlobal.pageSetupDatas("foot");
+    footDatas.value.boundArea.setup.subPageImg.value.tempMap = {imgPath:await oss.buildPathAsync(footDatas.value.boundArea.setup.subPageImg.value.img,true,null)};
     shiShowPage.value = true;
 })();
 
 provide("siteDatas",siteDatas);
+provide("footDatas",footDatas);
 
-onMounted(() => {
+onMounted(async () => {
 
 });
 
@@ -71,26 +75,26 @@ function isOutsideClicked(event) {
 </script>
 
 <template>
-    <div class="layout-wrapper animate__animated animate__fadeIn duration-75" :class="containerClass">
+    <div class="layout-wrapper bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn" :class="containerClass">
 <!--        <app-topbar></app-topbar>-->
-        <div class="w-full h-80 bg-surface-0 dark:!bg-surface-900">
+        <div class="w-full h-80 landing-wrapper">
             <TopbarWidget/>
-            <div class="w-full h-48 bg-[url('https://iaplc.com/assets_jp/img/judges/top_main.jpg')] bg-center center">
-                <h2 class="-text-surface-0 mix-blend-difference">{{useGlobal.getRouteInfo().meta.name}}</h2>
+            <div class="w-full h-56 bg-center bg-cover relative" :style="'background-image: url(\''+footDatas?.boundArea.setup.subPageImg.value.tempMap.imgPath+'\')'">
+                <h2 class="-text-surface-0 _mix-blend-difference text-white absolute bottom-10 left-20">{{useGlobal.getRouteInfo().meta.name}}</h2>
             </div>
         </div>
-        <div class="layout-main-container lg:!ml-0 !pt-3">
+         <div class="layout-main-container lg:!ml-0 !pt-3 card">
             <div class="row">
-                <div class="_layout-sidebar !top-80 w-64 h-dvh mr-5 bg-surface-0 hidden md:block">
-                    <app-menu></app-menu>
-                </div>
+<!--                <div class="_layout-sidebar !top-80 w-64 h-dvh mr-5 bg-surface-0 hidden md:block">-->
+<!--                    <app-menu></app-menu>-->
+<!--                </div>-->
                 <div id="app_container" styleClass="layout-main" class="layout-main relative">
                     <router-view/>
                 </div>
             </div>
-            <app-footer></app-footer>
         </div>
         <div class="layout-mask animate-fadein"></div>
+        <FooterWidget />
         <ScrollTop />
     </div>
 </template>

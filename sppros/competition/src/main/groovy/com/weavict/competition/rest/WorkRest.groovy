@@ -468,7 +468,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return workService.qyPageSetup(query.competitionId,query.key);
+                         return workService.qyPageSetup(query.competitionId,query.key,query.appId);
                      }).call()
                     ]);
         }
@@ -550,7 +550,7 @@ class WorkRest extends BaseRest
 
 
             //
-            List<MCPageSetup> mcPageSetupList = workService.qyPageSetup(query.masterCompetitionId,null);
+            List<MCPageSetup> mcPageSetupList = workService.qyPageSetup(query.masterCompetitionId,null,query.appId);
             for(MCPageSetup mcPageSetup in mcPageSetupList)
             {
                 writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/${mcPageSetup.mcPageSetupPK.key}.json""".toString(),"utf8");

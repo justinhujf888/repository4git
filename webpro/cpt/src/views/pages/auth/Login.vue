@@ -1,42 +1,26 @@
 <template>
 <!--    <FloatingConfigurator />-->
-    <div class="bg-surface-500 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
-        <div class="flex flex-col items-center justify-center">
-<!--            <Button label="test" @click="test"/>-->
-            <div _style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-                <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto dark:bg-surface-900 py-20 px-8 sm:px-20 bg-surface-900" _style="border-radius: 53px">
-                    <div class="text-center mb-8">
-                        <div class="text-surface-50 dark:text-surface-0 text-3xl font-medium mb-4">{{siteDatas?.siteInfo.siteCompetition.name}}</div>
-                        <span class="text-muted-color font-medium">登录</span>
-                    </div>
+    <div class="flex items-center justify-center overflow-hidden">
+        <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
+            <IftaLabel>
+                <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium">手机号码</label>
+                <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem]" v-model="buyer.phone" />
+                <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
+            </IftaLabel>
 
-                    <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
-                        <IftaLabel>
-                            <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium">手机号码</label>
-                            <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem]" v-model="buyer.phone" />
-                            <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
-                        </IftaLabel>
-
-                        <IftaLabel>
-                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">密码</label>
-                            <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" fluid :feedback="false"></Password>
-                            <div class="flex items-center justify-end mt-2 mb-8 gap-8">
-                                <router-link :to="{name:'forgotpw'}">
-                                    <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">忘记密码</span>
-                                </router-link>
-                            </div>
-                        </IftaLabel>
-
-                        <div class="row mt-12 !border-btn">
-                            <Button type="submit" label="登录" class="w-full" _as="router-link" _to="/"></Button>
-                        </div>
-                        <div class="row mt-4">
-                            <Button severity="warn" label="返回" class="w-full !bg-orange-400 !border-0" _as="router-link" _to="/" @click="Page.navBack()"></Button>
-                        </div>
-                    </Form>
+            <IftaLabel>
+                <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">密码</label>
+                <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" fluid :feedback="false"></Password>
+                <div class="flex items-center justify-end mt-2 mb-8 gap-8">
+                    <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="forgot">忘记密码</span>
                 </div>
+            </IftaLabel>
+
+            <div class="flex justify-end gap-2 mt-5 !border-btn">
+                <Button type="submit" label="登录" _as="router-link" _to="/"></Button>
+                <Button severity="warn" label="返回" class="!bg-orange-400 !border-0" _as="router-link" _to="/" @click="cancel"></Button>
             </div>
-        </div>
+    </Form>
     </div>
 </template>
 
@@ -61,8 +45,20 @@ const siteDatas = ref(null);
 (async ()=>{
     siteDatas.value = await useGlobal.siteDatas();
 })();
+const emit = defineEmits(["afterLogin","cancel","forgot"]);
 
 let errors = [];
+let loginToken = "";
+
+const afterLogin = ()=>{
+    emit("afterLogin",buyer.value.phone);
+}
+const cancel = ()=>{
+    emit("cancel");
+}
+const forgot = ()=>{
+    emit("forgot");
+}
 
 const resolver = ({ values }) => {
     errors = primeUtil.checkFormRequiredValid([
@@ -87,10 +83,12 @@ const onFormSubmit = ({ valid }) => {
     if (valid) {
         userRest.buyerLogin(buyer.value.phone,buyer.value.password,(data)=>{
             if (data.status=="OK") {
+                loginToken = data.loginToken;
                 useStorage("userId",buyer.value.phone);
-                useStorage("loginToken",data.loginToken);
+                useStorage("loginToken",loginToken);
                 dialog.alertBack("您已成功登录",()=>{
-                    Page.redirectTo("landing",null);
+                    // Page.redirectTo("landing",null);
+                    afterLogin();
                 });
             } else if (data.status=="ER_NOHAS") {
                 dialog.toastError("您输入的账号或密码错误");

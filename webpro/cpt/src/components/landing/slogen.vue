@@ -1,6 +1,5 @@
 <template>
-    <div class="relative">
-        <img class="w-full h-full absolute left-0 top-0" :src="indexDatas?.sloganArea.setup.bgImg.value.tempMap.imgPath" style="z-index: -1"/>
+    <div class="relative bg-center bg-cover" :style="'background-image: url(\''+indexDatas?.sloganArea.setup.bgImg.value.tempMap.imgPath+'\')'">
         <div class="px-6 lg:px-20 mx-0 lg:mx-20 py-10">
              <div class="grid grid-cols-12 gap-4 justify-center">
                 <div

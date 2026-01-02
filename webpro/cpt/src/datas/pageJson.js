@@ -16,9 +16,9 @@ export default {
                     {key:"teBie",label:"特别殊荣",isUserSetup:true,route:"",isInPageMenu:true}
                 ]},
             {key:"userCenter",label:"参赛",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
-                    {key:"baoMing",label:"报名入口",route:"",isInPageMenu:true},
-                    {key:"userWork",label:"我的参赛",route:"",isInPageMenu:true},
-                    {key:"userMsg",label:"我的消息",route:"",isInPageMenu:false}
+                    {key:"baoMing",label:"报名入口",route:"myWorks",isInPageMenu:true,isLogin:true},
+                    {key:"userWork",label:"我的参赛",route:"",isInPageMenu:true,isLogin:true},
+                    {key:"userMsg",label:"我的消息",route:"myMessages",isInPageMenu:true,isLogin:true}
                 ]},
             {key:"about",label:"关于",menuType:0,route:"",isUserSetup:true,isInPageMenu:true},
             {key:"contact",label:"联系我们",menuType:0,route:"",isUserSetup:true,isInPageMenu:true},
@@ -136,6 +136,7 @@ export default {
                 name:"页眉页脚",
                 setup:{
                     mImg:{type:"image",yeWuType:"media",value:{},pre:"Logo"},
+                    subPageImg:{type:"image",yeWuType:"media",value:{},pre:"子页面通用背景图片"},
                     linkItems:{type:"box",pre:"设置图标链接",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"text",type:"text",pre:"名称",value:""},{key:"url",type:"text",pre:"URL"}]},
                     footItems:{type:"box",pre:"设置页脚文字链接",value:[],eltTypes:[{key:"text",type:"text",pre:"公司/协会名称",value:""},{key:"url",type:"text",pre:"URL"}]}
                 }

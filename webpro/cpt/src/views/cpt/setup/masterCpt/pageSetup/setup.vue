@@ -50,6 +50,7 @@ const mainPage = inject("mainPage");
 const updatePage = useTemplateRef("updatePage");
 const delay = ref(false);
 
+let host = inject("domain");
 let a = "tp0";
 let pageComponentMap = [
     {key:"index",jsonFun:()=>{return pj.uiIndexJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
@@ -105,6 +106,7 @@ function saveJson() {
     delay.value = false;
     let mcPageSetup = Beans.mcPageSetup();
     mcPageSetup.mcPageSetupPK = Beans.mcPageSetupPK();
+    mcPageSetup.mcPageSetupPK.appId = host;
     mcPageSetup.mcPageSetupPK.competitionId = props.competitionId;
     mcPageSetup.mcPageSetupPK.key = pageComponentMap[componentIndex.value].key;
     mcPageSetup.setupJson = pj.preProcessPageJson(lodash.cloneDeep(pageJson.value),true);

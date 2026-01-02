@@ -109,10 +109,11 @@ class WorkService extends ModuleBean
         return competitionList;
     }
 
-    List<MCPageSetup> qyPageSetup(String competitionId,String key)
+    List<MCPageSetup> qyPageSetup(String competitionId,String key,String appId)
     {
         List<MCPageSetup> mcPageSetupList = this.newQueryUtils(false).masterTable(MCPageSetup.class.simpleName,null,null)
-                .where("mcPageSetupPK.competitionId = :competitionId",["competitionId":competitionId],null,{return true})
+                .where("mcPageSetupPK.appId = :appId",["appId":appId],null,{return true})
+                .where("mcPageSetupPK.competitionId = :competitionId",["competitionId":competitionId],"and",{return true})
                 .where("mcPageSetupPK.key = :key",["key":key],"and",{return !(key in [null,""])})
                 .buildSql().run().content;
         for(MCPageSetup mcPageSetup in mcPageSetupList)

@@ -1,6 +1,7 @@
  import CryptoJS from 'crypto-es'
 // import CryptoJS from 'CryptoJS';
 import {Config} from '@/api/config.js';
+import page from '@/api/uniapp/page';
 // const a = require()
 var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 //将Ansi编码的字符串进行Base64编码
@@ -573,6 +574,14 @@ export default {
         //     url = url.slice(0, dotIndex);
         // }
         // return url;
+    },
+    checkLoginGoPage(treeNode) {
+        if (treeNode.isLogin==true && !localStorage.getItem("userId")) {
+            return false;
+        }
+        document.body.click();
+        page.navigateTo(treeNode.route,null);
+        return true;
     },
     async forEachAsync(arr, handler, isSerial = true){
         if( isSerial ) {

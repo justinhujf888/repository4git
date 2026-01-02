@@ -152,6 +152,7 @@ export const Beans = {
 
     mcPageSetupPK() {
         return {
+            appId:"",
             competitionId: "",
             key: ""
         }

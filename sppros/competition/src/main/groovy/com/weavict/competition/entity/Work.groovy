@@ -415,12 +415,16 @@ class MCPageSetupPK implements Serializable
     @Column(nullable = false, insertable = false, updatable = false, length = 30)
     String key;
 
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String appId;
+
     MCPageSetupPK() {}
 
-    MCPageSetupPK(String competitionId,String key)
+    MCPageSetupPK(String competitionId,String key,String appId)
     {
         this.competitionId = competitionId;
         this.key = key;
+        this.appId = appId;
     }
 }
 

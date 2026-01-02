@@ -1,54 +1,40 @@
 <template>
 <!--    <FloatingConfigurator />-->
 <!--    <Button label="test" @click="test"/>-->
-    <div class="bg-surface-500 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
-        <div class="flex flex-col items-center justify-center">
-            <div _style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
-                <div class="xs:w-dvw xs:h-dvh md:w-full md:h-auto dark:bg-surface-900 py-20 px-8 sm:px-20 bg-surface-900" _style="border-radius: 53px">
-                    <div class="text-center mb-8">
-                        <div class="text-surface-50 dark:text-surface-0 text-3xl font-medium mb-4">{{siteDatas?.siteInfo.siteCompetition.name}}</div>
-                        <span class="text-muted-color font-medium">注册</span>
+    <div class="flex items-center justify-center overflow-hidden">
+        <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
+            <IftaLabel>
+                <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium">手机号码</label>
+                <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem]" v-model="buyer.phone" />
+                <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
+            </IftaLabel>
+
+            <IftaLabel>
+                <label for="vcord" class="block text-surface-900 dark:text-surface-0 text-base font-medium z-30">验证码</label>
+                <InputGroup>
+                    <InputText name="vcord" v-model="vcord" placeholder="请输入验证码" />
+                    <div :class="btnDisabled ? '' : 'hidden'">
+                        <InputGroupAddon>{{remaining}}s</InputGroupAddon>
                     </div>
+                    <Button label="发送验证码" severity="secondary" :disabled="btnDisabled" @click="startCountdown"/>
+                </InputGroup>
+            </IftaLabel>
 
-                    <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
-                        <IftaLabel>
-                            <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium">手机号码</label>
-                            <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem]" v-model="buyer.phone" />
-                            <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
-                        </IftaLabel>
+            <IftaLabel>
+                <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">密码</label>
+                <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" fluid :feedback="false"></Password>
+            </IftaLabel>
+            <IftaLabel>
+                <label for="password2" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">再次输入密码</label>
+                <Password name="password2" v-model="password" placeholder="请再次输入密码" :toggleMask="true" fluid :feedback="false"></Password>
+                <Message v-if="buyer.password!=password" severity="error" size="small" variant="simple">两次密码输入不一致</Message>
+            </IftaLabel>
 
-                        <IftaLabel>
-                            <label for="vcord" class="block text-surface-900 dark:text-surface-0 text-base font-medium z-30">验证码</label>
-                            <InputGroup>
-                                <InputText name="vcord" v-model="vcord" placeholder="请输入验证码" />
-                                <div :class="btnDisabled ? '' : 'hidden'">
-                                    <InputGroupAddon>{{remaining}}s</InputGroupAddon>
-                                </div>
-                                <Button label="发送验证码" severity="secondary" :disabled="btnDisabled" @click="startCountdown"/>
-                            </InputGroup>
-                        </IftaLabel>
-
-                        <IftaLabel>
-                            <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">密码</label>
-                            <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" fluid :feedback="false"></Password>
-                        </IftaLabel>
-                        <IftaLabel>
-                            <label for="password2" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">再次输入密码</label>
-                            <Password name="password2" v-model="password" placeholder="请再次输入密码" :toggleMask="true" fluid :feedback="false"></Password>
-                            <Message v-if="buyer.password!=password" severity="error" size="small" variant="simple">两次密码输入不一致</Message>
-                        </IftaLabel>
-
-                        <div class="row mt-12">
-                            <Button type="submit" label="注册" class="w-full" _as="router-link" _to="/"></Button>
-                        </div>
-
-                        <div class="row mt-4">
-                            <Button severity="warn" label="返回" class="w-full !bg-orange-400 !border-0" _as="router-link" _to="/" @click="Page.navBack()"></Button>
-                        </div>
-                    </Form>
-                </div>
+            <div class="flex justify-end gap-2 mt-5 !border-btn">
+                <Button type="submit" label="注册" _as="router-link" _to="/"></Button>
+                <Button severity="warn" label="返回" class="!bg-orange-400 !border-0" _as="router-link" _to="/" @click="cancel"></Button>
             </div>
-        </div>
+        </Form>
     </div>
 </template>
 
@@ -65,7 +51,7 @@ import Page from "@/api/uniapp/page";
 import util from "@/api/util";
 import checker from "@/api/check/checker";
 import useGlobal from "@/api/hooks/useGlobal";
-
+const emit = defineEmits(["afterLogin","cancel"]);
 const siteDatas = ref(null);
 (async ()=>{
     siteDatas.value = await useGlobal.siteDatas();
@@ -91,6 +77,7 @@ let countDown = null;
 // });
 
 let phoneCode = "";
+let loginToken = "";
 
 onMounted(()=>{
     let shiRun = false;
@@ -181,10 +168,11 @@ const onFormSubmit = ({ valid }) => {
         }
         userRest.registBuyer(buyer.value,(data)=>{
             if (data.status=="OK") {
+                loginToken = data.loginToken;
                 useStorage("userId",buyer.value.phone);
-                useStorage("loginToken",data.loginToken);
+                useStorage("loginToken",loginToken);
                 dialog.alertBack("您已成功注册",()=>{
-                    Page.redirectTo("landing",null);
+                    afterLogin();
                 });
             } else if (data.status=="ER_HAS") {
                 dialog.toastError("此账号已被注册");
@@ -192,6 +180,13 @@ const onFormSubmit = ({ valid }) => {
         });
     }
 };
+
+const afterLogin = ()=>{
+    emit("afterLogin",buyer.value.phone,loginToken);
+}
+const cancel = ()=>{
+    emit("cancel");
+}
 
 function test() {
     // Page.navigateTo("table",{});

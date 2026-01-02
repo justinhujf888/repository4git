@@ -11,7 +11,7 @@
                 <div class="col">
                     <span class="text-xl">{{menu.label}}</span>
                     <ul v-if="menu.menuType==1">
-                        <li v-for="item of menu.children" class="col my-4">
+                        <li v-for="item of menu.children" class="col my-4 cursor-pointer" @click="userBarClick(item)">
                             <span>{{item.label}}</span>
                         </li>
                     </ul>
@@ -108,6 +108,8 @@ import { useStorage } from '@vueuse/core';
 import oss from '@/api/oss';
 import lodash from 'lodash-es';
 import pj from '@/datas/pageJson';
+import page from '@/api/uniapp/page';
+import util from '@/api/util';
 
 const userId = useStorage("userId");
 const siteDatas = inject("siteDatas");
@@ -143,6 +145,10 @@ onMounted(()=>{
 
 function navPage(pageName) {
     Page.navigateTo(pageName,null)
+}
+
+function userBarClick(treeNode) {
+    util.checkLoginGoPage(treeNode);
 }
 </script>
 

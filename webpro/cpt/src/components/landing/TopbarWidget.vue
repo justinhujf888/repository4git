@@ -8,8 +8,7 @@
                         text
                         severity="secondary"
                         rounded
-                        v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')"
-                >
+                        _v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')" @click="toggle">
                     <i class="pi pi-bars !text-2xl"></i>
                 </Button>
             </div>
@@ -25,49 +24,37 @@
             <ul class="list-none p-0 m-0 flex lg:items-center select-none hidden lg:flex lg:flex-row cursor-pointer gap-8 text-base lg:text-lg text-center">
                 <li v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')">
                     <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
-                    <a _click="smoothScroll('hero')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a _click="smoothScroll('hero')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle" @click="toggle">
                         <span>评奖</span>
                     </a>
                 </li>
                 <li>
-                    <a _click="smoothScroll('features')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a _click="smoothScroll('features')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle" @click="toggle">
                         <span>获奖作品</span>
                     </a>
                 </li>
                 <li>
-                    <a _click="smoothScroll('highlights')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a _click="smoothScroll('highlights')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle" @click="toggle">
                         <span>参赛</span>
                     </a>
                 </li>
             </ul>
         </div>
-        <div id="mis" class="row justify-center flex-wrap gap-20 mt-10 hidden top-10">
-            <div class="col start" v-for="menu in treeDatas">
-                <div class="col">
-                    <span class="text-xl">{{menu.label}}</span>
-                    <ul v-if="menu.menuType==1">
-                        <li v-for="item of menu.children" class="col my-4">
-                            <span>{{item.label}}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
 
         <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 border-solid border-2 border-gray-200 rounded-border shadow-2xl absolute right-10 top-20 px-12 py-4 z-50 hidden">
             <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base">
                 <li>
-                    <a @click="userBarClick('myWorks')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="userBarClick({route:'myWorks',isLogin:true})" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                         <span>我的作品</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="userBarClick('myMessages')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="userBarClick({route:'myMessages',isLogin:true})" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                         <span>我的消息</span>
                     </a>
                 </li>
                 <li>
-                    <a @click="userBarClick('forgotpw')" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="userBarClick({route:'forgotpw',isLogin:true})" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                         <span>修改密码</span>
                     </a>
                 </li>
@@ -79,10 +66,10 @@
             </ul>
         </div>
 
-        <div class="row items-center gap-4">
+        <div class="row items-center gap-4" v-if="shiShowButton">
             <div v-if="!userId" class="flex lg:py-0 lg:mt-0 gap-x-2">
-                <Button label="登录" text as="router-link" to="/auth/login" rounded></Button>
-                <Button label="注册" as="router-link" to="/auth/register" rounded></Button>
+                <Button label="登录" text rounded @click="showLoginMode=true"></Button>
+                <Button label="注册" rounded @click="showRegistMode=true"></Button>
             </div>
             <div v-else class="row">
                 <!--            <button type="button" class="text-xl w-10 h-10">-->
@@ -100,6 +87,54 @@
             </div>
 <!--            <Button label="test" @click="shiShowButton=true"/>-->
         </div>
+        <Teleport to="body">
+            <Dialog model header="登录" v-model:visible="showLoginMode" pt:mask:class="backdrop-blur-sm">
+                <div class="card">
+                    <login @afterLogin="afterLogin" @cancel="cancelLogin" @forgot="loginForgot"/>
+                </div>
+            </Dialog>
+
+            <Dialog model header="注册" v-model:visible="showRegistMode" pt:mask:class="backdrop-blur-sm">
+                <div class="card">
+                    <register @afterLogin="afterRegist" @cancel="cancelRegist"/>
+                </div>
+            </Dialog>
+
+            <Dialog model header="重置密码" v-model:visible="showForgotMode" pt:mask:class="backdrop-blur-sm">
+                <div class="card">
+                    <forgot-pw @afterLogin="afterForgot4Login" @afterSave="afterForgot4Save" @cancel="cancelForgot"/>
+                </div>
+            </Dialog>
+        </Teleport>
+
+        <Popover ref="op">
+            <div class="px-10 py-5">
+                <div class="grid md:grid-cols-5 grid-cols-3 gap-5 top-10">
+                    <div class="col start" v-for="menu in treeDatas">
+                        <div class="col">
+                            <span class="text-base md:text-xl px-5 font-semibold">{{menu.label}}</span>
+                            <ul v-if="menu.menuType==1" class="mt-5">
+                                <li v-for="item of menu.children" class="col my-4 cursor-pointer" @click="userBarClick(item)">
+                                    <span class="text-base px-5">{{item.label}}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10 md:between">
+                    <div class="row">
+                        <a v-for="link of footDatas?.boundArea.setup.linkItems.value">
+                            <span class="px-5 text-sm">{{link.text}}</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:row">
+                        <a v-for="item of footDatas?.boundArea.setup.footItems.value">
+                            <span class="px-5 text-sm">{{item.text}}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </Popover>
     </div>
 </template>
 
@@ -107,10 +142,15 @@
 import { useStorage } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
-import { inject, onMounted, ref, watch } from 'vue';
+import { inject, onMounted, ref, watch, useTemplateRef } from 'vue';
 import oss from '@/api/oss';
 import lodash from 'lodash-es';
 import pj from '@/datas/pageJson';
+import util from '@/api/util';
+import Page from '@/api/uniapp/page';
+import Login from '@//views/pages/auth/Login.vue';
+import Register from '@/views/pages/auth/register.vue';
+import ForgotPw from '@/views/pages/auth/forgotPw.vue';
 
 const shiShowButton = ref(false);
 const userId = useStorage("userId");
@@ -118,6 +158,10 @@ const treeDatas = ref([]);
 
 const siteDatas = inject("siteDatas");
 const footDatas = inject("footDatas");
+const op = useTemplateRef("op");
+const showLoginMode = ref(false);
+const showRegistMode = ref(false);
+const showForgotMode = ref(false);
 watch(siteDatas,(newValue)=>{
     // console.log(newValue);
 });
@@ -176,6 +220,10 @@ onMounted(() => {
 //     }
 // });
 
+function toggle(event) {
+    op.value.show(event);
+}
+
 function smoothScroll(id) {
     document.body.click();
     const element = document.getElementById(id);
@@ -187,9 +235,10 @@ function smoothScroll(id) {
     }
 }
 
-function userBarClick(pathName) {
-    document.body.click();
-    page.navigateTo(pathName,null)
+function userBarClick(treeNode) {
+    if (!util.checkLoginGoPage(treeNode)) {
+        showLoginMode.value = true;
+    }
 }
 
 function barButtonClick(id) {
@@ -204,5 +253,34 @@ function logout() {
         localStorage.removeItem("userId");
         userId.value = null;
     },null);
+}
+
+function afterLogin(_userId,_loginToken) {
+    userId.value = _userId;
+    showLoginMode.value = false;
+}
+function cancelLogin() {
+    showLoginMode.value = false;
+}
+function loginForgot() {
+    showLoginMode.value = false;
+    showForgotMode.value = true;
+}
+function afterRegist(_userId,_loginToken) {
+    userId.value = _userId;
+    showRegistMode.value = false;
+}
+function cancelRegist() {
+    showRegistMode.value = false;
+}
+function afterForgot4Login(_userId) {
+    showForgotMode.value = true;
+}
+function afterForgot4Save() {
+    showForgotMode.value = false;
+    showLoginMode.value = true;
+}
+function cancelForgot() {
+    showForgotMode.value = false;
 }
 </script>

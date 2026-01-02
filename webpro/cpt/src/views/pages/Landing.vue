@@ -48,14 +48,13 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div v-show="shiShowPage" class="bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn duration-75">
+    <div v-show="shiShowPage" class="bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn">
         <div id="home" class="landing-wrapper overflow-hidden">
             <TopbarWidget/>
             <HeroWidget/>
             <slogen />
 
-            <div class="py-12 relative">
-                <img :src="indexDatas?.jiangArea.setup.bgImg.value.tempMap.imgPath" class="w-full h-full absolute left-0 top-0" style="z-index: -1"/>
+            <div class="py-12 relative bg-center bg-cover" :style="'background-image: url(\''+indexDatas?.jiangArea.setup.bgImg.value.tempMap.imgPath+'\')'">
                 <FeaturesWidget />
                 <div class="py-14 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
                     <Divider/>
