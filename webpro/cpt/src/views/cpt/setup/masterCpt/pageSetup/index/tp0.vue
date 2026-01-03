@@ -55,6 +55,15 @@
                         </template>
                     </image-grid>
                 </div>
+                <div v-else-if="element.yeWuType=='orgHuman'">
+                    <image-grid :mediaFiles="orgHumanList" :selFiles="element.value" :selCount="element.count" :funCheckHasIndex="imageGridCheckHas4Judge">
+                        <template #content="slotProps">
+                            <div class="w-full h-12 center">
+                                <span>{{slotProps.file.name}}</span>
+                            </div>
+                        </template>
+                    </image-grid>
+                </div>
             </ScrollPanel>
             <div class="center gap-4 mt-5">
                 <Button label="确定" size="small" @click="saveelm"/>
@@ -89,6 +98,7 @@ const op = useTemplateRef("op");
 const mediaFiles = ref([{sourceType:8,name:"页面素材",value:[]},{sourceType:9,name:"新闻素材",value:[]}]);
 const allMediaFiles = ref([]);
 const judgeList = ref([]);
+const orgHumanList = ref([]);
 
 let host = inject("domain");
 let process = -1;
@@ -154,9 +164,7 @@ async function openDialog(_element) {
     }
     if (element.value.yeWuType=="media") {
 
-    }
-
-    if (element.value.yeWuType=="judge") {
+    } else if (element.value.yeWuType=="judge") {
         judgeList.value = [];
         await (async ()=>{
             await new Promise(resolve => {
@@ -165,9 +173,30 @@ async function openDialog(_element) {
                         if (res.data!=null) {
                             judgeList.value = [];
                             for(let v of res.data.content) {
-                                let judge = {id:v.id,img:{value:v.headImgUrl},name:v.name,subDescription:v.subDescription,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
+                                let judge = {id:v.id,img:{value:v.headImgUrl},name:v.name,subDescription:v.subDescription,description:v.description,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
                                 judge.img.tempMap = {imgPath:judge.tempMap.imgPath};
                                 judgeList.value.push(judge);
+                            }
+                            resolve();
+                        } else {
+                            resolve();
+                        }
+                    }
+                });
+            });
+        })();
+    } else if (element.value.yeWuType=="orgHuman") {
+        orgHumanList.value = [];
+        await (async ()=>{
+            await new Promise(resolve => {
+                workRest.qyOrgHumanList({appId:host,sourceType:0,sourceId:host},async (res)=>{
+                    if (res.status=="OK") {
+                        if (res.data!=null) {
+                            orgHumanList.value = [];
+                            for(let v of res.data) {
+                                let orgHuman = {id:v.id,img:{value:v.headImgUrl},name:v.name,subDescription:v.subDescription,description:v.description,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
+                                orgHuman.img.tempMap = {imgPath:orgHuman.tempMap.imgPath};
+                                orgHumanList.value.push(orgHuman);
                             }
                             resolve();
                         } else {
@@ -197,7 +226,7 @@ function openPop(event,_eltTypes) {
     op.value.toggle(event);
 }
 function saveelm() {
-    if (element.value.yeWuType=="judge") {
+    if (element.value.yeWuType=="judge" || element.value.yeWuType=="orgHuman") {
 
     } else {
         if (!element.value.value) {

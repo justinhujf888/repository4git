@@ -20,7 +20,7 @@ export default {
                     {key:"userWork",label:"我的参赛",route:"",isInPageMenu:true,isLogin:true},
                     {key:"userMsg",label:"我的消息",route:"myMessages",isInPageMenu:true,isLogin:true}
                 ]},
-            {key:"about",label:"关于",menuType:0,route:"",isUserSetup:true,isInPageMenu:true},
+            {key:"about",label:"关于",menuType:0,route:"about",isUserSetup:true,isInPageMenu:true},
             {key:"contact",label:"联系我们",menuType:0,route:"",isUserSetup:true,isInPageMenu:true},
             {key:"news",label:"新闻",menuType:0,route:"",isInPageMenu:false}
         ]
@@ -44,11 +44,21 @@ export default {
                                     item[ev.key].tempMap = {};
                                 } else {
                                     // console.log("item",item[ev.key]);
-                                    item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].img,true,null)};
+                                    if (item[ev.key].img) {
+                                        item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].img,true,null)};
+                                    } else if (item[ev.key].value) {
+                                        item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].value,true,null)};
+                                    }
                                 }
                             });
                         }
                     });
+                    if (elm.yeWuType=="judge" || elm.yeWuType=="orgHuman") {
+                        lodash.forEach(elm.value,(jov)=>{
+                            jov.tempMap = {};
+                            jov.img.tempMap = {};
+                        });
+                    }
                 }
             });
         });
@@ -62,7 +72,11 @@ export default {
                 if (ev.type=="image") {
                     ev.value.tempMap = {};
                     for (let item of element.value) {
-                        item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].img,true,null)};
+                        if (item[ev.key].img) {
+                            item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].img,true,null)};
+                        } else if (item[ev.key].value) {
+                            item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].value,true,null)};
+                        }
                     }
                 }
             });
@@ -97,7 +111,7 @@ export default {
                 name:"评委",
                 setup:{
                     title:{type:"headTitle",value:"评委",pre:"标题名称"},
-                    judgeItems:{type:"box",yeWuType:"judge",pre:"设置评委信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"}]}
+                    judgeItems:{type:"box",yeWuType:"judge",pre:"设置评委信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
                 }
             },
             workStoreArea:{
@@ -139,6 +153,60 @@ export default {
                     subPageImg:{type:"image",yeWuType:"media",value:{},pre:"子页面通用背景图片"},
                     linkItems:{type:"box",pre:"设置图标链接",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"text",type:"text",pre:"名称",value:""},{key:"url",type:"text",pre:"URL"}]},
                     footItems:{type:"box",pre:"设置页脚文字链接",value:[],eltTypes:[{key:"text",type:"text",pre:"公司/协会名称",value:""},{key:"url",type:"text",pre:"URL"}]}
+                }
+            }
+        }
+    },
+    uiAboutJson() {
+        return {
+            titleTitleArea0:{
+                sort:0,
+                name:"标题文字",
+                setup:{
+                    titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
+                }
+            },
+            orgHumanArea:{
+                sort:1,
+                name: "组委会",
+                setup: {
+                    title:{type:"headTitle",value:"组委会",pre:"标题名称"},
+                    orgHumanItems:{type:"box",yeWuType:"orgHuman",pre:"设置组委会信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
+                }
+            },
+            titleTitleArea1:{
+                sort:2,
+                name:"标题文字",
+                setup:{
+                    titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
+                }
+            },
+            imageArea:{
+                sort:3,
+                name:"一张图片",
+                setup:{
+                    mImg:{type:"image",yeWuType:"media",value:{},pre:"滚动图片"}
+                }
+            },
+            titleTitleArea2:{
+                sort:4,
+                name:"标题文字",
+                setup:{
+                    titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
+                }
+            },
+            buttonArea:{
+                sort:5,
+                name:"链接按钮",
+                setup:{
+                    button:{type:"link",value:{url:"",text:""}}
+                }
+            },
+            titleTitleArea3:{
+                sort:6,
+                name:"标题文字",
+                setup:{
+                    titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
                 }
             }
         }

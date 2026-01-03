@@ -2,6 +2,7 @@
 // import CryptoJS from 'CryptoJS';
 import {Config} from '@/api/config.js';
 import page from '@/api/uniapp/page';
+ import lodash from 'lodash-es';
 // const a = require()
 var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 //将Ansi编码的字符串进行Base64编码
@@ -580,8 +581,22 @@ export default {
             return false;
         }
         document.body.click();
-        page.navigateTo(treeNode.route,null);
+        if (treeNode.route) {
+            page.navigateTo(treeNode.route,null);
+        }
         return true;
+    },
+    sortBy(sourceJson) {
+        let ary = [];
+        let json = {};
+        lodash.forEach(sourceJson,(v,k)=>{
+            v.id = k;
+            ary.push(v);
+        });
+        lodash.forEach(lodash.sortBy(ary,['sort'],['asc']),(v)=>{
+            json[v.id] = lodash.find(sourceJson,(o,k)=>{return v.id==k});
+        });
+        return json;
     },
     async forEachAsync(arr, handler, isSerial = true){
         if( isSerial ) {

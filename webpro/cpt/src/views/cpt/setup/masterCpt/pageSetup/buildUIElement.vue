@@ -11,6 +11,10 @@
             <Image class="rounded w-full" :src="element.value?.tempMap?.imgPath" style="max-width: 300px;" preview_ :pt="{image:{class:'!w-full'}}"/>
         </div>
     </div>
+    <div v-else-if="element.type=='link'">
+        <button class="bg-blue-500 text-sm p-2">{{element.value.text}}</button>
+        <span>{{element.value.url}}</span>
+    </div>
     <div v-else-if="element.type=='images'">
         <span class="text-green-600 text-sm">{{element.pre}}</span>
         <priview-image v-model:files="element.value"/>

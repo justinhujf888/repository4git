@@ -127,6 +127,12 @@ class OrgHuman extends BEntity implements Serializable, IEntity
     @Column(length=350)
     String description;
 
+    @Column(length=50)
+    String subDescription;
+
+    @Column(length=50)
+    String zhiWei;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 

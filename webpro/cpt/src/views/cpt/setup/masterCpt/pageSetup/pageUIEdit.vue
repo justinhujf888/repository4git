@@ -26,6 +26,15 @@
         <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">{{element.pre}}</label>
         <InputText class="w-full md:w-[30rem] mb-4" v-model="element.value"/>
     </IftaLabel>
+    <IftaLabel v-else-if="element.type=='textArea'">
+        <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">{{element.pre}}</label>
+        <Textarea class="w-full md:w-[30rem] mb-4" v-model="element.value"/>
+    </IftaLabel>
+    <IftaLabel v-else-if="element.type=='link'">
+        <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">{{element.pre}}</label>
+        <InputText class="w-full md:w-[30rem] mb-4" v-model="element.value.url" placeholder="url"/>
+        <InputText class="w-full md:w-[30rem] mb-4" v-model="element.value.text" placeholder="按钮文字"/>
+    </IftaLabel>
     <div v-else-if="element.type=='image'" class="col p-2">
         <div class="between">
             <span class="text-green-600 text-sm">{{element.pre}}</span>

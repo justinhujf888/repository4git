@@ -112,7 +112,7 @@
                 <div class="grid md:grid-cols-5 grid-cols-3 gap-5 top-10">
                     <div class="col start" v-for="menu in treeDatas">
                         <div class="col">
-                            <span class="text-base md:text-xl px-5 font-semibold">{{menu.label}}</span>
+                            <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" @click="userBarClick({isLogin:false,route:menu.route})">{{menu.label}}</span>
                             <ul v-if="menu.menuType==1" class="mt-5">
                                 <li v-for="item of menu.children" class="col my-4 cursor-pointer" @click="userBarClick(item)">
                                     <span class="text-base px-5">{{item.label}}</span>

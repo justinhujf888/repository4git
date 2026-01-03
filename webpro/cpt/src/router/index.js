@@ -30,6 +30,20 @@ const router = createRouter({
             ]
         },
         {
+            path: '/us',
+            component: userLayout,
+            children: [
+                {
+                    path: '/us/about',
+                    name: 'about',
+                    component: () => import('@/views/documents/about.vue'),
+                    meta:{
+                        name: "关于我们"
+                    }
+                },
+            ]
+        },
+        {
             path: '/manage',
             component: AppLayout,
             children: [

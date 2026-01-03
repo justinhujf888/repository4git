@@ -62,7 +62,9 @@ export const Beans = {
             description: "",
             createDate: null,
             headImgUrl: "",
-            appId: ""
+            appId: "",
+            subDescription: "",
+            zhiWei: ""
         }
     },
 

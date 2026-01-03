@@ -36,6 +36,7 @@ import animationPage from "@/components/my/animationPage.vue";
 import { Beans } from '@/api/dbs/beans';
 import workRest from '@/api/dbs/workRest';
 import dialog from "@/api/uniapp/dialog";
+import util from '@/api/util';
 
 const props = defineProps({
     competitionId: {type:String, default:""}
@@ -55,6 +56,7 @@ let a = "tp0";
 let pageComponentMap = [
     {key:"index",jsonFun:()=>{return pj.uiIndexJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
     {key:"foot",jsonFun:()=>{return pj.uiFootJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
+    {key:"about",jsonFun:()=>{return pj.uiAboutJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
     {key:"pingWei",component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
 ];
 
@@ -87,12 +89,15 @@ const onNodeSelect = (node) => {
     if (componentIndex.value > -1) {
         workRest.qyPageSetup({competitionId:props.competitionId,key:pageComponentMap[componentIndex.value].key},(res)=>{
             if (res.status=="OK") {
+                let json = null;
                 if (res.data) {
                     // pageJson.value = pj.preProcessPageJson(res.data[0].setupJson,false);
-                    pageJson.value = res.data[0].setupJson;
+                    json = res.data[0].setupJson;
                 } else {
-                    pageJson.value = pageComponentMap[componentIndex.value].jsonFun();
+                    json = pageComponentMap[componentIndex.value].jsonFun();
                 }
+                pageJson.value = util.sortBy(json);
+                // console.log(pageJson.value);
                 setTimeout(()=>{
                     delay.value = true;
                 },1500);
