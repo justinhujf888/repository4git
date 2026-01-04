@@ -580,10 +580,10 @@ export default {
         if (treeNode.isLogin==true && !localStorage.getItem("userId")) {
             return false;
         }
-        document.body.click();
         if (treeNode.route) {
             page.navigateTo(treeNode.route,null);
         }
+        // document.body.click();
         return true;
     },
     sortBy(sourceJson) {

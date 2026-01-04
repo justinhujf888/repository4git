@@ -1,10 +1,10 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
-        <div class="card">
+        <div class="card md:px-32">
             <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);">
                     <template #header>
-                        <img v-if="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})[0].tempMap.imgPath" class="h-48 w-full object-cover object-center"/>
+                        <img v-if="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})[0]?.tempMap?.imgPath" class="h-48 w-full object-cover object-center"/>
                         <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
                     </template>
                     <template #title>
@@ -127,8 +127,8 @@ function loadWorksByUser() {
             if (res.data!=null) {
                 workList.value = res.data;
                 lodash.forEach(workList.value,(work)=>{
-                    lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
-                        workItem.tempMap = {imgPath:oss.buildImgPath(workItem.path)};
+                    lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),async(workItem)=>{
+                        workItem.tempMap = {imgPath:await oss.buildPathAsync(workItem.path,true,null)};
                     });
                     work.tempMap = {};
                     work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;

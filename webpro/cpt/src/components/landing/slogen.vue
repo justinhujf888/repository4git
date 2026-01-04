@@ -1,6 +1,6 @@
 <template>
     <div class="relative bg-center bg-cover" :style="'background-image: url(\''+indexDatas?.sloganArea.setup.bgImg.value.tempMap.imgPath+'\')'">
-        <div class="px-6 lg:px-20 mx-0 lg:mx-20 py-10">
+        <div class="px-6 lg:px-20 mx-0 lg:mx-20 py-28">
              <div class="grid grid-cols-12 gap-4 justify-center">
                 <div
                     class="col-span-12 p-2 md:p-20 bg-opacity-10"

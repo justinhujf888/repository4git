@@ -1,8 +1,8 @@
 <template>
-    <div v-if="element.type=='title' || element.type=='headTitle'" class="row md:mx-10 card">
+    <div v-if="element.type=='title' || element.type=='headTitle'" class="row">
         <title-text :text="element.value" text-class="text-black font-semibold"/>
     </div>
-    <div v-else-if="element.type=='box' && element.yeWuType=='titleTextGruop'" class="row md:mx-10 card">
+    <div v-else-if="element.type=='box' && element.yeWuType=='titleTextGruop'" class="row">
         <div v-for="group of element.value" class="mt-10 leading-10">
             <title-text :text="group.title" text-class="text-black font-semibold"/>
             <div class="mt-10">
@@ -10,7 +10,7 @@
             </div>
         </div>
     </div>
-    <div v-else-if="element.type=='box' && element.yeWuType!='titleTextGruop'" class="row md:mx-10 card">
+    <div v-else-if="element.type=='box' && element.yeWuType!='titleTextGruop'" class="row">
 <!--        <div v-for="item of element.value" class="mt-10 leading-10">-->
 <!--            {{item}}-->
 <!--        </div>-->
@@ -19,6 +19,13 @@
     <div v-else-if="element.type=='image'">
         <div v-if="element.value.img" class="w-full">
             <Image class="rounded w-full" :src="element.value?.tempMap?.imgPath" preview_ :pt="{image:{class:'!w-full'}}"/>
+        </div>
+    </div>
+    <div v-else-if="element.type=='link'">
+        <div class="flex flex-col justify-center items-center text-center px-4 py-4 md:py-0">
+            <div class="text-base p-1 border-btn mt-10">
+                <a :href="element.value.url" class="center py-2 px-10 bg-lime-100 font-semibold sub-bg" target="_blank">{{element.value.text}}</a>
+            </div>
         </div>
     </div>
 </template>
@@ -32,7 +39,7 @@ const element = defineModel("element");
 
 onMounted(async ()=>{
     await pj.processPageImageJson(element.value);
-    console.log("element.value",element.value);
+    // console.log("element.value",element.value);
 });
 </script>
 

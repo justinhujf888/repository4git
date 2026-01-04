@@ -6,7 +6,7 @@
 <!--            </template>-->
 <!--        </Galleria>-->
         <div>
-            <img :src="indexDatas?.bannerArea.setup.banner.value[0].img.tempMap?.imgPath" class="w-dvw h-dvh object-cover object-top"/>
+            <img :src="indexDatas?.bannerArea.setup.banner.value[0].img.tempMap?.imgPath" class="w-full object-cover object-top"/>
         </div>
         <div
             id="hero"

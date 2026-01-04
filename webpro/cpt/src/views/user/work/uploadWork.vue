@@ -1,8 +1,8 @@
 <template>
-    <div class="card !p-2">
-        <routerPath :home="null" :items="menuItems"/>
-        <h2>{{competition?.name}}</h2>
-        <div class="start overflow-hidden">
+    <routerPath :home="null" :items="menuItems"/>
+    <div class="card md:px-32">
+        <title-text :text="competition?.name" text-class="text-black font-semibold"/>
+        <div class="start overflow-hidden mt-10">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">
                     <FloatLabel variant="on" v-if="process=='c'">
@@ -96,6 +96,7 @@ import lodash from "lodash-es";
 import exifr from 'exifr';
 import priviewImage from "@/components/my/priviewImage.vue";
 import videoInfo from "@/components/my/videoInfo.vue";
+import TitleText from '@/components/my/form/titleText.vue';
 
 const imageFileUpload = useTemplateRef("imageFileUpload");
 const videoFileUpload = useTemplateRef("videoFileUpload");

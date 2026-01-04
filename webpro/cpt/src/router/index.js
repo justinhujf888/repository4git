@@ -41,6 +41,22 @@ const router = createRouter({
                         name: "关于我们"
                     }
                 },
+                {
+                    path: '/us/judge',
+                    name: 'judge',
+                    component: () => import('@/views/documents/judge.vue'),
+                    meta:{
+                        name: "评委"
+                    }
+                },
+                {
+                    path: '/us/saiZhi',
+                    name: 'saiZhi',
+                    component: () => import('@/views/documents/saiZhi.vue'),
+                    meta:{
+                        name: "赛制"
+                    }
+                },
             ]
         },
         {

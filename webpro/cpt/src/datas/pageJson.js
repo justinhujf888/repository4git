@@ -6,8 +6,8 @@ export default {
         return [
             {key:"index",label:"首页",menuType:0,isUserSetup:true,isInPageMenu:false,route:""},
             {key:"pingJiang",label:"评奖",menuType:1,route:"",isUserSetup:true,isInPageMenu:true,items:[
-                    {key:"shaiZhi",label:"赛制",isUserSetup:true,route:"",isInPageMenu:true},
-                    {key:"pingWei",label:"评委团",isUserSetup:true,route:"",isInPageMenu:true},
+                    {key:"saiZhi",label:"赛制",isUserSetup:true,route:"saiZhi",isInPageMenu:true},
+                    {key:"judge",label:"评委团",isUserSetup:true,route:"judge",isInPageMenu:true},
                     {key:"pingShenBiaoZun",label:"评审标准",isUserSetup:true,route:"",isInPageMenu:true}
                 ]},
             {key:"huoJiangWork",label:"优胜作品",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
@@ -16,8 +16,8 @@ export default {
                     {key:"teBie",label:"特别殊荣",isUserSetup:true,route:"",isInPageMenu:true}
                 ]},
             {key:"userCenter",label:"参赛",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
-                    {key:"baoMing",label:"报名入口",route:"myWorks",isInPageMenu:true,isLogin:true},
-                    {key:"userWork",label:"我的参赛",route:"",isInPageMenu:true,isLogin:true},
+                    {key:"baoMing",label:"报名入口",route:"",isInPageMenu:true,isLogin:true},
+                    {key:"userWork",label:"我的参赛",route:"myWorks",isInPageMenu:true,isLogin:true},
                     {key:"userMsg",label:"我的消息",route:"myMessages",isInPageMenu:true,isLogin:true}
                 ]},
             {key:"about",label:"关于",menuType:0,route:"about",isUserSetup:true,isInPageMenu:true},
@@ -207,6 +207,86 @@ export default {
                 name:"标题文字",
                 setup:{
                     titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
+                }
+            }
+        }
+    },
+    uiJudgeJson() {
+        return {
+            titleTitleArea0:{
+                sort:0,
+                name:"标题文字",
+                setup:{
+                    titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
+                }
+            },
+            titleTitleArea1:{
+                sort:1,
+                name:"标题文字",
+                setup:{
+                    titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
+                }
+            },
+            judgeArea:{
+                sort:2,
+                name: "评审团",
+                setup: {
+                    orgHumanItems:{type:"box",yeWuType:"judge",pre:"设置评审团信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
+                }
+            }
+        }
+    },
+    uiSaiZhiJson() {
+        return {
+            titleTitleArea0:{
+                sort:0,
+                name:"标题文字",
+                setup:{
+                    title:{type:"title",pre:"标题",value:""},
+                    html:{type:"html",pre:"文字",value:""}
+                }
+            },
+            titleTitleArea1:{
+                sort:1,
+                name:"标题文字",
+                setup:{
+                    title:{type:"title",pre:"标题",value:""},
+                    titleTextGruop:{type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
+                }
+            },
+            saiDateArea:{
+                sort:2,
+                name:"赛程时间",
+                setup:{
+                    title:{type:"title",pre:"标题",value:""},
+                    titleTextGruop:{type:"box",pre:"",value:[],eltTypes:[{key:"label",type:"text",pre:"名称",value:""},{key:"date",type:"date",pre:"日期",value:""},{key:"description",type:"text",pre:"说明",value:""}]}
+                }
+            },
+            jiangArea:{
+                sort:3,
+                name:"奖项设置",
+                setup:{
+                    title:{type:"title",pre:"标题",value:""},
+                    text:{type:"textArea",value:"",pre:"说明"},
+                    slot:{type:"slot",value:[],pre:"各奖项不用设置，引用首页定义"},
+                }
+            },
+            guiZhangArea:{
+                sort:4,
+                name:"参赛规章",
+                setup:{
+                    title:{type:"title",pre:"标题",value:""},
+                    text:{type:"textArea",value:"",pre:"说明"},
+                    desc:{type:"box",pre:"",value:[],eltTypes:[{key:"img",type:"image",pre:"图片",value:{}},{key:"description",type:"textArea",pre:"说明",value:""}]},
+                    text1:{type:"textArea",value:"",pre:"说明"},
+                }
+            },
+            cealArea:{
+                sort:5,
+                name:"标题文字",
+                setup:{
+                    title:{type:"title",pre:"标题",value:""},
+                    text:{type:"textArea",value:"",pre:"说明"}
                 }
             }
         }

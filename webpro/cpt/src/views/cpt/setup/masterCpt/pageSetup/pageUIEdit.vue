@@ -11,6 +11,9 @@
                     <div v-else-if="col.type=='jbText'" class="center w-16">
                         <jb-text :colors="buildColors(data[col.key].colors)" :fromto="`${data[col.key].des}deg`" class="text-xl siyuansongBold">{{data[col.key].text}}</jb-text>
                     </div>
+                    <div v-else-if="col.type=='html'">
+                        <div v-html="data[col.key]"></div>
+                    </div>
                     <span v-else>{{data[col.key]}}</span>
                 </template>
             </Column>
@@ -54,6 +57,28 @@
         <Divider/>
         <updateJBText v-model:colors="element.value.colors" v-model:text="element.value.text" v-model:des="element.value.des"></updateJBText>
         <Divider/>
+    </div>
+    <div v-else-if="element.type=='slot'" class="py-4">
+        <span>{{element.pre}}</span>
+    </div>
+    <div v-else-if="element.type=='html'" class="col">
+        <span>输入Html</span>
+        <Divider/>
+        <Textarea rows="20" v-model="element.value"/>
+<!--        <Editor v-model="element.value" editorStyle="height: 120px">-->
+<!--            <template v-slot:toolbar>-->
+<!--                <span class="ql-formats">-->
+<!--                    <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>-->
+<!--                    <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>-->
+<!--                    <button v-tooltip.bottom="'Underline'" class="ql-underline"></button>-->
+<!--                    <button v-tooltip.bottom="'color'" class="ql-color"></button>-->
+<!--                    <button v-tooltip.bottom="'background'" class="ql-background"></button>-->
+<!--&lt;!&ndash;                    <button v-tooltip.bottom="'list'" class="ql-list"></button>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <button v-tooltip.bottom="'select'" class="ql-select"></button>&ndash;&gt;-->
+<!--                    <button v-tooltip.bottom="'link'" class="ql-link"></button>-->
+<!--                </span>-->
+<!--            </template>-->
+<!--        </Editor>-->
     </div>
 
     <Popover ref="op">

@@ -19,6 +19,12 @@
         <span class="text-green-600 text-sm">{{element.pre}}</span>
         <priview-image v-model:files="element.value"/>
     </div>
+    <div v-else-if="element.type=='html'" class="col">
+        <div v-html="element.value"></div>
+    </div>
+    <div v-else-if="element.type=='slot'" class="py-4">
+        <span>{{element.pre}}</span>
+    </div>
     <div v-else-if="element.type=='box'">
         <DataTable :value="element.value">
             <Column v-for="col of element.eltTypes" :field="col.key" :header="col.pre">
@@ -28,6 +34,9 @@
                     </div>
                     <div v-else-if="col.type=='jbText'" class="center w-16">
                         <jb-text :colors="buildColors(data[col.key].colors)" :fromto="`${data[col.key].des}deg`" class="text-xl siyuansongBold">{{data[col.key].text}}</jb-text>
+                    </div>
+                    <div v-else-if="col.type=='html'">
+                        <div v-html="data[col.key]"></div>
                     </div>
                     <span v-else>{{data[col.key]}}</span>
                 </template>

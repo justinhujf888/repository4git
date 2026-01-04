@@ -34,12 +34,7 @@
                 }
 
             }">
-                <div v-if="!element.yeWuType">
-                    <div v-for="boxItem of eltTypes" class="col gap-4">
-                        <pageUIEdit :element="boxItem" v-model:mediaFiles="allMediaFiles"/>
-                    </div>
-                </div>
-                <div v-else-if="element.yeWuType=='media'">
+                <div v-if="element.yeWuType=='media'">
                     <span>{{mediaFiles[0].name}}</span>
                     <image-grid :mediaFiles="mediaFiles[0].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
                     <Divider/>
@@ -63,6 +58,11 @@
                             </div>
                         </template>
                     </image-grid>
+                </div>
+                <div v-else>
+                    <div v-for="boxItem of eltTypes" class="col gap-4">
+                        <pageUIEdit :element="boxItem" v-model:mediaFiles="allMediaFiles"/>
+                    </div>
                 </div>
             </ScrollPanel>
             <div class="center gap-4 mt-5">
