@@ -595,6 +595,7 @@ export default {
         });
         lodash.forEach(lodash.sortBy(ary,['sort'],['asc']),(v)=>{
             json[v.id] = lodash.find(sourceJson,(o,k)=>{return v.id==k});
+            json[v.id].setup = this.sortBy(json[v.id].setup);
         });
         return json;
     },

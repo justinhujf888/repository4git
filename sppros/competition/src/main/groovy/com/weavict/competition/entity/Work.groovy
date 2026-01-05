@@ -446,7 +446,7 @@ class MCPageSetup extends BEntity implements Serializable, IEntity
 
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    Map<String,Object> setupJson;
+    LinkedHashMap<String,Object> setupJson;
 
     void cancelLazyEr()
     {

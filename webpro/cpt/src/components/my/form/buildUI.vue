@@ -21,6 +21,15 @@
             <Image class="rounded w-full" :src="element.value?.tempMap?.imgPath" preview_ :pt="{image:{class:'!w-full'}}"/>
         </div>
     </div>
+    <div v-else-if="element.type=='html'">
+        <div v-html="element.value" :class="htmlClass"></div>
+    </div>
+    <div v-else-if="element.type=='text'">
+        <span>{{element.value}}</span>
+    </div>
+    <div v-else-if="element.type=='textArea'">
+        <span class="textwrap">{{element.value}}</span>
+    </div>
     <div v-else-if="element.type=='link'">
         <div class="flex flex-col justify-center items-center text-center px-4 py-4 md:py-0">
             <div class="text-base p-1 border-btn mt-10">
@@ -36,6 +45,9 @@ import { onMounted } from 'vue';
 import pj from '@/datas/pageJson';
 
 const element = defineModel("element");
+const props = defineProps({
+    htmlClass: {type:String,default:""}
+});
 
 onMounted(async ()=>{
     await pj.processPageImageJson(element.value);

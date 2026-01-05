@@ -1,14 +1,17 @@
 <template>
     <div>
         <div class="row m-4 gap-2">
-            <div class="col w-28 gap-4 center" v-for="color in colorHEX">
+            <div class="col w-36 gap-4 center" v-for="color in colorHEX">
                 <Checkbox v-model="color.use" binary />
                 <ColorPicker v-model="color.value" format="hex" />
-                <InputText v-model="color.value" class="w-full"/>
+                <InputGroup>
+                    <InputGroupAddon>#</InputGroupAddon>
+                    <InputText v-model="color.value" class="w-full"/>
+                </InputGroup>
             </div>
         </div>
         <div class="m-5 p-2 col gap-4">
-            <span>角度</span>
+            <span>角度 {{des}}</span>
             <Slider :min="0" :max="180" v-model="des"/>
         </div>
         <div>

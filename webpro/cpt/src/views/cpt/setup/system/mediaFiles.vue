@@ -22,7 +22,7 @@
     </animationPage>
 
     <animationPage ref="updatePage">
-        <myFileUpload ref="refFileUpload" @theFileUploaded="theFileUpload" @allFilesUploaded="filesUpload" @cancel="cancelUpload" @deleteFile="deleteFile"/>
+        <myFileUpload ref="refFileUpload" :file-limit="50" @theFileUploaded="theFileUpload" @allFilesUploaded="filesUpload" @cancel="cancelUpload" @deleteFile="deleteFile"/>
     </animationPage>
 </template>
 

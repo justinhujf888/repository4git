@@ -9,7 +9,7 @@
         <div id="footmenu2" class="row sm:row justify-center flex-wrap gap-20 mt-10">
             <div class="col start" v-for="menu in treeDatas">
                 <div class="col">
-                    <span class="text-xl">{{menu.label}}</span>
+                    <span class="text-base md:text-xl font-semibold cursor-pointer" @click="userBarClick({isLogin:false,route:menu.route})">{{menu.label}}</span>
                     <ul v-if="menu.menuType==1">
                         <li v-for="item of menu.children" class="col my-4 cursor-pointer" @click="userBarClick(item)">
                             <span>{{item.label}}</span>

@@ -22,6 +22,9 @@
     <div v-else-if="element.type=='html'" class="col">
         <div v-html="element.value"></div>
     </div>
+    <div v-else-if="element.type=='textArea'">
+        <span class="textwrap">{{element.value}}</span>
+    </div>
     <div v-else-if="element.type=='slot'" class="py-4">
         <span>{{element.pre}}</span>
     </div>

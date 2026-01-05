@@ -33,28 +33,21 @@
 
 /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 @font-face {
-    font-family: "思源宋体 Heavy";font-weight: 900;src: url("https://at.alicdn.com/wf/webfont/T0dQfaixhl5O/kc2wpOuhW8vl.woff2") format("woff2"),
-url("https://at.alicdn.com/wf/webfont/T0dQfaixhl5O/k4hs1OLBGJ4Z.woff") format("woff");font-variation-settings: normal;font-display: swap;
+    font-family: "思源宋体 Heavy";font-weight: 900;src: url("//at.alicdn.com/wf/webfont/T0dQfaixhl5O/GBSKgjLKAClt.woff2") format("woff2"),
+url("//at.alicdn.com/wf/webfont/T0dQfaixhl5O/btVTVnswhNbM.woff") format("woff");font-variation-settings: normal;font-display: swap;
 }
 
 .siyuansongheavy {
+    /*font-family: '思源宋体 Heavy', webfont-notdef;*/
     font-family: "思源宋体 Heavy";font-variation-settings: normal; /* Chrome 140 以下版本需要 */}
 
 /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 @font-face {
-    font-family: "思源宋体 Bold";font-weight: 700;src: url("https://at.alicdn.com/wf/webfont/T0dQfaixhl5O/UoIiiPOtbQNx.woff2") format("woff2"),
-url("https://at.alicdn.com/wf/webfont/T0dQfaixhl5O/QtvGCYw28vPI.woff") format("woff");font-variation-settings: normal;font-display: swap;
+    font-family: "思源宋体 Bold";font-weight: 700;src: url("//at.alicdn.com/wf/webfont/T0dQfaixhl5O/YQcv7dDsfLxc.woff2") format("woff2"),
+url("//at.alicdn.com/wf/webfont/T0dQfaixhl5O/GxA0d6UMw806.woff") format("woff");font-variation-settings: normal;font-display: swap;
 }
 
 .siyuansongbold {
     font-family: "思源宋体 Bold";font-variation-settings: normal; /* Chrome 140 以下版本需要 */}
 
 
-/* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
-@font-face {
-    font-family: "思源宋体 Heavy";font-weight: 900;src: url("//at.alicdn.com/wf/webfont/T0dQfaixhl5O/oy2m65FKlVke.woff2") format("woff2"),
-url("//at.alicdn.com/wf/webfont/T0dQfaixhl5O/zakDbLkNaXkB.woff") format("woff");font-variation-settings: normal;font-display: swap;
-}
-
-.webfont {
-    font-family: "思源宋体 Heavy";font-variation-settings: normal; /* Chrome 140 以下版本需要 */}

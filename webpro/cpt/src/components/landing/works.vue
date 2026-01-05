@@ -1,13 +1,12 @@
 <template>
     <div id="works">
-        <div class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
+        <div class="mt-28 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
             <title-text :text="indexDatas?.workStoreArea.setup.title.value" text-class="text-gray-900"/>
         </div>
-        <div class="mt-10 w-full py-6 mx-0 my-12">
-            <div class="box w-full" style="height: 26rem;">
+        <div class="mt-5 w-full py-3 mx-0 my-12">
+            <div class="box w-full" style="height: 36rem;">
                 <div class="imgList left-0">
-                    <div class="row">
-                        <Image :src="indexDatas?.workStoreArea.setup.mImg.value.tempMap.imgPath"/>
+                    <div class="bg-blue-500" style="height: 32rem;width: 190rem" :style="'background-image: url(\''+indexDatas?.workStoreArea.setup.mImg.value.tempMap.imgPath+'\')'">
                     </div>
                 </div>
             </div>
@@ -26,7 +25,7 @@
             <!--                overlay-blur-color="#060010" fit-basis="auto"-->
             <div class="center">
                 <div class="text-base p-1 border-btn">
-                    <a class="center px-20 py-3 bg-lime-100 text-gray-800 font-semibold sub-bg">更多获奖作品</a>
+                    <a class="center px-12 py-2 bg-lime-100 text-gray-800 font-semibold sub-bg">更多获奖作品</a>
                 </div>
             </div>
         </div>

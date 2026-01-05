@@ -28,10 +28,10 @@
         </div>
         <div class="center mt-16 sm:row col gap-8">
             <div class="text-base p-1 border-btn">
-                <a class="center w-56 py-3 bg-gray-950 text-white font-semibold sub-bg">评委</a>
+                <a class="center px-20 py-2 bg-gray-950 text-white font-semibold sub-bg">评委</a>
             </div>
             <div class="text-base p-1 border-btn">
-                <a class="center w-56 py-3 bg-gray-950 text-white font-semibold sub-bg">评审标准</a>
+                <a class="center px-16 py-2 bg-gray-950 text-white font-semibold sub-bg">评审标准</a>
             </div>
         </div>
     </div>

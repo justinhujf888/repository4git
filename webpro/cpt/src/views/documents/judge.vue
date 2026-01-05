@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="(pageEls,i) in judgeDatas" :key="i" :class="{'mt-20':i>0}">
-            <div v-for="element of pageEls.setup" class="mt-8" :class="{'md:px-32':element.type!='image'}">
+            <div v-for="element of pageEls.setup" class="mt-8" :class="{'md:px-20 lg:px-32':element.type!='image'}">
                 <build-u-i :element="element" >
                     <template #box="{data}">
                         <DataView :value="data">

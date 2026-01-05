@@ -1,22 +1,20 @@
 <template>
     <div>
-        <div v-for="(pageEls,k,i) in saiZhiDatas" :key="i" :class="{'mt-20':i>0}">
-            <div v-for="element of pageEls.setup" class="mt-8" :class="{'md:px-32':element.type!='image'}">
-                <build-u-i :element="element" >
+        <div v-for="(pageEls,k,i) in saiZhiDatas" :key="i" :class="{'mt-20':i>0}" class="text-xl leading-10">
+            <div v-for="element of pageEls.setup" class="mt-8 md:px-32" :class="{'md:px-32':element.type!='image'}">
+                <jiang v-if="element.type=='slot'" :jiang-datas="indexDatas?.jiangArea.setup.jiangItems.value" root-class="mt-20" jiang-text-class="text-gray-800"/>
+                <build-u-i v-else :element="element">
                     <template #box="{data}">
                         <DataView :value="data">
                             <template #list="slotProps">
                                 <div class="col">
-                                    <div v-for="item of slotProps.items" class="row">
-                                        <div class="flex flex-col md:flex-row p-3 gap-4">
-                                            <div class="md:w-40 relative">
+                                    <div v-for="item of slotProps.items" class="row my-4">
+                                        <div class="flex flex-col items-center md:flex-row p-3 gap-4">
+                                            <div class="md:w-72 relative">
                                                 <img class="block xl:block mx-auto rounded w-full" :src="item.img.tempMap.imgPath" />
                                             </div>
                                             <div class="col gap-2 font-semibold flex-1">
-                                                <span class="text-lg font-medium">{{item.name}}</span>
-                                                <span class="text-lg font-medium">{{item.zhiWei}}</span>
-                                                <span class="text-lg font-medium">{{item.subDescription}}</span>
-                                                <span class="text-lg font-medium textwrap">{{item.description}}</span>
+                                                <span class="text-base font-semibold textwrap">{{item.description}}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -31,18 +29,18 @@
 </template>
 
 <script setup>
-import { ref, useTemplateRef } from 'vue';
-import animationPage from "@/components/my/animationPage.vue";
+import { inject, ref, useTemplateRef } from 'vue';
 import useGlobal from '@/api/hooks/useGlobal';
-import oss from '@/api/oss';
-import lodash from 'lodash-es';
 import util from '@/api/util';
 import BuildUI from '@/components/my/form/buildUI.vue';
-import pj from '@/datas/pageJson';
+import Jiang from '@/views/documents/components/jiang.vue';
 
 const saiZhiDatas = ref(null);
+const indexDatas = ref(null);
+
 (async () => {
     saiZhiDatas.value = util.sortBy(await useGlobal.pageSetupDatas("saiZhi"));
+    indexDatas.value = await useGlobal.pageSetupDatas("index");
 })();
 </script>
 
