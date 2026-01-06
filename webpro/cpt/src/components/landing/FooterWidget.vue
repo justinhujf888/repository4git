@@ -104,13 +104,13 @@
 <script setup>
 import Page from '@/api/uniapp/page';
 import { inject, onMounted, ref, watch } from 'vue';
-import { useStorage } from '@vueuse/core';
+import { useEventBus, useStorage } from '@vueuse/core';
 import oss from '@/api/oss';
 import lodash from 'lodash-es';
 import pj from '@/datas/pageJson';
 import page from '@/api/uniapp/page';
 import util from '@/api/util';
-
+const bus = useEventBus('login');
 const userId = useStorage("userId");
 const siteDatas = inject("siteDatas");
 const footDatas = inject("footDatas");
@@ -148,7 +148,10 @@ function navPage(pageName) {
 }
 
 function userBarClick(treeNode) {
-    util.checkLoginGoPage(treeNode);
+    // if (!util.checkLoginGoPage(treeNode)) {
+    //
+    // }
+    bus.emit(treeNode);
 }
 </script>
 

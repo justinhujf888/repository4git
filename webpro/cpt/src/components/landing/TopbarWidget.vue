@@ -68,8 +68,8 @@
 
         <div class="row items-center gap-4" v-if="shiShowButton">
             <div v-if="!userId" class="flex lg:py-0 lg:mt-0 gap-x-2">
-                <Button label="登录" text rounded @click="showLoginMode=true"></Button>
-                <Button label="注册" rounded @click="showRegistMode=true"></Button>
+                <Button label="登录" text rounded @click="wantTo='';showLoginMode=true"></Button>
+                <Button label="注册" rounded @click="wantTo='';showRegistMode=true"></Button>
             </div>
             <div v-else class="row">
                 <!--            <button type="button" class="text-xl w-10 h-10">-->
@@ -88,19 +88,19 @@
 <!--            <Button label="test" @click="shiShowButton=true"/>-->
         </div>
         <Teleport to="body">
-            <Dialog model header="登录" v-model:visible="showLoginMode" pt:mask:class="backdrop-blur-sm">
+            <Dialog modal header="登录" v-model:visible="showLoginMode" pt:mask:class="backdrop-blur-sm">
                 <div class="card">
                     <login @afterLogin="afterLogin" @cancel="cancelLogin" @forgot="loginForgot"/>
                 </div>
             </Dialog>
 
-            <Dialog model header="注册" v-model:visible="showRegistMode" pt:mask:class="backdrop-blur-sm">
+            <Dialog modal header="注册" v-model:visible="showRegistMode" pt:mask:class="backdrop-blur-sm">
                 <div class="card">
                     <register @afterLogin="afterRegist" @cancel="cancelRegist"/>
                 </div>
             </Dialog>
 
-            <Dialog model header="重置密码" v-model:visible="showForgotMode" pt:mask:class="backdrop-blur-sm">
+            <Dialog modal header="重置密码" v-model:visible="showForgotMode" pt:mask:class="backdrop-blur-sm">
                 <div class="card">
                     <forgot-pw @afterLogin="afterForgot4Login" @afterSave="afterForgot4Save" @cancel="cancelForgot"/>
                 </div>
@@ -152,6 +152,10 @@ import Login from '@//views/pages/auth/Login.vue';
 import Register from '@/views/pages/auth/register.vue';
 import ForgotPw from '@/views/pages/auth/forgotPw.vue';
 
+import { useEventBus } from '@vueuse/core';
+const bus = useEventBus('login');
+const unsubscribe = bus.on(busListener);
+
 const shiShowButton = ref(false);
 const userId = useStorage("userId");
 const treeDatas = ref([]);
@@ -162,6 +166,7 @@ const op = useTemplateRef("op");
 const showLoginMode = ref(false);
 const showRegistMode = ref(false);
 const showForgotMode = ref(false);
+const wantTo = ref("");
 watch(siteDatas,(newValue)=>{
     // console.log(newValue);
 });
@@ -220,6 +225,10 @@ onMounted(() => {
 //     }
 // });
 
+function busListener(treeNode) {
+    userBarClick(treeNode);
+}
+
 function toggle(event) {
     op.value.show(event);
 }
@@ -237,6 +246,7 @@ function smoothScroll(id) {
 
 function userBarClick(treeNode) {
     if (!util.checkLoginGoPage(treeNode)) {
+        wantTo.value = treeNode.route;
         showLoginMode.value = true;
     }
     if (treeNode.route) {
@@ -261,6 +271,9 @@ function logout() {
 function afterLogin(_userId,_loginToken) {
     userId.value = _userId;
     showLoginMode.value = false;
+    if (wantTo.value) {
+        page.redirectTo(wantTo.value,null);
+    }
 }
 function cancelLogin() {
     showLoginMode.value = false;
@@ -272,6 +285,9 @@ function loginForgot() {
 function afterRegist(_userId,_loginToken) {
     userId.value = _userId;
     showRegistMode.value = false;
+    if (wantTo.value) {
+        page.redirectTo(wantTo.value,null);
+    }
 }
 function cancelRegist() {
     showRegistMode.value = false;

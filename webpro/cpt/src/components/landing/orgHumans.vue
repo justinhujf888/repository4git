@@ -28,17 +28,17 @@
         </div>
         <div class="center mt-16 sm:row col gap-8">
             <div class="text-base p-1 border-btn">
-                <a class="center px-20 py-2 bg-gray-950 text-white font-semibold sub-bg">评委</a>
+                <a class="center px-5 py-2 w-40 bg-gray-950 text-white font-semibold sub-bg" @click="page.redirectTo('judge',null)">评委</a>
             </div>
             <div class="text-base p-1 border-btn">
-                <a class="center px-16 py-2 bg-gray-950 text-white font-semibold sub-bg">评审标准</a>
+                <a class="center px-5 py-2 w-40 bg-gray-950 text-white font-semibold sub-bg">评审标准</a>
             </div>
         </div>
     </div>
 </template>
 <script setup>
 import { inject, onMounted, ref, watch } from 'vue';
-import lodash from "lodash-es";
+import page from "@/api/uniapp/page"
 import oss from "@/api/oss";
 import TitleText from '@/components/my/form/titleText.vue';
 

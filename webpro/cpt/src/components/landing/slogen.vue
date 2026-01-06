@@ -12,7 +12,7 @@
                             {{indexDatas?.sloganArea.setup.subtitle.value}}
                         </p>
                         <div class="text-base p-1 border-btn mt-10">
-                            <a class="center px-16 py-2 bg-lime-100 font-semibold sub-bg">关于{{siteDatas?.siteInfo.siteCompetition.name}}</a>
+                            <a class="center px-5 py-2 w-40 bg-lime-100 font-semibold sub-bg" @click="page.redirectTo('about',null)">关于{{siteDatas?.siteInfo.siteCompetition.name}}</a>
                         </div>
                         <!--                    <div class="border-box center">-->
                         <!--                        <div class="content">-->
@@ -29,6 +29,7 @@
 
 <script setup>
 import { inject, onMounted, ref, watch } from 'vue';
+import page from "@/api/uniapp/page";
 import oss from '@/api/oss';
 // import {Config} from "@/api/config";
 const siteDatas = inject("siteDatas");

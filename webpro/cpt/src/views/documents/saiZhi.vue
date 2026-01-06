@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="(pageEls,k,i) in saiZhiDatas" :key="i" :class="{'mt-20':i>0}" class="text-xl leading-10">
-            <div v-for="element of pageEls.setup" class="mt-8 md:px-32" :class="{'md:px-32':element.type!='image'}">
+            <div v-for="element of pageEls.setup" class="mt-8 md:px-32" :style="element.type=='image' ? 'max-width:80rem' : ''">
                 <jiang v-if="element.type=='slot'" :jiang-datas="indexDatas?.jiangArea.setup.jiangItems.value" root-class="mt-20" jiang-text-class="text-gray-800"/>
                 <build-u-i v-else :element="element">
                     <template #box="{data}">
@@ -25,6 +25,14 @@
                 </build-u-i>
             </div>
         </div>
+        <div class="center mt-16 sm:row col gap-8">
+            <div class="text-base p-1 border-btn">
+                <a class="center px-16 py-2 bg-lime-100 text-gray-800 font-semibold sub-bg" @click="bus.emit({route:'myWorks',isLogin:true})">报名参赛</a>
+            </div>
+            <div class="text-base p-1 border-btn">
+                <a class="center px-16 py-2 bg-lime-100 text-gray-800 font-semibold sub-bg">评审规则</a>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -32,8 +40,11 @@
 import { inject, ref, useTemplateRef } from 'vue';
 import useGlobal from '@/api/hooks/useGlobal';
 import util from '@/api/util';
+import page from "@/api/uniapp/page";
 import BuildUI from '@/components/my/form/buildUI.vue';
 import Jiang from '@/views/documents/components/jiang.vue';
+import { useEventBus } from '@vueuse/core';
+const bus = useEventBus('login');
 
 const saiZhiDatas = ref(null);
 const indexDatas = ref(null);

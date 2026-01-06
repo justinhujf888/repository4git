@@ -54,7 +54,7 @@ onMounted(async () => {
             <HeroWidget/>
             <slogen />
 
-            <div class="py-12 relative bg-center bg-cover" :style="'background-image: url(\''+indexDatas?.jiangArea.setup.bgImg.value.tempMap.imgPath+'\')'">
+            <div class="py-12 relative bg-center bg-cover" :style="'background-image: url(\''+indexDatas?.jiangArea.setup.bgImg.value.tempMap.imgPath+'\');'">
                 <FeaturesWidget />
                 <div class="py-14 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
                     <Divider/>

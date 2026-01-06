@@ -4,7 +4,7 @@ import oss from '@/api/oss';
 export default {
     menuTreeDatas() {
         return [
-            {key:"index",label:"首页",menuType:0,isUserSetup:true,isInPageMenu:false,route:""},
+            {key:"index",label:"首页",menuType:0,isUserSetup:true,isInPageMenu:false,route:"landing"},
             {key:"pingJiang",label:"评奖",menuType:1,route:"",isUserSetup:true,isInPageMenu:true,items:[
                     {key:"saiZhi",label:"赛制",isUserSetup:true,route:"saiZhi",isInPageMenu:true},
                     {key:"judge",label:"评委团",isUserSetup:true,route:"judge",isInPageMenu:true},
@@ -16,7 +16,7 @@ export default {
                     {key:"teBie",label:"特别殊荣",isUserSetup:true,route:"",isInPageMenu:true}
                 ]},
             {key:"userCenter",label:"参赛",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
-                    {key:"baoMing",label:"报名入口",route:"",isInPageMenu:true,isLogin:true},
+                    {key:"baoMing",label:"报名入口",route:"myWorks",isInPageMenu:true,isLogin:true},
                     {key:"userWork",label:"我的参赛",route:"myWorks",isInPageMenu:true,isLogin:true},
                     {key:"userMsg",label:"我的消息",route:"myMessages",isInPageMenu:true,isLogin:true}
                 ]},

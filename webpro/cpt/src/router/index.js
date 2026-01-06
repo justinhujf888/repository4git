@@ -2,6 +2,10 @@ import AppLayout from '@/layout/AppLayout.vue';
 import userLayout from '@/layout/userlayout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import lodash from 'lodash-es';
+import { useEventBus } from '@vueuse/core';
+import pageJson from '@/datas/pageJson';
+import page from '@/api/uniapp/page';
+const bus = useEventBus('login');
 
 const router = createRouter({
     // base: import.meta.env.BASE_URL,
@@ -283,14 +287,39 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-    // ...
+    // ...localStorage.getItem("userId")
     if (lodash.includes(to.href,"/manage/")) {
         document.documentElement.classList.add('app-dark');
     } else {
         document.documentElement.classList.remove('app-dark');
     }
+    let t = null;
+    lodash.forEach(pageJson.menuTreeDatas(),(o)=>{
+        if (o.route!=to.name) {
+            lodash.forEach(o.items,(c)=>{
+                if (c.route==to.name) {
+                    t = c;
+                }
+            });
+        } else {
+            t = o;
+        }
+    });
     // 返回 false 以取消导航
-    return true
+    if (t) {
+        if (t.isLogin) {
+            if (localStorage.getItem("userId")) {
+                return true;
+            } else {
+                bus.emit({route:to.name,isLogin:t.isLogin});
+                return { name: 'landing' };
+            }
+        } else {
+            return true;
+        }
+    } else {
+        return { name: 'landing' };
+    }
 })
 
 export default router;

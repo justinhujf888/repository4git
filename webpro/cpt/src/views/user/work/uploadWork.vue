@@ -1,6 +1,6 @@
 <template>
     <routerPath :home="null" :items="menuItems"/>
-    <div class="card md:px-32">
+    <div class="card md:px-32 text-xl">
         <title-text :text="competition?.name" text-class="text-black font-semibold"/>
         <div class="start overflow-hidden mt-10">
             <div class="col center w-full p-2">
@@ -70,9 +70,13 @@
                         <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
                         <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" :readonly="work.status==1"/>
                     </FloatLabel>
-                    <div class="row mt-12 center gap-4" v-if="work.status<1">
-                        <Button type="submit" severity="warn" label="暂时保存" class="px-8" @click="preSave(0)"></Button>
-                        <Button type="submit" label="提交" class="px-8" _as="router-link" _to="/" @click="preSave(1)"></Button>
+                    <div class="center mt-16 sm:row col gap-8" v-if="work.status<1">
+                        <div class="text-base p-1 border-btn">
+                            <Button size="small" type="submit" label="暂时保存" variant="text" class="!center !px-5 !py-2 !w-40 !bg-lime-100 !text-gray-800 !font-semibold sub-bg" @click="preSave(0)"></Button>
+                        </div>
+                        <div class="text-base p-1 border-btn">
+                            <Button size="small" type="submit" label="提交" variant="text" class="!center !px-5 !py-2 !w-40 !text-white !bg-gray-800 !font-semibold sub-bg" _as="router-link" _to="/" @click="preSave(1)"></Button>
+                        </div>
                     </div>
                 </Form>
                 <priviewImage ref="refPriviewImage" v-if="work" :files="work" :shiShowImgGrid="false" _class="hidden"/>
@@ -97,6 +101,7 @@ import exifr from 'exifr';
 import priviewImage from "@/components/my/priviewImage.vue";
 import videoInfo from "@/components/my/videoInfo.vue";
 import TitleText from '@/components/my/form/titleText.vue';
+import page from '@/api/uniapp/page';
 
 const imageFileUpload = useTemplateRef("imageFileUpload");
 const videoFileUpload = useTemplateRef("videoFileUpload");
@@ -401,29 +406,29 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.workItemList = [];
     } else if (obj.process=="u") {
         // console.log(work.value);
-        workRest.qyWorks({appId:host,userId:obj.userId,workId:obj.work.id,masterCompetitionId:obj.masterCompetition.id,shiWorkItemList:true},(res)=>{
+        workRest.qyWorks({appId:host,userId:obj.userId,workId:obj.work.id,masterCompetitionId:obj.masterCompetition.id,shiWorkItemList:true},async (res)=>{
             if (res.status=="OK") {
                 if (res.data!=null) {
                     work.value = res.data[0];
-                    lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
+                    for (let workItem of lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0})) {
                         let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
                         item.file = workItem.mediaFields;
                         item.path = workItem.path;
                         item.exifInfo = workItem.exifInfo;
-                        item.src = oss.buildImgPath(workItem.path);
+                        item.src = await oss.buildPathAsync(workItem.path,true,null);
                         item.uploaded = true;
                         item.tempMap = {};
                         item.tempMap.imgPath = item.src;
                         item.bean = workItem;
-                    });
-                    lodash.forEach(lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1}),(workItem)=>{
+                    }
+                    for (let workItem of lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1})) {
                         let item = lodash.find(workVideoItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
                         item.file = workItem.mediaFields;
                         item.path = workItem.path;
-                        item.src = oss.buildPath(workItem.path);
+                        item.src = await oss.buildPathAsync(workItem.path,false,null);
                         item.bean = workItem;
                         item.uploaded = true;
-                    });
+                    }
                 }
             }
         });

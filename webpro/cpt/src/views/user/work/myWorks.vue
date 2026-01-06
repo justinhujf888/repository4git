@@ -1,21 +1,21 @@
 <template>
     <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
-        <div class="card md:px-32">
+        <div class="card md:px-32 text-xl">
             <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);">
+                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);" :pt="{content:{class:'!bggradient1'}}">
                     <template #header>
-                        <img v-if="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})[0]?.tempMap?.imgPath" class="h-48 w-full object-cover object-center"/>
+                        <img v-if="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})[0]?.tempMap?.imgPath" class="h-80 w-full object-cover object-center"/>
                         <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
                     </template>
                     <template #title>
                         <div class="between items-center">
                             <span>{{work.name}}</span>
-                            <span class="text-sm" :class="{'text-green-600':work.status==1,'text-red-600':work.status==9}">{{work.tempMap.status}}</span>
+                            <span class="text-sm" :class="{'text-green-600':work.status==1,'text-red-600':work.status==9}">{{work.tempMap?.status}}</span>
                         </div>
                     </template>
                     <template #subtitle>
-                        <span class="text-md mx-3 font-semibold">{{work.guiGe.competition.name}}</span>
-                        <span class="text-md">{{work.guiGe.name}}</span>
+                        <span class="text-sm mx-3 font-semibold">{{work.guiGe.competition.name}}</span>
+                        <span class="text-sm">{{work.guiGe.name}}</span>
                     </template>
                     <template #content>
                         <p class="m-0">
@@ -26,13 +26,19 @@
                 <Card class="overflow-hidden cursor-pointer" v-for="wIndex of uploadRule.maxWorkCount-workList.length" @click="showCompetitionList($event)">
                     <template #header>
 <!--                        <img src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />-->
-                        <div class="w-full h-48 bg-gray-500 content-center">
+                        <div class="w-full h-80 bg-gray-500 content-center">
                             <h1 class="center text-white">+</h1>
                         </div>
                     </template>
-                    <template #title>新增一个作品</template>
+                    <template #title>
+                        <div class="between items-center">
+                            <span>新增一个作品</span>
+                            <span class="text-sm"></span>
+                        </div>
+                    </template>
                     <template #subtitle>
-
+                        <span class="text-sm mx-3 font-semibold"></span>
+                        <span class="text-sm"></span>
                     </template>
                     <template #content>
                         <p class="m-0">
@@ -122,17 +128,20 @@ onMounted(async () => {
 });
 
 function loadWorksByUser() {
-    workRest.qyWorks({appId:host,userId:userId.value,masterCompetitionId:masterCompetition.id,shiWorkItemList:true},(res)=>{
+    if (!userId.value) {
+        return;
+    }
+    workRest.qyWorks({appId:host,userId:userId.value,masterCompetitionId:masterCompetition.id,shiWorkItemList:true},async (res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 workList.value = res.data;
-                lodash.forEach(workList.value,(work)=>{
-                    lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),async(workItem)=>{
+                for (let work of workList.value) {
+                    for (let workItem of lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})) {
                         workItem.tempMap = {imgPath:await oss.buildPathAsync(workItem.path,true,null)};
-                    });
+                    }
                     work.tempMap = {};
                     work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
-                });
+                }
             }
         }
     });
@@ -146,7 +155,7 @@ function showCompetitionList(event) {
     });
 }
 
-function returnFunction(obj) {
+async function returnFunction(obj) {
     let work = null;
     if (obj.process=="c") {
         work = obj.work;
@@ -166,11 +175,11 @@ function returnFunction(obj) {
         work.tempMap.workItemList = [];
     }
     work.workItemList = lodash.concat(work.workItemList,obj.work.tempMap.workItemList,obj.work.tempMap.upedItemList);
-    lodash.forEach(workList.value,(work)=>{
-        lodash.forEach(lodash.filter(work.workItemList,(o)=>{return o.mediaType==0}),(workItem)=>{
-            workItem.tempMap = {imgPath:oss.buildImgPath(workItem.path)};
-        })
-    });
+    for (let work of workList.value) {
+        for (let workItem of lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})) {
+            workItem.tempMap = {imgPath:await oss.buildPathAsync(workItem.path,true,false)};
+        }
+    }
     // loadWorksByUser();
     forceUpdateKey.value++;
 }
