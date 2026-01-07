@@ -292,33 +292,33 @@ router.beforeEach((to, from) => {
         document.documentElement.classList.add('app-dark');
     } else {
         document.documentElement.classList.remove('app-dark');
-    }
-    let t = null;
-    lodash.forEach(pageJson.menuTreeDatas(),(o)=>{
-        if (o.route!=to.name) {
-            lodash.forEach(o.items,(c)=>{
-                if (c.route==to.name) {
-                    t = c;
-                }
-            });
-        } else {
-            t = o;
-        }
-    });
-    // 返回 false 以取消导航
-    if (t) {
-        if (t.isLogin) {
-            if (localStorage.getItem("userId")) {
-                return true;
+        let t = null;
+        lodash.forEach(pageJson.menuTreeDatas(),(o)=>{
+            if (o.route!=to.name) {
+                lodash.forEach(o.items,(c)=>{
+                    if (c.route==to.name) {
+                        t = c;
+                    }
+                });
             } else {
-                bus.emit({route:to.name,isLogin:t.isLogin});
-                return { name: 'landing' };
+                t = o;
+            }
+        });
+        // 返回 false 以取消导航
+        if (t) {
+            if (t.isLogin) {
+                if (localStorage.getItem("userId")) {
+                    return true;
+                } else {
+                    bus.emit({route:to.name,isLogin:t.isLogin});
+                    return { name: 'landing' };
+                }
+            } else {
+                return true;
             }
         } else {
-            return true;
+            return { name: 'landing' };
         }
-    } else {
-        return { name: 'landing' };
     }
 })
 

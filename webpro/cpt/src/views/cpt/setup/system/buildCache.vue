@@ -1,5 +1,5 @@
 <template>
-    <animationPage :show="true" class="w-full absolute top-0 z-40">
+    <animationPage :show="true" _class="w-full absolute top-0 z-40">
         <div class="card !p-2">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">

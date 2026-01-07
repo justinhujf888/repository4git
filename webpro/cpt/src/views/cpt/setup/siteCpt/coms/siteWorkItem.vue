@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
+    <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40">
         <div class="center">
             <h1>Building...</h1>
         </div>
@@ -31,7 +31,7 @@
         </div>
     </animationPage>
 
-    <animationPage ref="updateSiteZuoPingWorkitemPage" class="w-full absolute top-0 z-40">
+    <animationPage ref="updateSiteZuoPingWorkitemPage" _class="w-full absolute top-0 z-40">
         <updateSiteWorkitem ref="refUpdateSiteWorkitem" :files="siteZuoPingWorkItemList" :sourceId="host" :sourceType="0" :type="1" :filePreKey="`cpt/${host}/zuoping`" :maxFileSize="2097152" :fileLimit="20" @callClose="updateSiteZuoPingWorkitemDialogClose"/>
     </animationPage>
 </template>

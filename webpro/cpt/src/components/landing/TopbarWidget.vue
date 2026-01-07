@@ -22,20 +22,10 @@
         </div>
         <div class="">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none hidden lg:flex lg:flex-row cursor-pointer gap-8 text-base lg:text-lg text-center">
-                <li v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')">
+                <li v-for="menu of menuBar" v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')">
                     <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
-                    <a _click="smoothScroll('hero')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle" @click="toggle">
-                        <span>评奖</span>
-                    </a>
-                </li>
-                <li>
-                    <a _click="smoothScroll('features')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle" @click="toggle">
-                        <span>获奖作品</span>
-                    </a>
-                </li>
-                <li>
-                    <a _click="smoothScroll('highlights')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle" @click="toggle">
-                        <span>参赛</span>
+                    <a _click="smoothScroll('hero')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium hover:underline hover:underline-offset-8 hover:decoration-orange-500 hover:decoration-solid hover:decoration-4" @mouseenter="toggle(menu,$event)" @click="toggle(menu,$event)">
+                        <span>{{menu.name}}</span>
                     </a>
                 </li>
             </ul>
@@ -54,7 +44,7 @@
                     </a>
                 </li>
                 <li>
-                    <a @click="userBarClick({route:'forgotpw',isLogin:true})" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
+                    <a @click="showForgotMode=true" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
                         <span>修改密码</span>
                     </a>
                 </li>
@@ -112,7 +102,7 @@
                 <div class="grid md:grid-cols-5 grid-cols-3 gap-5 top-10">
                     <div class="col start" v-for="menu in treeDatas">
                         <div class="col">
-                            <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" @click="userBarClick({isLogin:false,route:menu.route})">{{menu.label}}</span>
+                            <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" :class="menu.isHover ? 'underline underline-offset-8 decoration-orange-500 decoration-solid decoration-4': ''" @click="userBarClick({isLogin:false,route:menu.route})" @mouseenter="toggle(menu,$event)">{{menu.label}}</span>
                             <ul v-if="menu.menuType==1" class="mt-5">
                                 <li v-for="item of menu.children" class="col my-4 cursor-pointer" @click="userBarClick(item);">
                                     <span class="text-base px-5">{{item.label}}</span>
@@ -153,12 +143,14 @@ import Register from '@/views/pages/auth/register.vue';
 import ForgotPw from '@/views/pages/auth/forgotPw.vue';
 
 import { useEventBus } from '@vueuse/core';
+import pageJson from '@/datas/pageJson';
 const bus = useEventBus('login');
 const unsubscribe = bus.on(busListener);
 
 const shiShowButton = ref(false);
 const userId = useStorage("userId");
 const treeDatas = ref([]);
+const menuBar = ref([{key:"pingJiang",name:"评奖"},{key:"huoJiangWork",name:"获奖作品"},{key:"userCenter",name:"参赛"}]);
 
 const siteDatas = inject("siteDatas");
 const footDatas = inject("footDatas");
@@ -229,8 +221,13 @@ function busListener(treeNode) {
     userBarClick(treeNode);
 }
 
-function toggle(event) {
+function toggle(menu,event) {
     op.value.show(event);
+    lodash.forEach(treeDatas.value,(v,k)=>{
+        v.isHover = false;
+    });
+    let m = lodash.find(treeDatas.value,(o)=>{return o.key==menu.key});
+    m.isHover = true;
 }
 
 function smoothScroll(id) {

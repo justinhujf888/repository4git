@@ -65,7 +65,7 @@ export default {
         return pageJson;
     },
     async processPageImageJson(element) {
-        if (element.type=="image") {
+        if (element.type=="image" && element.value.img) {
             element.value.tempMap = {imgPath:await oss.buildPathAsync(element.value.img,true,null)};
         } else if (element.type=="box") {
             lodash.forEach(element.eltTypes,async (ev)=>{
@@ -88,8 +88,7 @@ export default {
                 sort:0,
                 name:"轮播区域",
                 setup:{
-                    banner:{sort:0,type:"box",pre:"设置轮播",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"url",type:"text",pre:"URL"},{key:"title",type:"title",pre:"Title"},{key:"content",type:"text",pre:"内容"}]},
-                    mImg:{type:"image",yeWuType:"media",value:{},pre:"中间信息图片"}
+                    banner:{sort:0,type:"box",pre:"设置轮播",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"url",type:"text",pre:"URL"},{key:"title",type:"title",pre:"Title"},{key:"content",type:"text",pre:"内容"}]}
                 }
             },
             sloganArea:{

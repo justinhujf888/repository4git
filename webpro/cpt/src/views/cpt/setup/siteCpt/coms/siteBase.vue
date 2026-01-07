@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
+    <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40">
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">赛事基础信息设置</span>
@@ -19,7 +19,7 @@
         </div>
     </animationPage>
 
-    <animationPage ref="updateSiteCptPage" class="w-full absolute top-0 z-40">
+    <animationPage ref="updateSiteCptPage" _class="w-full absolute top-0 z-40">
         <updateSiteCpt @callClose="updateSiteCptDialogClose"/>
     </animationPage>
 </template>

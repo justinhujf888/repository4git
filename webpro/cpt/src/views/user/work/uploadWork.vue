@@ -1,6 +1,6 @@
 <template>
     <routerPath :home="null" :items="menuItems"/>
-    <div class="card md:px-32 text-xl">
+    <div class="card md:px-32 text-xl w-dvw h-auto">
         <title-text :text="competition?.name" text-class="text-black font-semibold"/>
         <div class="start overflow-hidden mt-10">
             <div class="col center w-full p-2">
@@ -193,7 +193,7 @@ const resolver = ({ values }) => {
         errors.videoVaild = [];
         lodash.forEach(obj.uploadRule.workType.image,(v)=>{
             const count = lodash.size(lodash.filter(workImageItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}));
-            if (count < v.maxCount) {
+            if (count < v.minCount) {
                 errors.imageVaild.push({type:"error",message:v.title});
             }
             if (v.checkExif) {
@@ -207,7 +207,7 @@ const resolver = ({ values }) => {
 
         lodash.forEach(obj.uploadRule.workType.video,(v)=>{
             const count = lodash.size(lodash.filter(workVideoItems.value,(o)=>{return o.mediaType==v.mediaType && o.type==v.type && o.file!=null}));
-            if (count < v.maxCount) {
+            if (count < v.minCount) {
                 errors.videoVaild.push({type:"error",message:v.title});
             }
         });
@@ -257,6 +257,8 @@ const onFormSubmit = ({ valid }) => {
         // console.log(workImageItems.value,workVideoItems.value);
         dialog.openLoading("");
         work.value.guiGeId = work.value.guiGe.id;
+        work.value.guiGe.competition = {};
+        work.value.guiGe.competition.name = competition.value.name;
         work.value.status = shiTempSave ? 0 : 1;
         work.value.tempMap = {workItemList:[],upedItemList:work.value.workItemList};
         work.value.workItemList = null;

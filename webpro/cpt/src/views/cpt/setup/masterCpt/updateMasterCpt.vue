@@ -8,8 +8,12 @@
                     <DatePicker v-model="masterCompetition.name" dateFormat="yy" view="year" showIcon placeholder="请输入赛事年份" class="w-full mb-4"/>
                 </IftaLabel>
                 <IftaLabel>
-                    <label for="beginDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">报名时间</label>
-                    <DatePicker name="beginDate" v-model="masterCompetition.beginDate" dateFormat="yy-mm-dd" showIcon placeholder="请输入报名时间" class="w-full mb-4"/>
+                    <label for="beginDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">报名开始时间</label>
+                    <DatePicker name="beginDate" v-model="masterCompetition.beginDate" dateFormat="yy-mm-dd" showIcon placeholder="请输入报名开始时间" class="w-full mb-4"/>
+                </IftaLabel>
+                <IftaLabel>
+                    <label for="bmEndDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">报名结束时间</label>
+                    <DatePicker name="bmEndDate" v-model="masterCompetition.bmEndDate" dateFormat="yy-mm-dd" showIcon placeholder="请输入报名结束时间" class="w-full mb-4"/>
                 </IftaLabel>
                 <IftaLabel>
                     <label for="pingShenDate" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">评审时间</label>
@@ -67,6 +71,7 @@ const resolver = ({ values }) => {
     errors = primeUtil.checkFormRequiredValid([
         { val: masterCompetition.value.cptDate, name: "cptDate" },
         { val: masterCompetition.value.beginDate, name: "beginDate" },
+        { val: masterCompetition.value.bmEndDate, name: "bmEndDate" },
         { val: masterCompetition.value.pingShenDate, name: "pingShenDate" },
         { val: masterCompetition.value.endDate, name: "endDate" }
     ]);
@@ -93,6 +98,23 @@ const onFormSubmit = ({ valid }) => {
             masterCompetition.value.cptDate = dayjs(masterCompetition.value.name).format("YYYY-MM-DD");
             masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).format("YYYY");
         }
+
+        masterCompetition.value.workSetup = {
+            maxWorkCount: 4,
+            workType:{
+                image:[
+                    {type:0,mediaType:0,showCount:1,minCount:1,checkExif:true,title:"俯视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
+                    {type:1,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"侧视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
+                    {type:2,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"前视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
+                    {type:3,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"45度角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
+                    {type:4,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"品种特征特写",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
+                    {type:5,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"最美瞬间",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
+
+                ],
+                video:[
+                    {type:6,mediaType:1,showCount:1,minCount:1,title:"上传视频",text:"1分钟以内原片",rule:{duration:20,size:20*1024*1024}}
+                ]
+            }};
 
         let mc = lodash.cloneDeep(masterCompetition.value);
         mc.competitionList = null;

@@ -171,23 +171,26 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String appId;
 
-    @Column(length=1000,columnDefinition = "jsonb")
-    @JdbcTypeCode(SqlTypes.JSON)
-    Map<String,Object> pxBiaozun;
-
-    @Column(length=1000,columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> setupFields;
 
-    @Column(length=1000,columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> judgeSetup;
+
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> workSetup;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date cptDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date beginDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date bmEndDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date pingShenDate;

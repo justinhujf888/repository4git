@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
+    <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40" class="">
         <div class="card md:px-32 text-xl">
             <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);" :pt="{content:{class:'!bggradient1'}}">
@@ -9,13 +9,13 @@
                     </template>
                     <template #title>
                         <div class="between items-center">
-                            <span>{{work.name}}</span>
-                            <span class="text-sm" :class="{'text-green-600':work.status==1,'text-red-600':work.status==9}">{{work.tempMap?.status}}</span>
+                            <span>{{work?.name}}</span>
+                            <span class="text-sm" :class="{'text-green-600':work?.status==1,'text-red-600':work?.status==9}">{{work.tempMap?.status}}</span>
                         </div>
                     </template>
                     <template #subtitle>
-                        <span class="text-sm mx-3 font-semibold">{{work.guiGe.competition.name}}</span>
-                        <span class="text-sm">{{work.guiGe.name}}</span>
+                        <span class="text-sm mx-3 font-semibold">{{work?.guiGe?.competition?.name}}</span>
+                        <span class="text-sm">{{work?.guiGe?.name}}</span>
                     </template>
                     <template #content>
                         <p class="m-0">
@@ -23,7 +23,7 @@
                         </p>
                     </template>
                 </Card>
-                <Card class="overflow-hidden cursor-pointer" v-for="wIndex of uploadRule.maxWorkCount-workList.length" @click="showCompetitionList($event)">
+                <Card class="overflow-hidden cursor-pointer" v-for="wIndex of uploadRule?.maxWorkCount-workList.length" @click="showCompetitionList($event)">
                     <template #header>
 <!--                        <img src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />-->
                         <div class="w-full h-80 bg-gray-500 content-center">
@@ -52,7 +52,7 @@
 <!--                <Button v-for="wIndex of uploadRule.maxWorkCount-workList.length" class="!text-4xl !p-5 w-full md:w-3/5" label="+" severity="secondary" @click="showCompetitionList($event)"/>-->
 <!--            </div>-->
             <div v-else class="center grid gap-4">
-                <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule.maxWorkCount}}件作品</span>
+                <span>您还没有创建作品，请添加一个作品最多可提交{{uploadRule?.maxWorkCount}}件作品</span>
                 <Button class="!text-4xl" label="+" severity="secondary" @click="showCompetitionList($event)"/>
             </div>
         </div>
@@ -96,20 +96,7 @@ const forceUpdateKey = ref(0);
 const userId = useStorage("userId");//注意，userId不是ref对象
 const workList = ref([]);
 const competitionList = ref([]);
-const uploadRule = ref({
-    maxWorkCount: 3,
-    workType:{
-        image:[
-            {type:0,mediaType:0,showCount:1,maxCount:1,checkExif:true,title:"上传相机原图",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:2*1024*1024}},
-            {type:1,mediaType:0,showCount:1,maxCount:1,checkExif:false,title:"上传作品全景图主图",text:"",rule:{size:2*1024*1024}},
-            {type:2,mediaType:0,showCount:2,maxCount:2,checkExif:false,title:"上传作品全景图其他角度",text:"",rule:{size:2*1024*1024}},
-            {type:3,mediaType:0,showCount:4,maxCount:2,checkExif:false,title:"上传作品其他细节至少2张",text:"",rule:{size:2*1024*1024}}
-        ],
-        video:[
-            {type:4,mediaType:1,showCount:1,maxCount:1,title:"上传视频",text:"",rule:{duration:20,size:20*1024*1024}}
-        ]
-    }
-});
+const uploadRule = ref(null);
 
 let host = inject("domain");
 let masterCompetition = null;
@@ -122,6 +109,7 @@ onMounted(async () => {
     //         }
     //     }
     // });
+    uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     competitionList.value = masterCompetition.competitionList;
     loadWorksByUser();

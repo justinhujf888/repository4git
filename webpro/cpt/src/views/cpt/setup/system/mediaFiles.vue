@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
+    <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40">
         <Tabs v-model:value="tabIndex">
             <TabList>
                 <Tab value="8">页面素材</Tab>

@@ -137,11 +137,12 @@ export const Beans = {
         return {
             id: "",
             name: "",
-            pxBiaozun: null,
             setupFields: null,
             judgeSetup: null,
+            workSetup: null,
             cptDate: null,
             beginDate: null,
+            bmEndDate: null,
             pingShenDate: null,
             endDate: null,
             createDate: null,

@@ -1,5 +1,5 @@
 <template>
-    <animationPage ref="mainPage" :show="true" class="w-full absolute top-0 z-40">
+    <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40">
         <div class="card">
             <div class="flex flex-wrap items-center justify-between">
                 <span class="text-base">年份赛事管理</span>
@@ -41,32 +41,32 @@
                     </template>
                 </Column>
                 <template #expansion="slotProps">
-                    <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-80 sm:w-full">
-                            <div class="!relative w-full">
-                                <div class="absolute -top-10 right-1 z-100">
-                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[5].command()"/>
-                                </div>
-                                <div class="mt-10">
-                                    <DataView :value="slotProps.data.pxBiaozun?.data" :pt="{
-                                        emptyMessage:{
-                                            class:'opacity-0'
-                                        }
-                                    }">
-                                        <template #list="slotProps">
-                                            <div class="col">
-                                                <div v-for="(item,index) in slotProps.items" :key="index">
-                                                    <Panel :header="item.title">
-                                                        <p>{{item.description}}</p>
-                                                    </Panel>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </DataView>
-                                </div>
-                            </div>
-                        </ScrollPanel>
-                    </Fieldset>
+<!--                    <Fieldset class="text-wrap text-start" legend="评审标准" :toggleable="true" :collapsed="true">-->
+<!--                        <ScrollPanel class="w-80 sm:w-full">-->
+<!--                            <div class="!relative w-full">-->
+<!--                                <div class="absolute -top-10 right-1 z-100">-->
+<!--                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[5].command()"/>-->
+<!--                                </div>-->
+<!--                                <div class="mt-10">-->
+<!--                                    <DataView :value="slotProps.data.pxBiaozun?.data" :pt="{-->
+<!--                                        emptyMessage:{-->
+<!--                                            class:'opacity-0'-->
+<!--                                        }-->
+<!--                                    }">-->
+<!--                                        <template #list="slotProps">-->
+<!--                                            <div class="col">-->
+<!--                                                <div v-for="(item,index) in slotProps.items" :key="index">-->
+<!--                                                    <Panel :header="item.title">-->
+<!--                                                        <p>{{item.description}}</p>-->
+<!--                                                    </Panel>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </template>-->
+<!--                                    </DataView>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </ScrollPanel>-->
+<!--                    </Fieldset>-->
 
 <!--                    <Fieldset class="text-wrap text-start" legend="主题图片" :toggleable="true" :collapsed="true">-->
 <!--                        <ScrollPanel class="w-80 sm:w-full">-->
@@ -81,32 +81,32 @@
 <!--                        </ScrollPanel>-->
 <!--                    </Fieldset>-->
 
-                    <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true" :collapsed="true">
-                        <ScrollPanel class="w-80 sm:w-full">
-                            <div class="!relative w-full">
-                                <div class="absolute -top-10 right-1 z-100">
-                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[2].command()"/>
-                                </div>
-                                <div class="mt-10">
-                                    <DataView :value="slotProps.data.description?.data" :pt="{
-                                        emptyMessage:{
-                                            class:'opacity-0'
-                                        }
-                                    }">
-                                        <template #list="slotProps">
-                                            <div class="col">
-                                                <div v-for="(item,index) in slotProps.items" :key="index">
-                                                    <Panel :header="item.title">
-                                                        <p>{{item.description}}</p>
-                                                    </Panel>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </DataView>
-                                </div>
-                            </div>
-                        </ScrollPanel>
-                    </Fieldset>
+<!--                    <Fieldset class="text-wrap text-start" legend="赛事简介" :toggleable="true" :collapsed="true">-->
+<!--                        <ScrollPanel class="w-80 sm:w-full">-->
+<!--                            <div class="!relative w-full">-->
+<!--                                <div class="absolute -top-10 right-1 z-100">-->
+<!--                                    <Button label="设置" size="small" severity="warn" rounded @click="getSplitItems(slotProps.data,slotProps.index)[2].command()"/>-->
+<!--                                </div>-->
+<!--                                <div class="mt-10">-->
+<!--                                    <DataView :value="slotProps.data.description?.data" :pt="{-->
+<!--                                        emptyMessage:{-->
+<!--                                            class:'opacity-0'-->
+<!--                                        }-->
+<!--                                    }">-->
+<!--                                        <template #list="slotProps">-->
+<!--                                            <div class="col">-->
+<!--                                                <div v-for="(item,index) in slotProps.items" :key="index">-->
+<!--                                                    <Panel :header="item.title">-->
+<!--                                                        <p>{{item.description}}</p>-->
+<!--                                                    </Panel>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </template>-->
+<!--                                    </DataView>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </ScrollPanel>-->
+<!--                    </Fieldset>-->
 
                     <Fieldset class="text-wrap text-start" legend="字段配置" :toggleable="true" :collapsed="true">
                         <ScrollPanel class="w-80 sm:w-full">
