@@ -173,7 +173,7 @@ async function openDialog(_element) {
                         if (res.data!=null) {
                             judgeList.value = [];
                             for(let v of res.data.content) {
-                                let judge = {id:v.id,img:{value:v.headImgUrl},name:v.name,subDescription:v.subDescription,description:v.description,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
+                                let judge = {id:v.id,img:{value:v.headImgUrl},name:v.name,guoJi:v.guoJi,subDescription:v.subDescription,description:v.description,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
                                 judge.img.tempMap = {imgPath:judge.tempMap.imgPath};
                                 judgeList.value.push(judge);
                             }
@@ -194,7 +194,7 @@ async function openDialog(_element) {
                         if (res.data!=null) {
                             orgHumanList.value = [];
                             for(let v of res.data) {
-                                let orgHuman = {id:v.id,img:{value:v.headImgUrl},name:v.name,subDescription:v.subDescription,description:v.description,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
+                                let orgHuman = {id:v.id,img:{value:v.headImgUrl},name:v.name,guoJi:v.guoJi,subDescription:v.subDescription,description:v.description,zhiWei:v.zhiWei,tempMap:{imgPath:await oss.buildPathAsync(v.headImgUrl,true,null)}};
                                 orgHuman.img.tempMap = {imgPath:orgHuman.tempMap.imgPath};
                                 orgHumanList.value.push(orgHuman);
                             }

@@ -5,7 +5,11 @@
             <div class="overflow-hidden mt-8" v-for="man of indexDatas?.judgeArea.setup.judgeItems.value" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 slide-in-from-t-20 animate-duration-1000' }" :pt="{body:{class:'bg-transparent'}}">
                 <img :src="man.img.tempMap.imgPath" class="h-60 w-full object-cover object-center"/>
                 <div class="mt-5 text-white col gap-2">
-                    <span>{{man.name}}</span>
+                    <div class="row items-center">
+                        <span>{{man.name}}</span>
+                        <span class="mx-2">|</span>
+                        <span>{{man.guoJi}}</span>
+                    </div>
                     <span>{{man.subDescription}}</span>
                     <span>{{man.zhiWei}}</span>
                 </div>

@@ -5,20 +5,18 @@
         <jiang :jiang-datas="indexDatas?.jiangArea.setup.jiangItems.value" root-class="mt-20" jiang-text-class="text-white"/>
         <div class="center mt-20">
             <div class="text-base p-1 border-btn">
-                <a class="center px-16 py-2 bg-gray-950 text-white font-semibold sub-bg" @click="bus.emit({route:'myWorks',isLogin:true})">在线报名</a>
+                <a class="center px-16 py-2 bg-gray-950 text-white font-semibold sub-bg" @click="page.redirectTo('saiZhi',null)">在线报名</a>
             </div>
         </div>
     </div>
 </template>
 <script setup>
 import { inject, onMounted, ref, watch } from 'vue';
-const bus = useEventBus('login');
 // import Orb from "@/bit-blocks/Backgrounds/Orb/Orb.vue";
 // import GradientText from "@/bit-blocks/TextAnimations/GradientText/GradientText.vue";
-import lodash from 'lodash-es';
 import TitleText from '@/components/my/form/titleText.vue';
 import Jiang from '@/views/documents/components/jiang.vue';
-import { useEventBus } from '@vueuse/core';
+import page from '@/api/uniapp/page';
 
 const indexDatas = inject("indexDatas");
 const siteDatas = inject("siteDatas");

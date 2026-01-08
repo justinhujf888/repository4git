@@ -56,6 +56,7 @@ export const Beans = {
         return {
             id: "",
             name: "",
+            guoJi: "",
             engName: "",
             sourceType: -1,
             sourceId: "",
@@ -192,6 +193,7 @@ export const Beans = {
             id: "",
             phone: "",
             name: "",
+            guoJi: "",
             engName: "",
             password: "",
             description: "",

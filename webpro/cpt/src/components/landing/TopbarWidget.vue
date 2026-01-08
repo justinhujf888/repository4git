@@ -8,7 +8,7 @@
                         text
                         severity="secondary"
                         rounded
-                        _v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')" @click="toggle">
+                        _v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')" @click="toggle(null,$event)">
                     <i class="pi pi-bars !text-2xl"></i>
                 </Button>
             </div>
@@ -99,7 +99,7 @@
 
         <Popover ref="op">
             <div class="px-10 py-5">
-                <div class="grid md:grid-cols-5 grid-cols-3 gap-5 top-10">
+                <div class="grid md:grid-cols-5 grid-cols-3 gap-2 md:gap-5 top-10">
                     <div class="col start" v-for="menu in treeDatas">
                         <div class="col">
                             <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" :class="menu.isHover ? 'underline underline-offset-8 decoration-orange-500 decoration-solid decoration-4': ''" @click="userBarClick({isLogin:false,route:menu.route})" @mouseenter="toggle(menu,$event)">{{menu.label}}</span>
@@ -223,11 +223,13 @@ function busListener(treeNode) {
 
 function toggle(menu,event) {
     op.value.show(event);
-    lodash.forEach(treeDatas.value,(v,k)=>{
-        v.isHover = false;
-    });
-    let m = lodash.find(treeDatas.value,(o)=>{return o.key==menu.key});
-    m.isHover = true;
+    if (menu) {
+        lodash.forEach(treeDatas.value,(v,k)=>{
+            v.isHover = false;
+        });
+        let m = lodash.find(treeDatas.value,(o)=>{return o.key==menu.key});
+        m.isHover = true;
+    }
 }
 
 function smoothScroll(id) {

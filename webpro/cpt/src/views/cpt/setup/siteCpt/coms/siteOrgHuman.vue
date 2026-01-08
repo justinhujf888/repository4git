@@ -24,6 +24,7 @@
                     </template>
                 </Column>
                 <Column field="name" header="姓名" class="w-36"></Column>
+                <Column field="guoJi" header="国籍" class="w-36"></Column>
                 <Column header="简介">
                     <template #body="{data}">
                         <p class="truncate w-full text-start text-wrap">{{data.description}}</p>

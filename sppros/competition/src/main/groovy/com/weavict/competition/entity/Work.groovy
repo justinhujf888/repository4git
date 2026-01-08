@@ -115,6 +115,9 @@ class OrgHuman extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String name;
 
+    @Column(length=20)
+    String guoJi;
+
     @Column(length=30)
     String engName;
 
@@ -469,6 +472,9 @@ class Judge extends BEntity implements Serializable, IEntity
 
     @Column(length=20)
     String phone;
+
+    @Column(length=20)
+    String guoJi;
 
     @Column(length=30)
     String name;

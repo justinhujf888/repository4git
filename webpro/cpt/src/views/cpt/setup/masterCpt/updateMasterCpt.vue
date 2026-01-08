@@ -99,22 +99,22 @@ const onFormSubmit = ({ valid }) => {
             masterCompetition.value.name = dayjs(masterCompetition.value.cptDate).format("YYYY");
         }
 
-        masterCompetition.value.workSetup = {
-            maxWorkCount: 4,
-            workType:{
-                image:[
-                    {type:0,mediaType:0,showCount:1,minCount:1,checkExif:true,title:"俯视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
-                    {type:1,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"侧视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
-                    {type:2,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"前视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
-                    {type:3,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"45度角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
-                    {type:4,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"品种特征特写",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
-                    {type:5,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"最美瞬间",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:8*1024*1024}},
-
-                ],
-                video:[
-                    {type:6,mediaType:1,showCount:1,minCount:1,title:"上传视频",text:"1分钟以内原片",rule:{duration:20,size:20*1024*1024}}
-                ]
-            }};
+        // masterCompetition.value.workSetup = {
+        //     maxWorkCount: 2,
+        //     workType:{
+        //         image:[
+        //             {type:0,mediaType:0,showCount:1,minCount:1,checkExif:true,title:"俯视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:5*1024*1024}},
+        //             {type:1,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"侧视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:5*1024*1024}},
+        //             {type:2,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"前视角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:5*1024*1024}},
+        //             {type:3,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"45度角度",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:5*1024*1024}},
+        //             {type:4,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"品种特征特写",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:5*1024*1024}},
+        //             {type:5,mediaType:0,showCount:1,minCount:1,checkExif:false,title:"最美瞬间",text:"不可在原片基础上做任何修改调整，包括裁切、调整颜色、修改内容",rule:{size:5*1024*1024}},
+        //
+        //         ],
+        //         video:[
+        //             {type:6,mediaType:1,showCount:1,minCount:1,title:"上传视频",text:"1分钟以内原片",rule:{duration:20,size:15*1024*1024}}
+        //         ]
+        //     }};
 
         let mc = lodash.cloneDeep(masterCompetition.value);
         mc.competitionList = null;

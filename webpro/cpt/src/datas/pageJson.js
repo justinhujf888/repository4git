@@ -114,7 +114,7 @@ export default {
                 sort:3,
                 setup:{
                     title:{sort:0,type:"headTitle",value:"评委",pre:"标题名称"},
-                    judgeItems:{sort:1,type:"box",yeWuType:"judge",pre:"设置评委信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
+                    judgeItems:{sort:1,type:"box",yeWuType:"judge",pre:"设置评委信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"guoJi",type:"text",pre:"国籍"},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
                 }
             },
             workStoreArea:{
@@ -179,7 +179,7 @@ export default {
                 name: "组委会",
                 setup: {
                     title:{sort:0,type:"headTitle",value:"组委会",pre:"标题名称"},
-                    orgHumanItems:{sort:1,type:"box",yeWuType:"orgHuman",pre:"设置组委会信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
+                    orgHumanItems:{sort:1,type:"box",yeWuType:"orgHuman",pre:"设置组委会信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"guoJi",type:"text",pre:"国籍"},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
                 }
             },
             titleTitleArea1:{
@@ -233,7 +233,7 @@ export default {
                 sort:2,
                 name: "评审团",
                 setup: {
-                    orgHumanItems:{sort:0,type:"box",yeWuType:"judge",pre:"设置评审团信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
+                    orgHumanItems:{sort:0,type:"box",yeWuType:"judge",pre:"设置评审团信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"guoJi",type:"text",pre:"国籍"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
                 }
             }
         }

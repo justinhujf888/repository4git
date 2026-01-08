@@ -26,6 +26,7 @@
                             </div>
                         </template>
                     </Column>
+                    <Column field="guoJi" header="国籍" class="w-36"></Column>
                     <Column field="name" header="姓名" class="w-36"></Column>
                     <Column field="phone" header="手机号码" class="w-36"></Column>
                     <!--            <Column field="engName" header="Eng Name"></Column>-->

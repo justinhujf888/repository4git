@@ -13,8 +13,12 @@
                                                 <div class="relative w-full pb-5 px-5" style="max-width: 35rem;max-height: 35rem;width: 25rem;height: 30rem">
                                                     <Image class="w-full h-full object-cover" :src="item.img.tempMap.imgPath" :pt="{image:{class:'!w-full !h-full object-cover'}}"/>
                                                     <div class="absolute bottom-0 left-0 col gap-2 font-medium w-full p-5 text-white opacity-90" style="background: linear-gradient(45deg, #1d75a4, #2da75c, #f2923f)">
-                                                        <span class="text-lg font-semibold">{{item.name}}</span>
-                                                        <div class="row">
+                                                        <div class="row items-center">
+                                                            <span class="text-lg font-semibold">{{item.name}}</span>
+                                                            <span class="mx-2">|</span>
+                                                            <span class="text-lg font-semibold">{{item.guoJi}}</span>
+                                                        </div>
+                                                        <div>
                                                             <span class="text-lg">{{item.zhiWei}}</span>
                                                             <span class="text-base">{{item.subDescription}}</span>
                                                         </div>

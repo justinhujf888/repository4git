@@ -14,9 +14,13 @@
                                                 <Image class="w-full h-full object-cover" :src="item.img.tempMap.imgPath" :pt="{image:{class:'!w-full !h-full object-cover'}}"/>
                                             </div>
                                             <div class="col gap-2 font-semibold flex-1">
-                                                <span class="text-lg font-semibold">{{item.name}}</span>
+                                                <div class="row items-center">
+                                                    <span class="text-lg font-semibold">{{item.name}}</span>
+                                                    <span class="mx-2">|</span>
+                                                    <span class="text-lg font-semibold">{{item.guoJi}}</span>
+                                                </div>
                                                 <span class="text-base font-medium">{{item.zhiWei}}</span>
-                                                <span class="text-base font-medium">{{item.subDescription}}VAC面向全球景观行业从业者和造景爱好者，汇聚全球智慧，造景师们通过艺术的手段，呈现自</span>
+                                                <span class="text-base font-medium">{{item.subDescription}}</span>
 <!--                                                <span class="text-base font-medium textwrap">{{item.description}}</span>-->
                                             </div>
                                         </div>

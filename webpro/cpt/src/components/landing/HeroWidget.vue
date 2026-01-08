@@ -53,7 +53,7 @@ watch(indexDatas,async (newValue)=>{
     // console.log(newValue.bannerArea.setup.mImg.value);
     for(let v of newValue.bannerArea.setup.banner.value) {
         v.img.tempMap = {};
-        v.img.tempMap.imgPath = await oss.buildPathAsync(v.img.img,true,null);
+        v.img.tempMap.imgPath = await oss.buildPathAsync(v.img.img,false,null);
     }
     newValue.bannerArea.setup.mImg.value.tempMap = {};
     newValue.bannerArea.setup.mImg.value.tempMap.imgPath = await oss.buildPathAsync(newValue.bannerArea.setup.mImg.value.img,true,null);

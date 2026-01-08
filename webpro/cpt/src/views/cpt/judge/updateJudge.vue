@@ -8,6 +8,10 @@
                         <InputText name="name" placeholder="请输入姓名" class="w-full md:w-[30rem] mb-4" v-model="judge.name" />
                     </IftaLabel>
                     <IftaLabel>
+                        <label for="guoJi" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">国籍</label>
+                        <InputText name="guoJi" placeholder="请输入国籍" class="w-full md:w-[30rem] mb-4" v-model="judge.guoJi" />
+                    </IftaLabel>
+                    <IftaLabel>
                         <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">手机号码</label>
                         <InputText name="phone" placeholder="请输入手机号码" class="w-full md:w-[30rem] mb-4" v-model="judge.phone" />
                         <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
@@ -76,6 +80,7 @@ const resolver = ({ values }) => {
     errors = primeUtil.checkFormRequiredValid([
         {val:judge.value.name,name:"name"},
         {val:judge.value.phone,name:"phone"},
+        {val:judge.value.guoJi,name:"guoJi"},
         {val:judge.value.subDescription,name:"subDescription"},
         // {val:src.value,name:"headImg",label:"照片"}
     ]);
