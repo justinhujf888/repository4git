@@ -1,21 +1,23 @@
 <template>
     <routerPath :home="null" :items="menuItems"/>
-    <div class="card md:px-32 text-xl w-dvw h-auto">
+    <div class="card md:px-32 text-xl h-auto">
         <title-text :text="competition?.name" text-class="text-black font-semibold"/>
         <div class="start overflow-hidden mt-10">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">
-                    <FloatLabel variant="on" v-if="process=='c'">
-                        <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
-                        <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid placeholder="选择分组"/>
-                    </FloatLabel>
-                    <IftaLabel variant="on" v-if="process=='u'">
-                        <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium">选择分组</label>
-                        <InputText name="guige" class="w-full md:w-[30rem]" :value="work.guiGe?.name" disabled/>
-                    </IftaLabel>
+                    <div v-if="competition.guiGeList">
+                        <FloatLabel variant="on" v-if="process=='c'">
+                            <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
+                            <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid placeholder="选择分组"/>
+                        </FloatLabel>
+                        <IftaLabel variant="on" v-if="process=='u'">
+                            <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium">选择分组</label>
+                            <InputText name="guige" class="w-full" :value="work.guiGe?.name" disabled/>
+                        </IftaLabel>
+                    </div>
                     <FloatLabel variant="on">
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品名称</label>
-                        <InputText name="name" class="w-full md:w-[30rem]" v-model="work.name" :readonly="work.status==1"/>
+                        <InputText name="name" class="w-full" v-model="work.name" :readonly="work.status==1"/>
                     </FloatLabel>
                     <Fieldset legend="作品照片">
                         <InputText v-model="imageVaild" name="imageVaild" class="hidden"/>
@@ -173,22 +175,20 @@ function buildWorkItem(mediaType,type) {
 }
 
 const resolver = ({ values }) => {
+    let requireList = [];
+    requireList.push({val:work.value.name,name:"name"});
+    if (competition.value.guiGeList && competition.value.guiGeList.length > 0) {
+        requireList.push({val:work.value.guiGe.id,name:"guige"});
+    }
     if (shiTempSave) {
-        errors = primeUtil.checkFormRequiredValid([
-            {val:work.value.name,name:"name"},
-            {val:work.value.guiGe.id,name:"guige"},
-            // {val:src.value,name:"headImg",label:"照片"}
-        ]);
+        // {val:src.value,name:"headImg",label:"照片"}
+        errors = primeUtil.checkFormRequiredValid(requireList);
         errors.imageVaild = [];
         errors.videoVaild = [];
     } else {
-        errors = primeUtil.checkFormRequiredValid([
-            {val:work.value.name,name:"name"},
-            {val:work.value.guiGe.id,name:"guige"},
-            {val:work.value.myMeanDescription,name:"myMeanDescription"},
-            {val:work.value.gousiDescription,name:"gousiDescription"},
-            // {val:src.value,name:"headImg",label:"照片"}
-        ]);
+        requireList.push({val:work.value.myMeanDescription,name:"myMeanDescription"});
+        requireList.push({val:work.value.gousiDescription,name:"gousiDescription"});
+        errors = primeUtil.checkFormRequiredValid(requireList);
         errors.imageVaild = [];
         errors.videoVaild = [];
         lodash.forEach(obj.uploadRule.workType.image,(v)=>{

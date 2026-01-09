@@ -1,24 +1,25 @@
 <template>
 <!--    <FloatingConfigurator />-->
-    <div class="flex items-center justify-center overflow-hidden">
+    <div class="overflow-hidden">
         <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
             <IftaLabel>
                 <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium">手机号码</label>
-                <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem]" v-model="buyer.phone" />
+                <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full" v-model="buyer.phone" />
                 <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
             </IftaLabel>
 
             <IftaLabel>
                 <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base z-30">密码</label>
                 <Password name="password1" v-model="buyer.password" placeholder="请输入密码" :toggleMask="true" fluid :feedback="false"></Password>
-                <div class="flex items-center justify-end mt-2 mb-8 gap-8">
+                <div class="col justify-end mt-2 mb-8 gap-2">
                     <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="forgot">忘记密码</span>
+                    <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="regist">没有账号，我要注册</span>
                 </div>
             </IftaLabel>
 
             <div class="flex justify-end gap-2 mt-5 !border-btn">
-                <Button type="submit" label="登录" _as="router-link" _to="/"></Button>
-                <Button severity="warn" label="返回" class="!bg-orange-400 !border-0" _as="router-link" _to="/" @click="cancel"></Button>
+                <Button type="submit" label="登录" _as="router-link" _to="/" class="!bg-green-600 !rounded-full"></Button>
+                <Button severity="warn" label="返回" class="!bg-orange-500 !border-0 !rounded-full" _as="router-link" _to="/" @click="cancel"></Button>
             </div>
     </Form>
     </div>
@@ -45,7 +46,7 @@ const siteDatas = ref(null);
 (async ()=>{
     siteDatas.value = await useGlobal.siteDatas();
 })();
-const emit = defineEmits(["afterLogin","cancel","forgot"]);
+const emit = defineEmits(["afterLogin","cancel","forgot","regist"]);
 
 let errors = [];
 let loginToken = "";
@@ -58,6 +59,9 @@ const cancel = ()=>{
 }
 const forgot = ()=>{
     emit("forgot");
+}
+const regist = ()=>{
+    emit("regist");
 }
 
 const resolver = ({ values }) => {

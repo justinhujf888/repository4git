@@ -23,11 +23,17 @@
                                     <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">类别名称</label>
                                     <InputText v-model="element.name"/>
                                 </IftaLabel>
+                                <Divider/>
+                                <IftaLabel>
+                                    <label class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">类别说明</label>
+                                    <Textarea v-model="element.description"/>
+                                </IftaLabel>
                             </Fieldset>
                             <Fieldset legend="设置分组" class="col w-full md:w-2/5 lg:w-3/5 border-solid border-2 border-gray-200 p-2 gap-2 relative">
                                 <div class="gap-x-2">
                                     <p v-for="(gg,gIndex) in element.guiGeList" :key="gIndex" class="row gap-x-2">
                                         <InputText v-model="gg.name" size="small" placeholder="输入分组名称"/>
+                                        <Textarea v-model="gg.description" placeholder="输入分组说明"/>
                                         <button @click="deleteGuiGe(element,gIndex)" class="text-xs border-2 border-solid border-red-300 px-2 py-1 text-red-400 rounded-2xl place-self-center">删除</button>
                                     </p>
                                 </div>

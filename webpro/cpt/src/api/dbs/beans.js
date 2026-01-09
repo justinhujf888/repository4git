@@ -127,6 +127,7 @@ export const Beans = {
         return {
             id: "",
             name: "",
+            description: "",
             guigeFields: null,
             appId: "",
             competition: this.competition(),

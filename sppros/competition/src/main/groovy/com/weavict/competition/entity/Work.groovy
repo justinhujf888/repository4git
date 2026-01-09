@@ -231,7 +231,7 @@ class Competition extends BEntity implements Serializable, IEntity
     @Column(length=50)
     String name;
 
-    @Column(length=350)
+    @Column(length=150)
     String description;
 
     @Column(length=2)
@@ -267,6 +267,9 @@ class GuiGe extends BEntity implements Serializable, IEntity
 
     @Column(length=50)
     String name;
+
+    @Column(length=150)
+    String description;
 
     @Column(length=1000,columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)

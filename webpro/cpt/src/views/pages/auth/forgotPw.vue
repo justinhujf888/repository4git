@@ -1,11 +1,11 @@
 <template>
 <!--    <FloatingConfigurator />-->
 <!--    <Button label="test" @click="test"/>-->
-    <div class="flex items-center justify-center overflow-hidden">
+    <div class="overflow-hidden">
         <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
             <IftaLabel>
                 <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium">手机号码</label>
-                <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full md:w-[30rem]" v-model="buyer.phone" />
+                <InputMask name="phone" mask="99999999999" placeholder="请输入手机号码" class="w-full" v-model="buyer.phone" />
                 <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error"  size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
             </IftaLabel>
 
@@ -32,8 +32,8 @@
             </IftaLabel>
 
             <div class="flex justify-end gap-2 mt-5 !border-btn">
-                <Button type="submit" label="重置密码" _as="router-link" _to="/"></Button>
-                <Button severity="warn" label="返回" class="!bg-orange-400 !border-0" _as="router-link" _to="/" @click="cancel"></Button>
+                <Button type="submit" label="重置密码" _as="router-link" _to="/" class="!bg-green-600 !rounded-full"></Button>
+                <Button severity="warn" label="返回" class="!bg-orange-400 !border-0 !rounded-full" _as="router-link" _to="/" @click="cancel"></Button>
             </div>
         </Form>
     </div>

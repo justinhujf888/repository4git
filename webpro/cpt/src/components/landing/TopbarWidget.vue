@@ -78,20 +78,20 @@
 <!--            <Button label="test" @click="shiShowButton=true"/>-->
         </div>
         <Teleport to="body">
-            <Dialog modal header="登录" v-model:visible="showLoginMode" pt:mask:class="backdrop-blur-sm">
-                <div _class="card">
-                    <login @afterLogin="afterLogin" @cancel="cancelLogin" @forgot="loginForgot"/>
+            <Dialog modal header="登录" class="w-[40rem]" v-model:visible="showLoginMode" pt:mask:class="backdrop-blur-sm">
+                <div>
+                    <login @afterLogin="afterLogin" @cancel="cancelLogin" @forgot="loginForgot" @regist="loginRegist"/>
                 </div>
             </Dialog>
 
-            <Dialog modal header="注册" v-model:visible="showRegistMode" pt:mask:class="backdrop-blur-sm">
-                <div _class="card">
+            <Dialog modal header="注册" class="w-[40rem]" v-model:visible="showRegistMode" pt:mask:class="backdrop-blur-sm">
+                <div>
                     <register @afterLogin="afterRegist" @cancel="cancelRegist"/>
                 </div>
             </Dialog>
 
-            <Dialog modal header="重置密码" v-model:visible="showForgotMode" pt:mask:class="backdrop-blur-sm">
-                <div _class="card">
+            <Dialog modal header="重置密码" class="w-[40rem]" v-model:visible="showForgotMode" pt:mask:class="backdrop-blur-sm">
+                <div>
                     <forgot-pw @afterLogin="afterForgot4Login" @afterSave="afterForgot4Save" @cancel="cancelForgot"/>
                 </div>
             </Dialog>
@@ -99,7 +99,7 @@
 
         <Popover ref="op">
             <div class="px-2 md:px-10 py-5">
-                <div class="grid md:grid-cols-5 grid-cols-3 gap-2 md:gap-5 top-10">
+                <div class="grid md:grid-cols-4 grid-cols-3 gap-2 md:gap-4 top-10">
                     <div class="col start" v-for="menu in treeDatas">
                         <div class="col">
                             <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" :class="menu.isHover ? 'underline underline-offset-8 decoration-orange-500 decoration-solid decoration-4': ''" @click="userBarClick({isLogin:false,route:menu.route})" @mouseenter="toggle(menu,$event)">{{menu.label}}</span>
@@ -280,6 +280,10 @@ function cancelLogin() {
 function loginForgot() {
     showLoginMode.value = false;
     showForgotMode.value = true;
+}
+function loginRegist() {
+    showLoginMode.value = false;
+    showRegistMode.value = true;
 }
 function afterRegist(_userId,_loginToken) {
     userId.value = _userId;
