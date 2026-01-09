@@ -79,26 +79,26 @@
         </div>
         <Teleport to="body">
             <Dialog modal header="登录" v-model:visible="showLoginMode" pt:mask:class="backdrop-blur-sm">
-                <div class="card">
+                <div _class="card">
                     <login @afterLogin="afterLogin" @cancel="cancelLogin" @forgot="loginForgot"/>
                 </div>
             </Dialog>
 
             <Dialog modal header="注册" v-model:visible="showRegistMode" pt:mask:class="backdrop-blur-sm">
-                <div class="card">
+                <div _class="card">
                     <register @afterLogin="afterRegist" @cancel="cancelRegist"/>
                 </div>
             </Dialog>
 
             <Dialog modal header="重置密码" v-model:visible="showForgotMode" pt:mask:class="backdrop-blur-sm">
-                <div class="card">
+                <div _class="card">
                     <forgot-pw @afterLogin="afterForgot4Login" @afterSave="afterForgot4Save" @cancel="cancelForgot"/>
                 </div>
             </Dialog>
         </Teleport>
 
         <Popover ref="op">
-            <div class="px-10 py-5">
+            <div class="px-2 md:px-10 py-5">
                 <div class="grid md:grid-cols-5 grid-cols-3 gap-2 md:gap-5 top-10">
                     <div class="col start" v-for="menu in treeDatas">
                         <div class="col">
