@@ -38,7 +38,7 @@
                                     </p>
                                 </div>
                                 <div class="absolute -top-8 left-32">
-                                    <button @click="addGuiGe(index)" class="bg-indigo-400 text-xs h-6 px-2 text-white rounded-2xl place-self-start">新增分组</button>
+                                    <button @click="addGuiGe(index)" class="bg-indigo-700 text-xs h-6 px-2 text-white rounded-2xl place-self-start">新增分组</button>
                                 </div>
                             </Fieldset>
                         </div>
