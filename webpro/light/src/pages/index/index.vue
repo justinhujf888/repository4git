@@ -361,6 +361,10 @@
 						// Blue.writeBLEValue(hexTools.bleBuffer("0x01",parseInt(cday.format("HH")),parseInt(cday.format("mm"))).buffer);
 						setTimeout(()=>{
 							viewStatus.value = 2;
+                            uni.pageScrollTo({
+                                scrollTop: 0,
+                                duration: 300
+                            });
 						},1000);
 					} 
 					else if (data.code==BLUE_STATE.CONNECTFAILED.code) {
