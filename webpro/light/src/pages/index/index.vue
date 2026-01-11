@@ -1,5 +1,5 @@
 <template>
-	<view class="relative h-screen px-3">
+	<view class="relative px-3">
 		<wd-notify></wd-notify>
 <!--  #ifdef H5  -->
         <my-language></my-language>
@@ -24,7 +24,7 @@
 <!-- 			<wd-upload ref="uploader" :auto-upload="false" :file-list="fileList" image-mode="aspectFill" :action="host" :build-form-data="buildFormData" @change="handleChange" @fail="ossFail" @success="ossSuccess"></wd-upload>
 			<wd-button size="small" custom-class="py-2 text-xs text-white" @click="uploadClick()">开始上传</wd-button> -->
 			<!-- <wd-button custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" @click="writeBleValue()">test</wd-button> -->
-			<view v-if="viewStatus == 0" class="hwcenter mt-8">
+			<view v-if="viewStatus == 0" class="mt-32 center">
 				<wd-button size="large" custom-class="py-2 text-xs text-white" custom-style="background: #6AAE36" click="scan()" @click="callBle()">{{$t('page.index.addDevice')}}</wd-button>
 			</view>
 			<view v-else-if="viewStatus == 1" class="mt-2">
@@ -33,7 +33,7 @@
 					<view v-if="deviceList?.length > 0">
 						<view v-for="(device,index) in deviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row relative">
 							<view class="mx-2">
-								<img :src="'../../static/'+device.tempMap.img" mode="widthFix" class="w-25 h-25"></img>
+								<img :src="'../../static/'+device.tempMap.img" mode="widthFix" class="w-25 h-25"/>
 							</view>
 							<view class="flex-1 col">
 								<view class="row mb-2">
@@ -63,7 +63,7 @@
 					<view v-if="preDeviceList?.length > 0">
 						<view v-for="device in preDeviceList" :key="device.deviceId" class="bg-white rounded-xl px-2 py-4 mt-4 row">
 							<view class="mx-2">
-								<img :src="'../../static/'+device.tempMap.img" mode="widthFix" class="w-25 h-25"></img>
+								<img :src="'../../static/'+device.tempMap.img" mode="widthFix" class="w-25 h-25"/>
 							</view>
 							<view class="flex-1 col">
 								<view class="row mb-2">
@@ -77,6 +77,7 @@
 					<view v-else class="center mt-10">
 						<text class="text-gray-500 text-xs">{{$t('page.index.noSerOthDevices')}}</text>
 					</view>
+                    <view class="w-full mt-10"></view>
 				</view>
 			</view>
 			<view v-else-if="viewStatus == 2" class="px-2">
@@ -109,7 +110,7 @@
 			</button>
 		</view>
 	</view>
-    <view class="h-50"></view>
+<!--    <view class="h-50"></view>-->
 <!-- #ifdef MP	-->
 	<wd-popup v-model="renameShow" position="bottom" :safe-area-inset-bottom="true" custom-style="border-radius:32rpx;">
 		<view class="col center text-gray-500 mt-10">
@@ -169,7 +170,7 @@
 	
 	let userId = null;
 	let deviceTypeList = null;
-	let location = {};
+	let location = {}
 	
 	
 	// const uploader = ref();
