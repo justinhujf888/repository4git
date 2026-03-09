@@ -20,11 +20,13 @@
 <!--                <router-link :to="{name:'landing'}" class="text-xl lg:text-3xl font-bold leading-normal mr-20 text-surface-900 dark:text-surface-0">{{siteDatas?.siteInfo.siteCompetition.name}}</router-link>-->
             </div>
         </div>
+
+<!--    topbar menu    hover:underline hover:underline-offset-8 hover:decoration-orange-500 hover:decoration-solid hover:decoration-4-->
         <div class="">
             <ul class="list-none p-0 m-0 flex lg:items-center select-none hidden lg:flex lg:flex-row cursor-pointer gap-8 text-base lg:text-lg text-center">
                 <li v-for="menu of menuBar" v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')">
                     <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
-                    <a _click="smoothScroll('hero')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium hover:underline hover:underline-offset-8 hover:decoration-orange-500 hover:decoration-solid hover:decoration-4" @mouseenter="toggle(menu,$event)" @click="toggle(menu,$event)">
+                    <a _click="smoothScroll('hero')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle(menu,$event)" @click="toggle(menu,$event)">
                         <span>{{menu.name}}</span>
                     </a>
                 </li>
@@ -98,11 +100,12 @@
         </Teleport>
 
         <Popover ref="op">
-            <div class="px-2 md:px-10 py-5">
+<!--      underline underline-offset-8 decoration-orange-500 decoration-solid decoration-4      -->
+            <div class="px-2 md:px-10 py-5" :style="'width:'+(width)+'px'">
                 <div class="grid md:grid-cols-4 grid-cols-3 gap-2 md:gap-4 top-10">
                     <div class="col start" v-for="menu in treeDatas">
                         <div class="col">
-                            <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" :class="menu.isHover ? 'underline underline-offset-8 decoration-orange-500 decoration-solid decoration-4': ''" @click="userBarClick({isLogin:false,route:menu.route})" @mouseenter="toggle(menu,$event)">{{menu.label}}</span>
+                            <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" :class="menu.isHover ? '': ''" @click="userBarClick({isLogin:false,route:menu.route})" @mouseenter="toggle(menu,$event)">{{menu.label}}</span>
                             <ul v-if="menu.menuType==1" class="mt-5">
                                 <li v-for="item of menu.children" class="col my-4 cursor-pointer" @click="userBarClick(item);">
                                     <span class="text-base px-5">{{item.label}}</span>
@@ -130,6 +133,7 @@
 
 <script setup>
 import { useStorage } from '@vueuse/core';
+import { useWindowSize } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
 import { inject, onMounted, ref, watch, useTemplateRef } from 'vue';
@@ -146,6 +150,7 @@ import { useEventBus } from '@vueuse/core';
 import pageJson from '@/datas/pageJson';
 const bus = useEventBus('login');
 const unsubscribe = bus.on(busListener);
+const { width, height } = useWindowSize();
 
 const shiShowButton = ref(false);
 const userId = useStorage("userId");

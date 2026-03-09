@@ -80,7 +80,7 @@ function isOutsideClicked(event) {
         <div class="w-full h-80 landing-wrapper">
             <TopbarWidget/>
             <div class="w-full h-56 bg-center bg-cover relative" :style="'background-image: url(\''+footDatas?.boundArea.setup.subPageImg.value.tempMap.imgPath+'\')'">
-                <h2 class="-text-surface-0 _mix-blend-difference text-white absolute bottom-10 left-20">{{useGlobal.getRouteInfo().meta.name}}</h2>
+                <h1 class="-text-surface-0 _mix-blend-difference text-white absolute bottom-10 left-20 tracking-widest">{{useGlobal.getRouteInfo().meta.name}}</h1>
             </div>
         </div>
          <div class="layout-main-container lg:!ml-0 !pt-3">

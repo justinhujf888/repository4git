@@ -210,6 +210,13 @@ export default {
                 setup:{
                     titleTextGruop:{sort:0,type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
                 }
+            },
+            baseArea:{
+                name:"通用设置",
+                sort:6,
+                setup:{
+                    subPageImg:{sort:0,type:"image",yeWuType:"media",value:{},pre:"子页面背景图片"}
+                }
             }
         }
     },
