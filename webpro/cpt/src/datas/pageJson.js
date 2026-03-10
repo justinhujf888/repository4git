@@ -242,6 +242,13 @@ export default {
                 setup: {
                     orgHumanItems:{sort:0,type:"box",yeWuType:"judge",pre:"设置评审团信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"guoJi",type:"text",pre:"国籍"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
                 }
+            },
+            baseArea:{
+                name:"通用设置",
+                sort:3,
+                setup:{
+                    subPageImg:{sort:0,type:"image",yeWuType:"media",value:{},pre:"子页面背景图片"}
+                }
             }
         }
     },
@@ -295,6 +302,13 @@ export default {
                 setup:{
                     title:{sort:0,type:"title",pre:"标题",value:""},
                     text:{sort:1,type:"html",value:"",pre:"说明"}
+                }
+            },
+            baseArea:{
+                name:"通用设置",
+                sort:6,
+                setup:{
+                    subPageImg:{sort:0,type:"image",yeWuType:"media",value:{},pre:"子页面背景图片"}
                 }
             }
         }

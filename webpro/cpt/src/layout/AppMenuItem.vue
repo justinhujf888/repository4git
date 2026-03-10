@@ -76,7 +76,8 @@ function checkActiveRoute(item) {
             <span class="layout-menuitem-text font-bold text-base">{{ item.label }}</span>
             <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>
         </a>
-        <router-link v-if="item.to && !item.items && item.visible !== false" @click="itemClick($event, item, index)" :class="[item.class, { 'active-route': checkActiveRoute(item) }]" tabindex="0" :to="item.to">
+        <router-link v-if="item.to && !item.items && item.visible !== false" @click="itemClick($event, item, index)" :class="[item.class, { '_active-route': checkActiveRoute(item) }]" tabindex="0" :to="item.to">
+            <span class="w-1 h-6 mr-2" :class="[{'bg-gray-800 dark:bg-green-500':checkActiveRoute(item)}]"></span>
             <i :class="item.icon" class="layout-menuitem-icon"></i>
             <span class="layout-menuitem-text font-semibold">{{ item.label }}</span>
             <i class="pi pi-fw pi-angle-down layout-submenu-toggler" v-if="item.items"></i>

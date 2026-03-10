@@ -183,7 +183,7 @@ onMounted(() => {
         model.value = [
             {
                 label: '',
-                items: [{ label: '我的作品', _icon: 'pi pi-fw pi-circle', to: '/user/myWorks' }]
+                items: [{ label: '我的参赛作品', _icon: 'pi pi-fw pi-circle', to: '/user/myWorks' }]
             },
             {
                 label: '',

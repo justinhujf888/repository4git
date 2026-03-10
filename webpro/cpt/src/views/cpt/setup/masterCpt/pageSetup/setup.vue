@@ -96,10 +96,18 @@ const onNodeSelect = (node) => {
                     // pageJson.value = pj.preProcessPageJson(res.data[0].setupJson,false);
                     // json = res.data[0].setupJson;  实验性修改，这行是原来的代码，下面是修改的
                     let sourceJson = pageComponentMap[componentIndex.value].jsonFun();
+                    json = lodash.cloneDeep(sourceJson);
                     let dataJson = res.data[0].setupJson;
                     lodash.forEach(sourceJson,(r,rk)=>{
+                        let ro = lodash.find(dataJson,(v,k)=>{return k==rk});
+                        if (ro && !json[rk]) {
+                            json[rk] = ro;
+                        }
                         lodash.forEach(r.setup,(rd,rdk)=>{
-                            lodash.find(dataJson[rk].setup,(v,k)=>{return k==rdk})
+                            let rdo = lodash.find(dataJson[rk]?.setup,(v,k)=>{return k==rdk});
+                            if (rdo) {
+                                json[rk].setup[rdk] = rdo;
+                            }
                         });
                     });
                 } else {

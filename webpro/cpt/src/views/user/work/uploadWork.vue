@@ -1,10 +1,10 @@
 <template>
     <routerPath :home="null" :items="menuItems"/>
-    <div class="card md:px-32 text-xl h-auto">
+    <div class="card text-xl h-auto">
         <title-text :text="competition?.name" text-class="text-black font-semibold"/>
         <div class="start overflow-hidden mt-10">
             <div class="col center w-full p-2">
-                <Form v-slot="$form" :resolver @submit="onFormSubmit" class="lg:w-4/5 w-full grid gap-x-2 gap-y-4">
+                <Form v-slot="$form" :resolver @submit="onFormSubmit" class="w-full grid gap-x-2 gap-y-4">
                     <div v-if="competition.guiGeList">
                         <FloatLabel variant="on" v-if="process=='c'">
                             <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
@@ -20,20 +20,25 @@
                         <InputText name="name" class="w-full" v-model="work.name" :readonly="work.status==1"/>
                     </FloatLabel>
                     <Fieldset legend="作品照片">
+                        <span class="text-sm my-2">※ {{workImageText}}</span>
                         <InputText v-model="imageVaild" name="imageVaild" class="hidden"/>
                         <Message v-for="er of $form.imageVaild?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
                         <FileUpload v-show="false" ref="imageFileUpload" mode="basic" accept="image/*" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
-                        <div class="row flex-wrap gap-2">
-                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workImageItems" :key="index" @click="uploadButtonClick(item,index)">
-                                <img v-show="item.src" :alt="item.src" :src="item.src" class="absolute top-0 left-0 z-10 w-full h-32 object-cover object-center"/>
-                                <div class="mix-blend-difference text-white col absolute wcenter z-20 w-full">
-                                    <span class="text-xl">{{item.title}}</span>
-                                    <span class="text-sm">{{item.text}}</span>
+                        <div class="row flex-wrap gap-2 mt-5">
+                            <div v-for="(item,index) in workImageItems" :key="index">
+                                <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative" @click="uploadButtonClick(item,index)">
+                                    <img v-show="item.src" :alt="item.src" :src="item.src" class="absolute top-0 left-0 z-10 w-full h-32 object-cover object-center"/>
+                                    <span v-show="!item.src" class="iconfont text-5xl">&#xe67f;</span>
+                                    <div class="z-20 w-full"></div>
+                                    <div class="row absolute bottom-2 right-2 z-20">
+                                        <Tag v-if="item.src && work.status<1" severity="danger" value="删除" class="" @click.stop="deleteFile(item)"></Tag>
+                                    </div>
+                                </Button>
+                                <div class="col center mt-2">
+                                    <span class="text-sm font-semibold">{{item.title}}</span>
+                                    <!--                                    <span class="text-sm">{{item.text}}</span>-->
                                 </div>
-                                <div class="row absolute bottom-2 right-2 z-20">
-                                    <Tag v-if="item.src && work.status<1" severity="danger" value="删除" class="" @click.stop="deleteFile(item)"></Tag>
-                                </div>
-                            </Button>
+                            </div>
                         </div>
                     </Fieldset>
                     <Fieldset legend="作品视频">
@@ -41,16 +46,19 @@
                         <FileUpload v-show="false" ref="videoFileUpload" mode="basic" accept="video/*" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                         <Message v-for="er of $form.videoVaild?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
                         <div class="row flex-wrap gap-2">
-                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" v-for="(item,index) in workVideoItems" :key="index" @click="uploadButtonClick(item,index)">
-                                <videoInfo ref="refVideoInfo" v-if="item.src" :src="item.src" class="absolute top-0 left-0 z-10 object-center"/>
-                                <div class="mix-blend-difference text-white col absolute wcenter z-10 w-full">
-                                    <span class="text-xl">{{item.title}}</span>
-                                    <span class="text-sm">{{item.text}}</span>
+                            <div class="row" v-for="(item,index) in workVideoItems" :key="index">
+                                <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 !p-2 border-solid border-gray-500 border-2 rounded-xl relative" @click="uploadButtonClick(item,index)">
+                                    <videoInfo ref="refVideoInfo" v-if="item.src" :src="item.src" class="absolute top-0 left-0 z-10 object-center"/>
+                                    <span v-else class="iconfont text-5xl">&#xe681;</span>
+                                    <div class="row absolute bottom-2 right-2 z-20">
+                                        <Tag v-if="item.src && work.status<1" severity="danger" value="删除" class="" @click.stop="deleteFile(item)"></Tag>
+                                    </div>
+                                </Button>
+                                <div class="ml-3 center">
+<!--                                    <span class="text-xl">{{item.title}}</span>-->
+                                    <span class="text-sm">※ {{item.text}}</span>
                                 </div>
-                                <div class="row absolute bottom-2 right-2 z-20">
-                                    <Tag v-if="item.src && work.status<1" severity="danger" value="删除" class="" @click.stop="deleteFile(item)"></Tag>
-                                </div>
-                            </Button>
+                            </div>
                         </div>
                     </Fieldset>
                     <FloatLabel variant="on">
@@ -113,6 +121,7 @@ const masterCompetition = ref(Beans.masterCompetition());
 const competition = ref(Beans.competition());
 const work = ref(Beans.work());
 const menuItems = ref([]);
+const workImageText = ref("");
 const workImageItems = ref([]);
 const workVideoItems = ref([]);
 const imageVaild = ref(false);
@@ -385,6 +394,8 @@ const init = (_mainPage,_mePage,_obj)=>{
     workImageItems.value = [];
     workVideoItems.value = [];
     errors = null;
+
+    workImageText.value = obj.uploadRule.workType.imageText;
     lodash.forEach(obj.uploadRule.workType.image,(v)=>{
         for(let i=0;i<v.showCount;i++) {
             workImageItems.value.push({title:v.title,text:v.text,file:null,mediaType:v.mediaType,type:v.type,checkExif:v.checkExif,bean:buildWorkItem(v.mediaType,v.type)});

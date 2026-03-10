@@ -1,5 +1,6 @@
 import AppLayout from '@/layout/AppLayout.vue';
-import userLayout from '@/layout/userlayout/AppLayout.vue';
+import userLayout from '@/layout/userlayout/AppLayout.vue'
+import withLeftLayOut from '@/layout/userlayout/withLeftLayOut.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import lodash from 'lodash-es';
 import { useEventBus } from '@vueuse/core';
@@ -13,14 +14,14 @@ const router = createRouter({
     routes: [
         {
             path: '/user',
-            component: userLayout,
+            component: withLeftLayOut,
             children: [
                 {
                     path: '/user/myWorks',
                     name: 'myWorks',
                     component: () => import('@/views/user/work/myWorks.vue'),
                     meta:{
-                        name: "我的作品"
+                        name: "我的参赛作品"
                     }
                 },
                 {
