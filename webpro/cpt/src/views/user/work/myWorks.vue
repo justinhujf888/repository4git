@@ -2,7 +2,7 @@
     <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40" class="">
         <div class="card md:px-32 text-xl">
             <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);" :pt="{content:{class:'!bggradient1'}}">
+                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);" :pt="{content:{class:'!bggradient1'}}">
                     <template #header>
                         <img v-if="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})[0]?.tempMap?.imgPath" class="h-80 w-full object-cover object-center"/>
                         <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
@@ -56,19 +56,13 @@
                 <Button class="!text-4xl" label="+" severity="secondary" @click="showCompetitionList($event)"/>
             </div>
         </div>
-        <ConfirmPopup group="templating" :pt="{footer:{class:'!hidden'}}">
-            <template #message="slotProps">
-                <div class="flex flex-col items-center w-full gap-4 p-4 mb-4 pb-0">
-                    <!--                        <i :class="slotProps.message.icon" class="!text-6xl text-primary-500"></i>-->
-                    <div class="grid gap-2">
-                        <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return lodash.findIndex(workList,(w)=>{return w.guiGe.competition.id==o.id})<0})" :key="index">
-                            <Button :label="competition.name" severity="info" class="w-full !px-8" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});confirm.close();updateWorkPage.open(mainPage);"/>
-                        </div>
-                    </div>
-                    <p>{{ slotProps.message.message }}</p>
+        <Dialog v-model:visible="showDialog" header="请选择参赛类别" modal :dismissableMask="true">
+            <div class="flex flex-row items-center w-full gap-4 p-4 mb-4 pb-0">
+                <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return lodash.findIndex(workList,(w)=>{return w.guiGe.competition.id==o.id})<0})" :key="index" class="w-48 h-36">
+                    <Button :label="competition.name" severity="secondary" class="w-full h-full !px-8 !border-2 !border-solid !border-gray-200" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);"/>
                 </div>
-            </template>
-        </ConfirmPopup>
+            </div>
+        </Dialog>
     </animationPage>
 
     <animationPage ref="updateWorkPage">
@@ -87,7 +81,7 @@ import lodash from "lodash-es";
 import oss from "@/api/oss";
 import {Beans} from "@/api/dbs/beans";
 
-const confirm = useConfirm();
+const showDialog = ref(false);
 const mainPage = useTemplateRef("mainPage");
 const refUploadWork = useTemplateRef("refUploadWork");
 const updateWorkPage = useTemplateRef("updateWorkPage");
@@ -136,11 +130,7 @@ function loadWorksByUser() {
 }
 
 function showCompetitionList(event) {
-    confirm.require({
-        target: event.currentTarget,
-        group: 'templating',
-        message: '请选择参赛类别'
-    });
+    showDialog.value = true;
 }
 
 async function returnFunction(obj) {

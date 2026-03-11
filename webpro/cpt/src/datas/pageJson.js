@@ -158,9 +158,18 @@ export default {
                 sort:0,
                 setup:{
                     mImg:{sort:0,type:"image",yeWuType:"media",value:{},pre:"Logo"},
-                    subPageImg:{sort:1,type:"image",yeWuType:"media",value:{},pre:"子页面通用背景图片"},
+                    subPageImg:{sort:1,type:"image",yeWuType:"media",value:{},pre:"子页面Banner通用背景图片"},
                     linkItems:{sort:2,type:"box",pre:"设置图标链接",value:[],eltTypes:[{key:"img",type:"image",yeWuType:"media",pre:"图片",value:{}},{key:"text",type:"text",pre:"名称",value:""},{key:"url",type:"text",pre:"URL"}]},
                     footItems:{sort:3,type:"box",pre:"设置页脚文字链接",value:[],eltTypes:[{key:"text",type:"text",pre:"公司/协会名称",value:""},{key:"url",type:"text",pre:"URL"}]}
+                }
+            },
+            subPageBg:{
+                name:"子页面Banner背景图设置",
+                sort:1,
+                setup:{
+                    aboutPageImg:{sort:0,type:"image",yeWuType:"media",pageName:"about",value:{},pre:"关于页面背景图片"},
+                    judgePageImg:{sort:1,type:"image",yeWuType:"media",pageName:"judge",value:{},pre:"评委页面背景图片"},
+                    saiZhiPageImg:{sort:2,type:"image",yeWuType:"media",pageName:"saiZhi",value:{},pre:"赛制页面背景图片"}
                 }
             }
         }
@@ -210,13 +219,6 @@ export default {
                 setup:{
                     titleTextGruop:{sort:0,type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"textArea",pre:"文字",value:""}]}
                 }
-            },
-            baseArea:{
-                name:"通用设置",
-                sort:6,
-                setup:{
-                    subPageImg:{sort:0,type:"image",yeWuType:"media",value:{},pre:"子页面背景图片"}
-                }
             }
         }
     },
@@ -241,13 +243,6 @@ export default {
                 name: "评审团",
                 setup: {
                     orgHumanItems:{sort:0,type:"box",yeWuType:"judge",pre:"设置评审团信息",count:6,value:[],eltTypes:[{key:"img",type:"image",pre:"照片",value:{}},{key:"name",type:"text",pre:"姓名"},{key:"guoJi",type:"text",pre:"国籍"},{key:"subDescription",type:"text",pre:"一句话介绍(如：xxx公司创始人)"},{key:"zhiWei",type:"text",pre:"职位(如：xxx协会秘书长)"},{key:"description",type:"text",pre:"详细介绍"}]}
-                }
-            },
-            baseArea:{
-                name:"通用设置",
-                sort:3,
-                setup:{
-                    subPageImg:{sort:0,type:"image",yeWuType:"media",value:{},pre:"子页面背景图片"}
                 }
             }
         }
@@ -302,13 +297,6 @@ export default {
                 setup:{
                     title:{sort:0,type:"title",pre:"标题",value:""},
                     text:{sort:1,type:"html",value:"",pre:"说明"}
-                }
-            },
-            baseArea:{
-                name:"通用设置",
-                sort:6,
-                setup:{
-                    subPageImg:{sort:0,type:"image",yeWuType:"media",value:{},pre:"子页面背景图片"}
                 }
             }
         }
