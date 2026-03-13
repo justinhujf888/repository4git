@@ -2,20 +2,24 @@
     <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40" class="">
         <div class="card md:px-32 text-xl">
             <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);" :pt="{content:{class:'!bggradient1'}}">
+
+                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);" :pt="{root:{class:'!border-none !rounded-none !shadow-none'},body:{class:'!border-none !rounded-none !shadow-none'},content:{class:'!border-none !rounded-none !shadow-none'}}">
                     <template #header>
                         <img v-if="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})[0]?.tempMap?.imgPath" class="h-80 w-full object-cover object-center"/>
                         <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
                     </template>
                     <template #title>
-                        <div class="between items-center">
-                            <span>{{work?.name}}</span>
-                            <span class="text-sm" :class="{'text-green-600':work?.status==1,'text-red-600':work?.status==9}">{{work.tempMap?.status}}</span>
+                        <div class="col gap-y-1">
+                            <span class="text-base font-semibold">{{work?.name}}</span>
+                            <span class="text-sm">{{work?.guiGe?.competition?.name}}</span>
                         </div>
                     </template>
                     <template #subtitle>
-                        <span class="text-sm mx-3 font-semibold">{{work?.guiGe?.competition?.name}}</span>
-                        <span class="text-sm">{{work?.guiGe?.name}}</span>
+                        <div class="between">
+<!--                            <span class="text-sm">{{work?.guiGe?.name}}</span>-->
+                            <span class="text-sm">{{work?.createDate}}</span>
+                            <span class="text-sm font-semibold" :class="{'text-cyan-600':work?.status==1,'text-red-600':work?.status==9}">{{work.tempMap?.status}}</span>
+                        </div>
                     </template>
                     <template #content>
                         <p class="m-0">
@@ -23,7 +27,7 @@
                         </p>
                     </template>
                 </Card>
-                <Card class="overflow-hidden cursor-pointer" v-for="wIndex of uploadRule?.maxWorkCount-workList.length" @click="showCompetitionList($event)">
+                <Card class="overflow-hidden cursor-pointer" v-for="wIndex of uploadRule?.maxWorkCount-workList.length" @click="showCompetitionList($event)" :pt="{root:{class:'!border-none !rounded-none !shadow-none'},body:{class:'!border-none !rounded-none !shadow-none'},content:{class:'!border-none !rounded-none !shadow-none'}}">
                     <template #header>
 <!--                        <img src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />-->
                         <div class="w-full h-80 bg-gray-500 content-center">
@@ -32,7 +36,7 @@
                     </template>
                     <template #title>
                         <div class="between items-center">
-                            <span>新增一个作品</span>
+                            <span class="text-sm">新增一个作品</span>
                             <span class="text-sm"></span>
                         </div>
                     </template>

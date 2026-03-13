@@ -425,22 +425,28 @@ const init = (_mainPage,_mePage,_obj)=>{
                     work.value = res.data[0];
                     for (let workItem of lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0})) {
                         let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
-                        item.file = workItem.mediaFields;
-                        item.path = workItem.path;
-                        item.exifInfo = workItem.exifInfo;
-                        item.src = await oss.buildPathAsync(workItem.path,true,null);
-                        item.uploaded = true;
-                        item.tempMap = {};
-                        item.tempMap.imgPath = item.src;
-                        item.bean = workItem;
+                        if (item) {
+                            item.file = workItem.mediaFields;
+                            item.path = workItem.path;
+                            item.exifInfo = workItem.exifInfo;
+                            item.src = await oss.buildPathAsync(workItem.path,true,null);
+                            item.uploaded = true;
+                            item.tempMap = {};
+                            item.tempMap.imgPath = item.src;
+                            item.bean = workItem;
+                        }
                     }
+                    // console.log("workVideoItems",workVideoItems.value);
                     for (let workItem of lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==1})) {
+                        // console.log("bbbbbbbbbbbbbbbbbbbbbbbbb",workItem);
                         let item = lodash.find(workVideoItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
-                        item.file = workItem.mediaFields;
-                        item.path = workItem.path;
-                        item.src = await oss.buildPathAsync(workItem.path,false,null);
-                        item.bean = workItem;
-                        item.uploaded = true;
+                        if (item) {
+                            item.file = workItem.mediaFields;
+                            item.path = workItem.path;
+                            item.src = await oss.buildPathAsync(workItem.path,false,null);
+                            item.bean = workItem;
+                            item.uploaded = true;
+                        }
                     }
                 }
             }
