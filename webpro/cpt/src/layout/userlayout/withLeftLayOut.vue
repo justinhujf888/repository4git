@@ -85,7 +85,7 @@ function isOutsideClicked(event) {
         </div>
         <div class="layout-main-container lg:!ml-10 !pt-3">
             <div class="row">
-                <div class="_layout-sidebar !top-80 w-64 h-dvh mr-5 bg-surface-0 hidden md:block">
+                <div class="_layout-sidebar !top-80 min-w-40 h-dvh mr-5 bg-surface-0 hidden md:block">
                     <app-menu></app-menu>
                 </div>
                 <div id="app_container" styleClass="layout-main" class="layout-main relative">

@@ -1,12 +1,14 @@
 <template>
     <animationPage ref="mainPage" :show="true" _class="w-full absolute top-0 z-40" class="">
-        <div class="card md:px-32 text-xl">
-            <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.guiGe.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);" :pt="{root:{class:'!border-none !rounded-none !shadow-none'},body:{class:'!border-none !rounded-none !shadow-none'},content:{class:'!border-none !rounded-none !shadow-none'}}">
+        <div class="mt-5 ml-8"><span class="font-semibold text-base">您已上传{{workList.length}}件作品</span></div>
+        <div class="card text-xl !pt-1">
+            <div v-if="workList.length>0" class="center grid xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                <Card class="overflow-hidden cursor-pointer" v-for="work of workList" @click="refUploadWork.init(mainPage,updateWorkPage,{data:work.competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,work:work,process:'u',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);" :pt="{root:{class:'!border-none !rounded-none !shadow-none'},body:{class:'!border-none !rounded-none !shadow-none'},content:{class:'!border-none !rounded-none !shadow-none'}}">
                     <template #header>
-                        <img v-if="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})[0]?.tempMap?.imgPath" class="h-80 w-full object-cover object-center"/>
-                        <img v-else src="https://primefaces.org/cdn/primevue/images/card-vue.jpg" />
+                        <div class="w-full h-80 row center bg-gray-200">
+                            <img v-if="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})?.length>0" :src="lodash.filter(work.workItemList,(o)=>{return o?.mediaType==0})[0]?.tempMap?.imgPath" class="h-full w-full object-cover object-center"/>
+                            <span v-else class="iconfont text-5xl">&#xe67f;</span>
+                        </div>
                     </template>
                     <template #title>
                         <div class="col gap-y-1">
@@ -60,7 +62,7 @@
                 <Button class="!text-4xl" label="+" severity="secondary" @click="showCompetitionList($event)"/>
             </div>
         </div>
-        <Dialog v-model:visible="showDialog" header="请选择参赛类别" modal :dismissableMask="true">
+        <Dialog v-model:visible="showDialog" header="请选择参赛类别" modal :dismissableMask="true" :pt="{Button:{classd:'!border-none !rounded-none !shadow-none'}}">
             <div class="flex flex-row items-center w-full gap-4 p-4 mb-4 pb-0">
                 <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return lodash.findIndex(workList,(w)=>{return w.guiGe.competition.id==o.id})<0})" :key="index" class="w-48 h-36">
                     <Button :label="competition.name" severity="secondary" class="w-full h-full !px-8 !border-2 !border-solid !border-gray-200" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);"/>

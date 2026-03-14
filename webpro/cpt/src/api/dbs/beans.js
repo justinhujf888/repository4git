@@ -80,6 +80,7 @@ export const Beans = {
             lat: "",
             lng: "",
             guiGe: this.guiGe(),
+            competition: this.competition(),
             guiGeId: "",
             buyer: this.buyer(),
             createDate: null,
@@ -119,7 +120,8 @@ export const Beans = {
             description: "",
             appId: "",
             masterCompetition: this.masterCompetition(),
-            guiGeList: []
+            guiGeList: [],
+            workList:[]
 		}
 	},
 

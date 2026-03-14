@@ -5,14 +5,14 @@
         <div class="start overflow-hidden mt-10">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="w-full grid gap-x-2 gap-y-4">
-                    <div v-if="competition.guiGeList">
-                        <FloatLabel variant="on" v-if="process=='c'">
+                    <div>
+                        <FloatLabel variant="on" v-if="process=='c' && competition.guiGeList">
                             <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
                             <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid placeholder="选择分组"/>
                         </FloatLabel>
-                        <IftaLabel variant="on" v-if="process=='u'">
+                        <IftaLabel variant="on" v-if="process=='u' && work.guiGe">
                             <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium">选择分组</label>
-                            <InputText name="guige" class="w-full" :value="work.guiGe?.name" disabled/>
+                            <InputText name="guige" class="w-full" :value="work.guiGe?.name" readonly />
                         </IftaLabel>
                     </div>
                     <FloatLabel variant="on">
@@ -265,9 +265,14 @@ const onFormSubmit = ({ valid }) => {
     if (valid) {
         // console.log(workImageItems.value,workVideoItems.value);
         dialog.openLoading("");
-        work.value.guiGeId = work.value.guiGe.id;
-        work.value.guiGe.competition = {};
-        work.value.guiGe.competition.name = competition.value.name;
+        if (!obj.data.guiGeList || obj.data.guiGeList?.length<1) {
+            work.value.guiGe = null;
+            work.value.guiGeId = null;
+        } else {
+            work.value.guiGeId = work.value.guiGe?.id;
+            work.value.guiGe.competition = {};
+            work.value.guiGe.competition.name = competition.value.name;
+        }
         work.value.status = shiTempSave ? 0 : 1;
         work.value.tempMap = {workItemList:[],upedItemList:work.value.workItemList};
         work.value.workItemList = null;
@@ -389,6 +394,7 @@ const init = (_mainPage,_mePage,_obj)=>{
     obj = lodash.cloneDeep(_obj);
     process.value = obj.process;
     competition.value = obj.data;
+    // console.log(obj);
     masterCompetition.value = obj.masterCompetition;
 
     workImageItems.value = [];
@@ -416,6 +422,12 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.hangyeFields = masterCompetition.value.tempMap.setupFields;
         work.value.otherFields = masterCompetition.value.setupFields;
         work.value.createDate = new Date().getTime();
+        work.value.competition = Beans.competition();
+        work.value.competition.id = competition.value.id;
+        if (!obj.data.guiGeList || obj.data.guiGeList?.length<1) {
+            work.value.guiGe = null;
+            work.value.guiGeId = null;
+        }
         work.value.workItemList = [];
     } else if (obj.process=="u") {
         // console.log(work.value);

@@ -426,7 +426,7 @@ class WorkRest extends BaseRest
                                  .where("guiGe.id = :guiGeId",["guiGeId":query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
                                  .where("guiGeId = :guiGeJsonId",["guiGeJsonId":query.guiGeJsonId],"and",{return !(query.guiGeJsonId in [null,""])})
                                     .where("buyer.phone=:userId",["userId":query.userId],"and",{return !(query.userId in [null,""])})
-                                    .where("guiGe.competition.masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+                                    .where("competition.masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
                                  .orderBy("createDate")
                                  .buildSql().run().content;
                          for(Work work in workList)

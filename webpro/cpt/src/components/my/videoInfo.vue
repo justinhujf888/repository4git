@@ -21,7 +21,7 @@ const duration = ref(0);
 onMounted(()=>{
     if (refVideo.value) {
         refVideo.value.addEventListener("loadedmetadata", ()=>{
-            console.log(props.src,refVideo.value.duration);
+            // console.log(props.src,refVideo.value.duration);
             duration.value = refVideo.value.duration;
         });
     }

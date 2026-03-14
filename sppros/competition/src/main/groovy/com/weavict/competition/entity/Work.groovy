@@ -247,10 +247,14 @@ class Competition extends BEntity implements Serializable, IEntity
     @OneToMany(mappedBy="competition",fetch = FetchType.LAZY)
     List<GuiGe> guiGeList;
 
+    @OneToMany(mappedBy="competition",fetch = FetchType.LAZY)
+    List<Work> workList;
+
     void cancelLazyEr()
     {
         this.masterCompetition?.cancelLazyEr();
         this.guiGeList = null;
+        this.workList = null;
     }
 }
 
@@ -338,6 +342,9 @@ class Work extends BEntity implements Serializable, IEntity
     Date createDate;
 
     @ManyToOne(fetch=FetchType.EAGER)
+    Competition competition;
+
+    @ManyToOne(fetch=FetchType.EAGER)
     GuiGe guiGe;
 
 //    如果规格是多层级，那么这个就代表具体的那个层级ID，而guiGe对象表示最上层的。
@@ -351,6 +358,7 @@ class Work extends BEntity implements Serializable, IEntity
     {
         this.buyer?.cancelLazyEr();
         this.guiGe?.cancelLazyEr();
+        this.competition?.cancelLazyEr();
         this.workItemList = null;
     }
 }
