@@ -25,6 +25,47 @@ export default {
             {key:"news",label:"新闻",menuType:0,route:"",isInPageMenu:false}
         ]
     },
+    manageMenu() {
+      return [
+          // {
+          //     label: '',
+          //     items: [{ label: '首页', icon: 'pi pi-fw pi-home', to: '/manage/index' }]
+          // },
+          {
+              label: '',
+              items: [
+                  {
+                      label: "赛事设置",icon: 'pi pi-fw pi-bars',
+                      items: [
+                          // { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
+                          { label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase' },
+                          // { label: '主题图', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteZhuTi' },
+                          { label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem' },
+                          { label: '组委会成员', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteOrgHuman' },
+                          { label: '作品字段', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteFields' },
+                      ]
+                  },
+                  { label: '年份赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/master/masterCptSetup' },
+                  { label: '评委资料库', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' },
+                  { label: '发布赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' },
+                  { label: '素材库', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/mediaFiles' },
+                  // {
+                  //     label: "页面设置",icon: 'pi pi-fw pi-bars',
+                  //     items: [
+                  //         { label: '首页', icon: 'pi pi-fw pi-file', to: '/manage/cpt/masterCpt/pageSetup/index' },
+                  //     ]
+                  // },
+                  {
+                      label: "作品评审",
+                      items: [
+                          { label: '检验作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' },
+                          { label: '评审作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' }
+                      ]
+                  }
+              ]
+          }
+      ];
+    },
     preProcessPageJson(pageJson,isBeforeSave) {
         lodash.forEach(pageJson,(v)=>{
             lodash.forEach(v.setup,async (elm)=>{
