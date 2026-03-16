@@ -66,7 +66,7 @@ class WorkRest extends BaseRest
     String qySiteCompetition(@RequestBody Map<String,Object> query)
     {
         try
-        {
+        {workService.pingShenInit("localhost");
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",

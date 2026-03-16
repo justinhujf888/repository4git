@@ -130,4 +130,20 @@ class WorkService extends ModuleBean
                 [sort:2,id:2,name:"作品第二轮评分",type:1]
         ]];
     }
+
+    void pingShenInit(String masterCompetitionId)
+    {
+        MasterCompetition masterCompetition = this.findObjectById(MasterCompetition.class,masterCompetitionId);
+        for(def it in masterCompetition.judgeSetup.datas)
+        {
+            for(def cit in it.data)
+            {
+                if (cit.id==0)
+                {
+                    println cit.setupData;
+                }
+            }
+//            println it.guiGeList.size();
+        };
+    }
 }
