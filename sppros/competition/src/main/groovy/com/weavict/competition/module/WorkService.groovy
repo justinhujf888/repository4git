@@ -1,5 +1,6 @@
 package com.weavict.competition.module
 
+import com.bestvike.linq.Linq
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.MCPageSetup
@@ -131,19 +132,62 @@ class WorkService extends ModuleBean
         ]];
     }
 
-    void pingShenInit(String masterCompetitionId)
+    void pingShenInit(String masterCompetitionId,int pingShenStepId)
     {
+        List<String> comList = [];
+        List<String> ggList = [];
         MasterCompetition masterCompetition = this.findObjectById(MasterCompetition.class,masterCompetitionId);
         for(def it in masterCompetition.judgeSetup.datas)
-        {
+        {//it 为一个类别competition；it.data是评审的n个流程环节
+            comList = [];
             for(def cit in it.data)
             {
-                if (cit.id==0)
+                if (cit.id==pingShenStepId)
                 {
-                    println cit.setupData;
+                    for(def j in cit.setupData)
+                    {
+//                        println "cid:${it.id}  jid:${j.id}";
+                        comList << j.id;
+                    }
                 }
             }
-//            println it.guiGeList.size();
-        };
+
+            //如果有分组GuiGe
+            if (it.guiGeList.size()>0)
+            {
+                for(def gl in it.guiGeList)
+                {//gl 为一个类别下的某一个guiGe规格；gl.data是评审的n个流程环节
+                    ggList = [];
+                    for(def glit in gl.data)
+                    {
+                        if (glit.id==pingShenStepId)
+                        {
+                            for(def j in glit.setupData)
+                            {
+//                                println "cid:${it.id} gid:${gl.id}  jid:${j.id}";
+                                ggList << j.id;
+                            }
+                            //将类别的评委信息与规格进行交集合并
+//                            println "======================begin=======================";
+//                            println comList;
+//                            println ggList;
+//                            println Linq.of(comList).where(o -> !(o in ggList) ).toList();
+//                            println "======================end==========================";
+                            for(def x in Linq.of(comList).where(o -> !(o in ggList) ).toList())
+                            {
+                                ggList << x;
+                            }
+                            //ggList就是最后和类评委合并的评委集合，就可以开始进行分配作品的工作。
+
+                        }
+                    }
+                }
+            }
+//                没有分组，comList里是最后的评委信息
+            else
+            {
+
+            }
+        }
     }
 }
