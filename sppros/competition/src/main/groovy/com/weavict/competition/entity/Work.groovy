@@ -453,7 +453,7 @@ class MCPageSetupPK implements Serializable
 
 @Table
 @Entity
-//类别赛事
+//页面配置
 class MCPageSetup extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;
@@ -526,6 +526,9 @@ class CompetitionJudgePK implements Serializable
     static final long serialVersionUID = 1L;
 
     @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String masterCompetitionId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
     String competitionId;
 
     @Column(nullable=false, insertable=false, updatable=false,length = 30)
@@ -539,8 +542,9 @@ class CompetitionJudgePK implements Serializable
 
     CompetitionJudgePK() {}
 
-    CompetitionJudgePK(String competitionId,String guiGeId,String judgeId,byte competitionStatus)
+    CompetitionJudgePK(String masterCompetitionId,String competitionId,String guiGeId,String judgeId,byte competitionStatus)
     {
+        this.masterCompetitionId = masterCompetitionId;
         this.competitionId = competitionId;
         this.guiGeId = guiGeId;
         this.judgeId = judgeId;
@@ -560,6 +564,9 @@ class CompetitionJudge extends BEntity implements Serializable, IEntity
     @Column(length=1000,columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> pingShenFields;
+
+    @Column(length=30)
+    String appId;
 
     void cancelLazyEr()
     {

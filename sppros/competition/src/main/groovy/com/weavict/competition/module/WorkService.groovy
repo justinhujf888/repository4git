@@ -2,6 +2,8 @@ package com.weavict.competition.module
 
 import com.bestvike.linq.Linq
 import com.weavict.competition.entity.Competition
+import com.weavict.competition.entity.CompetitionJudge
+import com.weavict.competition.entity.CompetitionJudgePK
 import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
@@ -10,6 +12,8 @@ import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
+import jakarta.transaction.Transactional
+
 //import static org.jooq.impl.DSL.*;
 //import org.jooq.*;
 //import org.jooq.impl.*;
@@ -110,6 +114,18 @@ class WorkService extends ModuleBean
         return competitionList;
     }
 
+    List<GuiGe> qyGuiGeList8CompetitionId(String competitionId)
+    {
+        List<GuiGe> guiGeList = this.newQueryUtils(false).masterTable(GuiGe.class.simpleName,null,null)
+            .where("competition.id = :competitionId",["competitionId":competitionId],null,{return true})
+            .buildSql().run().content;
+        for(GuiGe guiGe in guiGeList)
+        {
+            guiGe.cancelLazyEr();
+        }
+        return guiGeList;
+    }
+
     List<MCPageSetup> qyPageSetup(String competitionId,String key,String appId)
     {
         List<MCPageSetup> mcPageSetupList = this.newQueryUtils(false).masterTable(MCPageSetup.class.simpleName,null,null)
@@ -132,7 +148,8 @@ class WorkService extends ModuleBean
         ]];
     }
 
-    void pingShenInit(String masterCompetitionId,int pingShenStepId)
+    @Transactional
+    void pingShenInit(String appId,String masterCompetitionId,byte pingShenStepId)
     {
         List<String> comList = [];
         List<String> ggList = [];
@@ -178,16 +195,52 @@ class WorkService extends ModuleBean
                                 ggList << x;
                             }
                             //ggList就是最后和类评委合并的评委集合，就可以开始进行分配作品的工作。
-
+                            for(String j in ggList)
+                            {
+                                CompetitionJudge competitionJudge = new CompetitionJudge();
+                                competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,gl.id as String,j,pingShenStepId);
+                                competitionJudge.pingShenFields = null;
+                                competitionJudge.appId = appId;
+                                this.updateObject(competitionJudge);
+                            }
                         }
                     }
                 }
             }
-//                没有分组，comList里是最后的评委信息
+            //                json没有分组，查询数据库进一步判断
             else
             {
-
+                List<GuiGe> guiGeList = this.qyGuiGeList8CompetitionId(it.id);
+                if (guiGeList!=null && guiGeList.size()>0)
+                {
+                    //数据库有分组，将类别评委设置到分组
+                    for(String j in comList)
+                    {
+                        for(GuiGe guiGe in guiGeList)
+                        {
+                            CompetitionJudge competitionJudge = new CompetitionJudge();
+                            competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,guiGe.id,j,pingShenStepId);
+                            competitionJudge.pingShenFields = null;
+                            competitionJudge.appId = appId;
+                            this.updateObject(competitionJudge);
+                        }
+                    }
+                }
+                else
+                {
+                    //                没有分组，comList里是最后的评委信息
+                    for(String j in comList)
+                    {
+                        CompetitionJudge competitionJudge = new CompetitionJudge();
+                        competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,"-1",j,pingShenStepId);
+                        competitionJudge.pingShenFields = null;
+                        competitionJudge.appId = appId;
+                        this.updateObject(competitionJudge);
+                    }
+                }
             }
         }
+
+//        select c.name,g.name,j.name from competitionjudge as cj left join competition as c on c.id = cj.competitionid left join guige as g on g.id = cj.guigeid left join judge as j on j.id = cj.judgeid
     }
 }
