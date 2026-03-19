@@ -164,7 +164,7 @@ class WorkService extends ModuleBean
                     for(def j in cit.setupData)
                     {
 //                        println "cid:${it.id}  jid:${j.id}";
-                        comList << j.id;
+                        comList << j;
                     }
                 }
             }
@@ -182,7 +182,7 @@ class WorkService extends ModuleBean
                             for(def j in glit.setupData)
                             {
 //                                println "cid:${it.id} gid:${gl.id}  jid:${j.id}";
-                                ggList << j.id;
+                                ggList << j;
                             }
                             //将类别的评委信息与规格进行交集合并
 //                            println "======================begin=======================";
@@ -190,16 +190,23 @@ class WorkService extends ModuleBean
 //                            println ggList;
 //                            println Linq.of(comList).where(o -> !(o in ggList) ).toList();
 //                            println "======================end==========================";
-                            for(def x in Linq.of(comList).where(o -> !(o in ggList) ).toList())
+                            for(def x in Linq.of(comList).where(o -> !(o.id in (Linq.of(ggList).select(tg -> tg.id).toList()))).toList())
                             {
                                 ggList << x;
                             }
                             //ggList就是最后和类评委合并的评委集合，就可以开始进行分配作品的工作。
-                            for(String j in ggList)
+                            for(def j in ggList)
                             {
                                 CompetitionJudge competitionJudge = new CompetitionJudge();
-                                competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,gl.id as String,j,pingShenStepId);
-                                competitionJudge.pingShenFields = null;
+                                competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,gl.id as String,j.id,pingShenStepId);
+                                if (pingShenStepId==0 as byte)
+                                {
+                                    competitionJudge.pingShenFields = null;
+                                }
+                                else
+                                {
+                                    competitionJudge.pingShenFields = ["fields":j.fields];
+                                }
                                 competitionJudge.appId = appId;
                                 this.updateObject(competitionJudge);
                             }
@@ -214,13 +221,20 @@ class WorkService extends ModuleBean
                 if (guiGeList!=null && guiGeList.size()>0)
                 {
                     //数据库有分组，将类别评委设置到分组
-                    for(String j in comList)
+                    for(def j in comList)
                     {
                         for(GuiGe guiGe in guiGeList)
                         {
                             CompetitionJudge competitionJudge = new CompetitionJudge();
-                            competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,guiGe.id,j,pingShenStepId);
-                            competitionJudge.pingShenFields = null;
+                            competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,guiGe.id,j.id,pingShenStepId);
+                            if (pingShenStepId==0 as byte)
+                            {
+                                competitionJudge.pingShenFields = null;
+                            }
+                            else
+                            {
+                                competitionJudge.pingShenFields = ["fields":j.fields];
+                            }
                             competitionJudge.appId = appId;
                             this.updateObject(competitionJudge);
                         }
@@ -229,11 +243,18 @@ class WorkService extends ModuleBean
                 else
                 {
                     //                没有分组，comList里是最后的评委信息
-                    for(String j in comList)
+                    for(def j in comList)
                     {
                         CompetitionJudge competitionJudge = new CompetitionJudge();
-                        competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,"-1",j,pingShenStepId);
-                        competitionJudge.pingShenFields = null;
+                        competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId,it.id as String,"-1",j.id,pingShenStepId);
+                        if (pingShenStepId==0 as byte)
+                        {
+                            competitionJudge.pingShenFields = null;
+                        }
+                        else
+                        {
+                            competitionJudge.pingShenFields = ["fields":j.fields];
+                        }
                         competitionJudge.appId = appId;
                         this.updateObject(competitionJudge);
                     }

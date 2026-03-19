@@ -213,7 +213,7 @@ class WorkRest extends BaseRest
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/qyMasterSiteCompetition")
     String qyMasterSiteCompetition(@RequestBody Map<String,Object> query)
-    {
+    {workService.pingShenInit("localhost","localhost",2 as byte)
         try
         {
             ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
