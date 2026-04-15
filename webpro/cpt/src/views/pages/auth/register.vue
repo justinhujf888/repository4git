@@ -169,8 +169,10 @@ const onFormSubmit = ({ valid }) => {
         userRest.registBuyer(buyer.value,(data)=>{
             if (data.status=="OK") {
                 loginToken = data.loginToken;
-                useStorage("userId",buyer.value.phone);
-                useStorage("loginToken",loginToken);
+                // useStorage("userId",buyer.value.phone);
+                // useStorage("loginToken",loginToken);
+                util.intoStorgeCry("userId",buyer.value.phone);
+                util.intoStorgeCry("loginToken",loginToken);
                 dialog.alertBack("您已成功注册",()=>{
                     afterLogin();
                 });

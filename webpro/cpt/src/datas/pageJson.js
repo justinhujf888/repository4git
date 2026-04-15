@@ -56,10 +56,11 @@ export default {
                   //     ]
                   // },
                   {
-                      label: "作品评审",
+                      label: "作品评审",icon: 'pi pi-fw pi-bars',
                       items: [
-                          { label: '检验作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' },
-                          { label: '评审作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' }
+                          { label: '作品审查', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/managerReview' },
+                          { label: '评审初筛', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFilte' },
+                          { label: '作品评分', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFen' }
                       ]
                   }
               ]

@@ -6,6 +6,7 @@ import lodash from 'lodash-es';
 import { useEventBus } from '@vueuse/core';
 import pageJson from '@/datas/pageJson';
 import page from '@/api/uniapp/page';
+import util from "@/api/util";
 const bus = useEventBus('login');
 
 const router = createRouter({
@@ -125,7 +126,10 @@ const router = createRouter({
                 {
                     path: '/manage/cpt/master/masterCptSetup',
                     name: 'masterCptSetup',
-                    component: () => import('@/views/cpt/setup/masterCpt/masterCptSetup.vue')
+                    component: () => import('@/views/cpt/setup/masterCpt/masterCptSetup.vue'),
+                    meta:{
+                        name: "年份赛事"
+                    }
                 },
                 {
                     path: '/manage/cpt/masterCpt/pageSetup/index',
@@ -135,17 +139,50 @@ const router = createRouter({
                 {
                     path: '/manage/judge/judgeList',
                     name: 'judgeList',
-                    component: () => import('@/views/cpt/judge/judgeList.vue')
+                    component: () => import('@/views/cpt/judge/judgeList.vue'),
+                    meta:{
+                        name: "评委资料库"
+                    }
                 },
                 {
                     path: '/manage/cpt/system/buildCache',
                     name: 'buildCache',
-                    component: () => import('@/views/cpt/setup/system/buildCache.vue')
+                    component: () => import('@/views/cpt/setup/system/buildCache.vue'),
+                    meta:{
+                        name: "发布赛事"
+                    }
                 },
                 {
                     path: '/manage/cpt/system/mediaFiles',
                     name: 'mediaFiles',
-                    component: () => import('@/views/cpt/setup/system/mediaFiles.vue')
+                    component: () => import('@/views/cpt/setup/system/mediaFiles.vue'),
+                    meta:{
+                        name: "素材库"
+                    }
+                },
+                {
+                    path: '/manage/cpt/pingshen/managerReview',
+                    name: 'managerReview',
+                    component: () => import('@/views/cpt/pingshen/managerReview.vue'),
+                    meta:{
+                        name: "作品审查"
+                    }
+                },
+                {
+                    path: '/manage/cpt/pingshen/psFen',
+                    name: 'psFen',
+                    component: () => import('@/views/cpt/pingshen/pingshenFen.vue'),
+                    meta:{
+                        name: "作品评分"
+                    }
+                },
+                {
+                    path: '/manage/cpt/pingshen/psFilte',
+                    name: 'psFilte',
+                    component: () => import('@/views/cpt/pingshen/psFilte.vue'),
+                    meta:{
+                        name: "作品初筛"
+                    }
                 },
                 {
                     path: '/uikit/formlayout',
@@ -308,7 +345,7 @@ router.beforeEach((to, from) => {
         // 返回 false 以取消导航
         if (t) {
             if (t.isLogin) {
-                if (localStorage.getItem("userId")) {
+                if (util.giveStorgeCry("userId")) {
                     return true;
                 } else {
                     bus.emit({route:to.name,isLogin:t.isLogin});

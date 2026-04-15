@@ -88,8 +88,10 @@ const onFormSubmit = ({ valid }) => {
         userRest.buyerLogin(buyer.value.phone,buyer.value.password,(data)=>{
             if (data.status=="OK") {
                 loginToken = data.loginToken;
-                useStorage("userId",buyer.value.phone);
-                useStorage("loginToken",loginToken);
+                // useStorage("userId",buyer.value.phone);
+                // useStorage("loginToken",loginToken);
+                util.intoStorgeCry("userId",buyer.value.phone);
+                util.intoStorgeCry("loginToken",loginToken);
                 dialog.alertBack("您已成功登录",()=>{
                     // Page.redirectTo("landing",null);
                     afterLogin();

@@ -111,7 +111,7 @@ import pj from '@/datas/pageJson';
 import page from '@/api/uniapp/page';
 import util from '@/api/util';
 const bus = useEventBus('login');
-const userId = useStorage("userId");
+let userId = "";
 const siteDatas = inject("siteDatas");
 const footDatas = inject("footDatas");
 const treeDatas = ref([]);
@@ -127,6 +127,9 @@ watch(footDatas,async (newValue)=>{
 });
 
 onMounted(()=>{
+    if (localStorage.getItem("userId")) {
+        userId = util.giveStorgeCry("userId");
+    }
     treeDatas.value = [];
     lodash.forEach(pj.menuTreeDatas(),(v)=>{
         if (v.isInPageMenu) {

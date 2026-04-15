@@ -492,6 +492,12 @@ export default {
 	giveStorgeCry(key) {
 		return decryptByDES(localStorage.getItem(key), Config.desKey);
 	},
+	intoStorgeMessage(key,message) {
+		return localStorage.setItem(key,message);
+	},
+	giveStorgeMessage(key) {
+		return localStorage.getItem(key);
+	},
 	buildPasswordStr(v) {
 		return v.substr(6, 23);
 	},

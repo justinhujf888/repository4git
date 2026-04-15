@@ -213,7 +213,7 @@ class WorkRest extends BaseRest
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/qyMasterSiteCompetition")
     String qyMasterSiteCompetition(@RequestBody Map<String,Object> query)
-    {workService.pingShenInit("localhost","localhost",2 as byte)
+    {
         try
         {
             ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
@@ -427,6 +427,7 @@ class WorkRest extends BaseRest
                                  .where("guiGeId = :guiGeJsonId",["guiGeJsonId":query.guiGeJsonId],"and",{return !(query.guiGeJsonId in [null,""])})
                                     .where("buyer.phone=:userId",["userId":query.userId],"and",{return !(query.userId in [null,""])})
                                     .where("competition.masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+                                    .where("status in :statusList",["statusList":query.statusList],"and",{return query.statusList!=null && (query.statusList as byte[]).length>0})
                                  .orderBy("createDate")
                                  .buildSql().run().content;
                          for(Work work in workList)
@@ -642,4 +643,6 @@ class WorkRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+//    workService.pingShenInit("localhost","localhost",2 as byte)
 }

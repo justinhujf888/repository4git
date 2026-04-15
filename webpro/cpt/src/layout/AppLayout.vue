@@ -5,20 +5,28 @@ import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 import Login from "./login.vue";
-import {useStorage} from "@vueuse/core";
 import dialog from "@/api/uniapp/dialog";
+import util from "@/api/util";
+import useGlobal from "@/api/hooks/useGlobal";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
-const managerId = useStorage("managerId");
-const managerInfo = useStorage("managerInfo");
+let managerId = "";
+let managerInfo = "";
 const visible = ref(false);
 
 
 onMounted(() => {
-    // console.log("managerId", managerId.value);
-    if (!managerId.value || !managerInfo) {
+    // console.log("managerId", managerId);
+    if (localStorage.getItem("managerId")) {
+        managerId = util.giveStorgeCry("managerId");
+    }
+    if (localStorage.getItem("managerInfo")) {
+        managerInfo = util.giveStorgeCry("managerInfo");
+    }
+
+    if (!managerId || !managerInfo) {
         visible.value = true;
     }
 });
@@ -89,6 +97,9 @@ function afterLogout() {
         <app-topbar @afterLogout="afterLogout"></app-topbar>
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
+            <div class="my-2 mb-5">
+                <span class="text-2xl">{{useGlobal.getRouteInfo().meta.name}}</span>
+            </div>
             <div id="app_container" styleClass="layout-main" class="layout-main relative">
                 <router-view/>
             </div>

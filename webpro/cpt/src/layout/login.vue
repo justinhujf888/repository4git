@@ -51,7 +51,8 @@ const onFormSubmit = ({ valid }) => {
     if (valid) {
         userRest.managerLogin({managerId:managerId.value,password:password.value},(data)=>{
             if (data.status=="OK") {
-                useStorage("managerId",managerId.value);
+                // useStorage("managerId",managerId.value);
+                util.intoStorgeCry("managerId",managerId.value);
                 util.intoStorgeCry("managerInfo",JSON.stringify(data.manager));
                 emit("afterLogin",data.manager);
             } else if (data.status=="ER_NOHAS") {

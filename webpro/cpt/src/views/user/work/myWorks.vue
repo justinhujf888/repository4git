@@ -80,12 +80,12 @@
 import animationPage from "@/components/my/animationPage.vue";
 import workRest from '@/api/dbs/workRest';
 import { inject, onMounted, ref, useTemplateRef } from 'vue';
-import {useStorage} from "@vueuse/core";
 import { useConfirm } from "primevue/useconfirm";
 import uploadWork from "@/views/user/work/uploadWork.vue";
 import lodash from "lodash-es";
 import oss from "@/api/oss";
 import {Beans} from "@/api/dbs/beans";
+import util from "@/api/util";
 
 const showDialog = ref(false);
 const mainPage = useTemplateRef("mainPage");
@@ -93,7 +93,7 @@ const refUploadWork = useTemplateRef("refUploadWork");
 const updateWorkPage = useTemplateRef("updateWorkPage");
 const forceUpdateKey = ref(0);
 
-const userId = useStorage("userId");//注意，userId不是ref对象
+const userId = ""//注意，userId不是ref对象
 const workList = ref([]);
 const competitionList = ref([]);
 const uploadRule = ref(null);
@@ -109,6 +109,9 @@ onMounted(async () => {
     //         }
     //     }
     // });
+    if (localStorage.getItem("userId")) {
+        util.giveStorgeCry("userId");
+    }
     uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     competitionList.value = masterCompetition.competitionList;
@@ -116,10 +119,10 @@ onMounted(async () => {
 });
 
 function loadWorksByUser() {
-    if (!userId.value) {
+    if (!userId) {
         return;
     }
-    workRest.qyWorks({appId:host,userId:userId.value,masterCompetitionId:masterCompetition.id,shiWorkItemList:true},async (res)=>{
+    workRest.qyWorks({appId:host,userId:userId,masterCompetitionId:masterCompetition.id,shiWorkItemList:true},async (res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 workList.value = res.data;

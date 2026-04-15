@@ -24,6 +24,7 @@ import workRest from '@/api/dbs/workRest';
 import primeUtil from "@/api/prime/util";
 import dialog from "@/api/uniapp/dialog";
 import {Beans} from "@/api/dbs/beans";
+import util from "@/api/util";
 
 const masterCompetitionList = ref([]);
 const masterCompetition = ref(Beans.masterCompetition());
@@ -56,6 +57,7 @@ const onFormSubmit = ({ valid }) => {
     if (valid) {
         workRest.buildCacheCpt({siteCompetitionId:host,masterCompetitionId:masterCompetition.value.id,host:host},(res)=>{
             if (res.status=="OK") {
+                util.intoStorgeCry("masterCompetitionId",masterCompetition.value.id);
                 dialog.toastSuccess("赛事已成功发布");
             }
         });
