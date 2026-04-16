@@ -126,6 +126,30 @@ class WorkService extends ModuleBean
         return guiGeList;
     }
 
+    PageUtil qyWorks(Map query)
+    {
+        QueryUtils queryUtils = this.newQueryUtils(false);
+        queryUtils.masterTable(Work.class.simpleName,null,null)
+                .where("appId = :appId",["appId":query.appId],null,{return true})
+                .where("id = :workId",["workId":query.workId],"and",{return !(query.workId in [null,""])})
+                .where("guiGe.id = :guiGeId",["guiGeId":query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
+                .where("guiGeId = :guiGeJsonId",["guiGeJsonId":query.guiGeJsonId],"and",{return !(query.guiGeJsonId in [null,""])})
+                .where("buyer.phone=:userId",["userId":query.userId],"and",{return !(query.userId in [null,""])})
+                .where("competition.id = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
+                .where("competition.masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+                .where("status in :statusList",["statusList":query.statusList],"and",{return query.statusList!=null && (query.statusList as byte[]).length>0})
+                .orderBy("createDate");
+        if (query.pageSize!=null)
+        {
+            return queryUtils.pageLimit(query.pageSize as int,query.currentPage as int,"id")
+                .buildSql().run();
+        }
+        else
+        {
+            return queryUtils.buildSql().run();
+        }
+    }
+
     List<MCPageSetup> qyPageSetup(String competitionId,String key,String appId)
     {
         List<MCPageSetup> mcPageSetupList = this.newQueryUtils(false).masterTable(MCPageSetup.class.simpleName,null,null)

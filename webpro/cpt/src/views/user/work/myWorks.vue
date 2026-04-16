@@ -93,7 +93,7 @@ const refUploadWork = useTemplateRef("refUploadWork");
 const updateWorkPage = useTemplateRef("updateWorkPage");
 const forceUpdateKey = ref(0);
 
-const userId = ""//注意，userId不是ref对象
+let userId = ""//注意，userId不是ref对象
 const workList = ref([]);
 const competitionList = ref([]);
 const uploadRule = ref(null);
@@ -109,8 +109,8 @@ onMounted(async () => {
     //         }
     //     }
     // });
-    if (localStorage.getItem("userId")) {
-        util.giveStorgeCry("userId");
+    if (util.giveStorgeMessage("userId")) {
+        userId = util.giveStorgeCry("userId");
     }
     uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
@@ -119,6 +119,7 @@ onMounted(async () => {
 });
 
 function loadWorksByUser() {
+    // console.log(userId);
     if (!userId) {
         return;
     }

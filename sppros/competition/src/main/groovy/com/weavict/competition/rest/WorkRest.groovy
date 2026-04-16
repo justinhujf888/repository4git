@@ -15,6 +15,7 @@ import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
+import com.weavict.competition.module.PageUtil
 import com.weavict.competition.module.UserBean
 import com.weavict.competition.module.WorkService
 import com.weavict.website.common.OtherUtils
@@ -420,25 +421,16 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         List<Work> workList = workService.newQueryUtils(false).masterTable(Work.class.simpleName,null,null)
-                                 .where("appId = :appId",["appId":query.appId],null,{return true})
-                                .where("id = :workId",["workId":query.workId],"and",{return !(query.workId in [null,""])})
-                                 .where("guiGe.id = :guiGeId",["guiGeId":query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
-                                 .where("guiGeId = :guiGeJsonId",["guiGeJsonId":query.guiGeJsonId],"and",{return !(query.guiGeJsonId in [null,""])})
-                                    .where("buyer.phone=:userId",["userId":query.userId],"and",{return !(query.userId in [null,""])})
-                                    .where("competition.masterCompetition.id = :masterCompetitionId",["masterCompetitionId":query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
-                                    .where("status in :statusList",["statusList":query.statusList],"and",{return query.statusList!=null && (query.statusList as byte[]).length>0})
-                                 .orderBy("createDate")
-                                 .buildSql().run().content;
-                         for(Work work in workList)
+                         PageUtil pageUtil = workService.qyWorks(query);
+                         for(Work work in pageUtil.content as List<Work>)
                          {
                              work.cancelLazyEr();
                              if (query.shiWorkItemList==true)
                              {
                                  work.workItemList = workService.newQueryUtils(false).masterTable(WorkItem.class.simpleName,null,null)
-                                 .where("work.id = :workId",["workId":work.id],null,{return true})
-                                 .orderBy("mediaType,type")
-                                 .buildSql().run().content;
+                                         .where("work.id = :workId",["workId":work.id],null,{return true})
+                                         .orderBy("mediaType,type")
+                                         .buildSql().run().content;
                                  for(WorkItem workItem in work.workItemList)
                                  {
                                      workItem.cancelLazyEr();
@@ -446,7 +438,14 @@ class WorkRest extends BaseRest
                                  }
                              }
                          }
-                         return workList;
+                         if (query.pageSize!=null)
+                         {
+                             return pageUtil;
+                         }
+                         else
+                         {
+                             return pageUtil.content;
+                         }
                      }).call()
                     ]);
         }
