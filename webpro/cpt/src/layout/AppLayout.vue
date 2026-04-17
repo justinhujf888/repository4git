@@ -100,7 +100,7 @@ function afterLogout() {
             <div class="my-2 mb-5">
                 <span class="text-2xl">{{useGlobal.getRouteInfo().meta.name}}</span>
             </div>
-            <div id="app_container" styleClass="layout-main" class="layout-main relative">
+            <div id="app_container" styleClass="layout-main" class="layout-main relative" style="overflow-x: auto">
                 <router-view/>
             </div>
             <app-footer></app-footer>
