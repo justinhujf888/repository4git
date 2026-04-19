@@ -19,40 +19,63 @@
                                             <Button icon="pi pi-cog" severity="secondary" rounded text  @click="menuToggle($event,index)"/>
                                             <Menu ref="menu" :model="menuItems" popup />
                                         </template>
-                                        <div class="grid md:grid-cols-2 gap-4 mt-5">
-                                            <div class="col">
-                                                <span class="dark:text-yellow-400">作品介绍</span>
-                                                <span class="break-words">{{item.gousiDescription}}</span>
-                                            </div>
-                                            <div class="col">
-                                                <span class="dark:text-yellow-400">作品理念</span>
-                                                <span class="break-words">{{item.myMeanDescription}}</span>
-                                            </div>
-                                        </div>
-                                        <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                            <div class="col" v-for="field of item.hangyeFields.data">
-                                                <span class="dark:text-yellow-400">{{field.name}}</span>
-                                                <span class="break-words">{{field.value}}</span>
-                                            </div>
-                                        </div>
-                                        <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                            <div class="col" v-for="field of item.otherFields.data">
-                                                <span class="dark:text-yellow-400">{{field.name}}</span>
-                                                <span class="break-words">{{field.value}}</span>
-                                            </div>
-                                        </div>
-                                        <div class="row flex-wrap">
-                                            <div v-for="img of item.workItemList">
-                                                <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative p-2">
-                                                    <img v-if="img.mediaType==0" :alt="img.tempMap?.imgPath" :src="img.tempMap?.imgPath" class="absolute top-0 left-0 z-10 w-full h-32 object-cover object-center" :class="{'border border-4 border-red-600 border-solid':!img.tempMap?.exifCheck}" @click="viewImg(item.workItemList,img.id)"/>
-                                                    <videoInfo v-if="img.mediaType==1" :src="img.tempMap?.imgPath" class="aabsolute top-0 left-0 z-10 w-full h-32 object-cover object-center"/>
-                                                </Button>
-                                                <div class="col center mt-2">
-                                                    <span class="text-sm font-semibold">{{img.tempMap?.title}}</span>
-                                                    <!--                                    <span class="text-sm">{{img.tempMap?.text}}</span>-->
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <Tabs value="0">
+                                            <TabList>
+                                                <Tab value="0">作品信息</Tab>
+                                                <Tab value="1">作品回执</Tab>
+                                            </TabList>
+                                            <TabPanels>
+                                                <TabPanel value="0">
+                                                    <div class="grid md:grid-cols-2 gap-4 mt-5">
+                                                        <div class="col">
+                                                            <span class="dark:text-yellow-400">作品介绍</span>
+                                                            <span class="break-words">{{item.gousiDescription}}</span>
+                                                        </div>
+                                                        <div class="col">
+                                                            <span class="dark:text-yellow-400">作品理念</span>
+                                                            <span class="break-words">{{item.myMeanDescription}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid md:grid-cols-4 gap-4 mt-5">
+                                                        <div class="col" v-for="field of item.hangyeFields.data">
+                                                            <span class="dark:text-yellow-400">{{field.name}}</span>
+                                                            <span class="break-words">{{field.value}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="grid md:grid-cols-4 gap-4 mt-5">
+                                                        <div class="col" v-for="field of item.otherFields.data">
+                                                            <span class="dark:text-yellow-400">{{field.name}}</span>
+                                                            <span class="break-words">{{field.value}}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row flex-wrap">
+                                                        <div v-for="img of item.workItemList">
+                                                            <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative p-2">
+                                                                <img v-if="img.mediaType==0" :alt="img.tempMap?.imgPath" :src="img.tempMap?.imgPath" class="absolute top-0 left-0 z-10 w-full h-32 object-cover object-center" :class="{'border border-4 border-red-600 border-solid':!img.tempMap?.exifCheck}" @click="viewImg(item.workItemList,img.id)"/>
+                                                                <videoInfo v-if="img.mediaType==1" :src="img.tempMap?.imgPath" class="aabsolute top-0 left-0 z-10 w-full h-32 object-cover object-center"/>
+                                                            </Button>
+                                                            <div class="col center mt-2">
+                                                                <span class="text-sm font-semibold">{{img.tempMap?.title}}</span>
+                                                                <!--                                    <span class="text-sm">{{img.tempMap?.text}}</span>-->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </TabPanel>
+                                                <TabPanel value="1">
+                                                    <Panel v-for="(workLog,logIndex) in item.tempMap?.workLogList" :key="workLog.id">
+                                                        <template #footer>
+                                                            <div class="flex flex-wrap items-center justify-between gap-4">
+                                                                <span class="text-surface-500 dark:text-surface-400">{{workLog.log}}</span>
+                                                                <div class="flex items-center gap-2">
+                                                                    <Button icon="pi pi-pencil" rounded text @click="updateMsg(workLog,logIndex,index)"></Button>
+                                                                    <Button icon="pi pi-trash" severity="secondary" rounded text></Button>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </Panel>
+                                                </TabPanel>
+                                            </TabPanels>
+                                        </Tabs>
                                     </Panel>
                                 </div>
                             </div>
@@ -71,6 +94,10 @@
     <animationPage ref="updateWorkPage">
         <updateWorkInfo ref="refUpdateWorkInfo"/>
     </animationPage>
+
+    <animationPage ref="returnMessagePage">
+        <returnMessage ref="refReturnMessage"/>
+    </animationPage>
 </template>
 
 <script setup>
@@ -84,11 +111,14 @@ import {Config} from "@/api/config";
 import videoInfo from "@/components/my/videoInfo.vue";
 import priviewImage from "@/components/my/priviewImage.vue";
 import updateWorkInfo from "@/views/cpt/pingshen/updateWorkInfo.vue";
+import returnMessage from "@/views/cpt/pingshen/returnMessage.vue";
 import animationPage from "@/components/my/animationPage.vue";
 
 const mainPage = useTemplateRef("mainPage");
 const updateWorkPage = useTemplateRef("updateWorkPage");
 const refUpdateWorkInfo = useTemplateRef("refUpdateWorkInfo");
+const returnMessagePage = useTemplateRef("returnMessagePage");
+const refReturnMessage = useTemplateRef("refReturnMessage");
 const uploadRule = ref(null);
 const comTree = ref([]);
 const selectedTreeNodeKey = ref(null);
@@ -110,7 +140,8 @@ const menuItems = ref([
         label: '回执信息',
         icon: 'pi pi-fw pi-file',
         command: ()=>{
-
+            refReturnMessage.value.init(mainPage.value,returnMessagePage.value,{process:"c",work:pageUtil.value.content[workIndex],returnFunction:returnMsgFunction,workLogIndex:workLogIndex,workIndex:workIndex});
+            returnMessagePage.value.open(mainPage.value);
         }
     }
 ]);
@@ -121,6 +152,7 @@ let hasChildren = false;
 let type = 0;
 let key = "";
 let workIndex = -1;
+let workLogIndex = -1;
 
 onMounted(async () => {
     if (util.giveStorgeMessage("masterCompetitionId")) {
@@ -194,6 +226,12 @@ const queryWorks = (type,key)=>{
                     }
                     work.tempMap = {};
                     work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
+                    work.tempMap.workLogList = [];
+                    workRest.qyWorkLog8Work({workId:work.id},(res)=>{
+                        if (res.status=="OK" && res.data!=null) {
+                            work.tempMap.workLogList = res.data;
+                        }
+                    });
                 }
                 // console.log(pageUtil.value);
             } else {
@@ -222,7 +260,22 @@ const menuToggle = (event,index)=> {
 
 const returnFunction = (obj)=>{
     pageUtil.value.content[obj.workIndex] = obj.work;
-}
+};
+
+const returnMsgFunction = (obj)=>{
+    if (obj.process=="c") {
+        pageUtil.value.content[obj.workIndex].tempMap.workLogList.push(obj.workLog);
+    } else if (obj.process=="u") {
+        // console.log(pageUtil.value.content[obj.workIndex].tempMap.workLogList[obj.workLogIndex]);
+        pageUtil.value.content[obj.workIndex].tempMap.workLogList[obj.workLogIndex] = obj.workLog;
+    }
+};
+
+const updateMsg = (workLog,logIndex,index) => {
+    workIndex = index;
+    refReturnMessage.value.init(mainPage.value,returnMessagePage.value,{process:"u",work:pageUtil.value.content[workIndex],returnFunction:returnMsgFunction,workLogIndex:logIndex,workIndex:workIndex,workLog:workLog});
+    returnMessagePage.value.open(mainPage.value);
+};
 </script>
 
 <style scoped lang="scss">

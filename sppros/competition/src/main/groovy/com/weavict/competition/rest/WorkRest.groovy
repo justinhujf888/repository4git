@@ -15,6 +15,7 @@ import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
+import com.weavict.competition.entity.WorkLog
 import com.weavict.competition.module.PageUtil
 import com.weavict.competition.module.UserBean
 import com.weavict.competition.module.WorkService
@@ -448,6 +449,49 @@ class WorkRest extends BaseRest
                          }
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyWorkLog8Work")
+    String qyWorkLog8Work(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.qyWorkLog8Work(query);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/saveWorkLog")
+    String saveWorkLog(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            WorkLog workLog = this.objToBean(query.workLog, WorkLog.class,null);
+            workLog.createDate = new Date();
+            workService.updateTheObject(workLog);
+            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {

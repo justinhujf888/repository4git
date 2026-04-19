@@ -421,6 +421,9 @@ class WorkLog extends BEntity implements Serializable, IEntity
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
+    @Column(length=30)
+    String appId;
+
     void cancelLazyEr()
     {
 

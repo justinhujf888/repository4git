@@ -12,6 +12,7 @@ import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
+import com.weavict.competition.entity.WorkLog
 import jakarta.transaction.Transactional
 
 //import static org.jooq.impl.DSL.*;
@@ -148,6 +149,21 @@ class WorkService extends ModuleBean
         {
             return queryUtils.buildSql().run();
         }
+    }
+
+    List<WorkLog> qyWorkLog8Work(Map query)
+    {
+        List<WorkLog> workLogList = this.newQueryUtils(false).masterTable(WorkLog.simpleName,null,null)
+                .where("appId = :appId",["appId":query.appId],null,{return true})
+                .where("id = :id",[id:query.id],"and",{!(query.id in [null,""])})
+                .where("workId = :workId",["workId":query.workId],"and",{return true})
+                .orderBy("createDate")
+                .buildSql().run().content;
+        for(WorkLog workLog in workLogList)
+        {
+            workLog.cancelLazyEr();
+        }
+        return workLogList;
     }
 
     List<MCPageSetup> qyPageSetup(String competitionId,String key,String appId)

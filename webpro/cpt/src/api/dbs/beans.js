@@ -108,7 +108,8 @@ export const Beans = {
             id: "",
             workId: "",
             log: "",
-            createDate: null
+            createDate: null,
+            appId: ""
         }
     },
 
