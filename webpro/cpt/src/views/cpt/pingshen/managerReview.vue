@@ -68,7 +68,7 @@
                                                                 <span class="text-surface-500 dark:text-surface-400">{{workLog.log}}</span>
                                                                 <div class="flex items-center gap-2">
                                                                     <Button icon="pi pi-pencil" rounded text @click="updateMsg(workLog,logIndex,index)"></Button>
-                                                                    <Button icon="pi pi-trash" severity="secondary" rounded text></Button>
+                                                                    <Button icon="pi pi-trash" severity="secondary" rounded text @click="delLog(workLog,logIndex,index)"></Button>
                                                                 </div>
                                                             </div>
                                                         </template>
@@ -113,6 +113,7 @@ import priviewImage from "@/components/my/priviewImage.vue";
 import updateWorkInfo from "@/views/cpt/pingshen/updateWorkInfo.vue";
 import returnMessage from "@/views/cpt/pingshen/returnMessage.vue";
 import animationPage from "@/components/my/animationPage.vue";
+import dialog from "@/api/uniapp/dialog";
 
 const mainPage = useTemplateRef("mainPage");
 const updateWorkPage = useTemplateRef("updateWorkPage");
@@ -275,6 +276,17 @@ const updateMsg = (workLog,logIndex,index) => {
     workIndex = index;
     refReturnMessage.value.init(mainPage.value,returnMessagePage.value,{process:"u",work:pageUtil.value.content[workIndex],returnFunction:returnMsgFunction,workLogIndex:logIndex,workIndex:workIndex,workLog:workLog});
     returnMessagePage.value.open(mainPage.value);
+};
+
+const delLog = (workLog,logIndex,index)=>{
+    dialog.confirm("是否删除这个信息？",()=>{
+        workRest.delTheWorkLog({id:workLog.id},(res)=>{
+            if (res.status=="OK") {
+                pageUtil.value.content[index].tempMap.workLogList.splice(logIndex,1);
+                dialog.toastSuccess("消息已成功删除");
+            }
+        });
+    },null);
 };
 </script>
 

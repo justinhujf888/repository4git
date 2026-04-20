@@ -124,6 +124,9 @@ export default {
     saveWorkLog(ds,onfun) {
         Http.callHttpFunction('/r/work/saveWorkLog',ds,onfun);
     },
+    delTheWorkLog(ds,onfun) {
+        Http.callHttpFunction('/r/work/delTheWorkLog',ds,onfun);
+    },
     buildCacheCpt(ds,onfun) {
         Http.callHttpFunction('/r/work/buildCacheCpt',ds,onfun);
     },

@@ -503,6 +503,24 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/delTheWorkLog")
+    String delTheWorkLog(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.deleteTheObject8Fields(WorkLog.simpleName,"id = :id",[id:query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/qyPageSetup")
     String qyPageSetup(@RequestBody Map<String,Object> query)
     {
