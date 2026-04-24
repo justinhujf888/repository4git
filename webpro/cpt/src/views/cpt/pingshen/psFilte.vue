@@ -5,7 +5,9 @@
                 <Tree :value="comTree" v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" selectionMode="single" @node-select="onNodeSelect"></Tree>
             </div>
             <div class="flex-1 p-2">
+                <h4>{{selTreeLabel}}</h4>
                 <div v-if="pageUtil.content?.length>0">
+                    {{selTypeCount}}个作品选中
                     <DataView :value="pageUtil.content" class="mt-5" :pt="{
                                             emptyMessage:{
                                                 class:'opacity-0'
@@ -89,6 +91,8 @@ const expandedTreeNodeKey = ref(null);
 const pageUtil = ref([]);
 const currentPage = ref(0);
 const refPriviewImage = useTemplateRef("refPriviewImage");
+const selTypeCount = ref(0)
+const selTreeLabel = ref(null);
 
 let masterCompetitionId = "";
 let host = inject("domain");
@@ -123,6 +127,7 @@ const onNodeSelect = (node) => {
     }
     type = node.data.type;
     key = node.key;
+    selTreeLabel.value = node.label;
     currentPage.value = 0;
     hasChildren = (node.children?.length > 0);
     queryWorks(type,key,currentPage.value);
@@ -175,6 +180,7 @@ const queryWorks = (type,key)=>{
                     work.tempMap.type = type;
                     work.tempMap.key = key;
                 }
+                selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==key}).length;
                 // console.log(pageUtil.value);
             } else {
                 pageUtil.value.content = [];
@@ -195,7 +201,7 @@ const viewImg = (workItemList,imgId)=>{
 };
 
 const switchChange = (item,index)=> {
-    // console.log(id,checked,index);
+    // console.log(item);
     let j = lodash.findIndex(selWork,(o)=>{return o.id==item.id});
     if (item.temp==true) {
         if (j < 0) {
@@ -206,6 +212,7 @@ const switchChange = (item,index)=> {
             selWork.splice(j,1);
         }
     }
+    selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key;}).length;
 };
 </script>
 
