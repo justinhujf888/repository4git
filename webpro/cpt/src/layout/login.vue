@@ -11,6 +11,11 @@
                 <InputText v-model="password" name="password" class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-80" type="password"></InputText>
                 <Message v-if="$form.password?.invalid" severity="error" size="small" variant="simple">{{ $form.password.error?.message}}</Message>
             </div>
+            <div class="inline-flex flex-col gap-2">
+                <label for="usertype" class="text-primary-50 font-semibold">帐户类型</label>
+                <SelectButton v-model="userType" name="usertype" :options="options" option-value="id" option-label="label" :allowEmpty="false" class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-80"></SelectButton>
+                <Message v-if="$form.username?.invalid" severity="error" size="small" variant="simple">{{ $form.username.error?.message}}</Message>
+            </div>
             <div class="flex items-center gap-4">
                 <Button type="submit" label="登录" variant="text" class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"></Button>
                 <!--            <Button label="Cancel" variant="text" class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"></Button>-->
@@ -31,6 +36,8 @@ import util from '@/api/util';
 const emit = defineEmits(["afterLogin"]);
 const managerId = ref("");
 const password = ref("");
+const options = ref([{id:'manager',label:"后台管理员"}, {id:'judge',label:"评委"}]);
+const userType = ref("manager");
 
 let errors = [];
 let host = inject("domain");
@@ -49,18 +56,34 @@ const resolver = ({ values }) => {
 
 const onFormSubmit = ({ valid }) => {
     if (valid) {
-        userRest.managerLogin({managerId:managerId.value,password:password.value},(data)=>{
-            if (data.status=="OK") {
-                // useStorage("managerId",managerId.value);
-                util.intoStorgeCry("managerId",managerId.value);
-                util.intoStorgeCry("managerInfo",JSON.stringify(data.manager));
-                emit("afterLogin",data.manager);
-            } else if (data.status=="ER_NOHAS") {
-                dialog.toastError("您输入的账号或密码错误");
-            } else if (data.status=="ER_PW") {
-                dialog.toastError("您输入的账号或密码错误");
-            }
-        });
+        if (userType.value == "manager") {
+            userRest.managerLogin({managerId:managerId.value,password:password.value},(data)=>{
+                if (data.status=="OK") {
+                    // useStorage("managerId",managerId.value);
+                    util.intoStorgeCry("userType",userType.value);
+                    util.intoStorgeCry("managerId",managerId.value);
+                    util.intoStorgeCry("managerInfo",JSON.stringify(data.manager));
+                    emit("afterLogin",data.manager);
+                } else if (data.status=="ER_NOHAS") {
+                    dialog.toastError("您输入的账号或密码错误");
+                } else if (data.status=="ER_PW") {
+                    dialog.toastError("您输入的账号或密码错误");
+                }
+            });
+        } else if (userType.value == "judge") {
+            userRest.judgeLogin({phone:managerId.value,password:password.value},(data)=>{
+                if (data.status=="OK") {
+                    util.intoStorgeCry("userType",userType.value);
+                    util.intoStorgeCry("managerId",data.judge.id);
+                    util.intoStorgeCry("managerInfo",JSON.stringify(data.judge));
+                    emit("afterLogin",data.judge);
+                } else if (data.status=="ER_NOHAS") {
+                    dialog.toastError("您输入的账号或密码错误");
+                } else if (data.status=="ER_PW") {
+                    dialog.toastError("您输入的账号或密码错误");
+                }
+            });
+        }
     }
 };
 </script>

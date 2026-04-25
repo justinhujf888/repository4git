@@ -17,6 +17,7 @@ function logout() {
     dialog.confirm("确定要登出账号吗？",()=>{
         localStorage.removeItem("managerId");
         localStorage.removeItem("managerInfo");
+        localStorage.removeItem("userType");
         emit("afterLogout");
     },null);
 }

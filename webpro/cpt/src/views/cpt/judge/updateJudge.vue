@@ -17,7 +17,17 @@
                         <Message v-if="$form.phone?.invalid && $form.phone.error?.type=='error'" severity="error" size="small" variant="simple">{{ $form.phone.error?.message}}</Message>
                     </IftaLabel>
                     <IftaLabel>
-                        <label for="phone" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
+                        <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2">密码</label>
+                        <Password name="password1" v-model="password1" placeholder="请输入密码" :toggleMask="true" fluid :feedback="false" class="w-full md:w-[30rem] mb-4"></Password>
+                        <inputText :value="judge.password" class="hidden"/>
+                    </IftaLabel>
+                    <IftaLabel>
+                        <label for="password2" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2">再次输入密码</label>
+                        <Password name="password2" v-model="password2" placeholder="请再次输入密码" :toggleMask="true" fluid :feedback="false" class="w-full md:w-[30rem] mb-4"></Password>
+                        <Message v-if="password1!=password2" severity="error" size="small" variant="simple">两次密码输入不一致</Message>
+                    </IftaLabel>
+                    <IftaLabel>
+                        <label for="headImgUrl" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">上传照片</label>
                         <div class="col card items-center gap-6">
                             <FileUpload mode="basic" @select="onFileSelect" customUpload auto severity="secondary" class="p-button-outlined" />
                             <Message v-if="!src" severity="error" size="small" variant="simple">{{ $form.headImgUrl?.error?.message}}</Message>
@@ -63,6 +73,8 @@ import oss from "@/api/oss";
 const judge = ref(Beans.judge());
 const file = ref(null);
 const src = ref(null);
+const password1 = ref('');
+const password2 = ref('');
 
 let errors = [];
 let host = inject("domain");
@@ -91,6 +103,7 @@ const resolver = ({ values }) => {
     primeUtil.buildFormValidError(errors.phone,"error","手机格式错误",()=>{
         return !checker.check({"phone":judge.value.phone},[{name:"phone",checkType:"phone",checkRule:"",errorMsg:"手机格式错误"}]);
     },(error)=>{errors.phone = error});
+    primeUtil.buildFormValidError(errors.password2,"error","两次密码输入不一致",()=>{return password1.value!=password2.value},(error)=>{errors.password2 = error});
 
     return {
         values, // (Optional) Used to pass current form values to submit event.
@@ -116,6 +129,11 @@ const onFormSubmit = ({ valid }) => {
                 judge.value.headImgUrl = `cpt/${host}/judge/${judge.value.id}_${file.value.name}`;
                 headImgUrl = judge.value.headImgUrl;
             }
+        }
+        if (password1.value && password2.value && password1.value.length > 0 && password2.value.length > 0) {
+            // console.log(password1.value);
+            judge.value.temp = true;
+            judge.value.password = password1.value;
         }
         if (headImgUrl) {
             oss.uploadFileWithClient(

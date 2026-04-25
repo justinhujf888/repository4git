@@ -157,9 +157,10 @@ class UserRest extends BaseRest
         try
         {
             Judge judge = this.objToBean(query.judge, Judge.class,null);
+            println judge.dump();
             if (judge.temp==true)
             {
-                judge.password = userBean.buildPasswordCode(judge.phone);
+                judge.password = userBean.buildPasswordCode(judge.password);
             }
             userBean.updateTheObject(judge);
             return """{"status":"OK"}""";
@@ -194,6 +195,46 @@ class UserRest extends BaseRest
                      "manager":({
                          manager.password = "";
                          return manager;
+                     }).call(),
+                     "loginToken":({
+                         //redis
+//                         redisUtil.hPut("buyer_${buyer.phone}","token",MathUtil.getPNewId());
+//                         return redisUtil.hGet("buyer_${buyer.phone}","token");
+                         //redis end
+                         return IdUtil.randomUUID();
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/judgeLogin")
+    String judgeLogin(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            Judge judge = userBean.queryJudge8PhonePw(query);
+            if (judge==null)
+            {
+                return """{"status":"ER_NOHAS"}""";
+            }
+            if (!userBean.buildPasswordCode(query.password).equals(judge.password))
+            {
+                return """{"status":"ER_PW"}""";
+            }
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "judge":({
+                         judge.password = "";
+                         return judge;
                      }).call(),
                      "loginToken":({
                          //redis

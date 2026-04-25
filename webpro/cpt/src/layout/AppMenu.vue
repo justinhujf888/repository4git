@@ -5,12 +5,37 @@ import AppMenuItem from './AppMenuItem.vue';
 import lodash from "lodash-es";
 import pageJson from "@/datas/pageJson";
 import workRest from "@/api/dbs/workRest";
+import util from "@/api/util";
 
 const model = ref([]);
+let userType = util.giveStorgeCry("userType");
 
 onMounted(() => {
     if (lodash.includes(window.location.href,"/manage/")) {
-        model.value = pageJson.manageMenu();
+        model.value = [{label:"",items:[]}];
+        let menuJson = pageJson.manageMenu();
+        lodash.forEach(menuJson[0].items, (m) => {
+            if (m.userType) {
+                // console.log(userType,m.userType);
+                if (lodash.findIndex(m.userType,(o)=>{return o==userType})>-1) {
+                    if (m.items) {
+                        let mm = lodash.cloneDeep(m);
+                        mm.items = [];
+                        lodash.forEach(m.items,(sm)=>{
+                            if (lodash.findIndex(sm.userType,(o)=>{return o==userType})>-1) {
+                                mm.items.push(sm);
+                            }
+                        });
+                        model.value[0].items.push(mm);
+                    } else {
+                        model.value[0].items.push(m);
+                    }
+                    console.log(JSON.stringify(model.value));
+                }
+            } else {
+                model.value[0].items.push(m);
+            }
+        });
     } else if (lodash.includes(window.location.href,"/user/")) {
         model.value = [
             {
@@ -23,6 +48,7 @@ onMounted(() => {
             }
         ];
     }
+
 });
 </script>
 
