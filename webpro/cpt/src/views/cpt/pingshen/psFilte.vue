@@ -106,6 +106,7 @@ onMounted(async () => {
         masterCompetitionId = util.giveStorgeCry("masterCompetitionId");
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
         // console.log(uploadRule.value);
+        workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId,pingShenStepId:2},null);
         workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res)=>{
             if (res.status=="OK") {
                 lodash.forEach(res.data,(c)=>{

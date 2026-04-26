@@ -705,5 +705,28 @@ class WorkRest extends BaseRest
         }
     }
 
-//    workService.pingShenInit("localhost","localhost",2 as byte)
+//    workService.pingShenJudgesInit("localhost","localhost",2 as byte)
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/pingShenWorksInit")
+    String pingShenWorksInit(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         workService.pingShenWorksInit(query.appId as String,query.masterCompetitionId as String,query.pingShenStepId as byte);
+                         return null;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

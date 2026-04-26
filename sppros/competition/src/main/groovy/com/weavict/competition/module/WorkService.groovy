@@ -5,6 +5,7 @@ import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.CompetitionJudge
 import com.weavict.competition.entity.CompetitionJudgePK
 import com.weavict.competition.entity.GuiGe
+import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
@@ -189,7 +190,7 @@ class WorkService extends ModuleBean
     }
 
     @Transactional
-    void pingShenInit(String appId,String masterCompetitionId,byte pingShenStepId)
+    void pingShenJudgesInit(String appId,String masterCompetitionId,byte pingShenStepId)
     {
         List<String> comList = [];
         List<String> ggList = [];
@@ -303,5 +304,35 @@ class WorkService extends ModuleBean
         }
 
 //        select c.name,g.name,j.name from competitionjudge as cj left join competition as c on c.id = cj.competitionid left join guige as g on g.id = cj.guigeid left join judge as j on j.id = cj.judgeid
+    }
+
+    List<CompetitionJudge> qyPingShenJudgeList(String appId,String masterCompetitionId,byte pingShenStepId)
+    {
+        return this.newQueryUtils(true,true).masterTable("competitionjudge","cj",[
+                [sf:"mastercompetitionid",bf:"competitionJudgePK.masterCompetitionId"],
+                [sf:"competitionid",bf:"competitionJudgePK.competitionId"],
+                [sf:"guigeid",bf:"competitionJudgePK.guiGeId"],
+                [sf:"judgeid",bf:"competitionJudgePK.judgeId"],
+                [sf:"competitionstatus",bf:"competitionJudgePK.competitionStatus"],
+                [sf:"pingshenfields",bf:"tempMap.pingShenFields"]
+        ])
+            .where("cj.appid = :appId",[appId:appId],null,{return true})
+                .where("cj.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:masterCompetitionId],"and",{return true})
+                .where("cj.competitionstatus = :competitionStatus",[competitionStatus:pingShenStepId],"and",{return true})
+            .beanSetup(CompetitionJudge.class,null,null)
+            .buildSql().run().content;
+    }
+
+    void pingShenWorksInit(String appId,String masterCompetitionId,byte pingShenStepId)
+    {
+        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList(appId,masterCompetitionId,pingShenStepId);
+        var judgeMap = Linq.of(competitionJudgeList).where(cj->cj.competitionJudgePK.judgeId == "1758220276814e3xFY2cN");
+        for (var jm : judgeMap)
+        {
+            for(var l : jm)
+            {
+                println l.competitionJudgePK.dump();
+            }
+        }
     }
 }

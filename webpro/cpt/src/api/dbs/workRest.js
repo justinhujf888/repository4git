@@ -156,5 +156,8 @@ export default {
     },
     qyPageSetup(ds,onfun) {
         Http.callHttpFunction('/r/work/qyPageSetup',ds,onfun);
+    },
+    pingShenWorksInit(ds,onfun) {
+        Http.callHttpFunction('/r/work/pingShenWorksInit',ds,onfun);
     }
 }
