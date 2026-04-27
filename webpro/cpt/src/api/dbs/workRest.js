@@ -159,5 +159,11 @@ export default {
     },
     pingShenWorksInit(ds,onfun) {
         Http.callHttpFunction('/r/work/pingShenWorksInit',ds,onfun);
+    },
+    qyPingShenJudgeList(ds,onfun) {
+        Http.callHttpFunction('/r/work/qyPingShenJudgeList',ds,onfun);
+    },
+    saveSubmitJudgeWorks(ds,onfun) {
+        Http.callHttpFunction('/r/work/saveSubmitJudgeWorks',ds,onfun);
     }
 }

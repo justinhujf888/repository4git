@@ -709,6 +709,29 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyPingShenJudgeList")
+    String qyPingShenJudgeList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {println query.dump();
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.qyPingShenJudgeList(query);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/pingShenWorksInit")
     String pingShenWorksInit(@RequestBody Map<String,Object> query)
     {
@@ -722,6 +745,24 @@ class WorkRest extends BaseRest
                          return null;
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/saveSubmitJudgeWorks")
+    String saveSubmitJudgeWorks(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            println query;
         }
         catch (Exception e)
         {

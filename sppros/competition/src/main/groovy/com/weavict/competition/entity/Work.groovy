@@ -392,7 +392,7 @@ class WorkItem extends BEntity implements Serializable, IEntity
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
-    @Column(length=1000,columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> mediaFields;
 
@@ -423,6 +423,49 @@ class WorkLog extends BEntity implements Serializable, IEntity
 
     @Column(length=30)
     String appId;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Embeddable
+class JudgeWorkPK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String appId;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String judgeId;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String workId;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 2)
+    byte stepStatus;
+}
+
+@Table
+@Entity
+class JudgeWork extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    JudgeWorkPK judgeWorkPK;
+
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    List fenJson;
+
+    @Column(length=3)
+    int fen;
+
+    @Column
+    boolean shiPass;
 
     void cancelLazyEr()
     {
@@ -570,6 +613,9 @@ class CompetitionJudge extends BEntity implements Serializable, IEntity
 
     @Column(length=30)
     String appId;
+
+    @Column(length = 2)
+    byte pingShenStatus;
 
     void cancelLazyEr()
     {

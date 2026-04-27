@@ -103,6 +103,24 @@ export const Beans = {
 		}
 	},
 
+    JudgeWorkPK() {
+        return {
+            appId: "",
+            judgeId: "",
+            workId: "",
+            stepStatus: -1,
+        }
+    },
+
+    JudgeWork() {
+        return {
+            judgeWorkPK: this.JudgeWorkPK(),
+            fenJson: null,
+            fen: "",
+            shiPass: -1,
+        }
+    },
+
     workLog() {
         return {
             id: "",
@@ -219,7 +237,10 @@ export const Beans = {
 
     competitionJudge() {
         return {
-            competitionJudgePK: this.competitionJudgePK()
+            competitionJudgePK: this.competitionJudgePK(),
+            pingShenFields: null,
+            pingShenStatus: -1,
+            appId: ""
         }
     },
 

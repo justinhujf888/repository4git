@@ -306,7 +306,7 @@ class WorkService extends ModuleBean
 //        select c.name,g.name,j.name from competitionjudge as cj left join competition as c on c.id = cj.competitionid left join guige as g on g.id = cj.guigeid left join judge as j on j.id = cj.judgeid
     }
 
-    List<CompetitionJudge> qyPingShenJudgeList(String appId,String masterCompetitionId,byte pingShenStepId)
+    List<CompetitionJudge> qyPingShenJudgeList(Map query)
     {
         return this.newQueryUtils(true,true).masterTable("competitionjudge","cj",[
                 [sf:"mastercompetitionid",bf:"competitionJudgePK.masterCompetitionId"],
@@ -316,18 +316,19 @@ class WorkService extends ModuleBean
                 [sf:"competitionstatus",bf:"competitionJudgePK.competitionStatus"],
                 [sf:"pingshenfields",bf:"tempMap.pingShenFields"]
         ])
-            .where("cj.appid = :appId",[appId:appId],null,{return true})
-                .where("cj.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:masterCompetitionId],"and",{return true})
-                .where("cj.competitionstatus = :competitionStatus",[competitionStatus:pingShenStepId],"and",{return true})
+            .where("cj.appid = :appId",[appId:query.appId],null,{return true})
+                .where("cj.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+//                .where("cj.competitionstatus = :competitionStatus",[competitionStatus:query.pingShenStepId],"and",{return true})
+                .where("cj.judgeid = :judgeId",[judgeId: query.judgeId],"and",{return !(query.judgeId in [null,""])})
             .beanSetup(CompetitionJudge.class,null,null)
             .buildSql().run().content;
     }
 
     void pingShenWorksInit(String appId,String masterCompetitionId,byte pingShenStepId)
     {
-        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList(appId,masterCompetitionId,pingShenStepId);
-        var judgeMap = Linq.of(competitionJudgeList).where(cj->cj.competitionJudgePK.judgeId == "1758220276814e3xFY2cN");
-        for (var jm : judgeMap)
+        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId:appId,masterCompetitionId:masterCompetitionId,judgeId:null,pingShenStepId:pingShenStepId]);
+//        var competitionJudgeList = Linq.of(competitionJudgeList).where(cj->cj.competitionJudgePK.judgeId == "1758220276814e3xFY2cN");
+        for (var jm : competitionJudgeList)
         {
             for(var l : jm)
             {

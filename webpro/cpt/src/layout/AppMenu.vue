@@ -30,7 +30,7 @@ onMounted(() => {
                     } else {
                         model.value[0].items.push(m);
                     }
-                    console.log(JSON.stringify(model.value));
+                    // console.log(JSON.stringify(model.value));
                 }
             } else {
                 model.value[0].items.push(m);

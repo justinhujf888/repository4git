@@ -1,5 +1,8 @@
 <template>
     <animationPage ref="mainPage" :show="true">
+        <div>
+            <Button label="saveSubmitJudgeWorks" @click="saveSubmitJudgeWorks"/>
+        </div>
         <div class="md:row col p-2 card">
             <div class="w-full md:w-1/6 text-sm">
                 <Tree :value="comTree" v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" selectionMode="single" @node-select="onNodeSelect"></Tree>
@@ -100,21 +103,31 @@ let hasChildren = false;
 let type = 0;
 let key = "";
 let selWork = [];
+let judgeId = util.giveStorgeCry("managerId");
 
 onMounted(async () => {
     if (util.giveStorgeMessage("masterCompetitionId")) {
         masterCompetitionId = util.giveStorgeCry("masterCompetitionId");
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
         // console.log(uploadRule.value);
-        workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId,pingShenStepId:2},null);
-        workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res)=>{
+        // console.log(judgeId);
+        workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:null,pingShenStepId:2},(res)=>{
             if (res.status=="OK") {
-                lodash.forEach(res.data,(c)=>{
-                    let competition = {key:c.id,label:c.name,data:{bean:c,type:0,masterCompetitionId:masterCompetitionId},children:[]};
-                    lodash.forEach(c.guiGeList,(g)=>{
-                        competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,masterCompetitionId:masterCompetitionId}});
-                    });
-                    comTree.value.push(competition);
+                // console.log(res.data);
+                let psJudgeList = res.data;
+                workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res2)=>{
+                    if (res2.status=="OK") {
+                        let list = lodash.filter(res2.data,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==o.id})>-1});
+                        // console.log("list",list);
+                        lodash.forEach(list,(c)=>{
+                            let competition = {key:c.id,label:c.name,data:{bean:c,type:0,masterCompetitionId:masterCompetitionId},children:[]};
+                            let glist = lodash.filter(c.guiGeList,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==c.id && p.competitionJudgePK.guiGeId==o.id})>-1});
+                            lodash.forEach(glist,(g)=>{
+                                competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,masterCompetitionId:masterCompetitionId}});
+                            });
+                            comTree.value.push(competition);
+                        });
+                    }
                 });
             }
         });
@@ -206,6 +219,7 @@ const switchChange = (item,index)=> {
     let j = lodash.findIndex(selWork,(o)=>{return o.id==item.id});
     if (item.temp==true) {
         if (j < 0) {
+            //type:0类别；1组别；key是类别或者组别的ID
             selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key});
         }
     } else {
@@ -214,6 +228,12 @@ const switchChange = (item,index)=> {
         }
     }
     selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key;}).length;
+};
+
+const saveSubmitJudgeWorks = ()=>{
+    workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId},(res)=>{
+
+    });
 };
 </script>
 
