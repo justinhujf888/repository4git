@@ -169,6 +169,14 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: '/manage/cpt/pingshen/psSetup',
+                    name: 'psSetup',
+                    component: () => import('@/views/cpt/pingshen/psSetup.vue'),
+                    meta:{
+                        name: "评审设定"
+                    }
+                },
+                {
                     path: '/manage/cpt/pingshen/psFen',
                     name: 'psFen',
                     component: () => import('@/views/cpt/pingshen/pingshenFen.vue'),

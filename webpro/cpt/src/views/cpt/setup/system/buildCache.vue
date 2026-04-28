@@ -57,7 +57,7 @@ const onFormSubmit = ({ valid }) => {
     if (valid) {
         workRest.buildCacheCpt({siteCompetitionId:host,masterCompetitionId:masterCompetition.value.id,host:host},(res)=>{
             if (res.status=="OK") {
-                util.intoStorgeCry("masterCompetitionId",masterCompetition.value.id);
+                // util.intoStorgeCry("masterCompetitionId",masterCompetition.value.id);
                 dialog.toastSuccess("赛事已成功发布");
             }
         });

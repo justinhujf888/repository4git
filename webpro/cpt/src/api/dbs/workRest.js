@@ -165,5 +165,11 @@ export default {
     },
     saveSubmitJudgeWorks(ds,onfun) {
         Http.callHttpFunction('/r/work/saveSubmitJudgeWorks',ds,onfun);
+    },
+    qyPingShenFlow(ds,onfun) {
+        Http.callHttpFunction('/r/work/qyPingShenFlow',ds,onfun);
+    },
+    updateCurrentMasterCompetitionSetup(ds,onfun) {
+        Http.callHttpFunction('/r/work/updateCurrentMasterCompetitionSetup',ds,onfun);
     }
 }

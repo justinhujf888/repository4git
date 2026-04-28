@@ -6,8 +6,11 @@ import cn.hutool.core.io.file.FileWriter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.Competition
+import com.weavict.competition.entity.CurrentMasterCompetitionSetup
 import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.Judge
+import com.weavict.competition.entity.JudgeWork
+import com.weavict.competition.entity.JudgeWorkPK
 import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
@@ -590,6 +593,11 @@ class WorkRest extends BaseRest
             ]));
 
             MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
+            CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
+            currentMasterCompetitionSetup.key = "masterCompetitionId";
+            currentMasterCompetitionSetup.value = masterCompetition.id;
+            workService.updateTheObject(currentMasterCompetitionSetup);
+
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
             writer.write(buildObjectMapper().writeValueAsString(masterCompetition.workSetup));
 
@@ -709,11 +717,34 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyPingShenFlow")
+    String qyPingShenFlow(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.qyPingShenFlow(query);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/qyPingShenJudgeList")
     String qyPingShenJudgeList(@RequestBody Map<String,Object> query)
     {
         try
-        {println query.dump();
+        {
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
@@ -737,14 +768,8 @@ class WorkRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = buildObjectMapper();
-            return objectMapper.writeValueAsString(
-                    ["status":"OK",
-                     "data":({
-                         workService.pingShenWorksInit(query.appId as String,query.masterCompetitionId as String,query.pingShenStepId as byte);
-                         return null;
-                     }).call()
-                    ]);
+            workService.pingShenWorksInit(query.appId as String,query.masterCompetitionId as String,query.pingShenStepId as byte);
+            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {
@@ -761,8 +786,61 @@ class WorkRest extends BaseRest
     {
         try
         {
+            List workList = objToBean(query.selWork,List.class,null);
+            workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                for(def item in workList)
+                {
+//                    JudgeWork judgeWork = new JudgeWork();
+//                    judgeWork.judgeWorkPK = new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte);
+//                    judgeWork.shiPass
+                    workService.updateTheObjectFilds(JudgeWork.simpleName,"judgeWorkPK = :judgeWorkPK",[shiPass:item.shiPass as boolean],[judgeWorkPK:new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte)],false);
+                }
+            });
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateCurrentMasterCompetitionSetup")
+    String updateCurrentMasterCompetitionSetup(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
+            currentMasterCompetitionSetup.key = query.key;
+            currentMasterCompetitionSetup.value = query.value;
+            workService.updateTheObject(currentMasterCompetitionSetup);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/giveCurrentMasterCompetitionSetup")
+    String giveCurrentMasterCompetitionSetup(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
             ObjectMapper objectMapper = buildObjectMapper();
-            println query;
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return null;
+                     }).call()
+                    ]);
         }
         catch (Exception e)
         {

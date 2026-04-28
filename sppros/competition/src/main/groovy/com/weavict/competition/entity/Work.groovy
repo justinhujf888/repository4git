@@ -446,6 +446,14 @@ class JudgeWorkPK implements Serializable
 
     @Column(nullable = false, insertable = false, updatable = false, length = 2)
     byte stepStatus;
+
+    JudgeWorkPK(String appId,String judgeId,String workId,byte stepStatus)
+    {
+        this.appId = appId;
+        this.judgeId = judgeId;
+        this.workId = workId;
+        this.stepStatus = stepStatus;
+    }
 }
 
 @Table
@@ -616,6 +624,25 @@ class CompetitionJudge extends BEntity implements Serializable, IEntity
 
     @Column(length = 2)
     byte pingShenStatus;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Table
+@Entity
+class CurrentMasterCompetitionSetup extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length=30)
+    String key;
+
+    @Column(length = 100)
+    String value;
 
     void cancelLazyEr()
     {

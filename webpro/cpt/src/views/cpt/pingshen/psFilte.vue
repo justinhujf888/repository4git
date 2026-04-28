@@ -1,7 +1,7 @@
 <template>
     <animationPage ref="mainPage" :show="true">
         <div>
-            <Button label="saveSubmitJudgeWorks" @click="saveSubmitJudgeWorks"/>
+            <Button label="saveSubmitJudgeWorks" @click="saveSubmitJudgeWorks(true)"/>
         </div>
         <div class="md:row col p-2 card">
             <div class="w-full md:w-1/6 text-sm">
@@ -104,14 +104,16 @@ let type = 0;
 let key = "";
 let selWork = [];
 let judgeId = util.giveStorgeCry("managerId");
+let stepStatus = -1;
 
 onMounted(async () => {
     if (util.giveStorgeMessage("masterCompetitionId")) {
         masterCompetitionId = util.giveStorgeCry("masterCompetitionId");
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
+        stepStatus = 2;
         // console.log(uploadRule.value);
         // console.log(judgeId);
-        workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:null,pingShenStepId:2},(res)=>{
+        workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:null,pingShenStepId:stepStatus},(res)=>{
             if (res.status=="OK") {
                 // console.log(res.data);
                 let psJudgeList = res.data;
@@ -230,10 +232,25 @@ const switchChange = (item,index)=> {
     selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key;}).length;
 };
 
-const saveSubmitJudgeWorks = ()=>{
-    workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId},(res)=>{
+const saveSubmitJudgeWorks = (shiPass)=>{
+    if (shiPass)
+    {
+        dialog.confirm("正式提交审核后将无法再修改，您是否确认此次审核提交？",()=>{
+            workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass},(res)=>{
+                if (res.status=="OK") {
+                    dialog.alert("您已提交此次审核");
+                }
+            });
+        },()=>{
 
-    });
+        });
+    } else {
+        workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass},(res)=>{
+            if (res.status=="OK") {
+                dialog.alert("您已暂时保存此次审核");
+            }
+        });
+    }
 };
 </script>
 

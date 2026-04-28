@@ -61,6 +61,7 @@ export default {
                       label: "作品评审",icon: 'pi pi-fw pi-bars',
                       items: [
                           { userType: ["manager"], label: '作品审查', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/managerReview' },
+                          { userType: ["manager"], label: '评审设定', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psSetup' },
                           { userType: ["manager","judge"], label: '评审初筛', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFilte' },
                           { userType: ["judge"], label: '作品评分', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFen' }
                       ]
