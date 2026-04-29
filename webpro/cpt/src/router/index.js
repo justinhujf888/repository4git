@@ -72,8 +72,8 @@ const router = createRouter({
                 {
                     path: '/manage/index',
                     name: 'dashboard',
-                    // component: () => import('@/views/Dashboard.vue')
-                    component: () => import('@/views/cpt/setup/siteCpt/coms/siteBase.vue')
+                    component: () => import('@/views/Dashboard.vue')
+                    // component: () => import('@/views/cpt/setup/siteCpt/coms/siteBase.vue')
                 },
                 {
                     path: '/manage/cpt/site/cptSetup',

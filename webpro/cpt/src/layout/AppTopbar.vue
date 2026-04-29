@@ -29,7 +29,7 @@ function logout() {
             <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button>
-            <router-link to="/" class="layout-topbar-logo">
+            <router-link to="/manage/index" class="layout-topbar-logo">
                 <span>{{siteDatas?.siteInfo.siteCompetition.name}}</span>
             </router-link>
         </div>

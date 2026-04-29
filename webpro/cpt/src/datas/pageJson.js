@@ -39,11 +39,11 @@ export default {
                       label: "赛事设置",icon: 'pi pi-fw pi-bars',
                       items: [
                           // { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
-                          { label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase' },
+                          { userType: ["manager"], label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase' },
                           // { label: '主题图', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteZhuTi' },
-                          { label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem' },
-                          { label: '组委会成员', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteOrgHuman' },
-                          { label: '作品字段', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteFields' },
+                          { userType: ["manager"], label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem' },
+                          { userType: ["manager"], label: '组委会成员', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteOrgHuman' },
+                          { userType: ["manager"], label: '作品字段', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteFields' },
                       ]
                   },
                   { userType: ["manager"], label: '年份赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/master/masterCptSetup' },

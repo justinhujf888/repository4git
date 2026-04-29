@@ -490,8 +490,12 @@ export default {
 		return localStorage.setItem(key,encryptByDES(message, Config.desKey));
 	},
 	giveStorgeCry(key) {
-		return decryptByDES(localStorage.getItem(key), Config.desKey);
-	},
+        if (localStorage.getItem(key)) {
+            return decryptByDES(this.giveStorgeMessage(key), Config.desKey);
+        } else {
+            return null;
+        }
+    },
 	intoStorgeMessage(key,message) {
 		return localStorage.setItem(key,message);
 	},
