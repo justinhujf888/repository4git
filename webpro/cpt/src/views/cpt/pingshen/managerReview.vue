@@ -102,7 +102,6 @@
 
 <script setup>
 import {inject, onMounted, ref, useTemplateRef} from 'vue';
-import util from "@/api/util";
 import workRest from "@/api/dbs/workRest";
 import lodash from "lodash-es";
 import oss from "@/api/oss";
@@ -156,19 +155,10 @@ let workIndex = -1;
 let workLogIndex = -1;
 
 onMounted(async () => {
-    let res = await workRest.giveCurrentMasterCompetitionSetup({},null);
-    console.log(res);
-    // await new Promise(resolve => {
-    //     workRest.giveCurrentMasterCompetitionSetup({},(res)=>{
-    //         if (res.status=="OK") {
-    //             console.log(res);
-    //             resolve();
-    //         }
-    //     });
-    // });
+    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data[0]?.value;
+    // console.log(masterCompetitionId);
 
-    if (util.giveStorgeMessage("masterCompetitionId")) {
-        masterCompetitionId = util.giveStorgeCry("masterCompetitionId");
+    if (masterCompetitionId) {
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
         // console.log(uploadRule.value);
         workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res)=>{
@@ -182,6 +172,8 @@ onMounted(async () => {
                 });
             }
         });
+    } else {
+        dialog.alert("还未发布赛事，请先发布赛事后在进行操作");
     }
 });
 

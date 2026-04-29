@@ -107,8 +107,8 @@ let judgeId = util.giveStorgeCry("managerId");
 let stepStatus = -1;
 
 onMounted(async () => {
-    if (util.giveStorgeMessage("masterCompetitionId")) {
-        masterCompetitionId = util.giveStorgeCry("masterCompetitionId");
+    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data[0]?.value;
+    if (masterCompetitionId) {
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
         stepStatus = 2;
         // console.log(uploadRule.value);
@@ -133,6 +133,8 @@ onMounted(async () => {
                 });
             }
         });
+    } else {
+        dialog.alert("还未发布赛事，请先发布赛事后在进行操作");
     }
 });
 

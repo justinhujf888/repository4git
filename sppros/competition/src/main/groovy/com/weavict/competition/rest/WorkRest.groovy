@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.CurrentMasterCompetitionSetup
+import com.weavict.competition.entity.CurrentMasterCompetitionSetupPK
 import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.JudgeWork
@@ -594,7 +595,8 @@ class WorkRest extends BaseRest
 
             MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
             CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
-            currentMasterCompetitionSetup.key = "masterCompetitionId";
+            CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(query.appId as String,"masterCompetitionId");
+            currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
             currentMasterCompetitionSetup.value = masterCompetition.id;
             workService.updateTheObject(currentMasterCompetitionSetup);
 
@@ -814,7 +816,9 @@ class WorkRest extends BaseRest
         try
         {
             CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
-            currentMasterCompetitionSetup.key = query.key;
+            CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK();
+            currentMasterCompetitionSetupPK.key = query.key
+            currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
             currentMasterCompetitionSetup.value = query.value;
             workService.updateTheObject(currentMasterCompetitionSetup);
             return """{"status":"OK"}""";
@@ -838,7 +842,10 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return """{"a":"b"}""";
+                         return workService.newQueryUtils(false,false).masterTable(CurrentMasterCompetitionSetup.simpleName,null,null)
+                            .where("currentMasterCompetitionSetupPK.appId = :appId",[appId:query.appId],null,{return true})
+                            .where("currentMasterCompetitionSetupPK.key in :keys",[keys:objToBean(query.keys,List.class,objectMapper)],"and",{return true})
+                            .buildSql().run().content;
                      }).call()
                     ]);
         }

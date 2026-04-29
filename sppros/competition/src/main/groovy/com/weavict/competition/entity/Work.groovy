@@ -447,6 +447,8 @@ class JudgeWorkPK implements Serializable
     @Column(nullable = false, insertable = false, updatable = false, length = 2)
     byte stepStatus;
 
+    JudgeWorkPK() {}
+
     JudgeWorkPK(String appId,String judgeId,String workId,byte stepStatus)
     {
         this.appId = appId;
@@ -594,15 +596,19 @@ class CompetitionJudgePK implements Serializable
     @Column(nullable=false, insertable=false, updatable=false,length = 2)
     byte competitionStatus;
 
+    @Column(nullable=false, insertable=false, updatable=false, length=30)
+    String appId;
+
     CompetitionJudgePK() {}
 
-    CompetitionJudgePK(String masterCompetitionId,String competitionId,String guiGeId,String judgeId,byte competitionStatus)
+    CompetitionJudgePK(String masterCompetitionId,String competitionId,String guiGeId,String judgeId,byte competitionStatus,String appId)
     {
         this.masterCompetitionId = masterCompetitionId;
         this.competitionId = competitionId;
         this.guiGeId = guiGeId;
         this.judgeId = judgeId;
         this.competitionStatus = competitionStatus;
+        this.appId = appId;
     }
 }
 
@@ -619,9 +625,6 @@ class CompetitionJudge extends BEntity implements Serializable, IEntity
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> pingShenFields;
 
-    @Column(length=30)
-    String appId;
-
     @Column(length = 2)
     byte pingShenStatus;
 
@@ -631,15 +634,34 @@ class CompetitionJudge extends BEntity implements Serializable, IEntity
     }
 }
 
+@Embeddable
+class CurrentMasterCompetitionSetupPK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String key;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String appId;
+
+    CurrentMasterCompetitionSetupPK() {}
+
+    CurrentMasterCompetitionSetupPK(String appId,String key)
+    {
+        this.appId = appId;
+        this.key = key;
+    }
+}
+
 @Table
 @Entity
 class CurrentMasterCompetitionSetup extends BEntity implements Serializable, IEntity
 {
     static final long serialVersionUID = 1L;
 
-    @Id
-    @Column(length=30)
-    String key;
+    @EmbeddedId
+    CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK;
 
     @Column(length = 100)
     String value;

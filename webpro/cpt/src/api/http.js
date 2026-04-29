@@ -26,7 +26,7 @@ export const Http = {
         ds.appId = util.getDomainFromUrl(window.location);
         ds.vstr = str;
         // console.log(util.encryptStoreInfo(encodeURIComponent(JSON.stringify(ds))));
-        axios({
+        return axios({
             baseURL: Config.apiBaseURL,
             url: url,
             method: method, // header: {timestamp:jsEncrypt.encrypt(str),createTime:str,nonceStr:util.encryptStoreInfo(str)},
@@ -38,7 +38,7 @@ export const Http = {
             .then((res) => {
                 returnfun(res);
                 dialog?.closeLoading();
-                return Promise.resolve(res);
+                return Promise.resolve(res.data);
             })
             .catch((error) => {
                 dialog?.closeLoading();
@@ -61,8 +61,8 @@ export const Http = {
 
     },
 
-    callHttpFunction(url,ds,onfun) {
-        let a = Http.httpclient_json(
+    async callHttpFunction(url,ds,onfun) {
+        return await Http.httpclient_json(
             url,
             'post',
             ds,
@@ -79,7 +79,6 @@ export const Http = {
             null,
             true
         );
-        console.log(a)
     },
 
     uploadFileOss(file,host,key,ossAccessKeyId,policy,signature,securityToken,okfun,erfun) {

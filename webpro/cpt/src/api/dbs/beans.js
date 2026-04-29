@@ -231,7 +231,8 @@ export const Beans = {
         return {
             competitionId: "",
             judgeId: "",
-            competitionStatus: -1
+            competitionStatus: -1,
+            appId: ""
         }
     },
 
@@ -239,12 +240,9 @@ export const Beans = {
         return {
             competitionJudgePK: this.competitionJudgePK(),
             pingShenFields: null,
-            pingShenStatus: -1,
-            appId: ""
+            pingShenStatus: -1
         }
     },
-
-
 
     workStatus() {
         return [

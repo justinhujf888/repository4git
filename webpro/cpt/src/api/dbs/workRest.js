@@ -115,8 +115,8 @@ export default {
     deleteGuiGe(ds,onfun) {
         Http.callHttpFunction('/r/work/deleteGuiGe',ds,onfun);
     },
-    qyWorks(ds,onfun) {
-        Http.callHttpFunction('/r/work/qyWorks',ds,onfun);
+    async qyWorks(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyWorks',ds,onfun);
     },
     qyWorkLog8Work(ds,onfun) {
         Http.callHttpFunction('/r/work/qyWorkLog8Work',ds,onfun);
@@ -172,7 +172,7 @@ export default {
     updateCurrentMasterCompetitionSetup(ds,onfun) {
         Http.callHttpFunction('/r/work/updateCurrentMasterCompetitionSetup',ds,onfun);
     },
-    giveCurrentMasterCompetitionSetup(ds,onfun) {
-        return Http.callHttpFunction('/r/work/giveCurrentMasterCompetitionSetup',ds,onfun);
+    async giveCurrentMasterCompetitionSetup(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/giveCurrentMasterCompetitionSetup',ds,onfun);
     }
 }

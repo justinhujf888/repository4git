@@ -17,17 +17,24 @@ import dialog from "@/api/uniapp/dialog";
 
 const flow = ref([]);
 
-onMounted(()=>{
-    workRest.qyPingShenFlow({},(res)=>{
-        if (res.status=="OK") {
-            // console.log(res.data.flow);
-            flow.value = res.data.flow;
-        }
-    });
+let masterCompetitionId = "";
+
+onMounted(async ()=>{
+    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data[0]?.value;
+    if (masterCompetitionId) {
+        workRest.qyPingShenFlow({},(res)=>{
+            if (res.status=="OK") {
+                // console.log(res.data.flow);
+                flow.value = res.data.flow;
+            }
+        });
+    } else {
+        dialog.alert("还未发布赛事，请先发布赛事后在进行操作");
+    }
 });
 
-const pingShenWorksInit = ()=>{
-    workRest.pingShenWorksInit({masterCompetitionId:util.giveStorgeCry("masterCompetitionId"),pingShenStepId:0},(res)=>{
+const pingShenWorksInit = async ()=>{
+    workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId,pingShenStepId:0},(res)=>{
         if (res.status=="OK") {
             dialog.toastSuccess("作品已分配到评委");
         }
