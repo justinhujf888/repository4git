@@ -156,6 +156,17 @@ let workIndex = -1;
 let workLogIndex = -1;
 
 onMounted(async () => {
+    let res = await workRest.giveCurrentMasterCompetitionSetup({},null);
+    console.log(res);
+    // await new Promise(resolve => {
+    //     workRest.giveCurrentMasterCompetitionSetup({},(res)=>{
+    //         if (res.status=="OK") {
+    //             console.log(res);
+    //             resolve();
+    //         }
+    //     });
+    // });
+
     if (util.giveStorgeMessage("masterCompetitionId")) {
         masterCompetitionId = util.giveStorgeCry("masterCompetitionId");
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");

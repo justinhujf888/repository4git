@@ -171,5 +171,8 @@ export default {
     },
     updateCurrentMasterCompetitionSetup(ds,onfun) {
         Http.callHttpFunction('/r/work/updateCurrentMasterCompetitionSetup',ds,onfun);
+    },
+    giveCurrentMasterCompetitionSetup(ds,onfun) {
+        return Http.callHttpFunction('/r/work/giveCurrentMasterCompetitionSetup',ds,onfun);
     }
 }

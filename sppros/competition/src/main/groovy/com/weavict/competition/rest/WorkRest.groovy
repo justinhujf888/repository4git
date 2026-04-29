@@ -838,7 +838,7 @@ class WorkRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return null;
+                         return """{"a":"b"}""";
                      }).call()
                     ]);
         }

@@ -2,6 +2,7 @@ import { Config } from '@/api/config.js';
 import axios from 'axios';
 import dialog from '@/api/uniapp/dialog';
 import util from "@/api/util";
+import workRest from '@/api/dbs/workRest';
 
 export const Http = {
     fetchJson(url) {
@@ -37,6 +38,7 @@ export const Http = {
             .then((res) => {
                 returnfun(res);
                 dialog?.closeLoading();
+                return Promise.resolve(res);
             })
             .catch((error) => {
                 dialog?.closeLoading();
@@ -60,7 +62,7 @@ export const Http = {
     },
 
     callHttpFunction(url,ds,onfun) {
-        Http.httpclient_json(
+        let a = Http.httpclient_json(
             url,
             'post',
             ds,
@@ -69,12 +71,15 @@ export const Http = {
                 if (res.data.status == 'FA_ER') {
                     dialog.showApiErrorMsg();
                 } else {
-                    onfun(res.data);
+                    if (onfun) {
+                        onfun(res.data);
+                    }
                 }
             },
             null,
             true
         );
+        console.log(a)
     },
 
     uploadFileOss(file,host,key,ossAccessKeyId,policy,signature,securityToken,okfun,erfun) {
