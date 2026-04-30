@@ -157,8 +157,8 @@ export default {
     qyPageSetup(ds,onfun) {
         Http.callHttpFunction('/r/work/qyPageSetup',ds,onfun);
     },
-    pingShenWorksInit(ds,onfun) {
-        Http.callHttpFunction('/r/work/pingShenWorksInit',ds,onfun);
+    async pingShenWorksInit(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/pingShenWorksInit',ds,onfun);
     },
     qyPingShenJudgeList(ds,onfun) {
         Http.callHttpFunction('/r/work/qyPingShenJudgeList',ds,onfun);

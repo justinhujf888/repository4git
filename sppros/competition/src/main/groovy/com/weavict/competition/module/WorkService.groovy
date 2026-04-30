@@ -1,11 +1,14 @@
 package com.weavict.competition.module
 
+import com.alibaba.fastjson2.JSON
 import com.bestvike.linq.Linq
 import com.bestvike.tuple.Tuple
 import com.bestvike.tuple.Tuple2
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.CompetitionJudge
 import com.weavict.competition.entity.CompetitionJudgePK
+import com.weavict.competition.entity.CurrentMasterCompetitionSetup
+import com.weavict.competition.entity.CurrentMasterCompetitionSetupPK
 import com.weavict.competition.entity.GuiGe
 import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.JudgeWork
@@ -189,6 +192,7 @@ class WorkService extends ModuleBean
         List<String> comList = [];
         List<String> ggList = [];
         MasterCompetition masterCompetition = this.findObjectById(MasterCompetition.class, masterCompetitionId);
+//        println JSON.toJSONString(masterCompetition.judgeSetup.datas);
         for (def it in masterCompetition.judgeSetup.datas) {//it 为一个类别competition；it.data是评审的n个流程环节
             comList = [];
             for (def cit in it.data) {
@@ -234,36 +238,33 @@ class WorkService extends ModuleBean
                     }
                 }
             }
-            //                json没有分组，查询数据库进一步判断
-            else {
-                List<GuiGe> guiGeList = this.qyGuiGeList8CompetitionId(it.id);
-                if (guiGeList != null && guiGeList.size() > 0) {
-                    //数据库有分组，将类别评委设置到分组
-                    for (def j in comList) {
-                        for (GuiGe guiGe in guiGeList) {
-                            CompetitionJudge competitionJudge = new CompetitionJudge();
-                            competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId, it.id as String, guiGe.id, j.id, pingShenStepId, appId);
-                            if (pingShenStepId == 0 as byte) {
-                                competitionJudge.pingShenFields = null;
-                            } else {
-                                competitionJudge.pingShenFields = ["fields": j.fields];
-                            }
-                            this.updateObject(competitionJudge);
-                        }
-                    }
-                } else {
-                    //                没有分组，comList里是最后的评委信息
-                    for (def j in comList) {
+            //                查询json是否有遗漏的分组，查询数据库进一步判断
+            List<GuiGe> guiGeList = this.qyGuiGeList8CompetitionId(it.id);
+            if (guiGeList != null && guiGeList.size() > 0) {
+                //数据库有分组，将类别评委设置到分组
+                for (def j in comList) {
+                    for (GuiGe guiGe in guiGeList) {
                         CompetitionJudge competitionJudge = new CompetitionJudge();
-                        competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId, it.id as String, "-1", j.id, pingShenStepId, appId);
+                        competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId, it.id as String, guiGe.id, j.id, pingShenStepId, appId);
                         if (pingShenStepId == 0 as byte) {
                             competitionJudge.pingShenFields = null;
                         } else {
                             competitionJudge.pingShenFields = ["fields": j.fields];
                         }
-                        competitionJudge.appId = appId;
                         this.updateObject(competitionJudge);
                     }
+                }
+            } else {
+                //                没有分组，comList里是最后的评委信息
+                for (def j in comList) {
+                    CompetitionJudge competitionJudge = new CompetitionJudge();
+                    competitionJudge.competitionJudgePK = new CompetitionJudgePK(masterCompetitionId, it.id as String, "-1", j.id, pingShenStepId, appId);
+                    if (pingShenStepId == 0 as byte) {
+                        competitionJudge.pingShenFields = null;
+                    } else {
+                        competitionJudge.pingShenFields = ["fields": j.fields];
+                    }
+                    this.updateObject(competitionJudge);
                 }
             }
         }
@@ -289,31 +290,51 @@ class WorkService extends ModuleBean
                 .buildSql().run().content;
     }
 
+    @Transactional
     void pingShenWorksInit(String appId, String masterCompetitionId, byte pingShenStepId)
     {
-        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId: appId, masterCompetitionId: masterCompetitionId, judgeId: null, pingShenStepId: pingShenStepId]);
-        var groupList = Linq.of(competitionJudgeList).groupBy(cj -> new Tuple2(cj.competitionJudgePK.competitionId,cj.competitionJudgePK.guiGeId)
-//        {
-//            if (cj.competitionJudgePK.guiGeId != "-1") {
-//                return cj.competitionJudgePK.guiGeId;
-//            } else {
-//                return cj.competitionJudgePK.competitionId;
-//            }
-//        }
-        );
+        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId: appId, masterCompetitionId: masterCompetitionId, judgeId: null, pingShenStepId: 0]);//查询初筛评委
+        var groupList = Linq.of(competitionJudgeList).groupBy(cj -> new Tuple2(cj.competitionJudgePK.competitionId,cj.competitionJudgePK.guiGeId));
         for (def group : groupList)
         {
 //            println group.key;
             //            group is map,key is competitionId or guigeid; value is a list of CompetitionJudge. 即评委
-            List<Work> workList = this.qyWorks([appId:appId,competitionId:group.key.item1,guiGeId:group.key.item2,statusList:[1 as byte]]).content;
-            println workList?.size();
-            for (CompetitionJudge cj in group.value) {
-//                println cj.competitionJudgePK.judgeId;
-                if (pingShenStepId == 0 as byte) {
-                    JudgeWork judgeWork = new JudgeWork();
-                    JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, "", pingShenStepId);
+            if (pingShenStepId == 0 as byte)
+            {
+                List<Work> workList = this.qyWorks([appId:appId,competitionId:group.key.item1,guiGeId:group.key.item2,statusList:[1 as byte]]).content;//查询已经提交的作品
+                if (group.value?.size()>0 && workList?.size()>0)
+                {
+                    Collections.shuffle(workList);
+                    Collections.shuffle(group.value);
+                    int cji = 0;
+                    for(Work work in workList)
+                    {
+                        if (cji >= group.value.size()-1)
+                        {
+                            cji = 0;
+                        }
+                        CompetitionJudge cj = group.value[cji];
+                        JudgeWork judgeWork = new JudgeWork();
+                        JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, pingShenStepId);
+                        judgeWork.judgeWorkPK = judgeWorkPK;
+                        judgeWork.fen = 0;
+                        judgeWork.fenJson = null;
+                        judgeWork.shiPass = false;
+                        judgeWork.competitionId = group.key.item1;
+                        judgeWork.guiGeId = group.key.item2;
+                        this.updateObject(judgeWork);
+                        cji++;
+                    }
                 }
             }
+        }
+        if (pingShenStepId == 0 as byte)
+        {
+            CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
+            CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(appId,"masterCompetitionStatus");
+            currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
+            currentMasterCompetitionSetup.value = 0;
+            this.updateTheObject(currentMasterCompetitionSetup);
         }
     }
 }

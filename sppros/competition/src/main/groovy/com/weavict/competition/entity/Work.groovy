@@ -477,6 +477,12 @@ class JudgeWork extends BEntity implements Serializable, IEntity
     @Column
     boolean shiPass;
 
+    @Column(length = 30)
+    String competitionId;
+
+    @Column(length = 30)
+    String guiGeId;
+
     void cancelLazyEr()
     {
 

@@ -594,11 +594,14 @@ class WorkRest extends BaseRest
             ]));
 
             MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
-            CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
-            CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(query.appId as String,"masterCompetitionId");
-            currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
-            currentMasterCompetitionSetup.value = masterCompetition.id;
-            workService.updateTheObject(currentMasterCompetitionSetup);
+            for(def item in [[key:"masterCompetitionId",value:masterCompetition.id],[key:"masterCompetitionStatus",value:-1 as byte]])
+            {
+                CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
+                CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(query.appId as String,item.key);
+                currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
+                currentMasterCompetitionSetup.value = item.value;
+                workService.updateTheObject(currentMasterCompetitionSetup);
+            }
             workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
 
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
@@ -840,14 +843,24 @@ class WorkRest extends BaseRest
         try
         {
             ObjectMapper objectMapper = buildObjectMapper();
+            List<CurrentMasterCompetitionSetup> currentMasterCompetitionSetupList = null;
+            currentMasterCompetitionSetupList = workService.newQueryUtils(false,false).masterTable(CurrentMasterCompetitionSetup.simpleName,null,null)
+                    .where("currentMasterCompetitionSetupPK.appId = :appId",[appId:query.appId],null,{return true})
+                    .where("currentMasterCompetitionSetupPK.key in :keys",[keys:objToBean(query.keys,List.class,objectMapper)],"and",{return true})
+                    .buildSql().run().content;
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return workService.newQueryUtils(false,false).masterTable(CurrentMasterCompetitionSetup.simpleName,null,null)
-                            .where("currentMasterCompetitionSetupPK.appId = :appId",[appId:query.appId],null,{return true})
-                            .where("currentMasterCompetitionSetupPK.key in :keys",[keys:objToBean(query.keys,List.class,objectMapper)],"and",{return true})
-                            .buildSql().run().content;
-                     }).call()
+                         return currentMasterCompetitionSetupList;
+                     }).call(),
+                     "map":({
+                                Map maps = new HashMap();
+                                for(CurrentMasterCompetitionSetup cm in currentMasterCompetitionSetupList)
+                                {
+                                    maps[cm.currentMasterCompetitionSetupPK.key] = cm.value;
+                                }
+                                return maps;
+                            }).call()
                     ]);
         }
         catch (Exception e)

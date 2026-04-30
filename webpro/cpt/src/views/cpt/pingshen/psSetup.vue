@@ -2,7 +2,7 @@
     <animation-page :show="true">
         <Panel v-for="f of flow" :header="f.name" class="m-5">
             <div v-if="f.id==0">
-                <Button label="分配作品" @click="pingShenWorksInit"/>
+                <Button label="分配作品" @click="pingShenWorksInit" :disabled="masterCompetitionStatus>-1"/>
             </div>
         </Panel>
     </animation-page>
@@ -17,11 +17,15 @@ import dialog from "@/api/uniapp/dialog";
 
 const flow = ref([]);
 
-let masterCompetitionId = "";
+const masterCompetitionId = ref("");
+const masterCompetitionStatus = ref(-1);
 
 onMounted(async ()=>{
-    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data?.[0]?.value;
-    if (masterCompetitionId) {
+    let cms = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId","masterCompetitionStatus"]},null))?.map;
+    masterCompetitionId.value = cms.masterCompetitionId;
+    masterCompetitionStatus.value = cms.masterCompetitionStatus;
+
+    if (masterCompetitionId.value) {
         workRest.qyPingShenFlow({},(res)=>{
             if (res.status=="OK") {
                 // console.log(res.data.flow);
@@ -34,11 +38,11 @@ onMounted(async ()=>{
 });
 
 const pingShenWorksInit = async ()=>{
-    workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId,pingShenStepId:0},(res)=>{
-        if (res.status=="OK") {
-            dialog.toastSuccess("作品已分配到评委");
-        }
-    });
+    let res = await workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId.value,pingShenStepId:0},null);
+    if (res.status=="OK") {
+        dialog.toastSuccess("作品已分配到评委");
+        masterCompetitionStatus.value = 0;
+    }
 };
 </script>
 
