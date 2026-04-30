@@ -20,7 +20,7 @@ const flow = ref([]);
 let masterCompetitionId = "";
 
 onMounted(async ()=>{
-    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data[0]?.value;
+    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data?.[0]?.value;
     if (masterCompetitionId) {
         workRest.qyPingShenFlow({},(res)=>{
             if (res.status=="OK") {

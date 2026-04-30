@@ -599,6 +599,7 @@ class WorkRest extends BaseRest
             currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
             currentMasterCompetitionSetup.value = masterCompetition.id;
             workService.updateTheObject(currentMasterCompetitionSetup);
+            workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
 
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
             writer.write(buildObjectMapper().writeValueAsString(masterCompetition.workSetup));

@@ -185,6 +185,7 @@ class WorkService extends ModuleBean
     @Transactional
     void pingShenJudgesInit(String appId, String masterCompetitionId, byte pingShenStepId)
     {
+        this.deleteTheObject8Fields(CompetitionJudge.simpleName,"competitionJudgePK.appId = :appId and competitionJudgePK.masterCompetitionId = :masterCompetitionId and competitionJudgePK.competitionStatus = :competitionStatus",[appId:appId,masterCompetitionId:masterCompetitionId,competitionStatus:pingShenStepId],false);
         List<String> comList = [];
         List<String> ggList = [];
         MasterCompetition masterCompetition = this.findObjectById(MasterCompetition.class, masterCompetitionId);
@@ -227,7 +228,6 @@ class WorkService extends ModuleBean
                                 } else {
                                     competitionJudge.pingShenFields = ["fields": j.fields];
                                 }
-                                competitionJudge.appId = appId;
                                 this.updateObject(competitionJudge);
                             }
                         }
@@ -248,7 +248,6 @@ class WorkService extends ModuleBean
                             } else {
                                 competitionJudge.pingShenFields = ["fields": j.fields];
                             }
-                            competitionJudge.appId = appId;
                             this.updateObject(competitionJudge);
                         }
                     }
@@ -302,10 +301,12 @@ class WorkService extends ModuleBean
 //            }
 //        }
         );
-        for (var group : groupList)
+        for (def group : groupList)
         {
-            println group.key;
+//            println group.key;
             //            group is map,key is competitionId or guigeid; value is a list of CompetitionJudge. 即评委
+            List<Work> workList = this.qyWorks([appId:appId,competitionId:group.key.item1,guiGeId:group.key.item2,statusList:[1 as byte]]).content;
+            println workList?.size();
             for (CompetitionJudge cj in group.value) {
 //                println cj.competitionJudgePK.judgeId;
                 if (pingShenStepId == 0 as byte) {

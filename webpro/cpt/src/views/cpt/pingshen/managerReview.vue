@@ -155,7 +155,7 @@ let workIndex = -1;
 let workLogIndex = -1;
 
 onMounted(async () => {
-    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data[0]?.value;
+    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data?.[0]?.value;
     // console.log(masterCompetitionId);
 
     if (masterCompetitionId) {

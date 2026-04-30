@@ -107,7 +107,7 @@ let judgeId = util.giveStorgeCry("managerId");
 let stepStatus = -1;
 
 onMounted(async () => {
-    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data[0]?.value;
+    masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data?.[0]?.value;
     if (masterCompetitionId) {
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
         stepStatus = 2;
