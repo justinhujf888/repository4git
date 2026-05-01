@@ -107,32 +107,52 @@ let judgeId = util.giveStorgeCry("managerId");
 let stepStatus = -1;
 
 onMounted(async () => {
+    console.log("judgeId",judgeId);
     masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data?.[0]?.value;
     if (masterCompetitionId) {
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
-        stepStatus = 2;
+        stepStatus = 0;
         // console.log(uploadRule.value);
         // console.log(judgeId);
-        workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:null,pingShenStepId:stepStatus},(res)=>{
-            if (res.status=="OK") {
-                // console.log(res.data);
-                let psJudgeList = res.data;
-                workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res2)=>{
-                    if (res2.status=="OK") {
-                        let list = lodash.filter(res2.data,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==o.id})>-1});
-                        // console.log("list",list);
-                        lodash.forEach(list,(c)=>{
-                            let competition = {key:c.id,label:c.name,data:{bean:c,type:0,masterCompetitionId:masterCompetitionId},children:[]};
-                            let glist = lodash.filter(c.guiGeList,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==c.id && p.competitionJudgePK.guiGeId==o.id})>-1});
-                            lodash.forEach(glist,(g)=>{
-                                competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,masterCompetitionId:masterCompetitionId}});
-                            });
-                            comTree.value.push(competition);
-                        });
-                    }
+        let res = await workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:judgeId,pingShenStepId:stepStatus},null);
+        if (res.status=="OK") {
+            let psJudgeList = res.data;
+            // console.log(psJudgeList);
+            let res2 = await workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},null);
+            if (res2.status=="OK") {
+                let list = lodash.filter(res2.data,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==o.id})>-1});
+                // console.log("list",list);
+                lodash.forEach(list,(c)=>{
+                    let competition = {key:c.id,label:c.name,data:{bean:c,type:0,masterCompetitionId:masterCompetitionId},children:[]};
+                    let glist = lodash.filter(c.guiGeList,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==c.id && p.competitionJudgePK.guiGeId==o.id})>-1});
+                    lodash.forEach(glist,(g)=>{
+                        competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,masterCompetitionId:masterCompetitionId}});
+                    });
+                    comTree.value.push(competition);
                 });
             }
-        });
+        }
+
+        // workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:null,pingShenStepId:stepStatus},(res)=>{
+        //     if (res.status=="OK") {
+        //         // console.log(res.data);
+        //         let psJudgeList = res.data;
+        //         workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res2)=>{
+        //             if (res2.status=="OK") {
+        //                 let list = lodash.filter(res2.data,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==o.id})>-1});
+        //                 // console.log("list",list);
+        //                 lodash.forEach(list,(c)=>{
+        //                     let competition = {key:c.id,label:c.name,data:{bean:c,type:0,masterCompetitionId:masterCompetitionId},children:[]};
+        //                     let glist = lodash.filter(c.guiGeList,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==c.id && p.competitionJudgePK.guiGeId==o.id})>-1});
+        //                     lodash.forEach(glist,(g)=>{
+        //                         competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,masterCompetitionId:masterCompetitionId}});
+        //                     });
+        //                     comTree.value.push(competition);
+        //                 });
+        //             }
+        //         });
+        //     }
+        // });
     } else {
         dialog.alert("还未发布赛事，请先发布赛事后在进行操作");
     }
@@ -154,11 +174,11 @@ const onNodeSelect = (node) => {
 const queryWorks = (type,key)=>{
     let query = {};
     if (type==0 && !hasChildren) {
-        query = {competitionId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,statusList:[1,9],pageSize:Config.pageSize,currentPage:currentPage.value};
+        query = {competitionId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value};
     } else {
-        query = {guiGeId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,statusList:[1,9],pageSize:Config.pageSize,currentPage:currentPage.value};
+        query = {guiGeId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value};
     }
-    workRest.qyWorks(query,async (res)=>{
+    workRest.qyJudgeWorks(query,async (res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 pageUtil.value = res.data;

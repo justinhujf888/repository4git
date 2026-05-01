@@ -351,6 +351,9 @@ class Work extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String guiGeId;
 
+    @Column(length=30)
+    String masterCompetitionId;
+
     @OneToMany(mappedBy="work",fetch = FetchType.LAZY)
     List<WorkItem> workItemList;
 

@@ -21,6 +21,7 @@ import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
 import com.weavict.competition.entity.WorkLog
 import com.weavict.competition.module.PageUtil
+import com.weavict.competition.module.QueryUtils
 import com.weavict.competition.module.UserBean
 import com.weavict.competition.module.WorkService
 import com.weavict.website.common.OtherUtils
@@ -820,22 +821,69 @@ class WorkRest extends BaseRest
         try
         {
             ObjectMapper objectMapper = buildObjectMapper();
-            List<JudgeWork> judgeWorkList = null;
-            judgeWorkList = workService.newQueryUtils(true,true).masterTable("judgework","jw",[
-                    [sf:"judgeid",bf:"judgeWorkPK.judgeId"],
-                    [sf:"workid",bf:"judgeWorkPK.workId"]
+            QueryUtils queryUtils = workService.newQueryUtils(true,true);
+            queryUtils.masterTable("work","w",[
+                    [sf:"name",bf:"name"],
+                    [sf:"id",bf:"id"],
+                    [sf:"competition_id",bf:"competition.id"],
+                    [sf:"guige_id",bf:"guiGe.id"],
+                    [sf:"guigeid",bf:"guiGeId"],
+                    [sf:"gousidescription",bf:"gousiDescription"],
+                    [sf:"mymeandescription",bf:"myMeanDescription"],
+                    [sf:"hangyefields",bf:"hangyeFields",convertType:"json"],
+                    [sf:"otherfields",bf:"otherFields",convertType:"json"],
+                    [sf:"buyer_phone",bf:"buyer.phone"],
+                    [sf:"appid",bf:"appId"],
+                    [sf:"status",bf:"status"],
+                    [sf:"lat",bf:"lat"],
+                    [sf:"lng",bf:"lng"],
+                    [sf:"createdate",bf:"createDate"],
+                    [sf:"mastercompetitionid",bf:"masterCompetitionId"]
             ])
-                .joinTable("work","w","left join","w.id=jw.workid",[
-                        [sf:"name",bf:"tempMap.workName"],
-                        [sf:"workid",bf:"judgeWorkPK.workId"]
-                ])
-                    .where("jw.appid = :appId",[appId:query.appId],null,{return true})
+                    .joinTable("judgework","jw","right join","w.id=jw.workid",[
+                    [sf:"judgeid",bf:"tempMap.judgeId"],
+                    [sf:"stepstatus",bf:"tempMap.stepStatus"],
+                    [sf:"fenJson",bf:"tempMap.fenJson"],
+                    [sf:"fen",bf:"tempMap.fen"],
+                    [sf:"shipass",bf:"tempMap.shiPass"]
+            ])
+                    .joinTable("mastercompetition","mc","left join","w.mastercompetitionid=mc.id",[
+                            [sf:"name",bf:"tempMap.masterCompetitionName"]
+                    ])
+                    .where("w.appid = :appId",[appId:query.appId],null,{return true})
                     .where("jw.stepstatus = :stepStatus",[stepStatus:query.stepStatus],"and",{return true})
-                    .buildSql().run().content;
+                    .where("w.competitionid = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
+                    .where("w.guige_id = :guiGeId",[guiGeId:query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
+                    .where("jw.judgeid = :judgeId",[judgeId:query.judgeId],"and",{return !(query.judgeId in [null,""])})
+                    .where("w.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+                    .beanSetup(Work.class,null,null)
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return currentMasterCompetitionSetupList;
+                         PageUtil pageUtil = null;
+                         if (query.pageSize != null) {
+                             pageUtil = queryUtils.pageLimit(query.pageSize as int, query.currentPage as int, "w.id")
+                                     .buildSql().run();
+                         } else {
+                             pageUtil = queryUtils.buildSql().run();
+                         }
+                         for(Work work in pageUtil.content as List<Work>)
+                         {
+                             work.cancelLazyEr();
+                             if (query.shiWorkItemList==true)
+                             {
+                                 work.workItemList = workService.newQueryUtils(false).masterTable(WorkItem.class.simpleName,null,null)
+                                         .where("work.id = :workId",["workId":work.id],null,{return true})
+                                         .orderBy("mediaType,type")
+                                         .buildSql().run().content;
+                                 for(WorkItem workItem in work.workItemList)
+                                 {
+                                     workItem.cancelLazyEr();
+                                     workItem.work = null;
+                                 }
+                             }
+                         }
+                         return pageUtil;
                      }).call()
                     ]);
         }

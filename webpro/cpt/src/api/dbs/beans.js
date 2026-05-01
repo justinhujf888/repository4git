@@ -86,6 +86,7 @@ export const Beans = {
             createDate: null,
             appId: "",
             status: -1,
+            masterCompetitionId: "",
             workItemList: []
 		}
 	},

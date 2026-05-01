@@ -97,8 +97,8 @@ export default {
     updateMasterCompetitionSetupFields(ds,onfun) {
         Http.callHttpFunction('/r/work/updateMasterCompetitionSetupFields',ds,onfun);
     },
-    qyCompetitionList(ds,onfun) {
-        Http.callHttpFunction('/r/work/qyCompetitionList',ds,onfun);
+    async qyCompetitionList(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyCompetitionList',ds,onfun);
     },
     updateCompetition(ds,onfun) {
         Http.callHttpFunction('/r/work/updateCompetition',ds,onfun);
@@ -142,6 +142,9 @@ export default {
     async gainPageSetup(host,key) {
         return Http.fetchJson(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
     },
+    async qyJudgeWorks(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyJudgeWorks',ds,onfun);
+    },
     updateBuyerWork(ds,onfun) {
         Http.callHttpFunction('/r/work/updateBuyerWork',ds,onfun);
     },
@@ -160,8 +163,8 @@ export default {
     async pingShenWorksInit(ds,onfun) {
         return await Http.callHttpFunction('/r/work/pingShenWorksInit',ds,onfun);
     },
-    qyPingShenJudgeList(ds,onfun) {
-        Http.callHttpFunction('/r/work/qyPingShenJudgeList',ds,onfun);
+    async qyPingShenJudgeList(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyPingShenJudgeList',ds,onfun);
     },
     saveSubmitJudgeWorks(ds,onfun) {
         Http.callHttpFunction('/r/work/saveSubmitJudgeWorks',ds,onfun);

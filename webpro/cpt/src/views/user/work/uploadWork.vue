@@ -424,6 +424,7 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.createDate = new Date().getTime();
         work.value.competition = Beans.competition();
         work.value.competition.id = competition.value.id;
+        work.value.masterCompetitionId = masterCompetition.value.id;
         if (!obj.data.guiGeList || obj.data.guiGeList?.length<1) {
             work.value.guiGe = null;
             work.value.guiGeId = null;
