@@ -814,6 +814,41 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyJudgeWorks")
+    String qyJudgeWorks(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            List<JudgeWork> judgeWorkList = null;
+            judgeWorkList = workService.newQueryUtils(true,true).masterTable("judgework","jw",[
+                    [sf:"judgeid",bf:"judgeWorkPK.judgeId"],
+                    [sf:"workid",bf:"judgeWorkPK.workId"]
+            ])
+                .joinTable("work","w","left join","w.id=jw.workid",[
+                        [sf:"name",bf:"tempMap.workName"],
+                        [sf:"workid",bf:"judgeWorkPK.workId"]
+                ])
+                    .where("jw.appid = :appId",[appId:query.appId],null,{return true})
+                    .where("jw.stepstatus = :stepStatus",[stepStatus:query.stepStatus],"and",{return true})
+                    .buildSql().run().content;
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return currentMasterCompetitionSetupList;
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/updateCurrentMasterCompetitionSetup")
     String updateCurrentMasterCompetitionSetup(@RequestBody Map<String,Object> query)
     {
