@@ -241,7 +241,8 @@ export const Beans = {
         return {
             competitionJudgePK: this.competitionJudgePK(),
             pingShenFields: null,
-            pingShenStatus: -1
+            pingShenStatus: -1,
+            shiFinish: false
         }
     },
 

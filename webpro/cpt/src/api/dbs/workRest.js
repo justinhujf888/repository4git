@@ -166,8 +166,8 @@ export default {
     async qyPingShenJudgeList(ds,onfun) {
         return await Http.callHttpFunction('/r/work/qyPingShenJudgeList',ds,onfun);
     },
-    saveSubmitJudgeWorks(ds,onfun) {
-        Http.callHttpFunction('/r/work/saveSubmitJudgeWorks',ds,onfun);
+    async saveSubmitJudgeWorks(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/saveSubmitJudgeWorks',ds,onfun);
     },
     qyPingShenFlow(ds,onfun) {
         Http.callHttpFunction('/r/work/qyPingShenFlow',ds,onfun);

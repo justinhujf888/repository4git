@@ -1,9 +1,10 @@
 <template>
     <animationPage ref="mainPage" :show="true">
-        <div>
-            <Button label="saveSubmitJudgeWorks" @click="saveSubmitJudgeWorks(true)"/>
+        <div class="row gap-4">
+            <Button severity="warn" label="暂时保存" @click="saveSubmitJudgeWorks(false)" :disabled="selTypeWorkCount==0 || shiSubmited"/>
+            <Button label="提交评审" @click="saveSubmitJudgeWorks(true)" :disabled="selTypeWorkCount==0 || shiSubmited"/>
         </div>
-        <div class="md:row col p-2 card">
+        <div class="md:row col p-2 card mt-8">
             <div class="w-full md:w-1/6 text-sm">
                 <Tree :value="comTree" v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" selectionMode="single" @node-select="onNodeSelect"></Tree>
             </div>
@@ -21,7 +22,7 @@
                                 <div v-for="(item, index) in slotProps.items" :key="index" class="leading-8">
                                     <Panel :header="item.name" toggleable collapsed :pt="{title:{class:'text-2xl font-bold dark:text-yellow-600'}}">
                                         <template #icons>
-                                            <ToggleSwitch v-model="item.temp" @change="switchChange(item,index)"/>
+                                            <ToggleSwitch v-model="item.tempMap.shiPass" @change="switchChange(item,index)" :readonly="shiSubmited"/>
                                         </template>
                                         <div class="grid md:grid-cols-2 gap-4 mt-5">
                                             <div class="col">
@@ -96,6 +97,8 @@ const currentPage = ref(0);
 const refPriviewImage = useTemplateRef("refPriviewImage");
 const selTypeCount = ref(0)
 const selTreeLabel = ref(null);
+const selTypeWorkCount = ref(0);
+const shiSubmited = ref(false);
 
 let masterCompetitionId = "";
 let host = inject("domain");
@@ -104,10 +107,12 @@ let type = 0;
 let key = "";
 let selWork = [];
 let judgeId = util.giveStorgeCry("managerId");
+let competitionId = "";
+let guiGeId = "";
 let stepStatus = -1;
 
 onMounted(async () => {
-    console.log("judgeId",judgeId);
+    // console.log("judgeId",judgeId);
     masterCompetitionId = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId"]},null))?.data?.[0]?.value;
     if (masterCompetitionId) {
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
@@ -126,7 +131,7 @@ onMounted(async () => {
                     let competition = {key:c.id,label:c.name,data:{bean:c,type:0,masterCompetitionId:masterCompetitionId},children:[]};
                     let glist = lodash.filter(c.guiGeList,(o)=>{return lodash.findIndex(psJudgeList,(p)=>{return p.competitionJudgePK.competitionId==c.id && p.competitionJudgePK.guiGeId==o.id})>-1});
                     lodash.forEach(glist,(g)=>{
-                        competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,masterCompetitionId:masterCompetitionId}});
+                        competition.children.push({key:g.id,label:g.name,data:{bean:g,type:1,pkey:c.id,masterCompetitionId:masterCompetitionId}});
                     });
                     comTree.value.push(competition);
                 });
@@ -158,7 +163,7 @@ onMounted(async () => {
     }
 });
 
-const onNodeSelect = (node) => {
+const onNodeSelect = async (node) => {
     // console.log(node);
     if (node.data.type==0 && node.children.length > 0) {
         return;
@@ -168,7 +173,17 @@ const onNodeSelect = (node) => {
     selTreeLabel.value = node.label;
     currentPage.value = 0;
     hasChildren = (node.children?.length > 0);
-    queryWorks(type,key,currentPage.value);
+    if (type==0) {
+        competitionId = node.key;
+    } else if (type==1) {
+        competitionId = node.data.pkey;
+        guiGeId = node.key;
+    }
+    let res = await workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:judgeId,pingShenStepId:stepStatus,competitionId:competitionId,guiGeId:guiGeId},null);
+    if (res.status=="OK" && res.data.length > 0) {
+        shiSubmited.value = res.data[0].pingShenStatus==1 ? true : false;
+    }
+    queryWorks(type,key);
 }
 
 const queryWorks = (type,key)=>{
@@ -210,10 +225,12 @@ const queryWorks = (type,key)=>{
                         }
                         workItem.tempMap = {title:ru.title,exifCheck:check,imgPath:await oss.buildPathAsync(workItem.path,(workItem.mediaType==0 ? true : false),null)};
                     }
-                    if (lodash.findIndex(selWork,(o)=>{return o.id==work.id}) > -1) {
-                        work.temp = true;
+                    // if (lodash.findIndex(selWork,(o)=>{return o.id==work.id}) > -1) {
+                    //     work.temp = true;
+                    // }
+                    if (!work.tempMap) {
+                        work.tempMap = {};
                     }
-                    work.tempMap = {};
                     work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
                     work.tempMap.type = type;
                     work.tempMap.key = key;
@@ -241,24 +258,32 @@ const viewImg = (workItemList,imgId)=>{
 const switchChange = (item,index)=> {
     // console.log(item);
     let j = lodash.findIndex(selWork,(o)=>{return o.id==item.id});
-    if (item.temp==true) {
+    if (item.tempMap.shiPass==true) {
         if (j < 0) {
             //type:0类别；1组别；key是类别或者组别的ID
-            selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key});
+            selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key,fg:1});
+        } else {
+            selWork[j].fg = 1;
+            // selWork.slice(j,0);
         }
     } else {
         if (j > -1) {
-            selWork.splice(j,1);
+            selWork[j].fg = 0;
+            // selWork.slice(j,0);
+        } else {
+            selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key,fg:0});
         }
     }
-    selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key;}).length;
+    // console.log(selWork);
+    selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key && o.fg==1;}).length;
+    selTypeWorkCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key;}).length;
 };
 
 const saveSubmitJudgeWorks = (shiPass)=>{
     if (shiPass)
     {
         dialog.confirm("正式提交审核后将无法再修改，您是否确认此次审核提交？",()=>{
-            workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass},(res)=>{
+            workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass,masterCompetitionId:masterCompetitionId,competitionId:competitionId,guiGeId:guiGeId},(res)=>{
                 if (res.status=="OK") {
                     dialog.alert("您已提交此次审核");
                 }

@@ -635,7 +635,7 @@ class CompetitionJudge extends BEntity implements Serializable, IEntity
     Map<String,Object> pingShenFields;
 
     @Column(length = 2)
-    byte pingShenStatus;
+    byte pingShenStatus;//0:还未评审提交；1：已经提交
 
     void cancelLazyEr()
     {

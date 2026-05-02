@@ -6,6 +6,8 @@ import cn.hutool.core.io.file.FileWriter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.Competition
+import com.weavict.competition.entity.CompetitionJudge
+import com.weavict.competition.entity.CompetitionJudgePK
 import com.weavict.competition.entity.CurrentMasterCompetitionSetup
 import com.weavict.competition.entity.CurrentMasterCompetitionSetupPK
 import com.weavict.competition.entity.GuiGe
@@ -800,9 +802,13 @@ class WorkRest extends BaseRest
 //                    JudgeWork judgeWork = new JudgeWork();
 //                    judgeWork.judgeWorkPK = new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte);
 //                    judgeWork.shiPass
-                    workService.updateTheObjectFilds(JudgeWork.simpleName,"judgeWorkPK = :judgeWorkPK",[shiPass:item.shiPass as boolean],[judgeWorkPK:new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte)],false);
+                    workService.updateTheObjectFilds(JudgeWork.simpleName,"judgeWorkPK = :judgeWorkPK",[shiPass:(item.fg as byte)==1 ? true : false],[judgeWorkPK:new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte)],false);
                 }
             });
+            if ((query.shiPass as boolean) == true)//query.shiPass==true;评委提交了最终结果
+            {
+                workService.updateTheObjectFilds(CompetitionJudge.simpleName,"competitionJudgePK = :competitionJudgePK",[pingShenStatus:1 as byte],[competitionJudgePK:new CompetitionJudgePK(query.masterCompetitionId as String,query.competitionId as String,query.guiGeId as String,query.judgeId as String,query.stepStatus as byte,query.appId as String)],false);
+            }
             return """{"status":"OK"}""";
         }
         catch (Exception e)

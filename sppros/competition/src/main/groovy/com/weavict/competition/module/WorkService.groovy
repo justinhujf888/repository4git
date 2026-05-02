@@ -232,6 +232,7 @@ class WorkService extends ModuleBean
                                 } else {
                                     competitionJudge.pingShenFields = ["fields": j.fields];
                                 }
+                                competitionJudge.pingShenStatus = 0 as byte;
                                 this.updateObject(competitionJudge);
                             }
                         }
@@ -251,6 +252,7 @@ class WorkService extends ModuleBean
                         } else {
                             competitionJudge.pingShenFields = ["fields": j.fields];
                         }
+                        competitionJudge.pingShenStatus = 0 as byte;
                         this.updateObject(competitionJudge);
                     }
                 }
@@ -280,12 +282,15 @@ class WorkService extends ModuleBean
                 [sf: "guigeid", bf: "competitionJudgePK.guiGeId"],
                 [sf: "judgeid", bf: "competitionJudgePK.judgeId"],
                 [sf: "competitionstatus", bf: "competitionJudgePK.competitionStatus"],
-                [sf: "pingshenfields", bf: "tempMap.pingShenFields"]
+                [sf: "pingshenfields", bf: "pingShenFields"],
+                [sf:"pingshenstatus",bf:"pingShenStatus"]
         ])
                 .where("cj.appid = :appId", [appId: query.appId], null, { return true })
                 .where("cj.mastercompetitionid = :masterCompetitionId", [masterCompetitionId: query.masterCompetitionId], "and", { return !(query.masterCompetitionId in [null, ""]) })
                 .where("cj.competitionstatus = :competitionStatus", [competitionStatus: query.pingShenStepId], "and", { return true })
                 .where("cj.judgeid = :judgeId", [judgeId: query.judgeId], "and", { return !(query.judgeId in [null, ""]) })
+                .where("cj.competitionid = :competitionId", [competitionId: query.competitionId], "and", { return !(query.competitionId in [null, ""]) })
+                .where("cj.guigeid = :guiGeId", [guiGeId: query.guiGeId], "and", { return !(query.guiGeId in [null, ""]) })
                 .beanSetup(CompetitionJudge.class, null, null)
                 .buildSql().run().content;
     }
