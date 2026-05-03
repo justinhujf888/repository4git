@@ -166,6 +166,9 @@ class QueryUtils
 
     PageUtil pageUtil;
 
+    Map sqlMaps;
+    boolean shiSaveSql = false;
+
     Object convertObj(int tableFieldIndex,Object distObj)
     {
         if (!(map["tableFields"][tableFieldIndex]["convertType"] in [null,""]))
@@ -508,6 +511,12 @@ class QueryUtils
 
     void clear()
     {
+        clearSaveSql();
+        sqlMaps = null;
+    }
+
+    void clearSaveSql()
+    {
         paramsMap = null;
         joinOnList = null;
         if (map["where"]!=null)
@@ -520,15 +529,30 @@ class QueryUtils
         sbf = null;
     }
 
+    QueryUtils saveSql()
+    {
+        shiSaveSql = true;
+        return this;
+    }
+
     PageUtil run()
     {
         List list = new ArrayList();
         if (this.isNative)
         {
+            this.pageUtil = new PageUtil(pageSize,currentPageNu,-1);
+            sqlMaps = [
+                    qyRecords:[sql:sbf.toString()],
+                    sqlParse:[count:map["countKey"],fromJoin:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),sbf.toString().indexOf("where")),where:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("where"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())],
+                    params:paramsMap
+            ];
             if (this.isPageSplit)
             {
                 sbf << " limit ${pageSize} offset ${firstRecord}";
-                this.totalRecords = this.moduleBean.createNativeQuery4Params("select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}",paramsMap).getSingleResult() as int;
+                sqlMaps["qyCount"] = [sql:"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}" as String];
+                //"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}"
+                this.totalRecords = this.moduleBean.createNativeQuery4Params(sqlMaps["qyCount"].sql,paramsMap).getSingleResult() as int;
+                pageUtil.totalElements = this.totalRecords;
             }
             this.moduleBean.createNativeQuery4Params(sbf.toString(),paramsMap).getResultList().each {
                 def obj = Class.forName(map["beanClass"]).newInstance();
@@ -627,27 +651,46 @@ class QueryUtils
 //				}
                 list << obj;
             }
-            this.pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
             this.pageUtil.content = list;
         }
         else
         {
             if (this.isPageSplit)
             {
-                totalRecords = this.moduleBean.querySingleObject("select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}",paramsMap);
-                pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
+                pageUtil = new PageUtil(pageSize,currentPageNu,-1);
+                sqlMaps = [
+                        qyCount:[sql:"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}"],
+                        qyRecords:[sql:sbf.toString()],
+                        sqlParse:[count:map["countKey"],fromJoin:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),sbf.toString().indexOf("where")),where:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("where"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())],
+                        params: paramsMap
+                ];
+                //"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}"
+                totalRecords = this.moduleBean.querySingleObject(sqlMaps.qyCount.sql,paramsMap);
+                pageUtil.totalElements = totalRecords;
                 pageUtil.content = this.moduleBean.queryObject(sbf.toString(),paramsMap,firstRecord,pageSize);
             }
             else
             {
                 pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
+                sqlMaps = [
+                        qyRecords:[sql:sbf.toString()],
+                        sqlParse:[count:map["countKey"],fromJoin:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),sbf.toString().indexOf("where")),where:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("where"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())],
+                        params: paramsMap
+                ];
                 pageUtil.content = this.moduleBean.queryObject(sbf.toString(),paramsMap);
                 pageUtil.content.each {
                     it.cancelLazyEr();
                 }
             }
         }
-        this.clear();
+        if (shiSaveSql)
+        {
+            this.clearSaveSql();
+        }
+        else
+        {
+            this.clear();
+        }
         return pageUtil;
     }
 }
@@ -702,6 +745,9 @@ class PageUtil
      * 数据
      */
     List content = new ArrayList();
+
+    //临时数据
+    Map tempMap = [:];
 
     /**
      * 根据传入的当前多少页

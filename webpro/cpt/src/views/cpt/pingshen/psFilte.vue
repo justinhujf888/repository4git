@@ -9,9 +9,11 @@
                 <Tree :value="comTree" v-model:selectionKeys="selectedTreeNodeKey" v-model:expandedKeys="expandedTreeNodeKey" selectionMode="single" @node-select="onNodeSelect"></Tree>
             </div>
             <div class="flex-1 p-2">
-                <h4>{{selTreeLabel}}</h4>
+                <OverlayBadge v-if="shiSubmited" value="已提交" severity="danger">
+                    <h4>{{selTreeLabel}}</h4>
+                </OverlayBadge>
                 <div v-if="pageUtil.content?.length>0">
-                    {{selTypeCount}}个作品选中
+                    <span>{{selTypeCount}}个作品选中</span>
                     <DataView :value="pageUtil.content" class="mt-5" :pt="{
                                             emptyMessage:{
                                                 class:'opacity-0'
@@ -110,6 +112,7 @@ let judgeId = util.giveStorgeCry("managerId");
 let competitionId = "";
 let guiGeId = "";
 let stepStatus = -1;
+let shiPassList = [];
 
 onMounted(async () => {
     // console.log("judgeId",judgeId);
@@ -189,14 +192,19 @@ const onNodeSelect = async (node) => {
 const queryWorks = (type,key)=>{
     let query = {};
     if (type==0 && !hasChildren) {
-        query = {competitionId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value};
+        query = {competitionId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
     } else {
-        query = {guiGeId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value};
+        query = {guiGeId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
     }
     workRest.qyJudgeWorks(query,async (res)=>{
         if (res.status=="OK") {
             if (res.data!=null) {
                 pageUtil.value = res.data;
+                // console.log(pageUtil.value);
+                shiPassList = pageUtil.value.tempMap.shiPassList;
+                if (!shiPassList) {
+                    shiPassList = [];
+                }
                 if (!pageUtil.value.content) {
                     pageUtil.value.content = [];
                 }
@@ -235,7 +243,7 @@ const queryWorks = (type,key)=>{
                     work.tempMap.type = type;
                     work.tempMap.key = key;
                 }
-                selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==key}).length;
+                comShiPassCount();
                 // console.log(pageUtil.value);
             } else {
                 pageUtil.value.content = [];
@@ -275,7 +283,7 @@ const switchChange = (item,index)=> {
         }
     }
     // console.log(selWork);
-    selTypeCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key && o.fg==1;}).length;
+    comShiPassCount();
     selTypeWorkCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key;}).length;
 };
 
@@ -285,6 +293,7 @@ const saveSubmitJudgeWorks = (shiPass)=>{
         dialog.confirm("正式提交审核后将无法再修改，您是否确认此次审核提交？",()=>{
             workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass,masterCompetitionId:masterCompetitionId,competitionId:competitionId,guiGeId:guiGeId},(res)=>{
                 if (res.status=="OK") {
+                    shiSubmited.value = true;
                     dialog.alert("您已提交此次审核");
                 }
             });
@@ -299,6 +308,25 @@ const saveSubmitJudgeWorks = (shiPass)=>{
         });
     }
 };
+
+const comShiPassCount = ()=>{
+    let selWorkPass = lodash.filter(selWork,(o)=>{return o.key==key && o.fg==1});
+    let updateDbPassList = [];
+    let updateSelPassList = [];
+    //将数据库查询到的pass=true的记录，依据前端的记录过滤一下
+    lodash.forEach(shiPassList,(o)=>{
+        if (lodash.findIndex(selWork,(w)=>{return w.id==o && w.fg==0}) < 0) {
+            updateDbPassList.push(o);
+        }
+    });
+    //前端的记录pass=true的过滤出DB list没有的
+    lodash.forEach(selWorkPass,(o)=>{
+        if (lodash.findIndex(updateDbPassList,(w)=>{return w==o.id}) < 0) {
+            updateSelPassList.push(o.id);
+        }
+    });
+    selTypeCount.value = updateDbPassList.length + updateSelPassList.length;
+}
 </script>
 
 <style scoped lang="scss">

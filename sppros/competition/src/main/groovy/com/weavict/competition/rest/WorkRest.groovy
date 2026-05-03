@@ -863,6 +863,7 @@ class WorkRest extends BaseRest
                     .where("jw.judgeid = :judgeId",[judgeId:query.judgeId],"and",{return !(query.judgeId in [null,""])})
                     .where("w.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
                     .beanSetup(Work.class,null,null)
+                    .saveSql();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
@@ -889,6 +890,11 @@ class WorkRest extends BaseRest
                                  }
                              }
                          }
+                         if ((query.qyPassCount as boolean) == true)
+                         {
+                             pageUtil.tempMap["shiPassList"] = workService.createNativeQuery4Params("select ${queryUtils.sqlMaps.sqlParse.count} ${queryUtils.sqlMaps.sqlParse.fromJoin} ${queryUtils.sqlMaps.sqlParse.where} and jw.shipass=true",queryUtils.sqlMaps.params).resultList;
+                         }
+                         queryUtils.sqlMaps = null;
                          return pageUtil;
                      }).call()
                     ]);
