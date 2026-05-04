@@ -858,7 +858,7 @@ class WorkRest extends BaseRest
                     ])
                     .where("w.appid = :appId",[appId:query.appId],null,{return true})
                     .where("jw.stepstatus = :stepStatus",[stepStatus:query.stepStatus],"and",{return true})
-                    .where("w.competitionid = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
+                    .where("jw.competitionid = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
                     .where("w.guige_id = :guiGeId",[guiGeId:query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
                     .where("jw.judgeid = :judgeId",[judgeId:query.judgeId],"and",{return !(query.judgeId in [null,""])})
                     .where("w.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
