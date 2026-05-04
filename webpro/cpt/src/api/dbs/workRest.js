@@ -85,8 +85,8 @@ export default {
     updateOrgHuman(ds,onfun) {
         Http.callHttpFunction('/r/work/updateOrgHuman',ds,onfun);
     },
-    qyMasterSiteCompetition(ds,onfun) {
-        Http.callHttpFunction('/r/work/qyMasterSiteCompetition',ds,onfun);
+    async qyMasterSiteCompetition(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyMasterSiteCompetition',ds,onfun);
     },
     updateMasterCompetition(ds,onfun) {
         Http.callHttpFunction('/r/work/updateMasterCompetition',ds,onfun);
@@ -169,8 +169,8 @@ export default {
     async saveSubmitJudgeWorks(ds,onfun) {
         return await Http.callHttpFunction('/r/work/saveSubmitJudgeWorks',ds,onfun);
     },
-    qyPingShenFlow(ds,onfun) {
-        Http.callHttpFunction('/r/work/qyPingShenFlow',ds,onfun);
+    async qyPingShenFlow(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyPingShenFlow',ds,onfun);
     },
     updateCurrentMasterCompetitionSetup(ds,onfun) {
         Http.callHttpFunction('/r/work/updateCurrentMasterCompetitionSetup',ds,onfun);

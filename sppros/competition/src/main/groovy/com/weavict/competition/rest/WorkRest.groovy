@@ -605,6 +605,8 @@ class WorkRest extends BaseRest
                 currentMasterCompetitionSetup.value = item.value;
                 workService.updateTheObject(currentMasterCompetitionSetup);
             }
+            masterCompetition.flowSetup = workService.qyPingShenFlow(null);
+            workService.updateTheObject(masterCompetition);
             workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
 
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
@@ -777,7 +779,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.pingShenWorksInit(query.appId as String,query.masterCompetitionId as String,query.pingShenStepId as byte);
+            workService.pingShenWorksInit(query.appId as String,query.masterCompetitionId as String,query.pingShenStepId as byte,objToBean(query.mapData,Map.class,null) as Map);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -802,7 +804,7 @@ class WorkRest extends BaseRest
 //                    JudgeWork judgeWork = new JudgeWork();
 //                    judgeWork.judgeWorkPK = new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte);
 //                    judgeWork.shiPass
-                    workService.updateTheObjectFilds(JudgeWork.simpleName,"judgeWorkPK = :judgeWorkPK",[shiPass:(item.fg as byte)==1 ? true : false],[judgeWorkPK:new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte)],false);
+                    workService.updateTheObjectFilds(JudgeWork.simpleName,"judgeWorkPK = :judgeWorkPK",[shiPass:(item.fg as byte)==1 ? true : false],[judgeWorkPK:new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.masterCompetitionId as String,query.stepStatus as byte)],false);
                 }
             });
             if ((query.shiPass as boolean) == true)//query.shiPass==true;评委提交了最终结果

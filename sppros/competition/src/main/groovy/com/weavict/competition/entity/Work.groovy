@@ -186,6 +186,10 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> workSetup;
 
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> flowSetup;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date cptDate;
 
@@ -447,17 +451,21 @@ class JudgeWorkPK implements Serializable
     @Column(nullable = false, insertable = false, updatable = false, length = 30)
     String workId;
 
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String masterCompetitionId;
+
     @Column(nullable = false, insertable = false, updatable = false, length = 2)
     byte stepStatus;
 
     JudgeWorkPK() {}
 
-    JudgeWorkPK(String appId,String judgeId,String workId,byte stepStatus)
+    JudgeWorkPK(String appId,String judgeId,String workId,String masterCompetitionId,byte stepStatus)
     {
         this.appId = appId;
         this.judgeId = judgeId;
         this.workId = workId;
         this.stepStatus = stepStatus;
+        this.masterCompetitionId = masterCompetitionId;
     }
 }
 

@@ -1,8 +1,8 @@
 <template>
     <animationPage ref="mainPage" :show="true">
         <div class="row gap-4">
-            <Button severity="warn" label="暂时保存" @click="saveSubmitJudgeWorks(false)" :disabled="selTypeWorkCount==0 || shiSubmited"/>
-            <Button label="提交评审" @click="saveSubmitJudgeWorks(true)" :disabled="selTypeWorkCount==0 || shiSubmited"/>
+            <Button severity="warn" label="暂时保存" @click="saveSubmitJudgeWorks(false)" :disabled="shiSubmited"/>
+            <Button label="提交评审" @click="saveSubmitJudgeWorks(true)" :disabled="shiSubmited"/>
         </div>
         <div class="md:row col p-2 card mt-8">
             <div class="w-full md:w-1/6 text-sm">
@@ -24,7 +24,8 @@
                                 <div v-for="(item, index) in slotProps.items" :key="index" class="leading-8">
                                     <Panel :header="item.name" toggleable collapsed :pt="{title:{class:'text-2xl font-bold dark:text-yellow-600'}}">
                                         <template #icons>
-                                            <ToggleSwitch v-model="item.tempMap.shiPass" @change="switchChange(item,index)" :readonly="shiSubmited"/>
+<!--                                            <ToggleSwitch v-model="item.tempMap.shiPass" @change="switchChange(item,index)" :readonly="shiSubmited"/>-->
+                                            <Checkbox v-model="item.tempMap.shiPass" :value="item.tempMap.shiPass" binary @change="switchChange(item,index)" :readonly="shiSubmited" class="!-top-2"/>
                                         </template>
                                         <div class="grid md:grid-cols-2 gap-4 mt-5">
                                             <div class="col">
@@ -99,7 +100,6 @@ const currentPage = ref(0);
 const refPriviewImage = useTemplateRef("refPriviewImage");
 const selTypeCount = ref(0)
 const selTreeLabel = ref(null);
-const selTypeWorkCount = ref(0);
 const shiSubmited = ref(false);
 
 let masterCompetitionId = "";
@@ -113,6 +113,7 @@ let competitionId = "";
 let guiGeId = "";
 let stepStatus = -1;
 let shiPassList = [];
+let flow = {};
 
 onMounted(async () => {
     // console.log("judgeId",judgeId);
@@ -122,6 +123,11 @@ onMounted(async () => {
         stepStatus = 0;
         // console.log(uploadRule.value);
         // console.log(judgeId);
+        let mcRes = await workRest.qyMasterSiteCompetition({id:masterCompetitionId,siteCompetitionId:host},null);
+        if (mcRes.status=="OK" && mcRes.data) {
+            flow = lodash.find(mcRes.data?.[0]?.flowSetup.flow,(o)=>{return o.sort == stepStatus});
+            // console.log(flow);
+        }
         let res = await workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:judgeId,pingShenStepId:stepStatus},null);
         if (res.status=="OK") {
             let psJudgeList = res.data;
@@ -189,67 +195,69 @@ const onNodeSelect = async (node) => {
     queryWorks(type,key);
 }
 
-const queryWorks = (type,key)=>{
+const queryWorks = async (type,key)=>{
     let query = {};
     if (type==0 && !hasChildren) {
         query = {competitionId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
     } else {
         query = {guiGeId:key,appId:host,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
     }
-    workRest.qyJudgeWorks(query,async (res)=>{
-        if (res.status=="OK") {
-            if (res.data!=null) {
-                pageUtil.value = res.data;
-                // console.log(pageUtil.value);
-                shiPassList = pageUtil.value.tempMap.shiPassList;
-                if (!shiPassList) {
-                    shiPassList = [];
-                }
-                if (!pageUtil.value.content) {
-                    pageUtil.value.content = [];
-                }
-                for (let work of pageUtil.value.content) {
-                    if (!work.workItemList) break;
-                    for (let workItem of work.workItemList) {
-                        let ru = lodash.find(uploadRule.value.workType.image,(o)=>{return o.type==workItem.type});
-                        let check = true;
-                        if (ru.checkExif) {
-                            let exif = JSON.parse(workItem.exifInfo);
-                            if (exif.Make==null) {
-                                // check = false;
-                            }
-                            if (exif.Software) {
-                                let software = lodash.toUpper(exif.Software);
-                                if (software.includes("ADOBE") || software.includes("PHOTOSHOP") || software.includes("PS") || software.includes("LARK") || software.includes("CAPCUT") || software.includes("JIANYING")) {
-                                    check = false;
-                                }
-                            }
-                            if (exif.Producer) {
-                                let producer = lodash.toUpper(exif.Producer);
-                                if (producer.includes("ADOBE") || producer.includes("PHOTOSHOP") || producer.includes("PS") || producer.includes("LARK") || producer.includes("CAPCUT") || producer.includes("JIANYING")) {
-                                    check = false;
-                                }
-                            }
-                        }
-                        workItem.tempMap = {title:ru.title,exifCheck:check,imgPath:await oss.buildPathAsync(workItem.path,(workItem.mediaType==0 ? true : false),null)};
-                    }
-                    // if (lodash.findIndex(selWork,(o)=>{return o.id==work.id}) > -1) {
-                    //     work.temp = true;
-                    // }
-                    if (!work.tempMap) {
-                        work.tempMap = {};
-                    }
-                    work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
-                    work.tempMap.type = type;
-                    work.tempMap.key = key;
-                }
-                comShiPassCount();
-                // console.log(pageUtil.value);
-            } else {
+    let res = await workRest.qyJudgeWorks(query,null);
+    if (res.status=="OK") {
+        if (res.data!=null) {
+            pageUtil.value = res.data;
+            // console.log(pageUtil.value);
+            shiPassList = pageUtil.value.tempMap.shiPassList;
+            if (!shiPassList) {
+                shiPassList = [];
+            }
+            if (!pageUtil.value.content) {
                 pageUtil.value.content = [];
             }
+            for (let work of pageUtil.value.content) {
+                if (!work.workItemList) break;
+                for (let workItem of work.workItemList) {
+                    let ru = lodash.find(uploadRule.value.workType.image,(o)=>{return o.type==workItem.type});
+                    let check = true;
+                    if (ru.checkExif) {
+                        let exif = JSON.parse(workItem.exifInfo);
+                        if (exif.Make==null) {
+                            // check = false;
+                        }
+                        if (exif.Software) {
+                            let software = lodash.toUpper(exif.Software);
+                            if (software.includes("ADOBE") || software.includes("PHOTOSHOP") || software.includes("PS") || software.includes("LARK") || software.includes("CAPCUT") || software.includes("JIANYING")) {
+                                check = false;
+                            }
+                        }
+                        if (exif.Producer) {
+                            let producer = lodash.toUpper(exif.Producer);
+                            if (producer.includes("ADOBE") || producer.includes("PHOTOSHOP") || producer.includes("PS") || producer.includes("LARK") || producer.includes("CAPCUT") || producer.includes("JIANYING")) {
+                                check = false;
+                            }
+                        }
+                    }
+                    workItem.tempMap = {title:ru.title,exifCheck:check,imgPath:await oss.buildPathAsync(workItem.path,(workItem.mediaType==0 ? true : false),null)};
+                }
+                // if (lodash.findIndex(selWork,(o)=>{return o.id==work.id}) > -1) {
+                //     work.temp = true;
+                // }
+                if (!work.tempMap) {
+                    work.tempMap = {};
+                }
+                work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
+                work.tempMap.type = type;
+                work.tempMap.key = key;
+                if (lodash.findIndex(selWork,(o)=>{return o.id==work.id && o.fg==1}) > -1) {
+                    work.tempMap.shiPass = true;
+                }
+            }
+            comShiPassCount();
+            // console.log(pageUtil.value);
+        } else {
+            pageUtil.value.content = [];
         }
-    });
+    }
 };
 
 const pageChange = (event)=>{
@@ -284,26 +292,29 @@ const switchChange = (item,index)=> {
     }
     // console.log(selWork);
     comShiPassCount();
-    selTypeWorkCount.value = lodash.filter(selWork,(o)=>{return o.key==item.tempMap.key;}).length;
 };
 
 const saveSubmitJudgeWorks = (shiPass)=>{
     if (shiPass)
     {
+        if (selTypeCount.value < flow.data.judgePassWorkMixCount) {
+            dialog.toastError("选择通过的作品数量最少为"+flow.data.judgePassWorkMixCount);
+            return;
+        }
         dialog.confirm("正式提交审核后将无法再修改，您是否确认此次审核提交？",()=>{
             workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass,masterCompetitionId:masterCompetitionId,competitionId:competitionId,guiGeId:guiGeId},(res)=>{
                 if (res.status=="OK") {
                     shiSubmited.value = true;
-                    dialog.alert("您已提交此次审核");
+                    dialog.toastSuccess("您已提交此次审核");
                 }
             });
         },()=>{
 
         });
     } else {
-        workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass},(res)=>{
+        workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,masterCompetitionId:masterCompetitionId,shiPass:shiPass},(res)=>{
             if (res.status=="OK") {
-                dialog.alert("您已暂时保存此次审核");
+                dialog.toastSuccess("您已暂时保存此次审核");
             }
         });
     }

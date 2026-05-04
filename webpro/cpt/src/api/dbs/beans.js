@@ -109,6 +109,7 @@ export const Beans = {
             appId: "",
             judgeId: "",
             workId: "",
+            masterCompetitionId: "",
             stepStatus: -1,
         }
     },
@@ -164,6 +165,7 @@ export const Beans = {
             setupFields: null,
             judgeSetup: null,
             workSetup: null,
+            flowSetup: null,
             cptDate: null,
             beginDate: null,
             bmEndDate: null,

@@ -179,9 +179,9 @@ class WorkService extends ModuleBean
     Map qyPingShenFlow(Map query)
     {
         return [flow: [
-                [sort: 0, id: 0, name: "作品初筛", type: 0],
-                [sort: 1, id: 1, name: "作品第一轮评分", type: 1],
-                [sort: 2, id: 2, name: "作品第二轮评分", type: 1]
+                [sort: 0, id: 0, name: "作品初筛", type: 0, data:[judgePassWorkMixCount:200]],
+                [sort: 1, id: 1, name: "作品第一轮评分", type: 1, data:[:]],
+                [sort: 2, id: 2, name: "作品第二轮评分", type: 1, data:[:]]
         ]];
     }
 
@@ -296,8 +296,11 @@ class WorkService extends ModuleBean
     }
 
     @Transactional
-    void pingShenWorksInit(String appId, String masterCompetitionId, byte pingShenStepId)
+    void pingShenWorksInit(String appId, String masterCompetitionId, byte pingShenStepId,Map mapData)
     {
+        MasterCompetition masterCompetition = this.findObjectById(MasterCompetition.class,masterCompetitionId);
+        masterCompetition.flowSetup = mapData.flowSetup;
+        this.updateObject(masterCompetition);
         List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId: appId, masterCompetitionId: masterCompetitionId, judgeId: null, pingShenStepId: 0]);//查询初筛评委
         var groupList = Linq.of(competitionJudgeList).groupBy(cj -> new Tuple2(cj.competitionJudgePK.competitionId,cj.competitionJudgePK.guiGeId));
         for (def group : groupList)
@@ -309,28 +312,44 @@ class WorkService extends ModuleBean
                 List<Work> workList = this.qyWorks([appId:appId,competitionId:group.key.item1,guiGeId:group.key.item2,statusList:[1 as byte]]).content;//查询已经提交的作品
                 if (group.value?.size()>0 && workList?.size()>0)
                 {
-                    Collections.shuffle(workList);
-                    Collections.shuffle(group.value);
-                    int cji = 0;
                     for(Work work in workList)
                     {
-                        if (cji >= group.value.size()-1)
-                        {
-                            cji = 0;
+                        for(CompetitionJudge cj in group.value) {
+                            JudgeWork judgeWork = new JudgeWork();
+                            JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id,masterCompetitionId, pingShenStepId);
+                            judgeWork.judgeWorkPK = judgeWorkPK;
+                            judgeWork.fen = 0;
+                            judgeWork.fenJson = null;
+                            judgeWork.shiPass = false;
+                            judgeWork.competitionId = group.key.item1;
+                            judgeWork.guiGeId = group.key.item2;
+                            this.updateObject(judgeWork);
                         }
-                        CompetitionJudge cj = group.value[cji];
-                        JudgeWork judgeWork = new JudgeWork();
-                        JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, pingShenStepId);
-                        judgeWork.judgeWorkPK = judgeWorkPK;
-                        judgeWork.fen = 0;
-                        judgeWork.fenJson = null;
-                        judgeWork.shiPass = false;
-                        judgeWork.competitionId = group.key.item1;
-                        judgeWork.guiGeId = group.key.item2;
-                        this.updateObject(judgeWork);
-                        cji++;
                     }
                 }
+            }
+            else if (pingShenStepId == 1 as byte)
+            {
+//                Collections.shuffle(workList);
+//                Collections.shuffle(group.value);
+//                int cji = 0;
+//                for(Work work in workList)
+//                {
+//                    if (cji >= group.value.size()-1)
+//                    {
+//                        cji = 0;
+//                    }
+//                    CompetitionJudge cj = group.value[cji];
+//                    JudgeWork judgeWork = new JudgeWork();
+//                    JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, pingShenStepId);
+//                    judgeWork.judgeWorkPK = judgeWorkPK;
+//                    judgeWork.fen = 0;
+//                    judgeWork.fenJson = null;
+//                    judgeWork.shiPass = false;
+//                    judgeWork.competitionId = group.key.item1;
+//                    judgeWork.guiGeId = group.key.item2;
+//                    this.updateObject(judgeWork);
+//                    cji++;
             }
         }
         if (pingShenStepId == 0 as byte)
