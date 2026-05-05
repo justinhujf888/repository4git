@@ -8,7 +8,12 @@
                     <span>个作品</span>
                 </div>
                 <div>
-                    <Button label="分配作品" @click="pingShenWorksInit" :disabled="masterCompetitionStatus>-1"/>
+                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus>-1"/>
+                </div>
+            </div>
+            <div v-if="f.id==1" class="col gap-4">
+                <div>
+                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus>0"/>
                 </div>
             </div>
         </Panel>
@@ -47,10 +52,10 @@ onMounted(async ()=>{
 });
 
 const pingShenWorksInit = async ()=>{
-    let res = await workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId.value,pingShenStepId:0,mapData:{flowSetup:flow.value}},null);
+    let res = await workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId.value,pingShenStepId:parseInt(masterCompetitionStatus.value)+1,mapData:{flowSetup:flow.value}},null);
     if (res.status=="OK") {
         dialog.toastSuccess("作品已分配到评委");
-        masterCompetitionStatus.value = 0;
+        masterCompetitionStatus.value = parseInt(masterCompetitionStatus.value)+1;
     }
 };
 </script>

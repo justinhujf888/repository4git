@@ -171,7 +171,7 @@ class QueryUtils
 
     Object convertObj(int tableFieldIndex,Object distObj)
     {
-        if (!(map["tableFields"][tableFieldIndex]["convertType"] in [null,""]))
+        if (!(map["tableFields"][tableFieldIndex]["convertType"] in [null,""]) && distObj!=null)
         {
             if (map["tableFields"][tableFieldIndex]["convertType"]=="json")
             {
@@ -692,6 +692,13 @@ class QueryUtils
             this.clear();
         }
         return pageUtil;
+    }
+
+    PageUtil runAndShowSqlMaps()
+    {
+        this.pageUtil = this.run();
+        println sqlMaps;
+        return this.pageUtil;
     }
 }
 

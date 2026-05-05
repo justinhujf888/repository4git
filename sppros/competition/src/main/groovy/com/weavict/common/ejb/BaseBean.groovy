@@ -2,7 +2,7 @@ package com.weavict.common.ejb
 
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
-import jakarta.persistence.Query;
+import jakarta.persistence.Query
 
 import javax.sql.DataSource
 import java.sql.Connection
@@ -26,6 +26,11 @@ class BaseBean implements BaseService
 
     BaseBean()
     {
+    }
+
+    void detach(Object obj)
+    {
+        em.detach(obj);
     }
 
     List queryObject(String EQL, Map<String, Object> paramsMap) throws Exception

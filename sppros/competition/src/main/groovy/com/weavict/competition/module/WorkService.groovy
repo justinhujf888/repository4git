@@ -282,17 +282,90 @@ class WorkService extends ModuleBean
                 [sf: "guigeid", bf: "competitionJudgePK.guiGeId"],
                 [sf: "judgeid", bf: "competitionJudgePK.judgeId"],
                 [sf: "competitionstatus", bf: "competitionJudgePK.competitionStatus"],
-                [sf: "pingshenfields", bf: "pingShenFields"],
+                [sf: "pingshenfields", bf: "pingShenFields",convertType:"json"],
                 [sf:"pingshenstatus",bf:"pingShenStatus"]
         ])
                 .where("cj.appid = :appId", [appId: query.appId], null, { return true })
                 .where("cj.mastercompetitionid = :masterCompetitionId", [masterCompetitionId: query.masterCompetitionId], "and", { return !(query.masterCompetitionId in [null, ""]) })
-                .where("cj.competitionstatus = :competitionStatus", [competitionStatus: query.pingShenStepId], "and", { return true })
+                .where("cj.competitionstatus = :competitionStatus", [competitionStatus: query.pingShenStepId as byte], "and", { return true })
                 .where("cj.judgeid = :judgeId", [judgeId: query.judgeId], "and", { return !(query.judgeId in [null, ""]) })
                 .where("cj.competitionid = :competitionId", [competitionId: query.competitionId], "and", { return !(query.competitionId in [null, ""]) })
                 .where("cj.guigeid = :guiGeId", [guiGeId: query.guiGeId], "and", { return !(query.guiGeId in [null, ""]) })
                 .beanSetup(CompetitionJudge.class, null, null)
                 .buildSql().run().content;
+    }
+
+    PageUtil qyJudgeWorks(Map query)
+    {
+        QueryUtils queryUtils = this.newQueryUtils(true,true);
+        queryUtils.masterTable("work","w",[
+                [sf:"name",bf:"name"],
+                [sf:"id",bf:"id"],
+                [sf:"competition_id",bf:"competition.id"],
+                [sf:"guige_id",bf:"guiGe.id"],
+                [sf:"guigeid",bf:"guiGeId"],
+                [sf:"gousidescription",bf:"gousiDescription"],
+                [sf:"mymeandescription",bf:"myMeanDescription"],
+                [sf:"hangyefields",bf:"hangyeFields",convertType:"json"],
+                [sf:"otherfields",bf:"otherFields",convertType:"json"],
+                [sf:"buyer_phone",bf:"buyer.phone"],
+                [sf:"appid",bf:"appId"],
+                [sf:"status",bf:"status"],
+                [sf:"lat",bf:"lat"],
+                [sf:"lng",bf:"lng"],
+                [sf:"createdate",bf:"createDate"],
+                [sf:"mastercompetitionid",bf:"masterCompetitionId"]
+        ])
+                .joinTable("judgework","jw","right join","w.id=jw.workid",[
+                        [sf:"judgeid",bf:"tempMap.judgeId"],
+                        [sf:"stepstatus",bf:"tempMap.stepStatus"],
+                        [sf:"fenJson",bf:"tempMap.fenJson"],
+                        [sf:"fen",bf:"tempMap.fen"],
+                        [sf:"shipass",bf:"tempMap.shiPass"]
+                ])
+                .joinTable("mastercompetition","mc","left join","w.mastercompetitionid=mc.id",[
+                        [sf:"name",bf:"tempMap.masterCompetitionName"]
+                ])
+                .where("w.appid = :appId",[appId:query.appId],null,{return true})
+                .where("jw.stepstatus = :stepStatus",[stepStatus:query.stepStatus],"and",{return true})
+                .where("jw.competitionid = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
+                .where("jw.shipass = :shiPass",[shiPass:query.shiPass as boolean],"and",{return query.shiPass !=null})
+                .where("w.guige_id = :guiGeId",[guiGeId:query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
+                .where("jw.judgeid = :judgeId",[judgeId:query.judgeId],"and",{return !(query.judgeId in [null,""])})
+                .where("w.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+                .beanSetup(Work.class,null,null)
+                .saveSql();
+        PageUtil pageUtil = null;
+        if (query.pageSize != null) {
+            pageUtil = queryUtils.pageLimit(query.pageSize as int, query.currentPage as int, "w.id")
+                    .buildSql().run();
+        } else {
+            pageUtil = queryUtils.buildSql().run();
+        }
+        for(Work work in pageUtil.content as List<Work>)
+        {
+            work.cancelLazyEr();
+            this.detach(work);
+            if (query.shiWorkItemList==true)
+            {
+                work.workItemList = this.newQueryUtils(false).masterTable(WorkItem.class.simpleName,null,null)
+                        .where("work.id = :workId",["workId":work.id],null,{return true})
+                        .orderBy("mediaType,type")
+                        .buildSql().run().content;
+                for(WorkItem workItem in work.workItemList)
+                {
+                    this.detach(workItem);
+                    workItem.cancelLazyEr();
+                    workItem.work = null;
+                }
+            }
+        }
+        if ((query.qyPassCount as boolean) == true)
+        {
+            pageUtil.tempMap["shiPassList"] = this.createNativeQuery4Params("select ${queryUtils.sqlMaps.sqlParse.count} ${queryUtils.sqlMaps.sqlParse.fromJoin} ${queryUtils.sqlMaps.sqlParse.where} and jw.shipass=true",queryUtils.sqlMaps.params).resultList;
+        }
+        queryUtils.sqlMaps = null;
+        return pageUtil;
     }
 
     @Transactional
@@ -301,7 +374,7 @@ class WorkService extends ModuleBean
         MasterCompetition masterCompetition = this.findObjectById(MasterCompetition.class,masterCompetitionId);
         masterCompetition.flowSetup = mapData.flowSetup;
         this.updateObject(masterCompetition);
-        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId: appId, masterCompetitionId: masterCompetitionId, judgeId: null, pingShenStepId: 0]);//查询初筛评委
+        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId: appId, masterCompetitionId: masterCompetitionId, judgeId: null, pingShenStepId: pingShenStepId]);
         var groupList = Linq.of(competitionJudgeList).groupBy(cj -> new Tuple2(cj.competitionJudgePK.competitionId,cj.competitionJudgePK.guiGeId));
         for (def group : groupList)
         {
@@ -323,6 +396,7 @@ class WorkService extends ModuleBean
                             judgeWork.shiPass = false;
                             judgeWork.competitionId = group.key.item1;
                             judgeWork.guiGeId = group.key.item2;
+                            judgeWork.cancelLazyEr();
                             this.updateObject(judgeWork);
                         }
                     }
@@ -330,35 +404,39 @@ class WorkService extends ModuleBean
             }
             else if (pingShenStepId == 1 as byte)
             {
-//                Collections.shuffle(workList);
-//                Collections.shuffle(group.value);
-//                int cji = 0;
-//                for(Work work in workList)
-//                {
-//                    if (cji >= group.value.size()-1)
-//                    {
-//                        cji = 0;
-//                    }
-//                    CompetitionJudge cj = group.value[cji];
-//                    JudgeWork judgeWork = new JudgeWork();
-//                    JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, pingShenStepId);
-//                    judgeWork.judgeWorkPK = judgeWorkPK;
-//                    judgeWork.fen = 0;
-//                    judgeWork.fenJson = null;
-//                    judgeWork.shiPass = false;
-//                    judgeWork.competitionId = group.key.item1;
-//                    judgeWork.guiGeId = group.key.item2;
-//                    this.updateObject(judgeWork);
-//                    cji++;
+                Map paramsMap = null;
+                if (group.key.item2=="-1") {
+                    paramsMap = [competitionId:group.key.item1,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:0,qyPassCount:false,shiPass:true];
+                } else {
+                    paramsMap = [competitionId:group.key.item1,guiGeId:group.key.item2,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:0,qyPassCount:false,shiPass:true];
+                }
+                List<Work> workList = Linq.of(this.qyJudgeWorks(paramsMap).content).distinctBy (w->w.id).toList();
+                Collections.shuffle(workList);
+                Collections.shuffle(group.value);
+                int cji = 0;
+                for(Work work in workList) {
+                    if (cji >= group.value.size() - 1) {
+                        cji = 0;
+                    }
+                    CompetitionJudge cj = group.value[cji];
+                    JudgeWork judgeWork = new JudgeWork();
+                    JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, masterCompetitionId, pingShenStepId);
+                    judgeWork.judgeWorkPK = judgeWorkPK;
+                    judgeWork.fen = 0;
+                    judgeWork.fenJson = null;
+                    judgeWork.shiPass = false;
+                    judgeWork.competitionId = group.key.item1;
+                    judgeWork.guiGeId = group.key.item2;
+                    judgeWork.cancelLazyEr();
+                    this.updateObject(judgeWork);
+                    cji++;
+                }
             }
         }
-        if (pingShenStepId == 0 as byte)
-        {
-            CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
-            CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(appId,"masterCompetitionStatus");
-            currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
-            currentMasterCompetitionSetup.value = 0;
-            this.updateTheObject(currentMasterCompetitionSetup);
-        }
+        CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
+        CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(appId,"masterCompetitionStatus");
+        currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
+        currentMasterCompetitionSetup.value = pingShenStepId;
+        this.updateTheObject(currentMasterCompetitionSetup);
     }
 }

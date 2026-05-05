@@ -432,6 +432,7 @@ class WorkRest extends BaseRest
                          PageUtil pageUtil = workService.qyWorks(query);
                          for(Work work in pageUtil.content as List<Work>)
                          {
+                             workService.detach(work);
                              work.cancelLazyEr();
                              if (query.shiWorkItemList==true)
                              {
@@ -441,6 +442,7 @@ class WorkRest extends BaseRest
                                          .buildSql().run().content;
                                  for(WorkItem workItem in work.workItemList)
                                  {
+                                     workService.detach(workItem);
                                      workItem.cancelLazyEr();
                                      workItem.work = null;
                                  }
@@ -607,7 +609,9 @@ class WorkRest extends BaseRest
             }
             masterCompetition.flowSetup = workService.qyPingShenFlow(null);
             workService.updateTheObject(masterCompetition);
-            workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
+
+//            改为管理员点击评审设定开始评审按钮时执行
+//            workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
 
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
             writer.write(buildObjectMapper().writeValueAsString(masterCompetition.workSetup));
@@ -616,12 +620,14 @@ class WorkRest extends BaseRest
             writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
                      masterCompetitionInfo:({
                         masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
+                         workService.detach(masterCompetition);
                         masterCompetition.competitionList = workService.qyCompetitionList([appId:query.appId,masterCompetitionId:masterCompetition.id,shiQyGuiGeList:true]);
                         for(Competition competition in masterCompetition.competitionList)
                         {
                             competition.masterCompetition = null;
                             for (GuiGe guiGe in competition.guiGeList)
                             {
+                                workService.detach(guiGe);
                                 guiGe.cancelLazyEr();
                                 guiGe.competition = null;
                             }
@@ -779,7 +785,10 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.pingShenWorksInit(query.appId as String,query.masterCompetitionId as String,query.pingShenStepId as byte,objToBean(query.mapData,Map.class,null) as Map);
+            workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW, {
+                workService.pingShenJudgesInit(query.appId as String, query.masterCompetitionId as String, query.pingShenStepId as byte);
+                workService.pingShenWorksInit(query.appId as String, query.masterCompetitionId as String, query.pingShenStepId as byte, objToBean(query.mapData, Map.class, null) as Map);
+            });
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -829,75 +838,10 @@ class WorkRest extends BaseRest
         try
         {
             ObjectMapper objectMapper = buildObjectMapper();
-            QueryUtils queryUtils = workService.newQueryUtils(true,true);
-            queryUtils.masterTable("work","w",[
-                    [sf:"name",bf:"name"],
-                    [sf:"id",bf:"id"],
-                    [sf:"competition_id",bf:"competition.id"],
-                    [sf:"guige_id",bf:"guiGe.id"],
-                    [sf:"guigeid",bf:"guiGeId"],
-                    [sf:"gousidescription",bf:"gousiDescription"],
-                    [sf:"mymeandescription",bf:"myMeanDescription"],
-                    [sf:"hangyefields",bf:"hangyeFields",convertType:"json"],
-                    [sf:"otherfields",bf:"otherFields",convertType:"json"],
-                    [sf:"buyer_phone",bf:"buyer.phone"],
-                    [sf:"appid",bf:"appId"],
-                    [sf:"status",bf:"status"],
-                    [sf:"lat",bf:"lat"],
-                    [sf:"lng",bf:"lng"],
-                    [sf:"createdate",bf:"createDate"],
-                    [sf:"mastercompetitionid",bf:"masterCompetitionId"]
-            ])
-                    .joinTable("judgework","jw","right join","w.id=jw.workid",[
-                    [sf:"judgeid",bf:"tempMap.judgeId"],
-                    [sf:"stepstatus",bf:"tempMap.stepStatus"],
-                    [sf:"fenJson",bf:"tempMap.fenJson"],
-                    [sf:"fen",bf:"tempMap.fen"],
-                    [sf:"shipass",bf:"tempMap.shiPass"]
-            ])
-                    .joinTable("mastercompetition","mc","left join","w.mastercompetitionid=mc.id",[
-                            [sf:"name",bf:"tempMap.masterCompetitionName"]
-                    ])
-                    .where("w.appid = :appId",[appId:query.appId],null,{return true})
-                    .where("jw.stepstatus = :stepStatus",[stepStatus:query.stepStatus],"and",{return true})
-                    .where("jw.competitionid = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
-                    .where("w.guige_id = :guiGeId",[guiGeId:query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
-                    .where("jw.judgeid = :judgeId",[judgeId:query.judgeId],"and",{return !(query.judgeId in [null,""])})
-                    .where("w.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
-                    .beanSetup(Work.class,null,null)
-                    .saveSql();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         PageUtil pageUtil = null;
-                         if (query.pageSize != null) {
-                             pageUtil = queryUtils.pageLimit(query.pageSize as int, query.currentPage as int, "w.id")
-                                     .buildSql().run();
-                         } else {
-                             pageUtil = queryUtils.buildSql().run();
-                         }
-                         for(Work work in pageUtil.content as List<Work>)
-                         {
-                             work.cancelLazyEr();
-                             if (query.shiWorkItemList==true)
-                             {
-                                 work.workItemList = workService.newQueryUtils(false).masterTable(WorkItem.class.simpleName,null,null)
-                                         .where("work.id = :workId",["workId":work.id],null,{return true})
-                                         .orderBy("mediaType,type")
-                                         .buildSql().run().content;
-                                 for(WorkItem workItem in work.workItemList)
-                                 {
-                                     workItem.cancelLazyEr();
-                                     workItem.work = null;
-                                 }
-                             }
-                         }
-                         if ((query.qyPassCount as boolean) == true)
-                         {
-                             pageUtil.tempMap["shiPassList"] = workService.createNativeQuery4Params("select ${queryUtils.sqlMaps.sqlParse.count} ${queryUtils.sqlMaps.sqlParse.fromJoin} ${queryUtils.sqlMaps.sqlParse.where} and jw.shipass=true",queryUtils.sqlMaps.params).resultList;
-                         }
-                         queryUtils.sqlMaps = null;
-                         return pageUtil;
+                         return workService.qyJudgeWorks(query);
                      }).call()
                     ]);
         }
