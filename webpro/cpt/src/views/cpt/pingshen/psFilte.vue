@@ -277,7 +277,7 @@ const switchChange = (item,index)=> {
     if (item.tempMap.shiPass==true) {
         if (j < 0) {
             //type:0类别；1组别；key是类别或者组别的ID
-            selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key,fg:1});
+            selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key,fg:1,fenJson:null,fen:0});
         } else {
             selWork[j].fg = 1;
             // selWork.slice(j,0);
@@ -287,7 +287,7 @@ const switchChange = (item,index)=> {
             selWork[j].fg = 0;
             // selWork.slice(j,0);
         } else {
-            selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key,fg:0});
+            selWork.push({id:item.id,type:item.tempMap.type,key:item.tempMap.key,fg:0,fenJson:null,fen:0});
         }
     }
     // console.log(selWork);

@@ -1,6 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import {computed, ref, watch, onMounted} from 'vue';
+import {computed, ref, watch, onMounted, useTemplateRef} from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
@@ -8,6 +8,8 @@ import Login from "./login.vue";
 import dialog from "@/api/uniapp/dialog";
 import util from "@/api/util";
 import useGlobal from "@/api/hooks/useGlobal";
+import Page from "@/api/uniapp/page";
+import AppMenu from "@/layout/AppMenu.vue";
 
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
@@ -15,18 +17,19 @@ const outsideClickListener = ref(null);
 let managerId = "";
 let managerInfo = "";
 const visible = ref(false);
+const appSideBar = useTemplateRef("appSideBar");
 
 
 onMounted(() => {
-    // console.log("managerId", managerId);
     if (localStorage.getItem("managerId")) {
         managerId = util.giveStorgeCry("managerId");
     }
     if (localStorage.getItem("managerInfo")) {
         managerInfo = util.giveStorgeCry("managerInfo");
     }
-
-    if (!managerId || !managerInfo) {
+    // console.log("managerId", managerId,"managerInfo",managerInfo);
+    // console.log(appSideBar.value);
+    if (!managerId) {
         visible.value = true;
     }
 });
@@ -78,7 +81,12 @@ function isOutsideClicked(event) {
 
 function afterLogin(manager) {
     visible.value = false;
-    dialog.toastSuccess("您已成功登录系统");
+    // dialog.toastSuccess("您已成功登录系统");
+    dialog.alertBack("您已成功登录系统",()=>{
+        // console.log(appSideBar.value);
+        appSideBar.value.buildMenu();
+        Page.redirectTo("dashboard",null);
+    });
 }
 
 function afterLogout() {
@@ -95,7 +103,10 @@ function afterLogout() {
             </template>
         </Dialog>
         <app-topbar @afterLogout="afterLogout"></app-topbar>
-        <app-sidebar></app-sidebar>
+<!--        <app-sidebar ref="appSideBar"></app-sidebar>-->
+        <div class="layout-sidebar">
+            <app-menu ref="appSideBar"></app-menu>
+        </div>
         <div class="layout-main-container">
             <div class="my-2 mb-5">
                 <span class="text-2xl">{{useGlobal.getRouteInfo().meta.name}}</span>

@@ -480,7 +480,7 @@ class JudgeWork extends BEntity implements Serializable, IEntity
 
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    List fenJson;
+    Map fenJson;
 
     @Column(length=3)
     int fen;

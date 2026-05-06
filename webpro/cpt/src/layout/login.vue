@@ -75,7 +75,7 @@ const onFormSubmit = ({ valid }) => {
                 if (data.status=="OK") {
                     util.intoStorgeCry("userType",userType.value);
                     util.intoStorgeCry("managerId",data.judge.id);
-                    util.intoStorgeCry("managerInfo",JSON.stringify(data.judge));
+                    util.intoStorgeCry("managerInfo ",JSON.stringify(data.judge));
                     emit("afterLogin",data.judge);
                 } else if (data.status=="ER_NOHAS") {
                     dialog.toastError("您输入的账号或密码错误");

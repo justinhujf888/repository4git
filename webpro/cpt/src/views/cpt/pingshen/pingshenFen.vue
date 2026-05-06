@@ -20,7 +20,7 @@
                                         }">
                         <template #list="slotProps">
                             <div class="col gap-2 flex-wrap">
-                                <div v-for="(item, index) in slotProps.items" :key="index" class="leading-8">
+                                <div v-for="(item, index) in slotProps.items" :key="index" class="leading-8 border border-1 border-solid p-2">
                                     <Panel :header="item.name" toggleable collapsed :pt="{title:{class:'text-2xl font-bold dark:text-yellow-600'}}">
                                         <div class="grid md:grid-cols-2 gap-4 mt-5">
                                             <div class="col">
@@ -57,6 +57,17 @@
                                             </div>
                                         </div>
                                     </Panel>
+                                    <div class="mt-2">
+                                        <span>评分</span>
+                                        <div class="grid md:grid-cols-4 gap-4 mt-3">
+                                            <div v-for="fenItem of item.tempMap.fenJson.fields">
+                                                <FloatLabel variant="on">
+                                                    <InputNumber :name="fenItem.name" v-model="fenItem.value" :min="0" :max="fenItem.fen" size="small" :readonly="shiSubmited"/>
+                                                    <label :for="fenItem.name">{{fenItem.name}} ({{fenItem.fen}}分)</label>
+                                                </FloatLabel>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -117,14 +128,14 @@ onMounted(async () => {
     masterCompetitionStatus.value = cms.masterCompetitionStatus;
 
     if (masterCompetitionId.value) {
-        let mcRes = await workRest.qyMasterSiteCompetition({id:masterCompetitionId,siteCompetitionId:host},null);
+        stepStatus = masterCompetitionStatus.value;
+        let mcRes = await workRest.qyMasterSiteCompetition({id:masterCompetitionId.value,siteCompetitionId:host},null);
         if (mcRes.status=="OK" && mcRes.data) {
             flow = lodash.find(mcRes.data?.[0]?.flowSetup.flow,(o)=>{return o.sort == stepStatus});
             // console.log(flow);
         }
 
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
-        stepStatus = masterCompetitionStatus.value;
 
         let res = await workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId.value,judgeId:judgeId,pingShenStepId:stepStatus},null);
         if (res.status=="OK") {
@@ -175,9 +186,9 @@ const onNodeSelect = async (node) => {
 const queryWorks = async (type,key)=>{
     let query = {};
     if (type==0 && !hasChildren) {
-        query = {competitionId:key,appId:host,masterCompetitionId:masterCompetitionId.value,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
+        query = {competitionId:key,appId:host,masterCompetitionId:masterCompetitionId.value,shiWorkItemList:true,judgeId:judgeId,stepStatus:stepStatus,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
     } else {
-        query = {guiGeId:key,appId:host,masterCompetitionId:masterCompetitionId.value,shiWorkItemList:true,judgeId:judgeId,stepStatus:0,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
+        query = {guiGeId:key,appId:host,masterCompetitionId:masterCompetitionId.value,shiWorkItemList:true,judgeId:judgeId,stepStatus:stepStatus,pageSize:Config.pageSize,currentPage:currentPage.value,qyPassCount:true};
     }
     let res = await workRest.qyJudgeWorks(query,null);
     if (res.status=="OK") {
@@ -200,9 +211,16 @@ const queryWorks = async (type,key)=>{
                 if (!work.tempMap) {
                     work.tempMap = {};
                 }
-                work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
                 work.tempMap.type = type;
                 work.tempMap.key = key;
+                if (work.tempMap.fenJson) {
+                    work.tempMap.fenJson = JSON.parse(work.tempMap.fenJson);
+                    lodash.forEach(work.tempMap.fenJson,(f)=>{
+                        if (!f.value) {
+                            f.value = 0;
+                        }
+                    });
+                }
             }
             // console.log(pageUtil.value);
         } else {
@@ -223,14 +241,20 @@ const viewImg = (workItemList,imgId)=>{
 };
 
 const saveSubmitJudgeWorks = (shiPass)=>{
+    let selWork = [];
+    lodash.forEach(pageUtil.value.content,(o)=>{
+        let sum = 0;
+        lodash.forEach(o.tempMap.fenJson.fields,(f)=>{
+            if (f.value) {
+                sum += f.value;
+            }
+        });
+        selWork.push({id:o.id,type:type,key:key,fg:shiPass ? 1 : 0,fenJson:o.tempMap.fenJson,fen:sum});
+    });
     if (shiPass)
     {
-        if (selTypeCount.value < flow.data.judgePassWorkMixCount) {
-            dialog.toastError("选择通过的作品数量最少为"+flow.data.judgePassWorkMixCount);
-            return;
-        }
         dialog.confirm("正式提交审核后将无法再修改，您是否确认此次审核提交？",()=>{
-            workRest.saveSubmitJudgeWorks({judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass,masterCompetitionId:masterCompetitionId,competitionId:competitionId,guiGeId:guiGeId},(res)=>{
+            workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,shiPass:shiPass,masterCompetitionId:masterCompetitionId.value,competitionId:competitionId,guiGeId:guiGeId},(res)=>{
                 if (res.status=="OK") {
                     shiSubmited.value = true;
                     dialog.toastSuccess("您已提交此次审核");
@@ -240,7 +264,7 @@ const saveSubmitJudgeWorks = (shiPass)=>{
 
         });
     } else {
-        workRest.saveSubmitJudgeWorks({judgeId:judgeId,stepStatus:stepStatus,masterCompetitionId:masterCompetitionId,shiPass:shiPass},(res)=>{
+        workRest.saveSubmitJudgeWorks({selWork:selWork,judgeId:judgeId,stepStatus:stepStatus,masterCompetitionId:masterCompetitionId.value,shiPass:shiPass},(res)=>{
             if (res.status=="OK") {
                 dialog.toastSuccess("您已暂时保存此次审核");
             }

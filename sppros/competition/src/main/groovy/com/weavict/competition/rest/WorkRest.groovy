@@ -813,7 +813,9 @@ class WorkRest extends BaseRest
 //                    JudgeWork judgeWork = new JudgeWork();
 //                    judgeWork.judgeWorkPK = new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.stepStatus as byte);
 //                    judgeWork.shiPass
-                    workService.updateTheObjectFilds(JudgeWork.simpleName,"judgeWorkPK = :judgeWorkPK",[shiPass:(item.fg as byte)==1 ? true : false],[judgeWorkPK:new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.masterCompetitionId as String,query.stepStatus as byte)],false);
+//                    println query;
+//                    println item.fenJson;
+                    workService.updateTheObjectFilds(JudgeWork.simpleName,"judgeWorkPK = :judgeWorkPK",[shiPass:(item.fg as byte)==1 ? true : false,fenJson:item.fenJson,fen:item.fen],[judgeWorkPK:new JudgeWorkPK(query.appId as String,query.judgeId as String,item.id as String,query.masterCompetitionId as String,query.stepStatus as byte)],false);
                 }
             });
             if ((query.shiPass as boolean) == true)//query.shiPass==true;评委提交了最终结果

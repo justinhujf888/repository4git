@@ -11,6 +11,11 @@ const model = ref([]);
 let userType = util.giveStorgeCry("userType");
 
 onMounted(() => {
+    buildMenu();
+});
+
+const buildMenu = ()=>{
+    userType = util.giveStorgeCry("userType");
     if (lodash.includes(window.location.href,"/manage/")) {
         model.value = [{label:"",items:[]}];
         let menuJson = pageJson.manageMenu();
@@ -48,8 +53,9 @@ onMounted(() => {
             }
         ];
     }
+}
 
-});
+defineExpose({buildMenu});
 </script>
 
 <template>

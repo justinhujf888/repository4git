@@ -4,16 +4,21 @@
             <div v-if="f.id==0" class="col gap-4">
                 <div class="row items-center gap-2">
                     <span>每位评委最少评选通过</span>
-                    <InputText v-model="f.data.judgePassWorkMixCount" :disabled="masterCompetitionStatus>-1"/>
+                    <InputText v-model="f.data.judgePassWorkMixCount" :disabled="masterCompetitionStatus!=-1"/>
                     <span>个作品</span>
                 </div>
                 <div>
-                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus>-1"/>
+                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=-1"/>
                 </div>
             </div>
             <div v-if="f.id==1" class="col gap-4">
                 <div>
-                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus>0"/>
+                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=0"/>
+                </div>
+            </div>
+            <div v-if="f.id==2" class="col gap-4">
+                <div>
+                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=1"/>
                 </div>
             </div>
         </Panel>

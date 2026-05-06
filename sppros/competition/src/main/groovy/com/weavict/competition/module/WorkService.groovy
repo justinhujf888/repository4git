@@ -326,8 +326,11 @@ class WorkService extends ModuleBean
                 .joinTable("mastercompetition","mc","left join","w.mastercompetitionid=mc.id",[
                         [sf:"name",bf:"tempMap.masterCompetitionName"]
                 ])
+//                .joinTable("competitionjudge","cj","left join","cj.mastercompetitionid=mc.id and cj.competitionid=jw.competitionid and cj.guigeid=jw.guigeid and cj.judgeid=jw.judgeid and cj.competitionstatus=jw.stepstatus",[
+//                        [sf:"pingshenfields",bf:"tempMap.pingShenFields"]
+//                ])
                 .where("w.appid = :appId",[appId:query.appId],null,{return true})
-                .where("jw.stepstatus = :stepStatus",[stepStatus:query.stepStatus],"and",{return true})
+                .where("jw.stepstatus = :stepStatus",[stepStatus:query.stepStatus as byte],"and",{return true})
                 .where("jw.competitionid = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
                 .where("jw.shipass = :shiPass",[shiPass:query.shiPass as boolean],"and",{return query.shiPass !=null})
                 .where("w.guige_id = :guiGeId",[guiGeId:query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
@@ -411,25 +414,21 @@ class WorkService extends ModuleBean
                     paramsMap = [competitionId:group.key.item1,guiGeId:group.key.item2,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:0,qyPassCount:false,shiPass:true];
                 }
                 List<Work> workList = Linq.of(this.qyJudgeWorks(paramsMap).content).distinctBy (w->w.id).toList();
-                Collections.shuffle(workList);
-                Collections.shuffle(group.value);
-                int cji = 0;
+//                Collections.shuffle(workList);
+//                Collections.shuffle(group.value);
                 for(Work work in workList) {
-                    if (cji >= group.value.size() - 1) {
-                        cji = 0;
+                    for (CompetitionJudge cj in group.value) {
+                        JudgeWork judgeWork = new JudgeWork();
+                        JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, masterCompetitionId, pingShenStepId);
+                        judgeWork.judgeWorkPK = judgeWorkPK;
+                        judgeWork.fen = 0;
+                        judgeWork.fenJson = cj.pingShenFields;
+                        judgeWork.shiPass = false;
+                        judgeWork.competitionId = group.key.item1;
+                        judgeWork.guiGeId = group.key.item2;
+                        judgeWork.cancelLazyEr();
+                        this.updateObject(judgeWork);
                     }
-                    CompetitionJudge cj = group.value[cji];
-                    JudgeWork judgeWork = new JudgeWork();
-                    JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, masterCompetitionId, pingShenStepId);
-                    judgeWork.judgeWorkPK = judgeWorkPK;
-                    judgeWork.fen = 0;
-                    judgeWork.fenJson = null;
-                    judgeWork.shiPass = false;
-                    judgeWork.competitionId = group.key.item1;
-                    judgeWork.guiGeId = group.key.item2;
-                    judgeWork.cancelLazyEr();
-                    this.updateObject(judgeWork);
-                    cji++;
                 }
             }
         }
