@@ -13,9 +13,9 @@
                     <div class="mt-5">
                         <div v-if="flow.type==0" class="row pt-10">
 <!--                            <Chip v-for="ju of flow.setupData" :label="ju.name" :image="ju.tempImg" removable/>-->
-                            <div v-for="ju of flow.setupData" class="row center mx-2 py-2 px-4 bg-surface-800 rounded-2xl">
+                            <div v-for="(ju,juIndex) of flow.setupData" class="row center mx-2 py-2 px-4 bg-surface-800 rounded-2xl">
                                 <span class="mr-1">{{ju.name}}</span>
-                                <span class="pi pi-times-circle"></span>
+                                <span class="pi pi-times-circle" @click="removeChip0(flow.setupData,juIndex)"></span>
                             </div>
                         </div>
                         <div v-if="flow.type==1" class="min-h-24">
@@ -39,7 +39,7 @@
                                 </Column>
                                 <Column class="w-16 !text-end">
                                     <template #body="{ data,index }">
-                                        <Button icon="pi pi-trash" @click="deleteJudge(data,index)" severity="secondary" rounded></Button>
+                                        <Button icon="pi pi-trash" @click="deleteJudge(data,flow.setupData,index)" severity="secondary" rounded></Button>
                                     </template>
                                 </Column>
                             </DataTable>
@@ -186,15 +186,21 @@ function cancelPop() {
 }
 
 function removeChip(event,judgeIndex,_flow,field,fieldIndex) {
-    // console.log(field.name);
+    // console.log(judgeIndex,fieldIndex);return;
     // let ay = lodash.remove(_flow.setupData[judgeIndex].fields,(o)=>{return o.id==field.id});
     // console.log(ay,_flow.setupData[judgeIndex].fields);
     _flow.setupData[judgeIndex].fields.splice(fieldIndex,1);
 }
 
-function deleteJudge(data,index) {
+function removeChip0(row,index) {
+    // console.log(row,index);return;
+    row.splice(index,1);
+}
+
+function deleteJudge(data,setupData,index) {
+    // console.log(data,index,setupData);return;
     dialog.confirm("是否删除？",()=>{
-        flow.setupData.splice(index,1);
+        setupData.splice(index,1);
     },null);
 }
 

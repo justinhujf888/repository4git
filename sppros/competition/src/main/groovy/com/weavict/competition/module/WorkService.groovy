@@ -336,6 +336,7 @@ class WorkService extends ModuleBean
                 .where("w.guige_id = :guiGeId",[guiGeId:query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
                 .where("jw.judgeid = :judgeId",[judgeId:query.judgeId],"and",{return !(query.judgeId in [null,""])})
                 .where("w.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return !(query.masterCompetitionId in [null,""])})
+                .orderBy("jw.fen desc")
                 .beanSetup(Work.class,null,null)
                 .saveSql();
         PageUtil pageUtil = null;
@@ -405,15 +406,48 @@ class WorkService extends ModuleBean
                     }
                 }
             }
-            else if (pingShenStepId == 1 as byte)
+            else if (pingShenStepId in [1 as byte,2 as byte])
             {
                 Map paramsMap = null;
                 if (group.key.item2=="-1") {
-                    paramsMap = [competitionId:group.key.item1,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:0,qyPassCount:false,shiPass:true];
+                    paramsMap = [competitionId:group.key.item1,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:(pingShenStepId-1) as byte,qyPassCount:false,shiPass:true];
                 } else {
-                    paramsMap = [competitionId:group.key.item1,guiGeId:group.key.item2,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:0,qyPassCount:false,shiPass:true];
+                    paramsMap = [competitionId:group.key.item1,guiGeId:group.key.item2,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:(pingShenStepId-1) as byte,qyPassCount:false,shiPass:true];
                 }
-                List<Work> workList = Linq.of(this.qyJudgeWorks(paramsMap).content).distinctBy (w->w.id).toList();
+                List<Work> workList = null;
+                if (pingShenStepId == 1 as byte)
+                {
+                    //从初筛的记录中获取通过的作品
+                    workList = Linq.of(this.qyJudgeWorks(paramsMap).content).distinctBy (w->w.id).toList();
+                } else if (pingShenStepId == 2 as byte)
+                {
+                    //从第一轮评分的记录中通过分数得到排名N位的记录（由于是多个评委对不同字段打分，所以需要在JudgeWork表中对相同workId的记录进行分数汇总）
+                    List sumList = this.newQueryUtils(true,true).masterTable("judgework","jw",[
+                        [sf:"workid",bf:"judgeWorkPK.workId"],
+                        [sf:"workid",bf:"tempMap.workId"],
+                        [isCop:true,cop:"sum(jw.fen)",sf:"sumfen",bf:"tempMap.sumFen"]
+                    ])
+                            .where("jw.appid = :appId",[appId:appId],null,{return true})
+                            .where("jw.stepstatus = :stepStatus",[stepStatus:paramsMap.stepStatus as byte],"and",{return true})
+                            .where("jw.competitionid = :competitionId",[competitionId:paramsMap.competitionId],"and",{return true})
+                            .where("jw.shipass = :shiPass",[shiPass:paramsMap.shiPass as boolean],"and",{return true})
+                            .where("jw.guigeid = :guiGeId",[guiGeId:paramsMap.guiGeId],"and",{return !(paramsMap.guiGeId in [null,""])})
+                            .where("jw.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:paramsMap.masterCompetitionId],"and",{return true})
+                        .groupBy("jw.workid")
+                        .beanSetup(JudgeWork.class,null,null)
+                        .buildSql().run().content;
+                    for (JudgeWork jw in sumList)
+                    {
+                        println jw.dump();
+                    }
+                }
+//                println paramsMap;
+//                println workList.size();
+//                for(Work w in workList)
+//                {
+//                    println w.dump();
+//                }
+
 //                Collections.shuffle(workList);
 //                Collections.shuffle(group.value);
                 for(Work work in workList) {
@@ -437,5 +471,6 @@ class WorkService extends ModuleBean
         currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
         currentMasterCompetitionSetup.value = pingShenStepId;
         this.updateTheObject(currentMasterCompetitionSetup);
+        throw new Exception("test");
     }
 }

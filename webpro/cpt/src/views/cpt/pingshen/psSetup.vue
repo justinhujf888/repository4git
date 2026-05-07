@@ -17,6 +17,11 @@
                 </div>
             </div>
             <div v-if="f.id==2" class="col gap-4">
+                <div class="row items-center gap-2">
+                    <span>每组从上一轮评分选出</span>
+                    <InputText v-model="f.data.workCount" :disabled="masterCompetitionStatus!=1"/>
+                    <span>个作品参加本轮评分</span>
+                </div>
                 <div>
                     <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=1"/>
                 </div>
@@ -31,6 +36,8 @@ import workRest from "@/api/dbs/workRest";
 import AnimationPage from "@/components/my/animationPage.vue";
 import util from "@/api/util";
 import dialog from "@/api/uniapp/dialog";
+import primeUtil from "@/api/prime/util";
+import lodash from "lodash-es";
 
 const flow = ref([]);
 
@@ -57,6 +64,28 @@ onMounted(async ()=>{
 });
 
 const pingShenWorksInit = async ()=>{
+    let errors = [];
+    if (masterCompetitionStatus.value==-1) {
+        errors = primeUtil.checkFormRequiredValid([
+            {val:flow.value.flow?.[0].data.judgePassWorkMixCount,name:"judgePassWorkMixCount",label:"最少通过作品数量"}
+        ]);
+    } else if (masterCompetitionStatus.value==1) {
+        errors = primeUtil.checkFormRequiredValid([
+            {val:flow.value.flow?.[2].data.workCount,name:"workCount",label:"参加评分的作品数量"}
+        ]);
+    }
+// console.log(flow,errors);
+    let shiEr = false;
+    lodash.forEach(errors, (er,key) => {
+        if (er && er.length>0) {
+            shiEr = true;
+            dialog.toastError(er[0].message);
+        }
+    });
+    if (shiEr) {
+        return;
+    }
+
     let res = await workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId.value,pingShenStepId:parseInt(masterCompetitionStatus.value)+1,mapData:{flowSetup:flow.value}},null);
     if (res.status=="OK") {
         dialog.toastSuccess("作品已分配到评委");
