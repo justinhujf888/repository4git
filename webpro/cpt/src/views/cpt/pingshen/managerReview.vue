@@ -160,7 +160,7 @@ onMounted(async () => {
 
     if (masterCompetitionId) {
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
-        // console.log(uploadRule.value);
+        console.log(uploadRule.value);
         workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res)=>{
             if (res.status=="OK") {
                 lodash.forEach(res.data,(c)=>{
@@ -211,7 +211,7 @@ const queryWorks = (type,key)=>{
                         if (ru.checkExif) {
                             let exif = JSON.parse(workItem.exifInfo);
                             if (exif.Make==null) {
-                                // check = false;
+                                check = false;
                             }
                             if (exif.Software) {
                                 let software = lodash.toUpper(exif.Software);

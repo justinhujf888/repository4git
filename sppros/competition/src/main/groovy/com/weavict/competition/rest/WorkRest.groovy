@@ -801,6 +801,26 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/buildFlowWork")
+    String buildFlowWork(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW, {
+                workService.buildFlowWork(query.appId as String, query.masterCompetitionId as String, query.pingShenStepId as byte, objToBean(query.mapData, Map.class, null) as Map);
+            });
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/saveSubmitJudgeWorks")
     String saveSubmitJudgeWorks(@RequestBody Map<String,Object> query)
     {

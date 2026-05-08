@@ -173,7 +173,7 @@ const router = createRouter({
                     name: 'psSetup',
                     component: () => import('@/views/cpt/pingshen/psSetup.vue'),
                     meta:{
-                        name: "评审设定"
+                        name: "评审流程"
                     }
                 },
                 {

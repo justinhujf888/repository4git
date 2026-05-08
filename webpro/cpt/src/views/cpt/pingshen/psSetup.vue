@@ -4,26 +4,36 @@
             <div v-if="f.id==0" class="col gap-4">
                 <div class="row items-center gap-2">
                     <span>每位评委最少评选通过</span>
-                    <InputText v-model="f.data.judgePassWorkMixCount" :disabled="masterCompetitionStatus!=-1"/>
+                    <InputText name="judgePassWorkMixCount" v-model="f.data.judgePassWorkMixCount" :disabled="masterCompetitionStatus!=-1"/>
                     <span>个作品</span>
                 </div>
                 <div>
-                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=-1"/>
+                    <Button label="评委开始初筛作品" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=-1"/>
                 </div>
             </div>
             <div v-if="f.id==1" class="col gap-4">
                 <div>
-                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=0"/>
+                    <Button label="对初筛进行汇总，评委开始第一轮评分" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=0"/>
                 </div>
             </div>
             <div v-if="f.id==2" class="col gap-4">
                 <div class="row items-center gap-2">
                     <span>每组从上一轮评分选出</span>
-                    <InputText v-model="f.data.workCount" :disabled="masterCompetitionStatus!=1"/>
+                    <InputText name="workCount" v-model="f.data.workCount" :disabled="masterCompetitionStatus!=1"/>
                     <span>个作品参加本轮评分</span>
                 </div>
                 <div>
-                    <Button label="开始评审" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=1"/>
+                    <Button label="对第一轮评分进行汇总，评委开始第二轮评分" @click="pingShenWorksInit" :disabled="masterCompetitionStatus!=1"/>
+                </div>
+            </div>
+            <div v-if="f.id==3" class="col gap-4">
+                <div class="row items-center gap-2">
+                    <span>选出排名</span>
+                    <InputText name="reportCount" v-model="f.data.reportCount" :disabled="masterCompetitionStatus!=2"/>
+                    <span>个作品</span>
+                </div>
+                <div>
+                    <Button label="对第二轮评分进行汇总，发布结果" @click="buildFlowWork" :disabled="masterCompetitionStatus!=2"/>
                 </div>
             </div>
         </Panel>
@@ -89,6 +99,28 @@ const pingShenWorksInit = async ()=>{
     let res = await workRest.pingShenWorksInit({masterCompetitionId:masterCompetitionId.value,pingShenStepId:parseInt(masterCompetitionStatus.value)+1,mapData:{flowSetup:flow.value}},null);
     if (res.status=="OK") {
         dialog.toastSuccess("作品已分配到评委");
+        masterCompetitionStatus.value = parseInt(masterCompetitionStatus.value)+1;
+    }
+};
+
+const buildFlowWork = async () => {
+    let errors = primeUtil.checkFormRequiredValid([
+        {val:flow.value.flow?.[3].data.reportCount,name:"reportCount",label:"选出排名作品数量"}
+    ]);
+    let shiEr = false;
+    lodash.forEach(errors, (er,key) => {
+        if (er && er.length>0) {
+            shiEr = true;
+            dialog.toastError(er[0].message);
+        }
+    });
+    if (shiEr) {
+        return;
+    }
+
+    let res = await workRest.buildFlowWork({masterCompetitionId:masterCompetitionId.value,pingShenStepId:parseInt(masterCompetitionStatus.value)+1,mapData:{flowSetup:flow.value}},null);
+    if (res.status=="OK") {
+        dialog.toastSuccess("作品分数已经汇总完成");
         masterCompetitionStatus.value = parseInt(masterCompetitionStatus.value)+1;
     }
 };

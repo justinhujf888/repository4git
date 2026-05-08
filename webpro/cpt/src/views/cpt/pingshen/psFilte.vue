@@ -222,7 +222,7 @@ const queryWorks = async (type,key)=>{
                     if (ru.checkExif) {
                         let exif = JSON.parse(workItem.exifInfo);
                         if (exif.Make==null) {
-                            // check = false;
+                            check = false;
                         }
                         if (exif.Software) {
                             let software = lodash.toUpper(exif.Software);

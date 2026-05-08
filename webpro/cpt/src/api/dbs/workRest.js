@@ -163,6 +163,9 @@ export default {
     async pingShenWorksInit(ds,onfun) {
         return await Http.callHttpFunction('/r/work/pingShenWorksInit',ds,onfun);
     },
+    async buildFlowWork(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/buildFlowWork',ds,onfun);
+    },
     async qyPingShenJudgeList(ds,onfun) {
         return await Http.callHttpFunction('/r/work/qyPingShenJudgeList',ds,onfun);
     },

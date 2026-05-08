@@ -540,6 +540,10 @@ class PingFenWork extends BEntity implements Serializable, IEntity
     @Column(length=3)
     int fen;
 
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map fenJson;
+
     @Column(length = 30)
     String competitionId;
 

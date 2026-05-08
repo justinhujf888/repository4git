@@ -5,6 +5,7 @@ import {ref} from 'vue';
 import page from '@/api/uniapp/page';
 import useGlobal from "@/api/hooks/useGlobal";
 import dialog from "@/api/uniapp/dialog";
+import Page from "@/api/uniapp/page";
 
 const emit = defineEmits(["afterLogout"]);
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
@@ -18,6 +19,7 @@ function logout() {
         localStorage.removeItem("managerId");
         localStorage.removeItem("managerInfo");
         localStorage.removeItem("userType");
+        Page.redirectTo("dashboard",null);
         emit("afterLogout");
     },null);
 }

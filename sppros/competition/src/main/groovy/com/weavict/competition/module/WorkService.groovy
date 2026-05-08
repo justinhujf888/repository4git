@@ -16,6 +16,8 @@ import com.weavict.competition.entity.JudgeWorkPK
 import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
+import com.weavict.competition.entity.PingFenWork
+import com.weavict.competition.entity.PingFenWorkPK
 import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
@@ -181,7 +183,8 @@ class WorkService extends ModuleBean
         return [flow: [
                 [sort: 0, id: 0, name: "作品初筛", type: 0, data:[judgePassWorkMixCount:200]],
                 [sort: 1, id: 1, name: "作品第一轮评分", type: 1, data:[:]],
-                [sort: 2, id: 2, name: "作品第二轮评分", type: 1, data:[:]]
+                [sort: 2, id: 2, name: "作品第二轮评分", type: 1, data:[:]],
+                [sort: 3, id: 3, name: "作品汇总发布", type: 1, data:[:]]
         ]];
     }
 
@@ -380,6 +383,8 @@ class WorkService extends ModuleBean
         this.updateObject(masterCompetition);
         List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId: appId, masterCompetitionId: masterCompetitionId, judgeId: null, pingShenStepId: pingShenStepId]);
         var groupList = Linq.of(competitionJudgeList).groupBy(cj -> new Tuple2(cj.competitionJudgePK.competitionId,cj.competitionJudgePK.guiGeId));
+//        println competitionJudgeList.size();
+//        println groupList.size();
         for (def group : groupList)
         {
 //            println group.key;
@@ -408,6 +413,7 @@ class WorkService extends ModuleBean
             }
             else if (pingShenStepId in [1 as byte,2 as byte])
             {
+//                要注意的是，pingShenStepId是流程步骤，但每一步处理的数据都是上一个流程的评委结果，所以，一般都是pingShenStepId-1查询数据库；即评委的作品数据源是上一个节点评审好的，所以pingShenStepId-1，本次的评委数据以及字段数据是本次的，所以pingShenStepId，不用-1
                 Map paramsMap = null;
                 if (group.key.item2=="-1") {
                     paramsMap = [competitionId:group.key.item1,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:(pingShenStepId-1) as byte,qyPassCount:false,shiPass:true];
@@ -419,14 +425,14 @@ class WorkService extends ModuleBean
                 {
                     //从初筛的记录中获取通过的作品
                     workList = Linq.of(this.qyJudgeWorks(paramsMap).content).distinctBy (w->w.id).toList();
-                } else if (pingShenStepId == 2 as byte)
+                }
+                else if (pingShenStepId == 2 as byte)
                 {
                     //从第一轮评分的记录中通过分数得到排名N位的记录（由于是多个评委对不同字段打分，所以需要在JudgeWork表中对相同workId的记录进行分数汇总）
                     workList = this.newQueryUtils(true,true).masterTable("Work","w",[
                             [sf:"id",bf:"id"],
                     ])
                             .joinTable("judgework","jw","right join","jw.workid=w.id",[
-                        [sf:"workid",bf:"tempMap.workId"],
                         [isCop:true,cop:"sum(jw.fen)",sf:"sumfen",bf:"tempMap.sumFen"]
                     ])
                             .where("jw.appid = :appId",[appId:appId],null,{return true})
@@ -435,8 +441,8 @@ class WorkService extends ModuleBean
                             .where("jw.shipass = :shiPass",[shiPass:paramsMap.shiPass as boolean],"and",{return true})
                             .where("jw.guigeid = :guiGeId",[guiGeId:paramsMap.guiGeId],"and",{return !(paramsMap.guiGeId in [null,""])})
                             .where("jw.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:paramsMap.masterCompetitionId],"and",{return true})
-                        .groupBy("jw.workid,w.id")
-                        .beanSetup(JudgeWork.class,null,null)
+                        .groupBy("w.id")
+                        .beanSetup(Work.class,null,null)
                         .buildSql().run().content;
                     //避免会存在几个评委对同一个字段打分的情况，下面循环进行评分字段的判断与汇总，同一个字段取最高打分的评委分数
                     for (Work jw in workList)
@@ -445,7 +451,7 @@ class WorkService extends ModuleBean
                         Map fmap = [:];
                         List<JudgeWork> jwList = this.newQueryUtils(false).masterTable(JudgeWork.class.simpleName,null,null)
                                 .where("judgeWorkPK.appId = :appId",[appId:appId],null,{return true})
-                                .where("judgeWorkPK.workId = :workId",[workId:jw.tempMap.workId],"and",{return true})
+                                .where("judgeWorkPK.workId = :workId",[workId:jw.id],"and",{return true})
                                 .where("judgeWorkPK.stepStatus = :stepStatus",[stepStatus:paramsMap.stepStatus as byte],"and",{return true})
                                 .where("competitionId = :competitionId",[competitionId:paramsMap.competitionId],"and",{return true})
                                 .where("shiPass = :shiPass",[shiPass:paramsMap.shiPass as boolean],"and",{return true})
@@ -478,8 +484,14 @@ class WorkService extends ModuleBean
 //                                println m.value;
                             jw.tempMap.sumFen += m.value;
                         }
-                        println jw.dump();
-
+//                        println jw.dump();
+                        PingFenWork pingFenWork = new PingFenWork();
+                        pingFenWork.pingFenWorkPK = new PingFenWorkPK(appId,jw.id,masterCompetitionId,paramsMap.stepStatus);
+                        pingFenWork.competitionId = paramsMap.competitionId;
+                        pingFenWork.guiGeId = paramsMap.guiGeId;
+                        pingFenWork.fen = jw.tempMap.sumFen as int;
+                        pingFenWork.fenJson = fmap;
+                        this.updateObject(pingFenWork);
                     }
                 }
 //                println paramsMap;
@@ -491,18 +503,48 @@ class WorkService extends ModuleBean
 
 //                Collections.shuffle(workList);
 //                Collections.shuffle(group.value);
-                for(Work work in workList) {
-                    for (CompetitionJudge cj in group.value) {
-                        JudgeWork judgeWork = new JudgeWork();
-                        JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, masterCompetitionId, pingShenStepId);
-                        judgeWork.judgeWorkPK = judgeWorkPK;
-                        judgeWork.fen = 0;
-                        judgeWork.fenJson = cj.pingShenFields;
-                        judgeWork.shiPass = false;
-                        judgeWork.competitionId = group.key.item1;
-                        judgeWork.guiGeId = group.key.item2;
-                        judgeWork.cancelLazyEr();
-                        this.updateObject(judgeWork);
+                if (pingShenStepId == 1 as byte)
+                {
+                    for(Work work in workList) {
+                        for (CompetitionJudge cj in group.value) {
+                            JudgeWork judgeWork = new JudgeWork();
+                            JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, work.id, masterCompetitionId, pingShenStepId);
+                            judgeWork.judgeWorkPK = judgeWorkPK;
+                            judgeWork.fen = 0;
+                            judgeWork.fenJson = cj.pingShenFields;
+                            judgeWork.shiPass = false;
+                            judgeWork.competitionId = group.key.item1;
+                            judgeWork.guiGeId = group.key.item2;
+                            judgeWork.cancelLazyEr();
+                            this.updateObject(judgeWork);
+                        }
+                    }
+                }
+                else if (pingShenStepId == 2 as byte)
+                {
+//                    println mapData.flowSetup.flow[2].data.workCount as int;
+                    List<PingFenWork> pingFenWorkList = this.newQueryUtils(false).masterTable(PingFenWork.class.simpleName,null,null)
+                            .where("pingFenWorkPK.appId = :appId",[appId:appId],null,{return true})
+                            .where("pingFenWorkPK.stepStatus = :stepStatus",[stepStatus:paramsMap.stepStatus as byte],"and",{return true})
+                            .where("competitionId = :competitionId",[competitionId:paramsMap.competitionId],"and",{return true})
+                            .where("guiGeId = :guiGeId",[guiGeId:paramsMap.guiGeId],"and",{return !(paramsMap.guiGeId in [null,""])})
+                            .where("pingFenWorkPK.masterCompetitionId = :masterCompetitionId",[masterCompetitionId:paramsMap.masterCompetitionId],"and",{return true})
+                            .pageLimit(mapData.flowSetup.flow[2].data.workCount as int,0,"pingFenWorkPK.workId")
+                            .buildSql().run().content;
+//                    println pingFenWorkList?.size();
+                    for(PingFenWork pw in pingFenWorkList) {
+                        for (CompetitionJudge cj in group.value) {
+                            JudgeWork judgeWork = new JudgeWork();
+                            JudgeWorkPK judgeWorkPK = new JudgeWorkPK(appId, cj.competitionJudgePK.judgeId, pw.pingFenWorkPK.workId, masterCompetitionId, pingShenStepId);
+                            judgeWork.judgeWorkPK = judgeWorkPK;
+                            judgeWork.fen = 0;
+                            judgeWork.fenJson = cj.pingShenFields;
+                            judgeWork.shiPass = false;
+                            judgeWork.competitionId = group.key.item1;
+                            judgeWork.guiGeId = group.key.item2;
+                            judgeWork.cancelLazyEr();
+                            this.updateObject(judgeWork);
+                        }
                     }
                 }
             }
@@ -512,6 +554,95 @@ class WorkService extends ModuleBean
         currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
         currentMasterCompetitionSetup.value = pingShenStepId;
         this.updateTheObject(currentMasterCompetitionSetup);
-        throw new Exception("test");
+//        throw new Exception("test");
+    }
+
+    void buildFlowWork(String appId,String masterCompetitionId,byte pingShenStepId,Map mapData)
+    {
+//        println mapData.flowSetup.flow[3].data.reportCount;
+        MasterCompetition masterCompetition = this.findObjectById(MasterCompetition.class,masterCompetitionId);
+        masterCompetition.flowSetup = mapData.flowSetup;
+        this.updateObject(masterCompetition);
+        List<CompetitionJudge> competitionJudgeList = qyPingShenJudgeList([appId: appId, masterCompetitionId: masterCompetitionId, judgeId: null, pingShenStepId: pingShenStepId-1]);
+        var groupList = Linq.of(competitionJudgeList).groupBy(cj -> new Tuple2(cj.competitionJudgePK.competitionId,cj.competitionJudgePK.guiGeId));
+        for (def group : groupList)
+        {
+            Map paramsMap = null;
+            if (group.key.item2=="-1") {
+                paramsMap = [competitionId:group.key.item1,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:(pingShenStepId-1) as byte,qyPassCount:false,shiPass:true];
+            } else {
+                paramsMap = [competitionId:group.key.item1,guiGeId:group.key.item2,appId:appId,masterCompetitionId:masterCompetitionId,shiWorkItemList:true,judgeId:null,stepStatus:(pingShenStepId-1) as byte,qyPassCount:false,shiPass:true];
+            }
+            List<Work> workList = this.newQueryUtils(true,true).masterTable("Work","w",[
+                    [sf:"id",bf:"id"],
+            ])
+                    .joinTable("judgework","jw","right join","jw.workid=w.id",[
+                            [isCop:true,cop:"sum(jw.fen)",sf:"sumfen",bf:"tempMap.sumFen"]
+                    ])
+                    .where("jw.appid = :appId",[appId:appId],null,{return true})
+                    .where("jw.stepstatus = :stepStatus",[stepStatus:paramsMap.stepStatus as byte],"and",{return true})
+                    .where("jw.competitionid = :competitionId",[competitionId:paramsMap.competitionId],"and",{return true})
+                    .where("jw.shipass = :shiPass",[shiPass:paramsMap.shiPass as boolean],"and",{return true})
+                    .where("jw.guigeid = :guiGeId",[guiGeId:paramsMap.guiGeId],"and",{return !(paramsMap.guiGeId in [null,""])})
+                    .where("jw.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:paramsMap.masterCompetitionId],"and",{return true})
+                    .groupBy("w.id")
+                    .beanSetup(Work.class,null,null)
+                    .buildSql().run().content;
+            //避免会存在几个评委对同一个字段打分的情况，下面循环进行评分字段的判断与汇总，同一个字段取最高打分的评委分数
+            for (Work jw in workList)
+            {
+                jw.tempMap.sumFen = 0;
+                Map fmap = [:];
+                List<JudgeWork> jwList = this.newQueryUtils(false).masterTable(JudgeWork.class.simpleName,null,null)
+                        .where("judgeWorkPK.appId = :appId",[appId:appId],null,{return true})
+                        .where("judgeWorkPK.workId = :workId",[workId:jw.id],"and",{return true})
+                        .where("judgeWorkPK.stepStatus = :stepStatus",[stepStatus:paramsMap.stepStatus as byte],"and",{return true})
+                        .where("competitionId = :competitionId",[competitionId:paramsMap.competitionId],"and",{return true})
+                        .where("shiPass = :shiPass",[shiPass:paramsMap.shiPass as boolean],"and",{return true})
+                        .where("guiGeId = :guiGeId",[guiGeId:paramsMap.guiGeId],"and",{return !(paramsMap.guiGeId in [null,""])})
+                        .where("judgeWorkPK.masterCompetitionId = :masterCompetitionId",[masterCompetitionId:paramsMap.masterCompetitionId],"and",{return true})
+                        .buildSql().run().content;
+                for(JudgeWork jfen in jwList)
+                {
+//                            println jfen.fenJson;
+                    List mapList = jfen.fenJson.fields;
+                    for (def fl in mapList)
+                    {
+                        if (fmap[fl.id]==null)
+                        {
+                            fmap[fl.id] = fl.value==null ? 0 : fl.value;
+                        }
+                        else
+                        {
+                            if (fl.value!=null && fl.value as int > fmap[fl.id] as int)
+                            {
+                                fmap[fl.id] = fl.value;
+                            }
+                        }
+                    }
+                }
+//                        println fmap;
+                for(def m in fmap)
+                {
+//                                println m.key;
+//                                println m.value;
+                    jw.tempMap.sumFen += m.value;
+                }
+//                        println jw.dump();
+                PingFenWork pingFenWork = new PingFenWork();
+                pingFenWork.pingFenWorkPK = new PingFenWorkPK(appId,jw.id,masterCompetitionId,paramsMap.stepStatus);
+                pingFenWork.competitionId = paramsMap.competitionId;
+                pingFenWork.guiGeId = paramsMap.guiGeId;
+                pingFenWork.fen = jw.tempMap.sumFen as int;
+                pingFenWork.fenJson = fmap;
+                this.updateObject(pingFenWork);
+            }
+        }
+        CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
+        CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(appId,"masterCompetitionStatus");
+        currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
+        currentMasterCompetitionSetup.value = pingShenStepId;
+        this.updateTheObject(currentMasterCompetitionSetup);
+//        throw new Exception("test");
     }
 }
