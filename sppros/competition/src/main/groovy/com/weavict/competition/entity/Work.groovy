@@ -501,6 +501,58 @@ class JudgeWork extends BEntity implements Serializable, IEntity
 }
 
 @Embeddable
+class PingFenWorkPK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String appId;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 30)
+    String workId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String masterCompetitionId;
+
+    @Column(nullable = false, insertable = false, updatable = false, length = 2)
+    byte stepStatus;
+
+    PingFenWorkPK() {}
+
+    PingFenWorkPK(String appId,String workId,String masterCompetitionId,byte stepStatus)
+    {
+        this.appId = appId;
+        this.workId = workId;
+        this.stepStatus = stepStatus;
+        this.masterCompetitionId = masterCompetitionId;
+    }
+}
+
+@Table
+@Entity
+class PingFenWork extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    PingFenWorkPK pingFenWorkPK;
+
+    @Column(length=3)
+    int fen;
+
+    @Column(length = 30)
+    String competitionId;
+
+    @Column(length = 30)
+    String guiGeId;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Embeddable
 class MCPageSetupPK implements Serializable
 {
     static final long serialVersionUID = 1L;

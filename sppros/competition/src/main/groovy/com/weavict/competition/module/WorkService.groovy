@@ -422,8 +422,10 @@ class WorkService extends ModuleBean
                 } else if (pingShenStepId == 2 as byte)
                 {
                     //从第一轮评分的记录中通过分数得到排名N位的记录（由于是多个评委对不同字段打分，所以需要在JudgeWork表中对相同workId的记录进行分数汇总）
-                    List sumList = this.newQueryUtils(true,true).masterTable("judgework","jw",[
-                        [sf:"workid",bf:"judgeWorkPK.workId"],
+                    workList = this.newQueryUtils(true,true).masterTable("Work","w",[
+                            [sf:"id",bf:"id"],
+                    ])
+                            .joinTable("judgework","jw","right join","jw.workid=w.id",[
                         [sf:"workid",bf:"tempMap.workId"],
                         [isCop:true,cop:"sum(jw.fen)",sf:"sumfen",bf:"tempMap.sumFen"]
                     ])
@@ -433,12 +435,51 @@ class WorkService extends ModuleBean
                             .where("jw.shipass = :shiPass",[shiPass:paramsMap.shiPass as boolean],"and",{return true})
                             .where("jw.guigeid = :guiGeId",[guiGeId:paramsMap.guiGeId],"and",{return !(paramsMap.guiGeId in [null,""])})
                             .where("jw.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:paramsMap.masterCompetitionId],"and",{return true})
-                        .groupBy("jw.workid")
+                        .groupBy("jw.workid,w.id")
                         .beanSetup(JudgeWork.class,null,null)
                         .buildSql().run().content;
-                    for (JudgeWork jw in sumList)
+                    //避免会存在几个评委对同一个字段打分的情况，下面循环进行评分字段的判断与汇总，同一个字段取最高打分的评委分数
+                    for (Work jw in workList)
                     {
+                        jw.tempMap.sumFen = 0;
+                        Map fmap = [:];
+                        List<JudgeWork> jwList = this.newQueryUtils(false).masterTable(JudgeWork.class.simpleName,null,null)
+                                .where("judgeWorkPK.appId = :appId",[appId:appId],null,{return true})
+                                .where("judgeWorkPK.workId = :workId",[workId:jw.tempMap.workId],"and",{return true})
+                                .where("judgeWorkPK.stepStatus = :stepStatus",[stepStatus:paramsMap.stepStatus as byte],"and",{return true})
+                                .where("competitionId = :competitionId",[competitionId:paramsMap.competitionId],"and",{return true})
+                                .where("shiPass = :shiPass",[shiPass:paramsMap.shiPass as boolean],"and",{return true})
+                                .where("guiGeId = :guiGeId",[guiGeId:paramsMap.guiGeId],"and",{return !(paramsMap.guiGeId in [null,""])})
+                                .where("judgeWorkPK.masterCompetitionId = :masterCompetitionId",[masterCompetitionId:paramsMap.masterCompetitionId],"and",{return true})
+                        .buildSql().run().content;
+                        for(JudgeWork jfen in jwList)
+                        {
+//                            println jfen.fenJson;
+                            List mapList = jfen.fenJson.fields;
+                            for (def fl in mapList)
+                            {
+                                if (fmap[fl.id]==null)
+                                {
+                                    fmap[fl.id] = fl.value==null ? 0 : fl.value;
+                                }
+                                else
+                                {
+                                    if (fl.value!=null && fl.value as int > fmap[fl.id] as int)
+                                    {
+                                        fmap[fl.id] = fl.value;
+                                    }
+                                }
+                            }
+                        }
+//                        println fmap;
+                        for(def m in fmap)
+                        {
+//                                println m.key;
+//                                println m.value;
+                            jw.tempMap.sumFen += m.value;
+                        }
                         println jw.dump();
+
                     }
                 }
 //                println paramsMap;
