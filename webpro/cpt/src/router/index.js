@@ -185,6 +185,14 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: '/manage/cpt/pingshen/psReport',
+                    name: 'psReport',
+                    component: () => import('@/views/cpt/pingshen/psReport.vue'),
+                    meta:{
+                        name: "评选排名"
+                    }
+                },
+                {
                     path: '/manage/cpt/pingshen/psFilte',
                     name: 'psFilte',
                     component: () => import('@/views/cpt/pingshen/psFilte.vue'),

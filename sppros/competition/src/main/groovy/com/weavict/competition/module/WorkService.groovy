@@ -645,4 +645,61 @@ class WorkService extends ModuleBean
         this.updateTheObject(currentMasterCompetitionSetup);
 //        throw new Exception("test");
     }
+
+    PageUtil qyPingFenWork(Map query)
+    {
+        PageUtil pageUtil = null;
+        QueryUtils queryUtils = this.newQueryUtils(true,true).masterTable("work","w",[
+                [sf:"id",bf:"id"],
+                [sf:"name",bf:"name"],
+                [sf:"competition_id",bf:"competition.id"],
+                [sf:"guige_id",bf:"guiGe.id"],
+                [sf:"mymeandescription",bf:"myMeanDescription"],
+                [sf:"gousidescription",bf:"gousiDescription"],
+                [sf:"hangyefields",bf:"hangyeFields",convertType:"json"],
+                [sf:"otherfields",bf:"otherFields",convertType: "json"],
+                [sf:"buyer_phone",bf:"buyer.phone"],
+                [sf:"lat",bf:"lat"],
+                [sf:"lng",bf:"lng"],
+                [sf:"mastercompetitionid",bf:"masterCompetitionId"],
+                [sf:"createdate",bf:"createDate"]
+        ]).joinTable("pingfenwork","pw","right join","pw.workid = w.id",[
+                [sf:"fen",bf:"tempMap.fen"],
+                [sf:"fenjson",bf:"tempMap.fenJson",convertType:"json"]
+        ])
+                .where("pw.appid = :appId",[appId:query.appId],null,{return true})
+                .where("pw.stepstatus = :stepStatus",[stepStatus:query.stepStatus as byte],"and",{return true})
+                .where("pw.competitionid = :competitionId",[competitionId:query.competitionId],"and",{return !(query.competitionId in [null,""])})
+                .where("pw.guigeid = :guiGeId",[guiGeId:query.guiGeId],"and",{return !(query.guiGeId in [null,""])})
+                .where("pw.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:query.masterCompetitionId],"and",{return true})
+                .orderBy("pw.fen")
+                .beanSetup(Work.class,null,null);
+        if (query.pageSize != null) {
+            pageUtil = queryUtils.pageLimit(query.pageSize as int, query.currentPage as int, "w.id")
+                    .buildSql().run();
+        } else {
+            pageUtil = queryUtils.buildSql().run();
+        }
+        for(Work work in pageUtil.content as List<Work>)
+        {
+            work.cancelLazyEr();
+            this.detach(work);
+            if (query.shiWorkItemList==true)
+            {
+                work.workItemList = this.newQueryUtils(false).masterTable(WorkItem.class.simpleName,null,null)
+                        .where("work.id = :workId",["workId":work.id],null,{return true})
+                        .orderBy("mediaType,type")
+                        .buildSql().run().content;
+                for(WorkItem workItem in work.workItemList)
+                {
+                    this.detach(workItem);
+                    workItem.cancelLazyEr();
+                    workItem.work = null;
+                }
+            }
+        }
+//        println query;
+//        println pageUtil.content.size();
+        return pageUtil;
+    }
 }

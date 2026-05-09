@@ -932,4 +932,27 @@ class WorkRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyPingFenWork")
+    String qyPingFenWork(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.qyPingFenWork(query);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

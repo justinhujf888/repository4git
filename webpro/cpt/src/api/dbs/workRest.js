@@ -180,5 +180,8 @@ export default {
     },
     async giveCurrentMasterCompetitionSetup(ds,onfun) {
         return await Http.callHttpFunction('/r/work/giveCurrentMasterCompetitionSetup',ds,onfun);
+    },
+    async qyPingFenWork(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyPingFenWork',ds,onfun);
     }
 }
