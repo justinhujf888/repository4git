@@ -18,7 +18,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <Button type="submit" label="登录" variant="text" class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"></Button>
-                <!--            <Button label="Cancel" variant="text" class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10"></Button>-->
+                <Button label="清除缓存" variant="text" class="!p-4 w-full !text-primary-50 !border !border-white/30 hover:!bg-white/10" @click="clear"></Button>
             </div>
         </div>
     </Form>
@@ -85,6 +85,13 @@ const onFormSubmit = ({ valid }) => {
             });
         }
     }
+};
+
+const clear = ()=>{
+    localStorage.removeItem("managerId");
+    localStorage.removeItem("managerInfo");
+    localStorage.removeItem("userType");
+    dialog.toastSuccess("浏览器缓存已清除");
 };
 </script>
 

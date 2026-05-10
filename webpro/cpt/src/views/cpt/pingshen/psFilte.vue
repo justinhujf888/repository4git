@@ -13,7 +13,10 @@
                     <h4>{{selTreeLabel}}</h4>
                 </OverlayBadge>
                 <div v-if="pageUtil.content?.length>0">
-                    <span>{{selTypeCount}}个作品选中</span>
+                    <div class="col md:row between">
+                        <span>共{{workCount}}个参加评选的作品</span>
+                        <span>{{selTypeCount}}个作品选中</span>
+                    </div>
                     <DataView :value="pageUtil.content" class="mt-5" :pt="{
                                             emptyMessage:{
                                                 class:'opacity-0'
@@ -101,6 +104,7 @@ const refPriviewImage = useTemplateRef("refPriviewImage");
 const selTypeCount = ref(0)
 const selTreeLabel = ref(null);
 const shiSubmited = ref(false);
+const workCount = ref(-1);
 
 let masterCompetitionId = "";
 let host = inject("domain");
@@ -188,6 +192,11 @@ const onNodeSelect = async (node) => {
         competitionId = node.data.pkey;
         guiGeId = node.key;
     }
+    let ctRes = await workRest.obtFlowWorkCount({masterCompetitionId:masterCompetitionId,pingShenStepId:-1,competitionId:competitionId,guiGeId:guiGeId},null);
+    if (ctRes.status=="OK") {
+        workCount.value = ctRes.data;
+    }
+
     let res = await workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:judgeId,pingShenStepId:stepStatus,competitionId:competitionId,guiGeId:guiGeId},null);
     if (res.status=="OK" && res.data.length > 0) {
         shiSubmited.value = res.data[0].pingShenStatus==1 ? true : false;

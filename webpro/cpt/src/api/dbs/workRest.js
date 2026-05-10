@@ -183,5 +183,8 @@ export default {
     },
     async qyPingFenWork(ds,onfun) {
         return await Http.callHttpFunction('/r/work/qyPingFenWork',ds,onfun);
+    },
+    async obtFlowWorkCount(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/obtFlowWorkCount',ds,onfun);
     }
 }

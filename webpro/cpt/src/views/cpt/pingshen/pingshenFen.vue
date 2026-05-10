@@ -13,6 +13,9 @@
                     <h4>{{selTreeLabel}}</h4>
                 </OverlayBadge>
                 <div v-if="pageUtil.content?.length>0">
+                    <div class="col md:row between">
+                        <span>{{workCount}}个参加评选的作品</span>
+                    </div>
                     <DataView :value="pageUtil.content" class="mt-5" :pt="{
                                             emptyMessage:{
                                                 class:'opacity-0'
@@ -109,6 +112,7 @@ const selTreeLabel = ref(null);
 const shiSubmited = ref(false);
 const masterCompetitionId = ref("");
 const masterCompetitionStatus = ref(-1);
+const workCount = ref(-1);
 
 let host = inject("domain");
 let hasChildren = false;
@@ -223,6 +227,7 @@ const queryWorks = async (type,key)=>{
                 }
             }
             // console.log(pageUtil.value);
+            workCount.value = pageUtil.value.totalElements;
         } else {
             pageUtil.value.content = [];
         }

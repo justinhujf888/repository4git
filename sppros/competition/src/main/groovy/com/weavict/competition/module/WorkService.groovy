@@ -1,5 +1,6 @@
 package com.weavict.competition.module
 
+import cn.hutool.db.Page
 import com.alibaba.fastjson2.JSON
 import com.bestvike.linq.Linq
 import com.bestvike.tuple.Tuple
@@ -701,5 +702,28 @@ class WorkService extends ModuleBean
 //        println query;
 //        println pageUtil.content.size();
         return pageUtil;
+    }
+
+    int obtFlowWorkCount(String appId, String masterCompetitionId, byte pingShenStepId,String competitionId,String guiGeId)
+    {
+        if (pingShenStepId == -1 as byte)
+        {//
+            queryUtils = this.newQueryUtils(true,true)
+                .masterTable("work", "w",[
+                    [isCop:true,cop:"count(w.id)",sf:"ct",bf:"ct",convertType:"int"]
+                ])
+                    .where("w.appid = :appId", ["appId": appId], null, { return true })
+                    .where("w.guige_id = :guiGeId", ["guiGeId": guiGeId], "and", { return !(guiGeId in [null, ""]) })
+                    .where("w.competition_id = :competitionId", [competitionId: competitionId], "and", { return !(competitionId in [null, ""]) })
+                    .where("w.mastercompetitionid = :masterCompetitionId", ["masterCompetitionId": masterCompetitionId], "and", { return true })
+                    .where("w.status = :status", ["status": 1 as byte], "and", { return true })
+                    .beanSetup(HashMap.class,null,null)
+                    .buildSql();
+            return this.createNativeQuery4Params(queryUtils.sbf.toString(),queryUtils.paramsMap).singleResult as int;
+        }
+        else if (pingShenStepId == 0 as byte)
+        {
+
+        }
     }
 }

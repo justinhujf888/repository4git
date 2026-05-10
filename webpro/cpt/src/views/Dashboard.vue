@@ -6,6 +6,11 @@ import RevenueStreamWidget from '@/components/dashboard/RevenueStreamWidget.vue'
 import StatsWidget from '@/components/dashboard/StatsWidget.vue';
 // import {OSS} from "@/api/oss.mjs";
 // import OSS from "ali-oss";
+const clear = ()=>{
+    localStorage.removeItem("managerId");
+    localStorage.removeItem("managerInfo");
+    localStorage.removeItem("userType");
+};
 </script>
 
 <template>
@@ -21,4 +26,5 @@ import StatsWidget from '@/components/dashboard/StatsWidget.vue';
 <!--            <NotificationsWidget />-->
 <!--        </div>-->
 <!--    </div>-->
+<!--    <Button label="清除缓存" @click="clear"/>-->
 </template>

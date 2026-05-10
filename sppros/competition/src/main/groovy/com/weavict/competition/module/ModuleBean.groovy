@@ -178,6 +178,10 @@ class QueryUtils
                 ObjectMapper objectMapper = StaticBean.buildObjectMapper();
                 return objectMapper.readValue(distObj as String,Map.class);
             }
+            else if (map["tableFields"][tableFieldIndex]["convertType"]=="int")
+            {
+                return distObj as int;
+            }
         }
         else
         {
