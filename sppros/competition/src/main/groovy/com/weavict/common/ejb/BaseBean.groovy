@@ -3,6 +3,7 @@ package com.weavict.common.ejb
 import jakarta.persistence.EntityManager
 import jakarta.persistence.PersistenceContext
 import jakarta.persistence.Query
+import org.springframework.transaction.TransactionDefinition
 
 import javax.sql.DataSource
 import java.sql.Connection
@@ -446,7 +447,7 @@ class BaseBean implements BaseService
     void transactionCall(int propagationBehavior, Closure closure) throws Exception
     {
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
-        definition.setPropagationBehavior(propagationBehavior);
+        definition.setPropagationBehavior(propagationBehavior==-1 ? TransactionDefinition.PROPAGATION_REQUIRES_NEW : propagationBehavior);
         TransactionStatus transactionStatus = transactionManager.getTransaction(definition);
         try
         {

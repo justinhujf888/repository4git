@@ -182,7 +182,7 @@ class WorkService extends ModuleBean
     Map qyPingShenFlow(Map query)
     {
         return [flow: [
-                [sort: 0, id: 0, name: "作品初筛", type: 0, data:[judgePassWorkMixCount:200]],
+                [sort: 0, id: 0, name: "作品初筛", type: 0, data:[:]],
                 [sort: 1, id: 1, name: "作品第一轮评分", type: 1, data:[:]],
                 [sort: 2, id: 2, name: "作品第二轮评分", type: 1, data:[:]],
                 [sort: 3, id: 3, name: "作品汇总发布", type: 1, data:[:]]

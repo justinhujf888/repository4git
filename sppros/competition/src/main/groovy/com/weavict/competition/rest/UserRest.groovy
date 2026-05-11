@@ -9,6 +9,8 @@ import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.Manager
 import com.weavict.competition.entity.ManagerPK
 import com.weavict.competition.entity.MasterCompetition
+import com.weavict.competition.entity.Rule
+import com.weavict.competition.entity.RulePermission
 import com.weavict.competition.module.UserBean
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -157,7 +159,7 @@ class UserRest extends BaseRest
         try
         {
             Judge judge = this.objToBean(query.judge, Judge.class,null);
-            println judge.dump();
+//            println judge.dump();
             if (judge.temp==true)
             {
                 judge.password = userBean.buildPasswordCode(judge.password);
@@ -244,6 +246,57 @@ class UserRest extends BaseRest
                          return IdUtil.randomUUID();
                      }).call()
                     ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/queryRuleList")
+    String queryRuleList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = this.buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         List<Rule> ruleList = userBean.queryRuleList(query);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateRule")
+    String updateRule(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            Rule rule = this.objToBean(query.rule, Rule.class,null);
+//            println judge.dump();
+            userBean.transactionCall(-1,{
+                userBean.updateTheObjectFilds(Rule.simpleName,"rulePK.appId = :appId and rulePK.ruleId = :ruleId",[name:rule.name],[appId:query.appId,ruleId:rule.rulePK.ruleId],false);
+                userBean.deleteTheObject8Fields(RulePermission.simpleName,"rulePermissionPK.appId = :appId and rulePermissionPK.ruleId",[appId:query.appId,ruleId:rule.rulePK.ruleId],false);
+                for(RulePermission rulePermission in rule.tempMap.permissionList)
+                {
+                    userBean.updateObject(rulePermission);
+                }
+            });
+
+            return """{"status":"OK"}""";
         }
         catch (Exception e)
         {

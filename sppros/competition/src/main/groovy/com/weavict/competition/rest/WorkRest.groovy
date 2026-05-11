@@ -140,7 +140,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.deleteTheObject8Fields(SiteWorkItem.class.name,"id=:id",["id":query.id],false);
+            workService.deleteTheObject8Fields(SiteWorkItem.class.name,"appId=:appId and id=:id",[appId:query.appId,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -289,7 +289,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", ["${query.typeId}":query.data],["id":query.id],false);
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"appId=:appId and id=:id", ["${query.typeId}":query.data],[appId:query.appId,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -307,7 +307,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id", [setupFields:query.setupFields],["id":query.id],false);
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"appId=:appId and id=:id", [setupFields:query.setupFields],[appId:query.appId,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -343,7 +343,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.updateTheObjectFilds(SiteCompetition.class.name,"id=:id", [setupFields:query.setupFields],["id":query.id],false);
+            workService.updateTheObjectFilds(SiteCompetition.class.name,"appId=:appId and id=:id", [setupFields:query.setupFields],[appId:query.appid,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -389,7 +389,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.deleteTheObject8Fields(Competition.class.simpleName,"id=:id",[id:query.id],false);
+            workService.deleteTheObject8Fields(Competition.class.simpleName,"appId=:appId and id=:id",[appId:query.appId,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -407,7 +407,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.deleteTheObject8Fields(GuiGe.class.simpleName,"id=:id",[id:query.id],false);
+            workService.deleteTheObject8Fields(GuiGe.class.simpleName,"appId=:appId and id=:id",[appId:query.appId,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -517,7 +517,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.deleteTheObject8Fields(WorkLog.simpleName,"id = :id",[id:query.id],false);
+            workService.deleteTheObject8Fields(WorkLog.simpleName,"appId = :appId and id = :id",[appId:query.appId,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -665,7 +665,7 @@ class WorkRest extends BaseRest
         try
         {
             Work work = this.objToBean(query.work,Work.class,null);
-               workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+            workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
                 workService.updateObject(work);
 
                 for (def w in work.tempMap.workItemList)
@@ -720,7 +720,7 @@ class WorkRest extends BaseRest
         try
         {
             Map<String,Object> judgeSetup = objToBean(query.judgeSetup,Map.class,null);
-            workService.updateTheObjectFilds(MasterCompetition.class.name,"id=:id",[judgeSetup:judgeSetup],[id:query.id],false);
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"appId=:appId and id=:id",[judgeSetup:judgeSetup],[appId:query.appId,id:query.id],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -884,6 +884,7 @@ class WorkRest extends BaseRest
         {
             CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
             CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK();
+            currentMasterCompetitionSetupPK.appId = query.appId;
             currentMasterCompetitionSetupPK.key = query.key
             currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
             currentMasterCompetitionSetup.value = query.value;
