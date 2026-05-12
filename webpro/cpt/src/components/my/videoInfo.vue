@@ -1,8 +1,10 @@
 <template>
     <div>
-        <video ref="refVideo" controls>
-            <source :src="src" :type="type">
-        </video>
+        <BlockUI :blocked="true" @click="openVideoWindow">
+            <video ref="refVideo" controls>
+                <source :src="src" :type="type">
+            </video>
+        </BlockUI>
     </div>
 </template>
 
@@ -31,6 +33,10 @@ const getVideoInfo = ()=>{
     return {
         duration: duration.value
     }
+}
+
+const openVideoWindow = ()=>{
+    window.open(props.src);
 }
 
 defineExpose({getVideoInfo});

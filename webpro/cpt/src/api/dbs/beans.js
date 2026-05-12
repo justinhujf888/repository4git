@@ -193,9 +193,16 @@ export const Beans = {
         }
     },
 
+    rulePK() {
+        return {
+            appId: "",
+            ruleId: ""
+        }
+    },
+
     rule() {
         return {
-            id: "",
+            rulePK: this.rulePK(),
             name: ""
         }
     },
@@ -203,7 +210,8 @@ export const Beans = {
     rulePermissionPK() {
         return {
             ruleId: "",
-            permissionId: ""
+            permissionId: "",
+            appId: ""
         }
     },
 

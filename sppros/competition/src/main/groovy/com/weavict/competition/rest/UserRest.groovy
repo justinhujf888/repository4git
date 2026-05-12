@@ -266,7 +266,7 @@ class UserRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         List<Rule> ruleList = userBean.queryRuleList(query);
+                         return userBean.queryRuleList(query);
                      }).call()
                     ]);
         }
@@ -289,7 +289,7 @@ class UserRest extends BaseRest
 //            println judge.dump();
             userBean.transactionCall(-1,{
                 userBean.updateTheObjectFilds(Rule.simpleName,"rulePK.appId = :appId and rulePK.ruleId = :ruleId",[name:rule.name],[appId:query.appId,ruleId:rule.rulePK.ruleId],false);
-                userBean.deleteTheObject8Fields(RulePermission.simpleName,"rulePermissionPK.appId = :appId and rulePermissionPK.ruleId",[appId:query.appId,ruleId:rule.rulePK.ruleId],false);
+                userBean.deleteTheObject8Fields(RulePermission.simpleName,"rulePermissionPK.appId = :appId and rulePermissionPK.ruleId = :ruleId",[appId:query.appId,ruleId:rule.rulePK.ruleId],false);
                 for(RulePermission rulePermission in rule.tempMap.permissionList)
                 {
                     userBean.updateObject(rulePermission);

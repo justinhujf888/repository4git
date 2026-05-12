@@ -72,5 +72,11 @@ export default {
     },
     judgeLogin(ds,onfun) {
         Http.callHttpFunction('/r/user/judgeLogin',ds,onfun);
+    },
+    async queryRuleList(ds,onfun) {
+        return await Http.callHttpFunction('/r/user/queryRuleList',ds,onfun);
+    },
+    async updateRule(ds,onfun) {
+        return await Http.callHttpFunction('/r/user/updateRule',ds,onfun);
     }
 };

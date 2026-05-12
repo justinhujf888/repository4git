@@ -161,6 +161,14 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: '/manage/cpt/system/rules',
+                    name: 'rules',
+                    component: () => import('@/views/cpt/setup/rules/ruleList.vue'),
+                    meta:{
+                        name: "角色权限"
+                    }
+                },
+                {
                     path: '/manage/cpt/pingshen/managerReview',
                     name: 'managerReview',
                     component: () => import('@/views/cpt/pingshen/managerReview.vue'),

@@ -36,20 +36,21 @@ export default {
               items: [
                   {
                       userType: ["manager"],
-                      label: "赛事设置",icon: 'pi pi-fw pi-bars',
+                      label: "赛事设置",icon: 'pi pi-fw pi-bars',key:"comSetup",
                       items: [
                           // { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
-                          { userType: ["manager"], label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase' },
+                          { userType: ["manager"], label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase',key:"siteBase" },
                           // { label: '主题图', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteZhuTi' },
-                          { userType: ["manager"], label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem' },
-                          { userType: ["manager"], label: '组委会成员', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteOrgHuman' },
-                          { userType: ["manager"], label: '作品字段', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteFields' },
+                          { userType: ["manager"], label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem',key:"siteWorkItem" },
+                          { userType: ["manager"], label: '组委会成员', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteOrgHuman',key:"siteOrgHuman" },
+                          { userType: ["manager"], label: '作品字段', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteFields',key:"siteFields" },
                       ]
                   },
-                  { userType: ["manager"], label: '年份赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/master/masterCptSetup' },
-                  { userType: ["manager"], label: '评委资料库', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' },
-                  { userType: ["manager"], label: '发布赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache' },
-                  { userType: ["manager"], label: '素材库', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/mediaFiles' },
+                  { userType: ["manager"], label: '年份赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/master/masterCptSetup',key:"masterCptSetup" },
+                  { userType: ["manager"], label: '评委资料库', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' ,key:"judgeList"},
+                  { userType: ["manager"], label: '发布赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache',key:"buildCache" },
+                  { userType: ["manager"], label: '素材库', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/mediaFiles',key:"mediaFiles" },
+                  { userType: ["manager"], label: '角色权限', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/rules' ,key:"rules"},
                   // {
                   //     label: "页面设置",icon: 'pi pi-fw pi-bars',
                   //     items: [
@@ -58,13 +59,13 @@ export default {
                   // },
                   {
                       userType: ["manager","judge"],
-                      label: "作品评审",icon: 'pi pi-fw pi-bars',
+                      label: "作品评审",icon: 'pi pi-fw pi-bars',key:"workPingShen",
                       items: [
-                          { userType: ["manager"], label: '作品审查', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/managerReview' },
-                          { userType: ["manager"], label: '评审流程', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psSetup' },
-                          { userType: ["manager","judge"], label: '评审初筛', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFilte' },
-                          { userType: ["judge"], label: '作品评分', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFen' },
-                          { userType: ["manager"], label: '评选排名', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psReport' }
+                          { userType: ["manager"], label: '作品审查', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/managerReview',key:"managerReview" },
+                          { userType: ["manager"], label: '评审流程', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psSetup',key:"psSetup" },
+                          { userType: ["manager","judge"], label: '评审初筛', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFilte',key:"psFilte" },
+                          { userType: ["judge"], label: '作品评分', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFen',key:"psFen" },
+                          { userType: ["manager"], label: '评选排名', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psReport',key:"psReport" }
                       ]
                   }
               ]

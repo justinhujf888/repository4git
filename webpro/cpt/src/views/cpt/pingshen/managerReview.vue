@@ -160,7 +160,7 @@ onMounted(async () => {
 
     if (masterCompetitionId) {
         uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
-        console.log(uploadRule.value);
+        // console.log(uploadRule.value);
         workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res)=>{
             if (res.status=="OK") {
                 lodash.forEach(res.data,(c)=>{
