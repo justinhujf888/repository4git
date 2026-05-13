@@ -37,13 +37,13 @@
                                                         </div>
                                                     </div>
                                                     <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                                        <div class="col" v-for="field of item.hangyeFields.data">
+                                                        <div class="col" v-for="field of item?.hangyeFields?.data">
                                                             <span class="dark:text-yellow-400">{{field.name}}</span>
                                                             <span class="break-words">{{field.value}}</span>
                                                         </div>
                                                     </div>
                                                     <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                                        <div class="col" v-for="field of item.otherFields.data">
+                                                        <div class="col" v-for="field of item?.otherFields?.data">
                                                             <span class="dark:text-yellow-400">{{field.name}}</span>
                                                             <span class="break-words">{{field.value}}</span>
                                                         </div>
@@ -206,27 +206,33 @@ const queryWorks = (type,key)=>{
                 for (let work of pageUtil.value.content) {
                     if (!work.workItemList) break;
                     for (let workItem of work.workItemList) {
-                        let ru = lodash.find(uploadRule.value.workType.image,(o)=>{return o.type==workItem.type});
-                        let check = true;
-                        if (ru.checkExif) {
-                            let exif = JSON.parse(workItem.exifInfo);
-                            if (exif.Make==null) {
-                                check = false;
-                            }
-                            if (exif.Software) {
-                                let software = lodash.toUpper(exif.Software);
-                                if (software.includes("ADOBE") || software.includes("PHOTOSHOP") || software.includes("PS") || software.includes("LARK") || software.includes("CAPCUT") || software.includes("JIANYING")) {
+                        if (workItem.mediaType==0) {
+                            let ru = lodash.find(uploadRule.value.workType.image,(o)=>{return o.type==workItem.type});
+                            // console.log(ru,workItem.type);
+                            let check = true;
+                            if (ru.checkExif) {
+                                let exif = JSON.parse(workItem.exifInfo);
+                                if (exif.Make==null) {
                                     check = false;
                                 }
-                            }
-                            if (exif.Producer) {
-                                let producer = lodash.toUpper(exif.Producer);
-                                if (producer.includes("ADOBE") || producer.includes("PHOTOSHOP") || producer.includes("PS") || producer.includes("LARK") || producer.includes("CAPCUT") || producer.includes("JIANYING")) {
-                                    check = false;
+                                if (exif.Software) {
+                                    let software = lodash.toUpper(exif.Software);
+                                    if (software.includes("ADOBE") || software.includes("PHOTOSHOP") || software.includes("PS") || software.includes("LARK") || software.includes("CAPCUT") || software.includes("JIANYING")) {
+                                        check = false;
+                                    }
+                                }
+                                if (exif.Producer) {
+                                    let producer = lodash.toUpper(exif.Producer);
+                                    if (producer.includes("ADOBE") || producer.includes("PHOTOSHOP") || producer.includes("PS") || producer.includes("LARK") || producer.includes("CAPCUT") || producer.includes("JIANYING")) {
+                                        check = false;
+                                    }
                                 }
                             }
+                            workItem.tempMap = {title:ru.title,exifCheck:check,imgPath:await oss.buildPathAsync(workItem.path,(workItem.mediaType==0 ? true : false),null)};
+                        } else {
+                            let ru = lodash.find(uploadRule.value.workType.video,(o)=>{return o.type==workItem.type});
+                            workItem.tempMap = {title:ru.title,exifCheck:true,imgPath:await oss.buildPathAsync(workItem.path,false,null)};
                         }
-                        workItem.tempMap = {title:ru.title,exifCheck:check,imgPath:await oss.buildPathAsync(workItem.path,(workItem.mediaType==0 ? true : false),null)};
                     }
                     work.tempMap = {};
                     work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;

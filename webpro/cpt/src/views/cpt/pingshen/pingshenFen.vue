@@ -36,13 +36,13 @@
                                             </div>
                                         </div>
                                         <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                            <div class="col" v-for="field of item.hangyeFields.data">
+                                            <div class="col" v-for="field of item.hangyeFields?.data">
                                                 <span class="dark:text-yellow-400">{{field.name}}</span>
                                                 <span class="break-words">{{field.value}}</span>
                                             </div>
                                         </div>
                                         <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                            <div class="col" v-for="field of item.otherFields.data">
+                                            <div class="col" v-for="field of item.otherFields?.data">
                                                 <span class="dark:text-yellow-400">{{field.name}}</span>
                                                 <span class="break-words">{{field.value}}</span>
                                             </div>
@@ -63,7 +63,7 @@
                                     <div class="mt-2">
                                         <span>评分</span>
                                         <div class="grid md:grid-cols-4 gap-4 mt-3">
-                                            <div v-for="fenItem of item.tempMap.fenJson.fields">
+                                            <div v-for="fenItem of item.tempMap?.fenJson?.fields">
                                                 <FloatLabel variant="on">
                                                     <InputNumber :name="fenItem.name" v-model="fenItem.value" :min="0" :max="fenItem.fen" size="small" :readonly="shiSubmited"/>
                                                     <label :for="fenItem.name">{{fenItem.name}} ({{fenItem.fen}}分)</label>
@@ -131,7 +131,7 @@ onMounted(async () => {
     masterCompetitionId.value = cms.masterCompetitionId;
     masterCompetitionStatus.value = cms.masterCompetitionStatus;
 
-    if (masterCompetitionId.value) {
+    if (masterCompetitionId.value && masterCompetitionId.value>0) {
         stepStatus = masterCompetitionStatus.value;
         let mcRes = await workRest.qyMasterSiteCompetition({id:masterCompetitionId.value,siteCompetitionId:host},null);
         if (mcRes.status=="OK" && mcRes.data) {
@@ -160,7 +160,7 @@ onMounted(async () => {
             }
         }
     } else {
-        dialog.alert("还未发布赛事，请先发布赛事后在进行操作");
+        dialog.alert("还未发布赛事，或者评审流程还未进行到评分节点");
     }
 });
 
@@ -205,12 +205,18 @@ const queryWorks = async (type,key)=>{
             }
             if (!pageUtil.value.content) {
                 pageUtil.value.content = [];
+                return;
             }
             for (let work of pageUtil.value.content) {
                 if (!work.workItemList) break;
                 for (let workItem of work.workItemList) {
-                    let ru = lodash.find(uploadRule.value.workType.image,(o)=>{return o.type==workItem.type});
-                    workItem.tempMap = {title:ru.title,imgPath:await oss.buildPathAsync(workItem.path,(workItem.mediaType==0 ? true : false),null)};
+                    if (workItem.mediaType==0) {
+                        let ru = lodash.find(uploadRule.value.workType.image,(o)=>{return o.type==workItem.type});
+                        workItem.tempMap = {title:ru.title,imgPath:await oss.buildPathAsync(workItem.path,true,null)};
+                    } else {
+                        let ru = lodash.find(uploadRule.value.workType.video,(o)=>{return o.type==workItem.type});
+                        workItem.tempMap = {title:ru.title,exifCheck:true,imgPath:await oss.buildPathAsync(workItem.path,false,null)};
+                    }
                 }
                 if (!work.tempMap) {
                     work.tempMap = {};

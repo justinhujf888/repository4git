@@ -609,6 +609,7 @@ class WorkRest extends BaseRest
             }
             masterCompetition.flowSetup = workService.qyPingShenFlow(null);
             workService.updateTheObject(masterCompetition);
+            workService.deleteTheObject8Fields(CompetitionJudge.simpleName,"competitionJudgePK.appId=:appId",[appId:query.appId],false);
 
 //            改为管理员点击评审设定开始评审按钮时执行
 //            workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);

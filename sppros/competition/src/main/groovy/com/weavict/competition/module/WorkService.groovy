@@ -392,7 +392,9 @@ class WorkService extends ModuleBean
             //            group is map,key is competitionId or guigeid; value is a list of CompetitionJudge. 即评委
             if (pingShenStepId == 0 as byte)
             {
-                List<Work> workList = this.qyWorks([appId:appId,competitionId:group.key.item1,guiGeId:group.key.item2,statusList:[1 as byte]]).content;//查询已经提交的作品
+//                println "=========================================================";
+//                println group.key;
+                List<Work> workList = this.qyWorks([appId:appId,competitionId:group.key.item1,guiGeId:group.key.item2=="-1" ? null : group.key.item2,statusList:[1 as byte]]).content;//查询已经提交的作品
                 if (group.value?.size()>0 && workList?.size()>0)
                 {
                     for(Work work in workList)
@@ -708,7 +710,7 @@ class WorkService extends ModuleBean
     {
         if (pingShenStepId == -1 as byte)
         {//
-            queryUtils = this.newQueryUtils(true,true)
+            QueryUtils queryUtils = this.newQueryUtils(true,true)
                 .masterTable("work", "w",[
                     [isCop:true,cop:"count(w.id)",sf:"ct",bf:"ct",convertType:"int"]
                 ])

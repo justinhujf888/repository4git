@@ -108,7 +108,7 @@
 <!--                        </ScrollPanel>-->
 <!--                    </Fieldset>-->
 
-                    <Fieldset class="text-wrap text-start" legend="字段配置" :toggleable="true" :collapsed="true">
+                    <Fieldset class="text-wrap text-start" legend="字段配置" :toggleable="false" :collapsed="false" :pt="{legendLabel:{class:'text-orange-300'}}">
                         <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100">
@@ -146,7 +146,7 @@
                         </ScrollPanel>
                     </Fieldset>
 
-                    <Fieldset class="text-wrap text-start" legend="分组及评委设置" :toggleable="true" :collapsed="true">
+                    <Fieldset class="text-wrap text-start" legend="分组及评委设置" :toggleable="false" :collapsed="false" :pt="{legendLabel:{class:'text-orange-300'}}">
                         <ScrollPanel class="w-full">
                             <div class="!relative w-full">
                                 <div class="absolute -top-10 right-1 z-100 row gap-x-2">
@@ -210,7 +210,7 @@
                         </ScrollPanel>
                     </Fieldset>
 
-                    <Fieldset class="text-wrap text-start" legend="页面设置" :toggleable="true" :collapsed="true">
+                    <Fieldset class="text-wrap text-start" legend="页面设置" :toggleable="false" :collapsed="false" :pt="{legendLabel:{class:'text-orange-300'}}">
                         <pageSetup :competitionId="slotProps.data.id"></pageSetup>
                     </Fieldset>
                 </template>

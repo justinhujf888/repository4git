@@ -553,7 +553,7 @@ export default {
         //     return matches[1];
         // }
         // return null;
-
+return "cpt.arkydesign.cn";
         const parsedUrl = new URL(url);
         return parsedUrl.hostname;
 
