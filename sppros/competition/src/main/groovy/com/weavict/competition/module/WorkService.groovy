@@ -469,13 +469,17 @@ class WorkService extends ModuleBean
                             {
                                 if (fmap[fl.id]==null)
                                 {
-                                    fmap[fl.id] = fl.value==null ? 0 : fl.value;
+                                    fmap[fl.id] = [:];
+                                    fmap[fl.id].type = fl.type;
+                                    fmap[fl.id].name = fl.name;
+                                    fmap[fl.id].fen = fl.fen;
+                                    fmap[fl.id].value = fl.value==null ? 0 : fl.value;
                                 }
                                 else
                                 {
-                                    if (fl.value!=null && fl.value as int > fmap[fl.id] as int)
+                                    if (fl.value!=null && fl.value as int > fmap[fl.id].value as int)
                                     {
-                                        fmap[fl.id] = fl.value;
+                                        fmap[fl.id].value = fl.value;
                                     }
                                 }
                             }
@@ -485,7 +489,7 @@ class WorkService extends ModuleBean
                         {
 //                                println m.key;
 //                                println m.value;
-                            jw.tempMap.sumFen += m.value;
+                            jw.tempMap.sumFen += m.value.value;
                         }
 //                        println jw.dump();
                         PingFenWork pingFenWork = new PingFenWork();

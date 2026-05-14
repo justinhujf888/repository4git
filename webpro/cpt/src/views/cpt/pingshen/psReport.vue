@@ -35,13 +35,13 @@
                                             </div>
                                         </div>
                                         <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                            <div class="col" v-for="field of item.hangyeFields.data">
+                                            <div class="col" v-for="field of item.hangyeFields?.data">
                                                 <span class="dark:text-yellow-400">{{field.name}}</span>
                                                 <span class="break-words">{{field.value}}</span>
                                             </div>
                                         </div>
                                         <div class="grid md:grid-cols-4 gap-4 mt-5">
-                                            <div class="col" v-for="field of item.otherFields.data">
+                                            <div class="col" v-for="field of item.otherFields?.data">
                                                 <span class="dark:text-yellow-400">{{field.name}}</span>
                                                 <span class="break-words">{{field.value}}</span>
                                             </div>

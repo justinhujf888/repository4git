@@ -65,7 +65,7 @@
                                         <div class="grid md:grid-cols-4 gap-4 mt-3">
                                             <div v-for="fenItem of item.tempMap?.fenJson?.fields">
                                                 <FloatLabel variant="on">
-                                                    <InputNumber :name="fenItem.name" v-model="fenItem.value" :min="0" :max="fenItem.fen" size="small" :readonly="shiSubmited"/>
+                                                    <InputNumber :name="fenItem.name" v-model="fenItem.value" :min="0" :max="fenItem.fen" size="small" :readonly="shiSubmited" fluid/>
                                                     <label :for="fenItem.name">{{fenItem.name}} ({{fenItem.fen}}分)</label>
                                                 </FloatLabel>
                                             </div>
@@ -130,8 +130,8 @@ onMounted(async () => {
     let cms = (await workRest.giveCurrentMasterCompetitionSetup({keys:["masterCompetitionId","masterCompetitionStatus"]},null))?.map;
     masterCompetitionId.value = cms.masterCompetitionId;
     masterCompetitionStatus.value = cms.masterCompetitionStatus;
-
-    if (masterCompetitionId.value && masterCompetitionId.value>0) {
+    // console.log(masterCompetitionId.value);
+    if (masterCompetitionId.value && masterCompetitionStatus.value>0) {
         stepStatus = masterCompetitionStatus.value;
         let mcRes = await workRest.qyMasterSiteCompetition({id:masterCompetitionId.value,siteCompetitionId:host},null);
         if (mcRes.status=="OK" && mcRes.data) {
@@ -176,6 +176,7 @@ const onNodeSelect = async (node) => {
     hasChildren = (node.children?.length > 0);
     if (type==0) {
         competitionId = node.key;
+        guiGeId = null;
     } else if (type==1) {
         competitionId = node.data.pkey;
         guiGeId = node.key;
@@ -212,7 +213,7 @@ const queryWorks = async (type,key)=>{
                 for (let workItem of work.workItemList) {
                     if (workItem.mediaType==0) {
                         let ru = lodash.find(uploadRule.value.workType.image,(o)=>{return o.type==workItem.type});
-                        workItem.tempMap = {title:ru.title,imgPath:await oss.buildPathAsync(workItem.path,true,null)};
+                        workItem.tempMap = {title:ru.title,exifCheck:true,imgPath:await oss.buildPathAsync(workItem.path,true,null)};
                     } else {
                         let ru = lodash.find(uploadRule.value.workType.video,(o)=>{return o.type==workItem.type});
                         workItem.tempMap = {title:ru.title,exifCheck:true,imgPath:await oss.buildPathAsync(workItem.path,false,null)};

@@ -188,6 +188,7 @@ const onNodeSelect = async (node) => {
     hasChildren = (node.children?.length > 0);
     if (type==0) {
         competitionId = node.key;
+        guiGeId = null;
     } else if (type==1) {
         competitionId = node.data.pkey;
         guiGeId = node.key;
@@ -195,6 +196,7 @@ const onNodeSelect = async (node) => {
     let ctRes = await workRest.obtFlowWorkCount({masterCompetitionId:masterCompetitionId,pingShenStepId:-1,competitionId:competitionId,guiGeId:guiGeId},null);
     if (ctRes.status=="OK") {
         workCount.value = ctRes.data;
+        // console.log(workCount.value);
     }
 
     let res = await workRest.qyPingShenJudgeList({masterCompetitionId:masterCompetitionId,judgeId:judgeId,pingShenStepId:stepStatus,competitionId:competitionId,guiGeId:guiGeId},null);

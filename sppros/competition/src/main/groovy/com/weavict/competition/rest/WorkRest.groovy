@@ -841,7 +841,9 @@ class WorkRest extends BaseRest
             });
             if ((query.shiPass as boolean) == true)//query.shiPass==true;评委提交了最终结果
             {
-                workService.updateTheObjectFilds(CompetitionJudge.simpleName,"competitionJudgePK = :competitionJudgePK",[pingShenStatus:1 as byte],[competitionJudgePK:new CompetitionJudgePK(query.masterCompetitionId as String,query.competitionId as String,query.guiGeId as String,query.judgeId as String,query.stepStatus as byte,query.appId as String)],false);
+//                println query.stepStatus;
+//                println query.guiGeId;
+                workService.updateTheObjectFilds(CompetitionJudge.simpleName,"competitionJudgePK = :competitionJudgePK",[pingShenStatus:1 as byte],[competitionJudgePK:new CompetitionJudgePK(query.masterCompetitionId as String,query.competitionId as String,query.guiGeId==null ? "-1" : query.guiGeId as String,query.judgeId as String,query.stepStatus as byte,query.appId as String)],false);
             }
             return """{"status":"OK"}""";
         }
