@@ -17,6 +17,7 @@ import com.weavict.competition.entity.JudgeWorkPK
 import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.OrgHuman
+import com.weavict.competition.entity.PingFenWork
 import com.weavict.competition.entity.SiteCompetition
 import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
@@ -598,29 +599,13 @@ class WorkRest extends BaseRest
                     }).call()
             ]));
 
-            MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
-            for(def item in [[key:"masterCompetitionId",value:masterCompetition.id],[key:"masterCompetitionStatus",value:-1 as byte]])
-            {
-                CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
-                CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(query.appId as String,item.key);
-                currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
-                currentMasterCompetitionSetup.value = item.value;
-                workService.updateTheObject(currentMasterCompetitionSetup);
-            }
-            masterCompetition.flowSetup = workService.qyPingShenFlow(null);
-            workService.updateTheObject(masterCompetition);
-            workService.deleteTheObject8Fields(CompetitionJudge.simpleName,"competitionJudgePK.appId=:appId",[appId:query.appId],false);
-
-//            改为管理员点击评审设定开始评审按钮时执行
-//            workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
-
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
             writer.write(buildObjectMapper().writeValueAsString(masterCompetition.workSetup));
 
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/masterCompetition.json""".toString(),"utf8");
             writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
                      masterCompetitionInfo:({
-                        masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
+                        MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
                          workService.detach(masterCompetition);
                         masterCompetition.competitionList = workService.qyCompetitionList([appId:query.appId,masterCompetitionId:masterCompetition.id,shiQyGuiGeList:true]);
                         for(Competition competition in masterCompetition.competitionList)
@@ -732,6 +717,42 @@ class WorkRest extends BaseRest
     }
 
 //    workService.pingShenJudgesInit("localhost","localhost",2 as byte)
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/resetPingShen")
+    String resetPingShen(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW, {
+                MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
+                for(def item in [[key:"masterCompetitionId",value:masterCompetition.id],[key:"masterCompetitionStatus",value:-1 as byte]])
+                {
+                    CurrentMasterCompetitionSetup currentMasterCompetitionSetup = new CurrentMasterCompetitionSetup();
+                    CurrentMasterCompetitionSetupPK currentMasterCompetitionSetupPK = new CurrentMasterCompetitionSetupPK(query.appId as String,item.key);
+                    currentMasterCompetitionSetup.currentMasterCompetitionSetupPK = currentMasterCompetitionSetupPK;
+                    currentMasterCompetitionSetup.value = item.value;
+                    workService.updateTheObject(currentMasterCompetitionSetup);
+                }
+                masterCompetition.flowSetup = workService.qyPingShenFlow(null);
+                workService.updateTheObject(masterCompetition);
+                workService.deleteTheObject8Fields(CompetitionJudge.simpleName,"competitionJudgePK.appId=:appId and competitionJudgePK.masterCompetitionId = :masterCompetitionId",[appId:query.appId,masterCompetitionId:masterCompetition.id],false);
+                workService.deleteTheObject8Fields(JudgeWork.simpleName,"judgeWorkPK.appId=:appId and judgeWorkPK.masterCompetitionId = :masterCompetitionId",[appId:query.appId,masterCompetitionId:masterCompetition.id],false);
+                workService.deleteTheObject8Fields(PingFenWork.simpleName,"pingFenWorkPK.appId = :appId and pingFenWorkPK.masterCompetitionId = :masterCompetitionId",[appId:query.appId,masterCompetitionId:masterCompetition.id],false);
+
+//            改为管理员点击评审设定开始评审按钮时执行
+//            workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
+            });
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)

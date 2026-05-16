@@ -160,8 +160,8 @@
                                             <div class="center">
                                                 <span class="text-base font-semibold">{{slotProps.data.tempMap?.judgeData?.type==0 ? '类别' : '组别'}} {{slotProps.data.tempMap?.judgeData?.name}} 评委</span>
                                             </div>
-                                            <div v-for="flow of slotProps.data.tempMap?.judgeData?.data">
-                                                <Fieldset :legend="flow.name" class="!relative">
+                                            <div v-for="(flow,flowIndex) in slotProps.data.tempMap?.judgeData?.data">
+                                                <Fieldset :legend="flow.name" class="!relative" v-if="flowIndex < slotProps.data.tempMap?.judgeData?.data.length-1">
                                                     <div class="mt-5">
                                                         <div v-if="flow.type==0" class="min-h-24">
                                                             <Chip v-for="ju of flow.setupData" :label="ju.name" :image="ju.tempImg"/>

@@ -6,8 +6,8 @@
             </div>
         </div>
         <Panel class="mt-10">
-            <div v-for="flow of selMasterCompetition.tempMap?.judgeData?.data">
-                <Fieldset :legend="flow.name" class="!relative">
+            <div v-for="(flow,flowIndex) in  selMasterCompetition.tempMap?.judgeData?.data">
+                <Fieldset :legend="flow.name" class="!relative" v-if="flowIndex < selMasterCompetition.tempMap?.judgeData?.data.length-1">
                     <Button v-if="flow.type==0" size="small" label="新增评委" class="!absolute top-0 right-2" @click="toggle($event,flow)"/>
                     <Button v-else-if="flow.type==1" size="small" label="新增评委/字段" class="!absolute top-0 right-2" @click="toggle($event,flow)"/>
                     <div class="mt-5">

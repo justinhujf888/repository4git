@@ -142,6 +142,9 @@ export default {
     async gainPageSetup(host,key) {
         return Http.fetchJson(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
     },
+    async resetPingShen(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/resetPingShen',ds,onfun);
+    },
     async qyJudgeWorks(ds,onfun) {
         return await Http.callHttpFunction('/r/work/qyJudgeWorks',ds,onfun);
     },
