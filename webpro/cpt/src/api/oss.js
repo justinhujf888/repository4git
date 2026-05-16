@@ -12,11 +12,7 @@ let  _tokenExpiredTime = 0;
 
 export default {
     async access() {
-        return new Promise(resolve => {
-            this.buildAliOssAccessInfo((info) => {
-                resolve(info);
-            });
-        });
+        return await this.buildAliOssAccessInfo(null);
     },
     async checkToken() {
         let times = 0;
@@ -44,60 +40,56 @@ export default {
             }
         },times);
     },
-    buildAliOssAccessInfo(fun) {
-        otherRest.genAliOssAccessInfo((data) => {
-            if (data.status == 'OK') {
-                aliOssAccessInfo = data.signatureInfo;
-                console.log("signatureInfo",aliOssAccessInfo);
-                if (fun) {
-                    fun(aliOssAccessInfo);
-                }
+    async buildAliOssAccessInfo(fun) {
+        let res = await otherRest.genAliOssAccessInfo(null);
+        if (res.status == 'OK') {
+            aliOssAccessInfo = res.signatureInfo;
+            // console.log("signatureInfo",aliOssAccessInfo);
+            if (fun) {
+                fun(aliOssAccessInfo);
             }
-        });
+            return aliOssAccessInfo;
+        } else {
+            return null;
+        }
     },
-    buildSignatureInfo(fun) {
-        otherRest.genSignature((data) => {
-            if (data.status == 'OK') {
-                signatureInfo = data.signatureInfo;
-                // console.log(signatureInfo);
-                if (fun) {
-                    fun(signatureInfo);
-                }
+    async buildSignatureInfo(fun) {
+        let res = await otherRest.genSignature(null);
+        if (res.status == 'OK') {
+            signatureInfo = res.signatureInfo;
+            // console.log(signatureInfo);
+            if (fun) {
+                fun(signatureInfo);
             }
-        });
+        }
     },
     async genClient() {
         if (client) {
-            return new Promise(resolve => {
-                resolve(client);
-            });
+            return client;
         } else {
-            return new Promise(resolve => {
-                this.buildAliOssAccessInfo(() => {
-                    client = new OSS({
-                        authorizationV4: true,
-                        region: aliOssAccessInfo.region, //换成你自己的
-                        accessKeyId: aliOssAccessInfo.accessId,
-                        accessKeySecret: aliOssAccessInfo.accessKey,
-                        bucket: aliOssAccessInfo.bucketName,
-                        stsToken: aliOssAccessInfo.securityToken,
-                        refreshSTSToken: async () => {
-                            console.log("refreshSTSToken");
-                            const info = await this.access();
-                            console.log("info",info);
-                            _tokenExpiredTime = new Date(info.expiration).getTime();
-                            return {
-                                accessKeyId: info.accessId,
-                                accessKeySecret: info.accessKey,
-                                stsToken: info.securityToken
-                            }
-                        },
-                        refreshSTSTokenInterval: 400000
-                    });
-                    _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
-                    resolve(client);
-                });
+            await this.buildAliOssAccessInfo(null);
+            client = new OSS({
+                authorizationV4: true,
+                region: aliOssAccessInfo.region, //换成你自己的
+                accessKeyId: aliOssAccessInfo.accessId,
+                accessKeySecret: aliOssAccessInfo.accessKey,
+                bucket: aliOssAccessInfo.bucketName,
+                stsToken: aliOssAccessInfo.securityToken,
+                refreshSTSToken: async () => {
+                    console.log("refreshSTSToken");
+                    const info = await this.access();
+                    // console.log("info",info);
+                    _tokenExpiredTime = new Date(info.expiration).getTime();
+                    return {
+                        accessKeyId: info.accessId,
+                        accessKeySecret: info.accessKey,
+                        stsToken: info.securityToken
+                    }
+                },
+                refreshSTSTokenInterval: 400000
             });
+            _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
+            return client;
         }
     },
     buildImgPath(imgPath) {
@@ -130,18 +122,21 @@ export default {
         }
         if (hasProcess) {
             if (process==null) {
-                return new Promise(resolve => {
-                    resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'}));
-                });
+                return client.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'});
+                // return new Promise(resolve => {
+                //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'}));
+                // });
             } else {
-                return new Promise(resolve => {
-                    resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': process}));
-                });
+                return client.signatureUrl(path,{expires: _tokenExpiredTime,'process': process});
+                // return new Promise(resolve => {
+                //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': process}));
+                // });
             }
         } else {
-            return new Promise(resolve => {
-                resolve(client.signatureUrl(path,{expires: _tokenExpiredTime}));
-            });
+            return client.signatureUrl(path,{expires: _tokenExpiredTime});
+            // return new Promise(resolve => {
+            //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime}));
+            // });
         }
     },
     uploadFileWithReq(file,key,okfun,erfun) {
@@ -154,7 +149,7 @@ export default {
             signatureInfo.signature,
             signatureInfo.securityToken,
             (res) => {
-                console.log("res",res);
+                // console.log("res",res);
                 if (okfun) {
                     okfun(res);
                 }
@@ -167,21 +162,19 @@ export default {
             }
         );
     },
-    uploadFileWithClient(file,key,okfun,erfun) {
-        (async ()=>{
-            try {
-                let res = await client.put(key,file);
-                console.log("res",res);
-                if (okfun) {
-                    okfun(res);
-                }
-            } catch(er) {
-                console.log(er);
-                if (erfun) {
-                    erfun(er);
-                }
+    async uploadFileWithClient(file,key,okfun,erfun) {
+        try {
+            let res = await client.put(key,file);
+            // console.log("res",res);
+            if (okfun) {
+                okfun(res);
             }
-        })();
+        } catch(er) {
+            console.log(er);
+            if (erfun) {
+                erfun(er);
+            }
+        }
     },
     async deleteFile(path) {
         // (async (c)=>{

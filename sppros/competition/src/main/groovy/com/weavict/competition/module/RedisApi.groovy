@@ -1,5 +1,6 @@
 package com.weavict.competition.module
 
+import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.util.DateUtil
 import com.weavict.competition.entity.*
@@ -65,6 +66,10 @@ class RedisApi
     void buildToken2Redis()
     {
         userBean.queryObject("select pw from PayWayInfoEntity as pw")?.each {pw->
+            if (pw.payWayInfoEntityPK.type = 9 as byte)
+            {
+                redisUtil.lLeftPush("ossApps",pw.payWayInfoEntityPK.appId);
+            }
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","appId",pw.payWayInfoEntityPK.appId ?: "");
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","appName",pw.appName ?: "");
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","doMain",pw.doMain ?: "");
@@ -80,42 +85,44 @@ class RedisApi
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","returnDoMain",pw.returnDoMain ?: "");
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","type",pw.payWayInfoEntityPK.type as String);
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","createDate",DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","mapJson", JSON.toJSONString(pw.mapJson));
 
-            if (!(pw.certPath in [null,""]) && pw.payWayInfoEntityPK.type == (1 as byte))
-            {
-                println "-------------initMchKeyStore ${pw.payWayInfoEntityPK.appId} begin-----------------";
-                LocalHttpClient.initMchKeyStore(pw.mchId,pw.certPath);
-                println "-------------initMchKeyStore ${pw.payWayInfoEntityPK.appId} end-----------------";
-            }
-
-            switch (pw.payWayInfoEntityPK.type as byte)
-            {
-                case 0 as byte:
-                    try
-                    {
-                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
-                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token?.getAccess_token());
-//                    Ticket t = TicketAPI.ticketGetticket(TokenManager.getToken(pw.payWayInfoEntityPK.appId));
-                        Ticket t = TicketAPI.ticketGetticket(token.getAccess_token());
-                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","jsTicket",t?.getTicket());
-                    }
-                    catch (e)
-                    {
-                        e.printStackTrace();
-                    }
-                    break;
-                case 1:
-                    try
-                    {
-                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
-                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token.getAccess_token());
-                    }
-                    catch (e)
-                    {
-                        e.printStackTrace();
-                    }
-                    break;
-            }
+//            目前应用没有支付功能
+//            if (!(pw.certPath in [null,""]) && pw.payWayInfoEntityPK.type == (1 as byte))
+//            {
+//                println "-------------initMchKeyStore ${pw.payWayInfoEntityPK.appId} begin-----------------";
+//                LocalHttpClient.initMchKeyStore(pw.mchId,pw.certPath);
+//                println "-------------initMchKeyStore ${pw.payWayInfoEntityPK.appId} end-----------------";
+//            }
+//
+//            switch (pw.payWayInfoEntityPK.type as byte)
+//            {
+//                case 0 as byte:
+//                    try
+//                    {
+//                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
+//                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token?.getAccess_token());
+////                    Ticket t = TicketAPI.ticketGetticket(TokenManager.getToken(pw.payWayInfoEntityPK.appId));
+//                        Ticket t = TicketAPI.ticketGetticket(token.getAccess_token());
+//                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","jsTicket",t?.getTicket());
+//                    }
+//                    catch (e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                    break;
+//                case 1:
+//                    try
+//                    {
+//                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
+//                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token.getAccess_token());
+//                    }
+//                    catch (e)
+//                    {
+//                        e.printStackTrace();
+//                    }
+//                    break;
+//            }
         }
     }
 
@@ -124,20 +131,32 @@ class RedisApi
         return redisUtil.hGet("appToken_${appId}_${type}",field) as String;
     }
 
-    void buildAliYunSts2Redis()
+    void buildAliYunSts2Redis(Map map)
     {
-        Map stsMap = OtherUtils.genOssAccessKey();
-        redisUtil.hPut("aliyun_sts","expiration",stsMap["expiration"]);
-        redisUtil.hPut("aliyun_sts","accessId",stsMap["accessId"]);
-        redisUtil.hPut("aliyun_sts","accessKey",stsMap["accessKey"]);
-        redisUtil.hPut("aliyun_sts","securityToken",stsMap["securityToken"]);
-        redisUtil.hPut("aliyun_sts","requestId",stsMap["requestId"]);
-        redisUtil.hPut("aliyun_sts","bucketUrl","https://${OtherUtils.givePropsValue( "ali_oss_bucketName")}.${OtherUtils.givePropsValue("ali_oss_endPoint")}");
+        Map stsMap = OtherUtils.genOssAccessKey(map);
+//        println stsMap;
+        map.each{k,v->
+            redisUtil.hPut("${map.appId}_aliyun_sts",k as String,v as String);
+        };
+
+        redisUtil.hPut("${map.appId}_aliyun_sts","expiration",stsMap["expiration"]);
+        redisUtil.hPut("${map.appId}_aliyun_sts","accessId",stsMap["accessId"]);
+        redisUtil.hPut("${map.appId}_aliyun_sts","accessKey",stsMap["accessKey"]);
+        redisUtil.hPut("${map.appId}_aliyun_sts","securityToken",stsMap["securityToken"]);
+        redisUtil.hPut("${map.appId}_aliyun_sts","requestId",stsMap["requestId"]);
+        redisUtil.hPut("${map.appId}_aliyun_sts","bucketUrl","https://${map["ali_oss_bucketName"]}.${map["ali_oss_endPoint"]}");
+
+//        redisUtil.hPut("aliyun_sts","expiration",stsMap["expiration"]);
+//        redisUtil.hPut("aliyun_sts","accessId",stsMap["accessId"]);
+//        redisUtil.hPut("aliyun_sts","accessKey",stsMap["accessKey"]);
+//        redisUtil.hPut("aliyun_sts","securityToken",stsMap["securityToken"]);
+//        redisUtil.hPut("aliyun_sts","requestId",stsMap["requestId"]);
+//        redisUtil.hPut("aliyun_sts","bucketUrl","https://${OtherUtils.givePropsValue( "ali_oss_bucketName")}.${OtherUtils.givePropsValue("ali_oss_endPoint")}");
     }
 
-    String ganAliYunStsValue(String field)
+    String ganAliYunStsValue(String appId,String field)
     {
-        return redisUtil.hGet("aliyun_sts",field) as String;
+        return redisUtil.hGet("${appId}_aliyun_sts",field) as String;
     }
 
     @Transactional

@@ -117,7 +117,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         OSS client = OtherUtils.genOSSClient();
+                         OSS client = OtherUtils.genOSSClient(query.appId as String);
                          long expireTime = 30;
                          long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
                          PolicyConditions policyConds = new PolicyConditions();
@@ -126,7 +126,7 @@ class OtherRest extends BaseRest
                          String encodedPolicy = BinaryUtil.toBase64String(postPolicy.getBytes("utf-8"));
                          String postSignature = client.calculatePostSignature(postPolicy);
                          client.shutdown();
-                         return ["accessId":redisApi.ganAliYunStsValue("accessId"),"accessKey":redisApi.ganAliYunStsValue("accessKey"),"policy":encodedPolicy,"signature":postSignature,"securityToken":redisApi.ganAliYunStsValue("securityToken"),"bucketUrl":redisApi.ganAliYunStsValue("bucketUrl"),"expire":String.valueOf(expireEndTime / 1000),"region":OtherUtils.givePropsValue("ali_oss_region"),"bucketName":OtherUtils.givePropsValue("ali_oss_bucketName")];
+                         return ["accessId":redisApi.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":redisApi.ganAliYunStsValue(query.appId as String,"accessKey"),"policy":encodedPolicy,"signature":postSignature,"securityToken":redisApi.ganAliYunStsValue(query.appId as String,"securityToken"),"bucketUrl":redisApi.ganAliYunStsValue(query.appId as String,"bucketUrl"),"expire":String.valueOf(expireEndTime / 1000),"region":OtherUtils.givePropsValue("ali_oss_region"),"bucketName":OtherUtils.givePropsValue("ali_oss_bucketName")];
                      }).call()
                     ]);
         }
@@ -193,8 +193,8 @@ class OtherRest extends BaseRest
         try
         {
             //oss
-            OSS ossClient = OtherUtils.genOSSClient();
-            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), query.imgPath);
+            OSS ossClient = OtherUtils.genOSSClient(query.appId as String);
+            ossClient.deleteObject(redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"), query.imgPath);
             ossClient.shutdown();
             //oss end
             return """{"status":"OK"}""";
@@ -217,7 +217,7 @@ class OtherRest extends BaseRest
             ObjectMapper objectMapper = buildObjectMapper();
             // oss
             OSS ossClient = OtherUtils.genOSSClient();
-            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
+            PutObjectRequest putObjectRequest = new PutObjectRequest(redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
                     ({return query.fileObj}).call()
             ).getBytes("UTF-8")));
             // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
@@ -255,7 +255,7 @@ class OtherRest extends BaseRest
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
             ObjectMapper objectMapper = buildObjectMapper();
-            Config config = new Config().setAccessKeyId(OtherUtils.givePropsValue("ali_sms_AccessKeyId")).setAccessKeySecret(OtherUtils.givePropsValue("ali_sms_AccessKeySecret"));
+            Config config = new Config().setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeyId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeySecret"));
             config.endpoint = "dysmsapi.aliyuncs.com";
             Client client = new Client(config);
 
@@ -272,7 +272,7 @@ class OtherRest extends BaseRest
                 templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
             }
 
-            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(OtherUtils.givePropsValue("ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
+            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
             SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
 
             return objectMapper.writeValueAsString(
@@ -305,7 +305,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         return ["expiration":redisApi.ganAliYunStsValue("expiration"),"accessId":redisApi.ganAliYunStsValue("accessId"),"accessKey":redisApi.ganAliYunStsValue("accessKey"),"securityToken":redisApi.ganAliYunStsValue("securityToken"),"requestId":redisApi.ganAliYunStsValue("requestId"),"endPoint":OtherUtils.givePropsValue("ali_oss_endPoint"),"region":OtherUtils.givePropsValue("ali_oss_region"),"bucketName":OtherUtils.givePropsValue("ali_oss_bucketName"),"bucketUrl":redisApi.ganAliYunStsValue("bucketUrl")];
+                         return ["expiration":redisApi.ganAliYunStsValue(query.appId as String,"expiration"),"accessId":redisApi.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":redisApi.ganAliYunStsValue(query.appId as String,"accessKey"),"securityToken":redisApi.ganAliYunStsValue(query.appId as String,"securityToken"),"requestId":redisApi.ganAliYunStsValue(query.appId as String,"requestId"),"endPoint":redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_endPoint"),"region":redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_region"),"bucketName":redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"),"bucketUrl":redisApi.ganAliYunStsValue(query.appId as String,"bucketUrl")];
                      }).call()
                     ]);
         }

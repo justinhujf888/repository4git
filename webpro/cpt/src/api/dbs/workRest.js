@@ -118,8 +118,8 @@ export default {
     async qyWorks(ds,onfun) {
         return await Http.callHttpFunction('/r/work/qyWorks',ds,onfun);
     },
-    qyWorkLog8Work(ds,onfun) {
-        Http.callHttpFunction('/r/work/qyWorkLog8Work',ds,onfun);
+    async qyWorkLog8Work(ds,onfun) {
+        return Http.callHttpFunction('/r/work/qyWorkLog8Work',ds,onfun);
     },
     saveWorkLog(ds,onfun) {
         Http.callHttpFunction('/r/work/saveWorkLog',ds,onfun);
