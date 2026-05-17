@@ -62,7 +62,6 @@ const buildMenu = ()=>{
                 } else {
                     model.value.push(m);
                 }
-                // console.log(JSON.stringify(model.value));
             }
         } else {
             model.value.push(m);
@@ -86,19 +85,23 @@ const onFormSubmit = async ({ valid }) => {
         if (obj.process=="c") {
             rule.value.rulePK.ruleId = Beans.buildPId("");
             rule.value.rulePK.appId = host;
-            console.log(JSON.stringify(selectedKey.value));
+            // console.log(selectedKey.value);
             lodash.forEach(selectedKey.value,(o,k)=>{
-                console.log(o.checked,k);
+                // console.log(o,k);
+                let ml = lodash.find(model.value,(m)=>{return k==m.key});
+                if (ml && ml.children) {
+                    o.pmenu = true;
+                }
             });
             return;
         } else if (obj.process=="u") {
 
         }
-        let res = await userRest.updateRule({rule:rule.value},null);
-        if (res.status=="OK") {
-            obj.returnFunction(obj);
-            mePage.close(mainPage);
-        }
+        // let res = await userRest.updateRule({rule:rule.value},null);
+        // if (res.status=="OK") {
+        //     obj.returnFunction(obj);
+        //     mePage.close(mainPage);
+        // }
     }
 };
 
@@ -111,7 +114,6 @@ const init = (_mainPage,_mePage,_obj)=>{
     mePage = _mePage;
     obj = _obj;
     buildMenu();
-    console.log(model.value);
     if (obj.process=="u") {
         rule.value = obj.data;
     } else if (obj.process=="c") {
