@@ -69,6 +69,21 @@ const buildMenu = ()=>{
     });
 }
 
+const findMenuItem = (key)=>{
+    let rv = null;
+    lodash.forEach(model.value,(v,k)=>{
+        if (v.key==key) {
+            rv = v;
+        } else if (v.children)  {
+            let ml = lodash.find(v.children,(m)=>{return key==m.key});
+            if (ml) {
+                rv = ml;
+            }
+        }
+    });
+    return rv;
+};
+
 const resolver = ({ values }) => {
     errors = primeUtil.checkFormRequiredValid([
         {val:rule.value.name,name:"name"}
@@ -85,23 +100,28 @@ const onFormSubmit = async ({ valid }) => {
         if (obj.process=="c") {
             rule.value.rulePK.ruleId = Beans.buildPId("");
             rule.value.rulePK.appId = host;
-            // console.log(selectedKey.value);
-            lodash.forEach(selectedKey.value,(o,k)=>{
-                // console.log(o,k);
-                let ml = lodash.find(model.value,(m)=>{return k==m.key});
-                if (ml && ml.children) {
-                    o.pmenu = true;
-                }
-            });
-            return;
         } else if (obj.process=="u") {
 
         }
-        // let res = await userRest.updateRule({rule:rule.value},null);
-        // if (res.status=="OK") {
-        //     obj.returnFunction(obj);
-        //     mePage.close(mainPage);
-        // }
+        lodash.forEach(selectedKey.value,(o,k)=>{
+            // console.log(o,k);
+            let ml = findMenuItem(k);
+            // console.log(ml);
+            if (ml) {
+                o.label = ml.label;
+                if (ml.children) {
+                    o.pmenu = true;
+                }
+            }
+        });
+        rule.value.ruleJson = selectedKey.value;
+        // console.log(selectedKey.value);
+        let res = await userRest.updateRule({rule:rule.value},null);
+        if (res.status=="OK") {
+            obj.data = rule.value;
+            obj.returnFunction(obj);
+            mePage.close(mainPage);
+        }
     }
 };
 
@@ -114,8 +134,10 @@ const init = (_mainPage,_mePage,_obj)=>{
     mePage = _mePage;
     obj = _obj;
     buildMenu();
+    // console.log(model.value);
     if (obj.process=="u") {
         rule.value = obj.data;
+        selectedKey.value = obj.data.ruleJson;
     } else if (obj.process=="c") {
         rule.value = Beans.rule();
     }

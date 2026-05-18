@@ -24,6 +24,9 @@ export const Http = {
             .replace(/\.[\d]{3}Z/, '');
         ds.loginState = null; //login.getLoginState();
         ds.appId = util.getDomainFromUrl(window.location);
+        if (!ds.appId) {
+            return;
+        }
         ds.vstr = str;
         // console.log(util.encryptStoreInfo(encodeURIComponent(JSON.stringify(ds))));
         return axios({

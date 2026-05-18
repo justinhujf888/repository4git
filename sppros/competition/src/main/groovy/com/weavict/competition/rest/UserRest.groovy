@@ -11,6 +11,7 @@ import com.weavict.competition.entity.ManagerPK
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.Rule
 import com.weavict.competition.entity.RulePermission
+import com.weavict.competition.entity.RulePermissionPK
 import com.weavict.competition.module.UserBean
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -286,13 +287,19 @@ class UserRest extends BaseRest
         try
         {
             Rule rule = this.objToBean(query.rule, Rule.class,null);
-//            println judge.dump();
+//            println rule.dump();
             userBean.transactionCall(-1,{
+                userBean.updateObject(rule);
                 userBean.updateTheObjectFilds(Rule.simpleName,"rulePK.appId = :appId and rulePK.ruleId = :ruleId",[name:rule.name],[appId:query.appId,ruleId:rule.rulePK.ruleId],false);
                 userBean.deleteTheObject8Fields(RulePermission.simpleName,"rulePermissionPK.appId = :appId and rulePermissionPK.ruleId = :ruleId",[appId:query.appId,ruleId:rule.rulePK.ruleId],false);
-                for(RulePermission rulePermission in rule.tempMap.permissionList)
-                {
-                    userBean.updateObject(rulePermission);
+                rule.ruleJson.each {k,v ->
+                    if (v.pmenu==null || !(v.pmenu as boolean))
+                    {
+                        RulePermission rulePermission = new RulePermission();
+                        rulePermission.rulePermissionPK = new RulePermissionPK(query.appId as String,rule.rulePK.ruleId,k as String);
+                        rulePermission.permissionName = v.label;
+                        userBean.updateObject(rulePermission);
+                    }
                 }
             });
 

@@ -203,7 +203,8 @@ export const Beans = {
     rule() {
         return {
             rulePK: this.rulePK(),
-            name: ""
+            name: "",
+            ruleJson: null
         }
     },
 
@@ -217,7 +218,8 @@ export const Beans = {
 
     rulePermission() {
         return {
-            rulePermissionPK: this.rulePermissionPK()
+            rulePermissionPK: this.rulePermissionPK(),
+            permissionName: ""
         }
     },
 

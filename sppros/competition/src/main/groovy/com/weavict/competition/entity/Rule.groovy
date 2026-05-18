@@ -6,6 +6,8 @@ import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Embeddable
 class RulePK implements Serializable
@@ -15,7 +17,7 @@ class RulePK implements Serializable
     @Column(name="appid",length=30,nullable=false, insertable=false, updatable=false)
     String appId;
 
-    @Column(name="ruleid",length=20,nullable=false, insertable=false, updatable=false)
+    @Column(name="ruleid",length=30,nullable=false, insertable=false, updatable=false)
     String ruleId;
 
     RulePK()
@@ -42,6 +44,10 @@ class Rule extends BEntity implements Serializable, IEntity
     @Column(length=30)
     String name;
 
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> ruleJson;
+
     void cancelLazyEr()
     {
 
@@ -56,6 +62,9 @@ class RulePermission extends BEntity implements Serializable, IEntity
 
     @EmbeddedId
     RulePermissionPK rulePermissionPK;
+
+    @Column(length = 50)
+    String permissionName;
 
     void cancelLazyEr()
     {
