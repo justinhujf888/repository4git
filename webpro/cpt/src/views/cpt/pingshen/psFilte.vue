@@ -2,7 +2,7 @@
     <animationPage ref="mainPage" :show="true">
         <div class="row gap-4">
             <Button severity="warn" label="暂时保存" @click="saveSubmitJudgeWorks(false)" :disabled="shiSubmited"/>
-            <Button label="提交评审" @click="saveSubmitJudgeWorks(true)" :disabled="shiSubmited"/>
+            <Button label="提交初筛结果" @click="saveSubmitJudgeWorks(true)" :disabled="shiSubmited"/>
         </div>
         <div class="md:row col p-2 card mt-8">
             <div class="w-full md:w-1/6 text-sm">

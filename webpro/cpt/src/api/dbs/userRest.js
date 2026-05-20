@@ -78,5 +78,8 @@ export default {
     },
     async updateRule(ds,onfun) {
         return await Http.callHttpFunction('/r/user/updateRule',ds,onfun);
+    },
+    async deleteRule(ds,onfun) {
+        return await Http.callHttpFunction('/r/user/deleteRule',ds,onfun);
     }
 };

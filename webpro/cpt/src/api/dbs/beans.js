@@ -86,6 +86,7 @@ export const Beans = {
             createDate: null,
             appId: "",
             status: -1,
+            psStatus: -1,
             masterCompetitionId: "",
             workItemList: []
 		}
@@ -263,6 +264,14 @@ export const Beans = {
             {id:0,name:"未提交"},
             {id:1,name:"已提交"},
             {id:9,name:"驳回"}
+        ]
+    },
+
+    psStatus() {
+        return [
+            {id:0,name:"作品已提交，进入初筛"},
+            {id:1,name:"作品通过初筛，进入复审"},
+            {id:2,name:"作品进入第二轮复审"}
         ]
     }
 }

@@ -20,7 +20,8 @@
                         <div class="between">
 <!--                            <span class="text-sm">{{work?.guiGe?.name}}</span>-->
                             <span class="text-sm">{{work?.createDate}}</span>
-                            <span class="text-sm font-semibold" :class="{'text-cyan-600':work?.status==1,'text-red-600':work?.status==9}">{{work.tempMap?.status}}</span>
+                            <span v-if="work?.psStatus<0" class="text-sm font-semibold" :class="{'text-cyan-600':work?.status==1,'text-red-600':work?.status==9}">{{work.tempMap?.status}}</span>
+                            <span v-else class="text-sm font-semibold text-cyan-600">{{work.tempMap?.psStatus}}</span>
                         </div>
                     </template>
                     <template #content>
@@ -133,6 +134,7 @@ function loadWorksByUser() {
                     }
                     work.tempMap = {};
                     work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
+                    work.tempMap.psStatus = lodash.find(Beans.psStatus(),(o)=>{return o.id==work.psStatus}).name;
                 }
             }
         }

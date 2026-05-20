@@ -342,6 +342,9 @@ class Work extends BEntity implements Serializable, IEntity
     @Column(length=1)
     byte status;
 
+    @Column(length=1)
+    byte psStatus;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 

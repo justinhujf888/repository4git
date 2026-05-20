@@ -315,6 +315,7 @@ class WorkService extends ModuleBean
                 [sf:"buyer_phone",bf:"buyer.phone"],
                 [sf:"appid",bf:"appId"],
                 [sf:"status",bf:"status"],
+                [sf:"psstatus",bf:"psStatus"],
                 [sf:"lat",bf:"lat"],
                 [sf:"lng",bf:"lng"],
                 [sf:"createdate",bf:"createDate"],
@@ -395,6 +396,11 @@ class WorkService extends ModuleBean
 //                println "=========================================================";
 //                println group.key;
                 List<Work> workList = this.qyWorks([appId:appId,competitionId:group.key.item1,guiGeId:group.key.item2=="-1" ? null : group.key.item2,statusList:[1 as byte]]).content;//查询已经提交的作品
+                // 将Work作品的状态改为进入初筛，这样作品的作者可以及时看到当前的作品评审状态
+                for(Work w in workList)
+                {
+                    this.updateTheObjectFilds(Work.simpleName,"appId=:appId and id=:id",[psStatus:pingShenStepId],[appId:w.appId,id:w.id],false);
+                }
                 if (group.value?.size()>0 && workList?.size()>0)
                 {
                     for(Work work in workList)
@@ -428,6 +434,11 @@ class WorkService extends ModuleBean
                 {
                     //从初筛的记录中获取通过的作品
                     workList = Linq.of(this.qyJudgeWorks(paramsMap).content).distinctBy (w->w.id).toList();
+                    // 将Work作品的状态改为已经通过初筛，进入复审，这样作品的作者可以及时看到当前的作品评审状态
+                    for(Work w in workList)
+                    {
+                        this.updateTheObjectFilds(Work.simpleName,"appId=:appId and id=:id",[psStatus:pingShenStepId],[appId:w.appId,id:w.id],false);
+                    }
                 }
                 else if (pingShenStepId == 2 as byte)
                 {
@@ -450,6 +461,9 @@ class WorkService extends ModuleBean
                     //避免会存在几个评委对同一个字段打分的情况，下面循环进行评分字段的判断与汇总，同一个字段取最高打分的评委分数
                     for (Work jw in workList)
                     {
+                        // 顺便将Work作品的状态改为进入第二轮复审，这样作品的作者可以及时看到当前的作品评审状态
+                        this.updateTheObjectFilds(Work.simpleName,"appId=:appId and id=:id",[psStatus:pingShenStepId],[appId:appId,id:jw.id],false);
+
                         jw.tempMap.sumFen = 0;
                         Map fmap = [:];
                         List<JudgeWork> jwList = this.newQueryUtils(false).masterTable(JudgeWork.class.simpleName,null,null)

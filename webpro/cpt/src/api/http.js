@@ -53,9 +53,11 @@ export const Http = {
                 if (error.response) {
                     // 请求已发出，服务器回复状态码非 2xx
                     console.error('服务器返回错误：', error.response.status);
+                    dialog.toastError("服务器返回错误，请联系管理员");
                 } else if (error.request) {
                     // 请求已发出，但没有收到响应
                     console.error('没有收到响应：', error.request);
+                    dialog.toastError("没有收到服务器响应，请联系管理员");
                 } else {
                     // 其他错误（例如，配置错误）
                     console.error('请求配置错误：', error.message);

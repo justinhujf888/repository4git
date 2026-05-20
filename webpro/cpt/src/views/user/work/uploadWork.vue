@@ -425,6 +425,7 @@ const init = (_mainPage,_mePage,_obj)=>{
         work.value.competition = Beans.competition();
         work.value.competition.id = competition.value.id;
         work.value.masterCompetitionId = masterCompetition.value.id;
+        work.value.psStatus = -1;
         if (!obj.data.guiGeList || obj.data.guiGeList?.length<1) {
             work.value.guiGe = null;
             work.value.guiGeId = null;
@@ -436,6 +437,7 @@ const init = (_mainPage,_mePage,_obj)=>{
             if (res.status=="OK") {
                 if (res.data!=null) {
                     work.value = res.data[0];
+                    work.value.psStatus = -1;
                     for (let workItem of lodash.filter(work.value.workItemList,(o)=>{return o.mediaType==0})) {
                         let item = lodash.find(workImageItems.value,(o)=>{return !o.file && o.mediaType==workItem.mediaType && o.type==workItem.type});
                         if (item) {

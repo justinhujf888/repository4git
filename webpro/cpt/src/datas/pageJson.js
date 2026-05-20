@@ -63,7 +63,7 @@ export default {
                       items: [
                           { userType: ["manager"], label: '作品审查', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/managerReview',key:"managerReview" },
                           { userType: ["manager"], label: '评审流程', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psSetup',key:"psSetup" },
-                          { userType: ["manager","judge"], label: '评审初筛', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFilte',key:"psFilte" },
+                          { userType: ["judge"], label: '评审初筛', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFilte',key:"psFilte" },
                           { userType: ["judge"], label: '作品评分', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psFen',key:"psFen" },
                           { userType: ["manager"], label: '评选排名', icon: 'pi pi-fw pi-file', to: '/manage/cpt/pingshen/psReport',key:"psReport" }
                       ]

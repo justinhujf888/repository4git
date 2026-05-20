@@ -19,13 +19,18 @@
                 <Column header="权限">
                     <template #body="{data}">
                         <div class="row gap-2 flex-wrap">
-                            <Chip v-for="qx of data?.ruleJson" :label="qx.label"/>
+                            <div v-for="qx of data?.ruleJson">
+                                <Chip v-if="!qx.pmenu" :label="qx.label"/>
+                            </div>
                         </div>
                     </template>
                 </Column>
                 <Column class="w-16 !text-end">
                     <template #body="{ data,index }">
-                        <Button icon="pi pi-pencil" @click="edit(data,index)" severity="secondary" rounded></Button>
+                        <div class="row gap-4">
+                            <Button icon="pi pi-pencil" @click="edit(data,index)" severity="secondary" rounded></Button>
+                            <Button icon="pi pi-trash" @click="del(data,index)" severity="secondary" rounded></Button>
+                        </div>
                     </template>
                 </Column>
             </DataTable>
@@ -62,7 +67,17 @@ onMounted(async () => {
 const edit = (data,index)=>{
     refUpdateRule.value.init(mainPage.value,updateRulePage.value,{data:data,process:'u',index:index,returnFunction:returnFunction});
     updateRulePage.value.open(mainPage.value);
-}
+};
+
+const del = async (data,index)=>{
+    dialog.confirm("确定删除这个角色吗？",async ()=>{
+        let res = await userRest.deleteRule({ruleId:data.rulePK.ruleId},null);
+        if (res.status=="OK") {
+            ruleList.value.splice(index,1);
+            dialog.toastSuccess(`角色${data.name}已删除`)
+        }
+    },null);
+};
 
 const returnFunction = (obj)=>{
     if (obj.process=="c") {

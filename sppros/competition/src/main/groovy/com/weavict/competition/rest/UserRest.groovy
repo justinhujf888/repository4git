@@ -311,4 +311,26 @@ class UserRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deleteRule")
+    String deleteRule(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            userBean.transactionCall(-1,{
+                userBean.deleteTheObject8Fields(RulePermission.simpleName,"rulePermissionPK.appId = :appId and rulePermissionPK.ruleId = :ruleId",[appId:query.appId,ruleId:query.ruleId],false);
+                userBean.deleteTheObject8Fields(Rule.simpleName,"rulePK.appId = :appId and rulePK.ruleId = :ruleId",[appId:query.appId,ruleId:query.ruleId],false);
+            });
+
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }
