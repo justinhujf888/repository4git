@@ -195,3 +195,42 @@ class Manager extends BEntity implements Serializable, IEntity
 
     }
 }
+
+@Embeddable
+class ManagerRulePK implements Serializable
+{
+    static final long serialVersionUID = 1L;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String managerId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String appId;
+
+    @Column(nullable=false, insertable=false, updatable=false,length = 30)
+    String ruleId;
+
+    ManagerRulePK() {}
+
+    ManagerRulePK(String appId,String managerId,String ruleId)
+    {
+        this.appId = appId;
+        this.managerId = managerId;
+        this.ruleId = ruleId;
+    }
+}
+
+@Table
+@Entity
+class ManagerRule extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @EmbeddedId
+    ManagerRulePK managerRulePK;
+
+    void cancelLazyEr()
+    {
+
+    }
+}

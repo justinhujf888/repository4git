@@ -333,4 +333,64 @@ class UserRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/queryManagerList")
+    String queryManagerList(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = this.buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return userBean.queryManagerList(query);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateManager")
+    String updateManager(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            Manager manager = this.objToBean(query.manager, Manager.class,null);
+            userBean.updateTheObject(manager);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/deleteManager")
+    String deleteManager(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            userBean.deleteTheObject8Fields(Manager.simpleName,"managerPK.appId = :appId and managerPK.managerId = :managerId",[appId:query.appId,managerId:query.managerId],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

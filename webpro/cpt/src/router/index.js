@@ -169,6 +169,14 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: '/manage/cpt/system/managers',
+                    name: 'managers',
+                    component: () => import('@/views/cpt/setup/manager/managerList.vue'),
+                    meta:{
+                        name: "管理员设置"
+                    }
+                },
+                {
                     path: '/manage/cpt/pingshen/managerReview',
                     name: 'managerReview',
                     component: () => import('@/views/cpt/pingshen/managerReview.vue'),

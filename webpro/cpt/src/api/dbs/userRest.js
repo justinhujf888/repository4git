@@ -81,5 +81,14 @@ export default {
     },
     async deleteRule(ds,onfun) {
         return await Http.callHttpFunction('/r/user/deleteRule',ds,onfun);
+    },
+    async queryManagerList(ds,onfun) {
+        return await Http.callHttpFunction('/r/user/queryManagerList',ds,onfun);
+    },
+    async updateManager(ds,onfun) {
+        return await Http.callHttpFunction('/r/user/updateManager',ds,onfun);
+    },
+    async deleteManager(ds,onfun) {
+        return await Http.callHttpFunction('/r/user/deleteManager',ds,onfun);
     }
 };

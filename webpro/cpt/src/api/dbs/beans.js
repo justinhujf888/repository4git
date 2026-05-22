@@ -194,6 +194,26 @@ export const Beans = {
         }
     },
 
+    managerPK() {
+        return {
+            appId: "",
+            managerId: ""
+        }
+    },
+
+    manager() {
+        return {
+            managerPK: this.managerPK(),
+            phone: "",
+            name: "",
+            password: "",
+            headImgUrl: "",
+            sex: -1,
+            description: "",
+            createDate: null
+        }
+    },
+
     rulePK() {
         return {
             appId: "",
