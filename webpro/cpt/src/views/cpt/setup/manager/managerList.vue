@@ -19,8 +19,10 @@
                 <Column header="权限">
                     <template #body="{data}">
                         <div class="row gap-2 flex-wrap">
-                            <div v-for="qx of data?.ruleJson">
-                                <Chip v-if="!qx.pmenu" :label="qx.label"/>
+                            <div v-for="rp of data?.tempMap?.selRules
+">
+<!--                                <Chip :label="rp?.tempMap?.permissionName"/>-->
+                                <Chip :label="rp?.ruleName"/>
                             </div>
                         </div>
                     </template>
@@ -62,6 +64,7 @@ onMounted(async () => {
     if (!managerList.value) {
         managerList.value = [];
     }
+    // console.log(managerList.value);
 });
 
 const edit = (data,index)=>{

@@ -18,12 +18,18 @@
                         <Message v-if="password1!=password2" severity="error" size="small" variant="simple">两次密码输入不一致</Message>
                     </IftaLabel>
                     <IftaLabel>
-                        <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">备注</label>
-                        <Textarea v-model="manager.description" autoResize rows="15" class="w-full" />
+                        <label for="rules" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">选择角色</label>
+                        <div class="row card items-center gap-6 mt-5">
+                            <div v-for="rule of ruleList" :key="rule.rulePK.ruleId" class="row items-center gap-2">
+                                <Checkbox v-model="selRules" :inputId="rule.rulePK.ruleId" name="rule" :value="{ruleId:rule.rulePK.ruleId,ruleName:rule.name}" />
+                                <label :for="rule.rulePK.ruleId" class="!static">{{ rule.name }}</label>
+                            </div>
+                            <inputText name="rules" :value="selRules" class="hidden"/>
+                        </div>
                     </IftaLabel>
                     <IftaLabel>
-                        <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">选择角色</label>
-
+                        <label for="description" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">备注</label>
+                        <Textarea v-model="manager.description" autoResize rows="15" class="w-full" />
                     </IftaLabel>
                     <div class="row mt-12 center gap-4">
                         <Button type="submit" label="保存" class="px-8" _as="router-link" _to="/"></Button>
@@ -46,10 +52,13 @@ import userRest from "@/api/dbs/userRest";
 import util from '@/api/util';
 import dialog from '@/api/uniapp/dialog';
 import checker from '@/api/check/checker';
+import lodash from 'lodash-es';
 
 const manager = ref(Beans.manager());
 const password1 = ref('');
 const password2 = ref('');
+const ruleList = ref([]);
+const selRules = ref([]);
 
 let errors = [];
 let host = inject("domain");
@@ -87,8 +96,16 @@ const onFormSubmit = async ({ valid }) => {
             manager.value.temp = true;
             manager.value.password = password1.value;
         }
+        if (selRules.value) {
+            if (!manager.value.tempMap) {
+                manager.value.tempMap = {};
+            }
+            manager.value.tempMap.selRules = selRules.value;
+        }
+        // console.log(manager.value.tempMap.selRules);
         let res = await userRest.updateManager({manager:manager.value},null);
         if (res.status=="OK") {
+            manager.value.tempMap.selRules = selRules.value;
             obj.data = manager.value;
             obj.returnFunction(obj);
             mePage.close(mainPage);
@@ -104,11 +121,23 @@ const init = async (_mainPage,_mePage,_obj)=>{
     mainPage = _mainPage;
     mePage = _mePage;
     obj = _obj;
+
+    let res = await userRest.queryRuleList({},null);
+    ruleList.value = res.data;
+    if (!ruleList.value) {
+        ruleList.value = [];
+    }
+    selRules.value = [];
+
     if (obj.process=="c") {
         manager.value = Beans.manager();
     } else if (obj.process=="u") {
         manager.value = obj.data;
-        // console.log(manager.value);
+        // console.log(manager.value?.tempMap?.selRules);
+        lodash.forEach(manager.value.tempMap?.selRules,(rp,k)=>{
+            selRules.value.push({ruleId:rp.ruleId,ruleName:rp.ruleName})
+        });
+        // console.log(selRules.value);
     }
 }
 defineExpose({ init });

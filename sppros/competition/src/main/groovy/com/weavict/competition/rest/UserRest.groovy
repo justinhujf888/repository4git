@@ -8,6 +8,8 @@ import com.weavict.competition.entity.BuyerAppInfoPK
 import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.Manager
 import com.weavict.competition.entity.ManagerPK
+import com.weavict.competition.entity.ManagerRule
+import com.weavict.competition.entity.ManagerRulePK
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.Rule
 import com.weavict.competition.entity.RulePermission
@@ -324,7 +326,6 @@ class UserRest extends BaseRest
                 userBean.deleteTheObject8Fields(RulePermission.simpleName,"rulePermissionPK.appId = :appId and rulePermissionPK.ruleId = :ruleId",[appId:query.appId,ruleId:query.ruleId],false);
                 userBean.deleteTheObject8Fields(Rule.simpleName,"rulePK.appId = :appId and rulePK.ruleId = :ruleId",[appId:query.appId,ruleId:query.ruleId],false);
             });
-
             return """{"status":"OK"}""";
         }
         catch (Exception e)
@@ -366,7 +367,23 @@ class UserRest extends BaseRest
         try
         {
             Manager manager = this.objToBean(query.manager, Manager.class,null);
-            userBean.updateTheObject(manager);
+            if (manager.temp==true)
+            {
+                manager.password = userBean.buildPasswordCode(manager.password);
+            }
+            userBean.transactionCall(-1,{
+                userBean.updateObject(manager);
+                userBean.deleteTheObject8Fields("managerrule","appid=:appId and managerid=:managerId",[appId:manager.managerPK.appId,managerId: manager.managerPK.managerId],true);
+                if (manager.tempMap?.selRules!=null && manager.tempMap?.selRules?.size()>0)
+                {
+                    for(r in manager.tempMap?.selRules)
+                    {
+                        ManagerRule managerRule = new ManagerRule();
+                        managerRule.managerRulePK = new ManagerRulePK(query.appId as String,manager.managerPK.managerId,r.ruleId);
+                        userBean.updateObject(managerRule);
+                    }
+                }
+            });
             return """{"status":"OK"}""";
         }
         catch (Exception e)

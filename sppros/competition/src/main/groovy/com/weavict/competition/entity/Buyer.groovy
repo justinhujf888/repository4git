@@ -145,7 +145,7 @@ class ManagerPK implements Serializable
     @Column(name="appid",length=30,nullable=false, insertable=false, updatable=false)
     String appId;
 
-    @Column(name="managerid",length=20,nullable=false, insertable=false, updatable=false)
+    @Column(name="managerid",length=30,nullable=false, insertable=false, updatable=false)
     String managerId;
 
     ManagerPK()
