@@ -6,6 +6,11 @@
                     <IftaLabel>
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">管理员名称</label>
                         <InputText name="name" placeholder="请输入管理员名称" class="w-full md:w-[30rem] mb-4" v-model="manager.name" />
+                        <Message v-for="er of $form.name?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
+                    </IftaLabel>
+                    <IftaLabel>
+                        <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">管理员账号</label>
+                        <InputText name="managerId" placeholder="请输入管理员账号" class="w-full md:w-[30rem] mb-4" v-model="manager.managerPK.managerId" />
                     </IftaLabel>
                     <IftaLabel>
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2">密码</label>
@@ -78,6 +83,14 @@ const resolver = ({ values }) => {
 
     primeUtil.buildFormValidError(errors.password2,"error","两次密码输入不一致",()=>{return password1.value!=password2.value},(error)=>{errors.password2 = error});
 
+    // errors.name = [];
+    // if (obj.process=="c") {
+    //     let res = await userRest.queryManagerList({name:manager.value.name},null);
+    //     if (res.data && res.data?.length>0) {
+    //         errors.name.push({type:"error",message:"已存在相同名称的管理员，请重新定义管理员名称"});
+    //     }
+    // }
+
     return {
         values, // (Optional) Used to pass current form values to submit event.
         errors
@@ -87,6 +100,11 @@ const resolver = ({ values }) => {
 const onFormSubmit = async ({ valid }) => {
     if (valid) {
         if (obj.process=="c") {
+            let res = await userRest.queryManagerList({managerId:manager.value.managerPK.managerId},null);
+            if (res.data && res.data?.length>0) {
+                dialog.toastError("已存在相同账号的管理员，请重新定义管理员账号");
+                return;
+            }
             manager.value.managerPK.appId = host;
             manager.value.managerPK.managerId = Beans.buildPId("");
             manager.value.createDate = new Date().getTime();

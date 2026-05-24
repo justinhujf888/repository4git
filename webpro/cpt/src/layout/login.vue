@@ -54,22 +54,23 @@ const resolver = ({ values }) => {
     };
 };
 
-const onFormSubmit = ({ valid }) => {
+const onFormSubmit = async ({ valid }) => {
     if (valid) {
         if (userType.value == "manager") {
-            userRest.managerLogin({managerId:managerId.value,password:password.value},(data)=>{
-                if (data.status=="OK") {
-                    // useStorage("managerId",managerId.value);
-                    util.intoStorgeCry("userType",userType.value);
-                    util.intoStorgeCry("managerId",managerId.value);
-                    util.intoStorgeCry("managerInfo",JSON.stringify(data.manager));
-                    emit("afterLogin",data.manager);
-                } else if (data.status=="ER_NOHAS") {
-                    dialog.toastError("您输入的账号或密码错误");
-                } else if (data.status=="ER_PW") {
-                    dialog.toastError("您输入的账号或密码错误");
-                }
-            });
+            let data = await userRest.managerLogin({managerId:managerId.value,password:password.value},null);
+            if (data.status=="OK") {
+                // useStorage("managerId",managerId.value);
+                util.intoStorgeCry("userType",userType.value);
+                util.intoStorgeCry("managerId",managerId.value);
+                util.intoStorgeCry("managerInfo",JSON.stringify(data.manager));
+                emit("afterLogin",data.manager);
+            } else if (data.status=="ER_NOHAS") {
+                dialog.toastError("您输入的账号或密码错误");
+            } else if (data.status=="ER_PW") {
+                dialog.toastError("您输入的账号或密码错误");
+            }
+            let ps = await userRest.queryManagerList({qyPermissions:true},null);
+            console.log(ps);
         } else if (userType.value == "judge") {
             userRest.judgeLogin({phone:managerId.value,password:password.value},(data)=>{
                 if (data.status=="OK") {

@@ -11,19 +11,19 @@ export default {
         }
         return errors;
     },
-    buildFormValidError(error,type,message,checkFun,returnFun) {
+    async buildFormValidError(error,type,message,checkFun,returnFun) {
         if (!error) {
             error = [];
         }
         if (checkFun) {
-            if (checkFun()) {
+            if (await checkFun()) {
                 error.push({ type: type, message: message });
             }
         } else {
             error.push({ type: type, message: message });
         }
         if (returnFun) {
-            returnFun(error);
+            await returnFun(error);
         }
     }
 }

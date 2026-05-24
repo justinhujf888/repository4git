@@ -59,7 +59,7 @@ const refUpdateManager = useTemplateRef("refUpdateManager");
 const managerList = ref([]);
 
 onMounted(async () => {
-    let res = await userRest.queryManagerList({},null);
+    let res = await userRest.queryManagerList({qyRules:true},null);
     managerList.value = res.data;
     if (!managerList.value) {
         managerList.value = [];
