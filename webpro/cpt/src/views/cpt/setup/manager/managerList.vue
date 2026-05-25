@@ -15,8 +15,9 @@
 
                 }
             }">
+                <Column field="managerPK.managerId" header="管理员账号" class="w-36"></Column>
                 <Column field="name" header="管理员名称" class="w-36"></Column>
-                <Column header="权限">
+                <Column header="角色">
                     <template #body="{data}">
                         <div class="row gap-2 flex-wrap">
                             <div v-for="rp of data?.tempMap?.selRules

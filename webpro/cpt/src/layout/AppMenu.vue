@@ -16,9 +16,11 @@ onMounted(() => {
 
 const buildMenu = ()=>{
     userType = util.giveStorgeCry("userType");
+    let managerId = util.giveStorgeCry("managerId");
     if (lodash.includes(window.location.href,"/manage/")) {
         model.value = [{label:"",items:[]}];
         let menuJson = pageJson.manageMenu();
+        let permissions = [...JSON.parse(util.giveStorgeCry("rulePermissions")),"dashboard"];
         lodash.forEach(menuJson[0].items, (m) => {
             if (m.userType) {
                 // console.log(userType,m.userType);
@@ -27,13 +29,17 @@ const buildMenu = ()=>{
                         let mm = lodash.cloneDeep(m);
                         mm.items = [];
                         lodash.forEach(m.items,(sm)=>{
-                            if (lodash.findIndex(sm.userType,(o)=>{return o==userType})>-1) {
+                            if (lodash.findIndex(sm.userType,(o)=>{return o==userType})>-1 && (lodash.findIndex(permissions,(o)=>{return o==sm.key})>-1 || lodash.toUpper(managerId)=="ADMIN")) {
                                 mm.items.push(sm);
                             }
                         });
-                        model.value[0].items.push(mm);
+                        if (mm.items.length>0) {
+                            model.value[0].items.push(mm);
+                        }
                     } else {
-                        model.value[0].items.push(m);
+                        if (lodash.findIndex(permissions,(o)=>{return o==m.key})>-1 || lodash.toUpper(managerId)=="ADMIN") {
+                            model.value[0].items.push(m);
+                        }
                     }
                     // console.log(JSON.stringify(model.value));
                 }

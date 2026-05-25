@@ -9,8 +9,8 @@
                         <Message v-for="er of $form.name?.errors" class="my-2" severity="error" size="small" variant="simple">{{er.message}}</Message>
                     </IftaLabel>
                     <IftaLabel>
-                        <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">管理员账号</label>
-                        <InputText name="managerId" placeholder="请输入管理员账号" class="w-full md:w-[30rem] mb-4" v-model="manager.managerPK.managerId" />
+                        <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">管理员账号(新增后不可修改)</label>
+                        <InputText name="managerId" placeholder="请输入管理员账号" class="w-full md:w-[30rem] mb-4" v-model="manager.managerPK.managerId" :readonly="obj?.process=='u'"/>
                     </IftaLabel>
                     <IftaLabel>
                         <label for="password1" class="block text-surface-900 dark:text-surface-0 font-medium text-base mb-2">密码</label>
@@ -70,6 +70,7 @@ let host = inject("domain");
 let mainPage = null;
 let mePage = null;
 let obj = null;
+let oldManagerId = "";
 
 onMounted(async () => {
 
@@ -100,15 +101,29 @@ const resolver = ({ values }) => {
 const onFormSubmit = async ({ valid }) => {
     if (valid) {
         if (obj.process=="c") {
-            let res = await userRest.queryManagerList({managerId:manager.value.managerPK.managerId},null);
-            if (res.data && res.data?.length>0) {
+            if (lodash.toUpper(manager.value.managerPK.managerId)=="ADMIN") {
+                dialog.toastError("已存在相同账号的管理员，请重新定义管理员账号");
+                return;
+            }
+            let res = await userRest.queryManagerList({ managerId: manager.value.managerPK.managerId }, null);
+            if (res.data && res.data?.length > 0) {
                 dialog.toastError("已存在相同账号的管理员，请重新定义管理员账号");
                 return;
             }
             manager.value.managerPK.appId = host;
-            manager.value.managerPK.managerId = Beans.buildPId("");
             manager.value.createDate = new Date().getTime();
         }
+        // if (obj.process=="c" || (obj.process=="u" && oldManagerId!=manager.value.managerPK.managerId)) {
+        //     if (lodash.toUpper(manager.value.managerPK.managerId)=="ADMIN") {
+        //         dialog.toastError("已存在相同账号的管理员，请重新定义管理员账号");
+        //         return;
+        //     }
+        //     let res = await userRest.queryManagerList({ managerId: manager.value.managerPK.managerId }, null);
+        //     if (res.data && res.data?.length > 0) {
+        //         dialog.toastError("已存在相同账号的管理员，请重新定义管理员账号");
+        //         return;
+        //     }
+        // }
         if (password1.value && password2.value && password1.value.length > 0 && password2.value.length > 0) {
             // console.log(password1.value);
             manager.value.temp = true;
@@ -151,6 +166,7 @@ const init = async (_mainPage,_mePage,_obj)=>{
         manager.value = Beans.manager();
     } else if (obj.process=="u") {
         manager.value = obj.data;
+        oldManagerId = manager.value.managerPK.managerId;
         // console.log(manager.value?.tempMap?.selRules);
         lodash.forEach(manager.value.tempMap?.selRules,(rp,k)=>{
             selRules.value.push({ruleId:rp.ruleId,ruleName:rp.ruleName})

@@ -32,6 +32,7 @@ import { useStorage } from '@vueuse/core';
 import dialog from '@/api/uniapp/dialog';
 import Page from '@/api/uniapp/page';
 import util from '@/api/util';
+import lodash from 'lodash-es';
 
 const emit = defineEmits(["afterLogin"]);
 const managerId = ref("");
@@ -69,8 +70,19 @@ const onFormSubmit = async ({ valid }) => {
             } else if (data.status=="ER_PW") {
                 dialog.toastError("您输入的账号或密码错误");
             }
-            let ps = await userRest.queryManagerList({qyPermissions:true},null);
-            console.log(ps);
+            if (lodash.toUpper(managerId.value)=="ADMIN") {
+                util.intoStorgeCry("rulePermissions",JSON.stringify([]));
+            } else {
+                let ps = await userRest.queryManagerList({qyPermissions:true,managerId:managerId.value},null);
+                if (ps.status=="OK") {
+                    // console.log(ps.data[0].tempMap.rulePermissions);
+                    let permissions = [];
+                    lodash.forEach(ps.data[0].tempMap.rulePermissions,(v)=>{
+                        permissions.push(v.rulePermissionPK.permissionId);
+                    });
+                    util.intoStorgeCry("rulePermissions",JSON.stringify(permissions));
+                }
+            }
         } else if (userType.value == "judge") {
             userRest.judgeLogin({phone:managerId.value,password:password.value},(data)=>{
                 if (data.status=="OK") {

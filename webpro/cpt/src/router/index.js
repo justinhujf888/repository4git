@@ -360,6 +360,11 @@ router.beforeEach((to, from) => {
     // ...localStorage.getItem("userId")
     if (lodash.includes(to.href,"/manage/")) {
         document.documentElement.classList.add('app-dark');
+        if (lodash.toUpper(util.giveStorgeCry("managerId"))!="ADMIN") {
+            if (lodash.findIndex([...JSON.parse(util.giveStorgeCry("rulePermissions")),"dashboard"],(o)=>{return o==to.name}) < 0) {
+                return { name: 'dashboard' };
+            }
+        }
     } else {
         document.documentElement.classList.remove('app-dark');
         let t = null;

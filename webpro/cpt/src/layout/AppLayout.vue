@@ -14,22 +14,22 @@ import AppMenu from "@/layout/AppMenu.vue";
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);
-let managerId = "";
-let managerInfo = "";
+const managerId = ref(null);
+const managerInfo = ref(null);
 const visible = ref(false);
 const appSideBar = useTemplateRef("appSideBar");
 
 
 onMounted(() => {
     if (localStorage.getItem("managerId")) {
-        managerId = util.giveStorgeCry("managerId");
+        managerId.value = util.giveStorgeCry("managerId");
     }
     if (localStorage.getItem("managerInfo")) {
-        managerInfo = util.giveStorgeCry("managerInfo");
+        managerInfo.value = JSON.parse(util.giveStorgeCry("managerInfo"));
     }
     // console.log("managerId", managerId,"managerInfo",managerInfo);
     // console.log(appSideBar.value);
-    if (!managerId) {
+    if (!managerId.value) {
         visible.value = true;
     }
 });
@@ -84,6 +84,15 @@ function afterLogin(manager) {
     // dialog.toastSuccess("您已成功登录系统");
     dialog.alertBack("您已成功登录系统",()=>{
         // console.log(appSideBar.value);
+        if (localStorage.getItem("managerId")) {
+            managerId.value = util.giveStorgeCry("managerId");
+        }
+        if (localStorage.getItem("managerInfo")) {
+            managerInfo.value = JSON.parse(util.giveStorgeCry("managerInfo"));
+        }
+        if (!managerId.value) {
+            visible.value = true;
+        }
         appSideBar.value.buildMenu();
         Page.redirectTo("dashboard",null);
     });
@@ -102,7 +111,7 @@ function afterLogout() {
                 <Login @afterLogin="afterLogin"></Login>
             </template>
         </Dialog>
-        <app-topbar @afterLogout="afterLogout"></app-topbar>
+        <app-topbar v-model:manager-info="managerInfo" @afterLogout="afterLogout"></app-topbar>
 <!--        <app-sidebar ref="appSideBar"></app-sidebar>-->
         <div class="layout-sidebar">
             <app-menu ref="appSideBar"></app-menu>

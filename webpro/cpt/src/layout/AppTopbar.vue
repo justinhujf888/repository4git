@@ -6,8 +6,12 @@ import page from '@/api/uniapp/page';
 import useGlobal from "@/api/hooks/useGlobal";
 import dialog from "@/api/uniapp/dialog";
 import Page from "@/api/uniapp/page";
+import util from '@/api/util';
 
 const emit = defineEmits(["afterLogout"]);
+const props = defineProps({
+    managerInfo: { type: Object }
+});
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 const siteDatas = ref(null);
 (async ()=>{
@@ -36,7 +40,7 @@ function logout() {
             </router-link>
         </div>
 
-        <div class="layout-topbar-actions">
+        <div class="layout-topbar-actions items-center">
 <!--            <div class="layout-config-menu">-->
 <!--                <button type="button" class="layout-topbar-action" @click="toggleDarkMode">-->
 <!--                    <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>-->
@@ -52,7 +56,9 @@ function logout() {
 <!--                    <AppConfigurator />-->
 <!--                </div>-->
 <!--            </div>-->
-
+            <div>
+                <span>{{managerInfo?.name}}</span>
+            </div>
             <button
                 class="layout-topbar-menu-button layout-topbar-action"
                 v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"

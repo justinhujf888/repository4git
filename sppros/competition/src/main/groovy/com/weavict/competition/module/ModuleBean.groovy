@@ -450,28 +450,35 @@ class QueryUtils
 
     QueryUtils buildSql()
     {
+        sqlMaps = [:];
         sbf << " from ${map["masterTableName"]} as ${map["masterTableAliasName"]}";
+        sqlMaps["from"] = sbf.toString();
         if (joinOnList!=null && joinOnList.size()>0)
         {
             joinOnList.each {
                 sbf << it;
             }
+            sqlMaps["joinOnList"] = joinOnList;
         }
         if (map["where"]!=null)
         {
             sbf << map["where"].toString();
+            sqlMaps["where"] = map["where"].toString();
         }
         if (map["groupBy"]!=null)
         {
             sbf << map["groupBy"];
+            sqlMaps["groupBy"] = map["groupBy"];
         }
         if (map["orderBy"]!=null)
         {
             sbf << map["orderBy"];
+            sqlMaps["orderBy"] = map["orderBy"];
         }
         if (map["union"]!=null)
         {
             sbf << map["union"];
+            sqlMaps["union"] = map["union"];
         }
         return this;
     }
