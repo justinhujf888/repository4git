@@ -8,7 +8,7 @@ export default {
             {key:"pingJiang",label:"评奖",menuType:1,route:"",isUserSetup:true,isInPageMenu:true,items:[
                     {key:"saiZhi",label:"赛制",isUserSetup:true,route:"saiZhi",isInPageMenu:true},
                     {key:"judge",label:"评委团",isUserSetup:true,route:"judge",isInPageMenu:true},
-                    {key:"pingShenBiaoZun",label:"评审标准",isUserSetup:true,route:"",isInPageMenu:true}
+                    {key:"pingShenBiaoZun",label:"评审标准",isUserSetup:true,route:"pingShenBiaoZun",isInPageMenu:true}
                 ]},
             {key:"huoJiangWork",label:"优胜作品",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
                     {key:"storyWork",label:"往届优胜作品",isUserSetup:true,route:"",isInPageMenu:true},
@@ -219,7 +219,8 @@ export default {
                 setup:{
                     aboutPageImg:{sort:0,type:"image",yeWuType:"media",pageName:"about",value:{},pre:"关于页面背景图片"},
                     judgePageImg:{sort:1,type:"image",yeWuType:"media",pageName:"judge",value:{},pre:"评委页面背景图片"},
-                    saiZhiPageImg:{sort:2,type:"image",yeWuType:"media",pageName:"saiZhi",value:{},pre:"赛制页面背景图片"}
+                    saiZhiPageImg:{sort:2,type:"image",yeWuType:"media",pageName:"saiZhi",value:{},pre:"赛制页面背景图片"},
+                    psbzPageImg:{sort:2,type:"image",yeWuType:"media",pageName:"pingShenBiaoZun",value:{},pre:"评审标准页面背景图片"}
                 }
             }
         }
@@ -347,6 +348,17 @@ export default {
                 setup:{
                     title:{sort:0,type:"title",pre:"标题",value:""},
                     text:{sort:1,type:"html",value:"",pre:"说明"}
+                }
+            }
+        }
+    },
+    uiPingShenBiaoZunJson() {
+        return {
+            titleTitleArea0:{
+                sort:0,
+                name:"标题文字",
+                setup:{
+                    titleTextGruop:{sort:0,type:"box",yeWuType:"titleTextGruop",pre:"",value:[],eltTypes:[{key:"title",type:"title",pre:"标题",value:""},{key:"text",type:"html",pre:"文字",value:""}]}
                 }
             }
         }

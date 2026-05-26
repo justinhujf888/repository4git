@@ -599,14 +599,15 @@ class WorkRest extends BaseRest
                     }).call()
             ]));
 
+            MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
+            workService.detach(masterCompetition);
+            
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
             writer.write(buildObjectMapper().writeValueAsString(masterCompetition.workSetup));
 
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/masterCompetition.json""".toString(),"utf8");
             writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString([
                      masterCompetitionInfo:({
-                        MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
-                         workService.detach(masterCompetition);
                         masterCompetition.competitionList = workService.qyCompetitionList([appId:query.appId,masterCompetitionId:masterCompetition.id,shiQyGuiGeList:true]);
                         for(Competition competition in masterCompetition.competitionList)
                         {

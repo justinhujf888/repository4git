@@ -63,6 +63,14 @@ const router = createRouter({
                         name: "赛制"
                     }
                 },
+                {
+                    path: '/us/pingShenBiaoZun',
+                    name: 'pingShenBiaoZun',
+                    component: () => import('@/views/documents/pingShenBiaoZun.vue'),
+                    meta:{
+                        name: "评审标准"
+                    }
+                }
             ]
         },
         {

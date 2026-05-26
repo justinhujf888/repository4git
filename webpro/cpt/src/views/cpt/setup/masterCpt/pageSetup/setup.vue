@@ -60,6 +60,7 @@ let pageComponentMap = [
     {key:"judge",jsonFun:()=>{return pj.uiJudgeJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
     {key:"pingWei",component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
     {key:"saiZhi",jsonFun:()=>{return pj.uiSaiZhiJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})},
+    {key:"pingShenBiaoZun",jsonFun:()=>{return pj.uiPingShenBiaoZunJson()},component:defineAsyncComponent(()=>{return import(`@/views/cpt/setup/masterCpt/pageSetup/index/${a}.vue`)})}
 ];
 
 onMounted(()=>{

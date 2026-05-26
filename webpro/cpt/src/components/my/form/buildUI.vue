@@ -2,12 +2,14 @@
     <div v-if="element.type=='title' || element.type=='headTitle'" class="row">
         <title-text :text="element.value" text-class="text-black font-semibold"/>
     </div>
-    <div v-else-if="element.type=='box' && element.yeWuType=='titleTextGruop'" class="row">
-        <div v-for="group of element.value" class="mt-10 leading-10">
+    <div v-else-if="element.type=='box' && element.yeWuType=='titleTextGruop'" class="col">
+        <div v-for="group of element.value" class="mt-10 leading-10" :class="groupClass">
             <title-text :text="group.title" text-class="text-black font-semibold"/>
             <div class="mt-10">
-                <span class="textwrap text-xl">{{group.text}}</span>
+                <span v-if="eltTypes.text=='text'" class="textwrap text-xl">{{group.text}}</span>
+                <div v-else-if="eltTypes.text=='html'" v-html="group.text" :class="htmlClass"></div>
             </div>
+            <slot name="groupFoot"></slot>
         </div>
     </div>
     <div v-else-if="element.type=='box' && element.yeWuType!='titleTextGruop'" class="row">
@@ -41,17 +43,24 @@
 
 <script setup>
 import TitleText from '@/components/my/form/titleText.vue';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import pj from '@/datas/pageJson';
+import lodash from 'lodash-es';
 
 const element = defineModel("element");
+const eltTypes = ref({});
 const props = defineProps({
-    htmlClass: {type:String,default:""}
+    htmlClass: {type:String,default:""},
+    groupClass: {type:String,default:""}
 });
 
 onMounted(async ()=>{
     await pj.processPageImageJson(element.value);
     // console.log("element.value",element.value);
+    lodash.forEach(element.value.eltTypes,(v)=>{
+        eltTypes.value[v.key] = v.type;
+    });
+    // console.log(eltTypes.value);
 });
 </script>
 
