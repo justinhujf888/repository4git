@@ -154,11 +154,25 @@ class WorkService extends ModuleBean
 
     List<WorkLog> qyWorkLog8Work(Map query)
     {
-        List<WorkLog> workLogList = this.newQueryUtils(false).masterTable(WorkLog.simpleName, null, null)
-                .where("appId = :appId", ["appId": query.appId], null, { return true })
-                .where("id = :id", [id: query.id], "and", { !(query.id in [null, ""]) })
-                .where("workId = :workId", ["workId": query.workId], "and", { return true })
+        query.listKey = ["masterCompetitionId"];
+        Map map = this.giveCurrentMasterCompetitionSetup(query);
+//        println map;
+        List<WorkLog> workLogList = this.newQueryUtils(true,true).masterTable("worklog", "wl", [
+                [sf:"id",bf:"id"],
+                [sf:"createdate",bf:"createDate"],
+                [sf:"log",bf:"log"],
+                [sf:"appid",bf:"appId"],
+                [sf:"workid",bf:"workId"]
+        ]).joinTable("work","w","left join","w.id = wl.workid",[
+                [sf:"name",bf:"tempMap.workName"]
+        ])
+                .where("wl.appid = :appId", ["appId": query.appId], null, { return true })
+                .where("wl.id = :id", [id: query.id], "and", {return !(query.id in [null, ""]) })
+                .where("wl.workid = :workId", ["workId": query.workId], "and", { return !(query.workId in [null,""]) })
+                .where("w.mastercompetitionid = :masterCompetitionId",[masterCompetitionId:map.map.masterCompetitionId],"and",{return true})
+                .where("w.buyer_phone = :userId",[userId:query.userId],"and",{return true})
                 .orderBy("createDate")
+                .beanSetup(WorkLog.class,null,null)
                 .buildSql().run().content;
         for (WorkLog workLog in workLogList) {
             workLog.cancelLazyEr();
@@ -187,6 +201,20 @@ class WorkService extends ModuleBean
                 [sort: 2, id: 2, name: "作品第二轮评分", type: 1, data:[:]],
                 [sort: 3, id: 3, name: "作品汇总发布", type: 1, data:[:]]
         ]];
+    }
+
+    Map giveCurrentMasterCompetitionSetup(Map query)
+    {
+        List<CurrentMasterCompetitionSetup> currentMasterCompetitionSetupList = this.newQueryUtils(false,false).masterTable(CurrentMasterCompetitionSetup.simpleName,null,null)
+                .where("currentMasterCompetitionSetupPK.appId = :appId",[appId:query.appId],null,{return true})
+                .where("currentMasterCompetitionSetupPK.key in :keys",[keys:query.listKey],"and",{return true})
+                .buildSql().run().content;
+        Map maps = new HashMap();
+        for(CurrentMasterCompetitionSetup cm in currentMasterCompetitionSetupList)
+        {
+            maps[cm.currentMasterCompetitionSetupPK.key] = cm.value;
+        }
+        return [list:currentMasterCompetitionSetupList,map:maps];
     }
 
     @Transactional

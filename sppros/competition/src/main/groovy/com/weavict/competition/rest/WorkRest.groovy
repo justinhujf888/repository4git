@@ -475,7 +475,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
+            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd HH:mm:ss",null);
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
@@ -932,23 +932,16 @@ class WorkRest extends BaseRest
         try
         {
             ObjectMapper objectMapper = buildObjectMapper();
-            List<CurrentMasterCompetitionSetup> currentMasterCompetitionSetupList = null;
-            currentMasterCompetitionSetupList = workService.newQueryUtils(false,false).masterTable(CurrentMasterCompetitionSetup.simpleName,null,null)
-                    .where("currentMasterCompetitionSetupPK.appId = :appId",[appId:query.appId],null,{return true})
-                    .where("currentMasterCompetitionSetupPK.key in :keys",[keys:objToBean(query.keys,List.class,objectMapper)],"and",{return true})
-                    .buildSql().run().content;
+            List listKey = objToBean(query.keys,List.class,objectMapper);
+            query.listKey = listKey;
+            Map map = workService.giveCurrentMasterCompetitionSetup(query);
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({
-                         return currentMasterCompetitionSetupList;
+                         return map.list;
                      }).call(),
                      "map":({
-                                Map maps = new HashMap();
-                                for(CurrentMasterCompetitionSetup cm in currentMasterCompetitionSetupList)
-                                {
-                                    maps[cm.currentMasterCompetitionSetupPK.key] = cm.value;
-                                }
-                                return maps;
+                         return map.map;
                             }).call()
                     ]);
         }

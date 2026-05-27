@@ -6,7 +6,7 @@
         <div v-for="group of element.value" class="mt-10 leading-10" :class="groupClass">
             <title-text :text="group.title" text-class="text-black font-semibold"/>
             <div class="mt-10">
-                <span v-if="eltTypes.text=='text'" class="textwrap text-xl">{{group.text}}</span>
+                <span v-if="eltTypes.text=='text' || eltTypes.text=='textArea'" class="textwrap text-xl">{{group.text}}</span>
                 <div v-else-if="eltTypes.text=='html'" v-html="group.text" :class="htmlClass"></div>
             </div>
             <slot name="groupFoot"></slot>
