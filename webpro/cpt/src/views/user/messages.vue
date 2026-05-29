@@ -19,6 +19,9 @@
                     </template>
                 </DataView>
             </div>
+            <div v-else class="center mt-16 text-base">
+                <span>无消息数据</span>
+            </div>
         </div>
     </animationPage>
 </template>

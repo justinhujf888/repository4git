@@ -108,6 +108,10 @@
 <!--                        </ScrollPanel>-->
 <!--                    </Fieldset>-->
 
+                    <Fieldset class="text-wrap text-start" legend="作品设置" :toggleable="false" :collapsed="false" :pt="{legendLabel:{class:'text-orange-300'}}">
+                        <work-setup v-model:workSetupJson="slotProps.data.workSetup" v-model:master-competition-id="slotProps.data.id"/>
+                    </Fieldset>
+
                     <Fieldset class="text-wrap text-start" legend="字段配置" :toggleable="false" :collapsed="false" :pt="{legendLabel:{class:'text-orange-300'}}">
                         <ScrollPanel class="w-80 sm:w-full">
                             <div class="!relative w-full">
@@ -265,6 +269,7 @@ import { Beans } from '@/api/dbs/beans';
 import systemRest from "@/api/dbs/systemRest";
 
 import pageSetup from "@/views/cpt/setup/masterCpt/pageSetup/setup.vue";
+import WorkSetup from '@/views/cpt/setup/masterCpt/WorkSetup.vue';
 
 const mainPage = useTemplateRef("mainPage");
 const updateMasterCptPage = useTemplateRef("updateMasterCptPage");
