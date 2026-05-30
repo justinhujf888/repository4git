@@ -321,6 +321,24 @@ class WorkRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/updateMasterCompetitionWorkSetup")
+    String updateMasterCompetitionWorkSetup(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            workService.updateTheObjectFilds(MasterCompetition.class.name,"appId=:appId and id=:id", [workSetup:query.workSetup],[appId:query.appId,id:query.id],false);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/updateCompetition")
     String updateCompetition(@RequestBody Map<String,Object> query)
     {

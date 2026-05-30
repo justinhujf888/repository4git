@@ -106,6 +106,9 @@ export default {
     updateSiteCompetitionSetupFields(ds,onfun) {
         Http.callHttpFunction('/r/work/updateSiteCompetitionSetupFields',ds,onfun);
     },
+    async updateMasterCompetitionWorkSetup(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/updateMasterCompetitionWorkSetup',ds,onfun);
+    },
     updateCompetitionList(ds,onfun) {
         Http.callHttpFunction('/r/work/updateCompetitionList',ds,onfun);
     },
