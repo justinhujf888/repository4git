@@ -493,7 +493,7 @@ class WorkRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd HH:mm:ss",null);
+            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "data":({

@@ -11,13 +11,13 @@
                         </div>
                     </template>
                     <template #title>
-                        <div class="col gap-y-1">
+                        <div class="between items-end gap-y-1">
                             <span class="text-base font-semibold">{{work?.name}}</span>
-                            <span class="text-sm">{{work?.guiGe?.competition?.name}}</span>
+                            <span class="text-sm">{{work?.competition?.name}} {{work?.guiGe?.name}}</span>
                         </div>
                     </template>
                     <template #subtitle>
-                        <div class="between">
+                        <div class="between mt-5">
 <!--                            <span class="text-sm">{{work?.guiGe?.name}}</span>-->
                             <span class="text-sm">{{work?.createDate}}</span>
                             <span v-if="work?.psStatus<0" class="text-sm font-semibold" :class="{'text-cyan-600':work?.status==1,'text-red-600':work?.status==9}">{{work.tempMap?.status}}</span>
@@ -44,8 +44,10 @@
                         </div>
                     </template>
                     <template #subtitle>
-                        <span class="text-sm mx-3 font-semibold"></span>
-                        <span class="text-sm"></span>
+                        <div class="mt-5">
+                            <span class="text-sm mx-3 font-semibold"></span>
+                            <span class="text-sm"></span>
+                        </div>
                     </template>
                     <template #content>
                         <p class="m-0">

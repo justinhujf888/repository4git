@@ -5,7 +5,7 @@
         <div class="start overflow-hidden mt-10">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="w-full grid gap-x-2 gap-y-4">
-                    <div>
+                    <div ref="refValid">
                         <FloatLabel variant="on" v-if="process=='c' && competition.guiGeList">
                             <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
                             <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid placeholder="选择分组"/>
@@ -116,6 +116,7 @@ import page from '@/api/uniapp/page';
 const imageFileUpload = useTemplateRef("imageFileUpload");
 const videoFileUpload = useTemplateRef("videoFileUpload");
 const refVideoInfo = useTemplateRef("refVideoInfo");
+const refValid = useTemplateRef("refValid");
 
 const masterCompetition = ref(Beans.masterCompetition());
 const competition = ref(Beans.competition());
@@ -293,6 +294,12 @@ const onFormSubmit = ({ valid }) => {
         //     }
         // });
         // console.log(work.value);
+    } else {
+        refValid.value.scrollIntoView({
+            behavior: 'smooth', // 平滑滚动；auto 瞬间跳转
+            block: 'start'      // 对齐方式：start/center/end
+        });
+        dialog.toastError("请检查输入项");
     }
 };
 

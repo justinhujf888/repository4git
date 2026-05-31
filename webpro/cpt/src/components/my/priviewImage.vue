@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" v-model:value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" _containerStyle="max-width: 640px" :pt="{
+        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" v-model:value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicators="false" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" _containerStyle="max-width: 640px" :pt="{
             root: {
                 class: [{ 'flex flex-col': fullScreen }]
             },
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, useTemplateRef } from 'vue';
 
 // const props = defineProps(['files','activeIndex','fullScreen','showItemNavigators','showThumbnails','thumbnailsPosition','responsiveOptions',{shiShowImgGrid:{type:Object,default:true}},'obj']);
 const files = defineModel({default:[]});
@@ -82,7 +82,7 @@ const props = defineProps({
     obj: { type: Object }
 })
 
-const galleria = ref();
+const galleria = useTemplateRef("galleria");
 const activeIndex = ref(props.activeIndex);
 const shiShow = ref(false);
 const fullScreen = ref(props.fullScreen);
@@ -95,7 +95,7 @@ const shiShowImgGrid = ref(props.shiShowImgGrid);
 let obj = props.obj;
 
 onMounted(() => {
-    // console.log(files.value);
+    // console.log(files.value);galleria.value.maskHide()
     bindDocumentListeners();
 });
 

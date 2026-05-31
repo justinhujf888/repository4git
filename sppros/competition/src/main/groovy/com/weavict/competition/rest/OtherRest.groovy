@@ -216,7 +216,7 @@ class OtherRest extends BaseRest
         {
             ObjectMapper objectMapper = buildObjectMapper();
             // oss
-            OSS ossClient = OtherUtils.genOSSClient();
+            OSS ossClient = OtherUtils.genOSSClient(query.appId);
             PutObjectRequest putObjectRequest = new PutObjectRequest(redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
                     ({return query.fileObj}).call()
             ).getBytes("UTF-8")));
