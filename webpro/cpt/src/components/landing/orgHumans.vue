@@ -35,7 +35,7 @@
                 <a class="center px-5 py-2 w-40 bg-gray-950 text-white font-semibold sub-bg" @click="page.redirectTo('judge',null)">评委</a>
             </div>
             <div class="text-base p-1 border-btn">
-                <a class="center px-5 py-2 w-40 bg-gray-950 text-white font-semibold sub-bg">评审标准</a>
+                <a class="center px-5 py-2 w-40 bg-gray-950 text-white font-semibold sub-bg" @click="page.redirectTo('pingShenBiaoZun',null)">评审标准</a>
             </div>
         </div>
     </div>

@@ -30,7 +30,7 @@
                 <a class="center px-16 py-2 bg-lime-100 text-gray-800 font-semibold sub-bg" @click="bus.emit({route:'myWorks',isLogin:true})">报名参赛</a>
             </div>
             <div class="text-base p-1 border-btn">
-                <a class="center px-16 py-2 bg-lime-100 text-gray-800 font-semibold sub-bg">评审规则</a>
+                <a class="center px-16 py-2 bg-lime-100 text-gray-800 font-semibold sub-bg" @click="page.redirectTo('pingShenBiaoZun',null)">评审规则</a>
             </div>
         </div>
     </div>
