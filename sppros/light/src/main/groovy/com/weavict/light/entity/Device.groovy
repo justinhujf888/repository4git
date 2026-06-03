@@ -1,6 +1,8 @@
 package com.weavict.light.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Table
 @Entity
@@ -68,6 +70,10 @@ class DeviceType extends BEntity implements Serializable, IEntity
 
     @Column(length=350)
     String characteristicsWriteIds;
+
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> deviceTypeSetup;
 
     @OneToMany(mappedBy="deviceType",fetch = FetchType.LAZY)
     List<Device> deviceList;

@@ -1,7 +1,9 @@
 package com.weavict.light.module
 
 import cn.hutool.core.util.StrUtil
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.ejb.BaseBean
+import com.weavict.common.ejb.StaticBean
 import jakarta.persistence.Query
 import org.springframework.transaction.annotation.Transactional
 
@@ -83,7 +85,7 @@ class ModuleBean extends BaseBean
         return pageUtil;
     }
 
-    PageUtil createNativeQueryLimit(String sql, String sqlcount, int currentPageNu, int pageSize)
+    PageUtil createNativeQueryLimit(String sql, String sqlcount, int currentPageNu, int pageSize,...args)
     {
         int firstRecord = currentPageNu * pageSize;
         int totalRecords = this.em.createNativeQuery(sqlcount).getResultList()[0] as int;
@@ -93,14 +95,14 @@ class ModuleBean extends BaseBean
             ++totalPageNumber;
         }
         PageUtil pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
-        pageUtil.content = createNativeQuery("$sql limit ${pageSize} offset ${firstRecord}").getResultList();
+        pageUtil.content = createNativeQuery("$sql limit ${pageSize} offset ${firstRecord}",args).getResultList();
         return pageUtil;
     }
 
-    PageUtil createNativeQueryLimit(String sql, String sqlcount, Map<String, Object> paramsMap, int currentPageNu, int pageSize)
+    PageUtil createNativeQueryLimit(String sql, String sqlcount, Map<String, Object> paramsMap, int currentPageNu, int pageSize,...args)
     {
         int firstRecord = currentPageNu * pageSize;
-        int totalRecords = createNativeQuery4Params(sqlcount,paramsMap).getSingleResult() as int;
+        int totalRecords = createNativeQuery4Params(sqlcount,paramsMap,args).getSingleResult() as int;
 
         int totalPageNumber = totalRecords / pageSize;
         if (totalPageNumber * pageSize < totalRecords)
@@ -108,18 +110,25 @@ class ModuleBean extends BaseBean
             ++totalPageNumber;
         }
         PageUtil pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
-        pageUtil.content = createNativeQuery4Params("$sql limit ${pageSize} offset ${firstRecord}",paramsMap).getResultList();
+        pageUtil.content = createNativeQuery4Params("$sql limit ${pageSize} offset ${firstRecord}",paramsMap,args).getResultList();
         return pageUtil;
     }
 
-    Query createNativeQuery(String sql)
+    Query createNativeQuery(String sql,...args)
     {
-        this.em.createNativeQuery(sql.replaceAll("<script", ""));
+        if (args!=null && args.length>0)
+        {
+            this.em.createNativeQuery(sql.replaceAll("<script", ""),args[0]);
+        }
+        else
+        {
+            this.em.createNativeQuery(sql.replaceAll("<script", ""));
+        }
     }
 
-    Query createNativeQuery4Params(String sql,Map<String, Object> paramsMap)
+    Query createNativeQuery4Params(String sql,Map<String, Object> paramsMap,...args)
     {
-        Query query = createNativeQuery(sql);
+        Query query = createNativeQuery(sql,args);
         if (paramsMap!=null)
         {
             Iterator iter = paramsMap.keySet().iterator();
@@ -155,8 +164,35 @@ class QueryUtils
 
     PageUtil pageUtil;
 
+    Map sqlMaps;
+    boolean shiSaveSql = false;
+
+    Object convertObj(int tableFieldIndex,Object distObj)
+    {
+        if (!(map["tableFields"][tableFieldIndex]["convertType"] in [null,""]) && distObj!=null)
+        {
+            if (map["tableFields"][tableFieldIndex]["convertType"]=="json")
+            {
+                ObjectMapper objectMapper = StaticBean.buildObjectMapper();
+                return objectMapper.readValue(distObj as String,Map.class);
+            }
+            else if (map["tableFields"][tableFieldIndex]["convertType"]=="int")
+            {
+                return distObj as int;
+            }
+        }
+        else
+        {
+            return distObj;
+        }
+    }
+
     void beanSet(Object it,Object obj,List fields,int startIndex)
     {
+//        println it;
+//        println obj;
+//        println fields;
+//        println map["tableFields"];
         fields?.eachWithIndex{f,findex->
             def sp = f.split("\\.");
             if (sp.length>0)
@@ -164,17 +200,17 @@ class QueryUtils
                 switch (sp.length)
                 {
                     case 0:
-                        obj[f] = it[findex+startIndex];
+                        obj[f] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 1:
-                        obj[f] = it[findex+startIndex];
+                        obj[f] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 2:
                         if (obj[sp[0]]==null)
                         {
                             obj[sp[0]] = [:];
                         }
-                        obj[sp[0]][sp[1]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 3:
                         if (obj[sp[0]]==null)
@@ -185,7 +221,7 @@ class QueryUtils
                         {
                             obj[sp[0]][sp[1]] = [:];
                         }
-                        obj[sp[0]][sp[1]][sp[2]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]][sp[2]] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 4:
                         if (obj[sp[0]]==null)
@@ -200,7 +236,7 @@ class QueryUtils
                         {
                             obj[sp[0]][sp[1]][sp[2]] = [:];
                         }
-                        obj[sp[0]][sp[1]][sp[2]][sp[3]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]][sp[2]][sp[3]] = convertObj(findex,it[findex+startIndex]);
                         break;
                     case 5:
                         if (obj[sp[0]]==null)
@@ -219,7 +255,7 @@ class QueryUtils
                         {
                             obj[sp[0]][sp[1]][sp[2]][sp[3]] = [:];
                         }
-                        obj[sp[0]][sp[1]][sp[2]][sp[3]][sp[4]] = it[findex+startIndex];
+                        obj[sp[0]][sp[1]][sp[2]][sp[3]][sp[4]] = convertObj(findex,it[findex+startIndex]);
                         break;
                 }
             }
@@ -412,28 +448,35 @@ class QueryUtils
 
     QueryUtils buildSql()
     {
+        sqlMaps = [:];
         sbf << " from ${map["masterTableName"]} as ${map["masterTableAliasName"]}";
+        sqlMaps["from"] = sbf.toString();
         if (joinOnList!=null && joinOnList.size()>0)
         {
             joinOnList.each {
                 sbf << it;
             }
+            sqlMaps["joinOnList"] = joinOnList;
         }
         if (map["where"]!=null)
         {
             sbf << map["where"].toString();
+            sqlMaps["where"] = map["where"].toString();
         }
         if (map["groupBy"]!=null)
         {
             sbf << map["groupBy"];
+            sqlMaps["groupBy"] = map["groupBy"];
         }
         if (map["orderBy"]!=null)
         {
             sbf << map["orderBy"];
+            sqlMaps["orderBy"] = map["orderBy"];
         }
         if (map["union"]!=null)
         {
             sbf << map["union"];
+            sqlMaps["union"] = map["union"];
         }
         return this;
     }
@@ -477,6 +520,12 @@ class QueryUtils
 
     void clear()
     {
+        clearSaveSql();
+        sqlMaps = null;
+    }
+
+    void clearSaveSql()
+    {
         paramsMap = null;
         joinOnList = null;
         if (map["where"]!=null)
@@ -489,15 +538,30 @@ class QueryUtils
         sbf = null;
     }
 
+    QueryUtils saveSql()
+    {
+        shiSaveSql = true;
+        return this;
+    }
+
     PageUtil run()
     {
         List list = new ArrayList();
         if (this.isNative)
         {
+            this.pageUtil = new PageUtil(pageSize,currentPageNu,-1);
+            sqlMaps = [
+                    qyRecords:[sql:sbf.toString()],
+                    sqlParse:[count:map["countKey"],fromJoin:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),sbf.toString().indexOf("where")),where:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("where"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())],
+                    params:paramsMap
+            ];
             if (this.isPageSplit)
             {
                 sbf << " limit ${pageSize} offset ${firstRecord}";
-                this.totalRecords = this.moduleBean.createNativeQuery4Params("select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}",paramsMap).getSingleResult() as int;
+                sqlMaps["qyCount"] = [sql:"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}" as String];
+                //"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}"
+                this.totalRecords = this.moduleBean.createNativeQuery4Params(sqlMaps["qyCount"].sql,paramsMap).getSingleResult() as int;
+                pageUtil.totalElements = this.totalRecords;
             }
             this.moduleBean.createNativeQuery4Params(sbf.toString(),paramsMap).getResultList().each {
                 def obj = Class.forName(map["beanClass"]).newInstance();
@@ -596,28 +660,54 @@ class QueryUtils
 //				}
                 list << obj;
             }
-            this.pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
             this.pageUtil.content = list;
         }
         else
         {
             if (this.isPageSplit)
             {
-                totalRecords = this.moduleBean.querySingleObject("select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}",paramsMap);
-                pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
+                pageUtil = new PageUtil(pageSize,currentPageNu,-1);
+                sqlMaps = [
+                        qyCount:[sql:"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}"],
+                        qyRecords:[sql:sbf.toString()],
+                        sqlParse:[count:map["countKey"],fromJoin:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),sbf.toString().indexOf("where")),where:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("where"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())],
+                        params: paramsMap
+                ];
+                //"select count(${map["countKey"]}) ${StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())}"
+                totalRecords = this.moduleBean.querySingleObject(sqlMaps.qyCount.sql,paramsMap);
+                pageUtil.totalElements = totalRecords;
                 pageUtil.content = this.moduleBean.queryObject(sbf.toString(),paramsMap,firstRecord,pageSize);
             }
             else
             {
                 pageUtil = new PageUtil(pageSize,currentPageNu,totalRecords);
+                sqlMaps = [
+                        qyRecords:[sql:sbf.toString()],
+                        sqlParse:[count:map["countKey"],fromJoin:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("from"),sbf.toString().indexOf("where")),where:StrUtil.sub(sbf.toString(),sbf.toString().indexOf("where"),map["orderBy"]!=null ? sbf.toString().indexOf("order by") : sbf.toString().length())],
+                        params: paramsMap
+                ];
                 pageUtil.content = this.moduleBean.queryObject(sbf.toString(),paramsMap);
                 pageUtil.content.each {
                     it.cancelLazyEr();
                 }
             }
         }
-        this.clear();
+        if (shiSaveSql)
+        {
+            this.clearSaveSql();
+        }
+        else
+        {
+            this.clear();
+        }
         return pageUtil;
+    }
+
+    PageUtil runAndShowSqlMaps()
+    {
+        this.pageUtil = this.run();
+        println sqlMaps;
+        return this.pageUtil;
     }
 }
 
@@ -633,6 +723,8 @@ class PageUtil
      * 当前页为第几页
      */
     int number;
+
+    int firstRecord;
 
     /**
      * 是否为第一页
@@ -659,10 +751,19 @@ class PageUtil
      */
     int numberOfElements;
 
+    void setContent(List content)
+    {
+        this.content = content;
+        this.numberOfElements = this.content==null ? 0 : this.content.size();
+    }
+
     /**
      * 数据
      */
     List content = new ArrayList();
+
+    //临时数据
+    Map tempMap = [:];
 
     /**
      * 根据传入的当前多少页
@@ -684,5 +785,7 @@ class PageUtil
         this.first = number == 0 ? true : false;
 
         this.last = number == this.totalPages-1 ? true : false;
+
+        this.firstRecord = this.number * this.size;
     }
 }

@@ -4,8 +4,6 @@ import cn.hutool.core.util.StrUtil
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.ejb.BaseBean
 import com.weavict.common.ejb.StaticBean
-import com.weavict.competition.entity.Judge
-import com.weavict.competition.rest.BaseRest
 import jakarta.persistence.Query
 import org.springframework.transaction.annotation.Transactional
 

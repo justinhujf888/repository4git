@@ -49,6 +49,7 @@ export const Beans = {
 			serviceId: "",
 			characteristicsReadIds: "",
 			characteristicsWriteIds: "",
+			deviceTypeSetup: null,
 			deviceList: []
 		}
 	},
