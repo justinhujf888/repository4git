@@ -202,7 +202,7 @@ const init = async (_mainPage,_mePage,_obj)=>{
         judge.value = Beans.judge();
     } else if (obj.process=="u") {
         judge.value = obj.data;
-        console.log(judge.value);
+        // console.log(judge.value);
         if (judge?.value?.headImgUrl) {
             src.value = await oss.buildPathAsync(judge.value.headImgUrl,true,null);
         }
