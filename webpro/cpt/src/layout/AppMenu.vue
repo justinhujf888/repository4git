@@ -6,6 +6,7 @@ import lodash from "lodash-es";
 import pageJson from "@/datas/pageJson";
 import workRest from "@/api/dbs/workRest";
 import util from "@/api/util";
+import {ru} from "primelocale/js/ru.js";
 
 const model = ref([]);
 let userType = util.giveStorgeCry("userType");
@@ -16,11 +17,32 @@ onMounted(() => {
 
 const buildMenu = ()=>{
     userType = util.giveStorgeCry("userType");
+    // console.log(util.giveStorgeCry("managerId"));
     let managerId = util.giveStorgeCry("managerId");
     if (lodash.includes(window.location.href,"/manage/")) {
         model.value = [{label:"",items:[]}];
         let menuJson = pageJson.manageMenu();
-        let permissions = [...JSON.parse(util.giveStorgeCry("rulePermissions")),"dashboard"];
+        let rulePermissions = [];
+        if (lodash.toUpper(util.giveStorgeCry("userType"))=="JUDGE") {
+            lodash.forEach(menuJson[0].items, (m) => {
+                if (m.userType) {
+                    if (lodash.findIndex(m.userType,(o)=>{return o=="judge"})>-1) {
+                        rulePermissions.push(m.key);
+                    }
+                    if (m.items) {
+                        lodash.forEach(m.items,(sm)=>{
+                            if (lodash.findIndex(sm.userType,(o)=>{return o=="judge"})>-1 ) {
+                                rulePermissions.push(sm.key);
+                            }
+                        });
+                    }
+                }
+            });
+        } else if (util.giveStorgeCry("rulePermissions")) {
+            rulePermissions = JSON.parse(util.giveStorgeCry("rulePermissions"));
+        }
+        // console.log(rulePermissions);
+        let permissions = [...rulePermissions,"dashboard"];
         lodash.forEach(menuJson[0].items, (m) => {
             if (m.userType) {
                 // console.log(userType,m.userType);

@@ -492,7 +492,7 @@ class WorkService extends ModuleBean
                         // 顺便将Work作品的状态改为进入第二轮复审，这样作品的作者可以及时看到当前的作品评审状态
                         this.updateTheObjectFilds(Work.simpleName,"appId=:appId and id=:id",[psStatus:pingShenStepId],[appId:appId,id:jw.id],false);
 
-                        jw.tempMap.sumFen = 0;
+                        jw.tempMap.sumFen = 0 as int;
                         Map fmap = [:];
                         List<JudgeWork> jwList = this.newQueryUtils(false).masterTable(JudgeWork.class.simpleName,null,null)
                                 .where("judgeWorkPK.appId = :appId",[appId:appId],null,{return true})
@@ -531,7 +531,7 @@ class WorkService extends ModuleBean
                         {
 //                                println m.key;
 //                                println m.value;
-                            jw.tempMap.sumFen += m.value.value;
+                            jw.tempMap.sumFen += m.value.value as int;
                         }
 //                        println jw.dump();
                         PingFenWork pingFenWork = new PingFenWork();
@@ -640,7 +640,7 @@ class WorkService extends ModuleBean
             //避免会存在几个评委对同一个字段打分的情况，下面循环进行评分字段的判断与汇总，同一个字段取最高打分的评委分数
             for (Work jw in workList)
             {
-                jw.tempMap.sumFen = 0;
+                jw.tempMap.sumFen = 0 as int;
                 Map fmap = [:];
                 List<JudgeWork> jwList = this.newQueryUtils(false).masterTable(JudgeWork.class.simpleName,null,null)
                         .where("judgeWorkPK.appId = :appId",[appId:appId],null,{return true})
@@ -675,7 +675,7 @@ class WorkService extends ModuleBean
                 {
 //                                println m.key;
 //                                println m.value;
-                    jw.tempMap.sumFen += m.value;
+                    jw.tempMap.sumFen += m.value as int;
                 }
 //                        println jw.dump();
                 PingFenWork pingFenWork = new PingFenWork();

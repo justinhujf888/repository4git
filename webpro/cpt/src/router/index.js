@@ -366,10 +366,31 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
     // ...localStorage.getItem("userId")
+    // console.log(util.giveStorgeCry("userType"));
     if (lodash.includes(to.href,"/manage/")) {
         document.documentElement.classList.add('app-dark');
         if (lodash.toUpper(util.giveStorgeCry("managerId"))!="ADMIN") {
-            if (lodash.findIndex([...JSON.parse(util.giveStorgeCry("rulePermissions")),"dashboard"],(o)=>{return o==to.name}) < 0) {
+            let rulePermissions = [];
+            if (lodash.toUpper(util.giveStorgeCry("userType"))=="JUDGE") {
+                let menuJson = pageJson.manageMenu();
+                lodash.forEach(menuJson[0].items, (m) => {
+                    if (m.userType) {
+                        if (lodash.findIndex(m.userType,(o)=>{return o=="judge"})>-1) {
+                            rulePermissions.push(m.key);
+                        }
+                        if (m.items) {
+                            lodash.forEach(m.items,(sm)=>{
+                                if (lodash.findIndex(sm.userType,(o)=>{return o=="judge"})>-1 ) {
+                                    rulePermissions.push(sm.key);
+                                }
+                            });
+                        }
+                    }
+                });
+            } else if (util.giveStorgeCry("rulePermissions")) {
+                rulePermissions = JSON.parse(util.giveStorgeCry("rulePermissions"));
+            }
+            if (lodash.findIndex([...rulePermissions,"dashboard"],(o)=>{return o==to.name}) < 0) {
                 return { name: 'dashboard' };
             }
         }

@@ -759,7 +759,7 @@ class WorkRest extends BaseRest
                 workService.deleteTheObject8Fields(CompetitionJudge.simpleName,"competitionJudgePK.appId=:appId and competitionJudgePK.masterCompetitionId = :masterCompetitionId",[appId:query.appId,masterCompetitionId:masterCompetition.id],false);
                 workService.deleteTheObject8Fields(JudgeWork.simpleName,"judgeWorkPK.appId=:appId and judgeWorkPK.masterCompetitionId = :masterCompetitionId",[appId:query.appId,masterCompetitionId:masterCompetition.id],false);
                 workService.deleteTheObject8Fields(PingFenWork.simpleName,"pingFenWorkPK.appId = :appId and pingFenWorkPK.masterCompetitionId = :masterCompetitionId",[appId:query.appId,masterCompetitionId:masterCompetition.id],false);
-
+                workService.updateTheObjectFilds(Work.simpleName,"masterCompetitionId=:masterCompetitionId and status=:status and appId=:appId",[psStatus:0 as byte],[masterCompetitionId:masterCompetition.id,status:1 as byte,appId:query.appId as String],false);
 //            改为管理员点击评审设定开始评审按钮时执行
 //            workService.pingShenJudgesInit(query.appId as String,masterCompetition.id,0 as byte);
             });
