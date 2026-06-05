@@ -1,5 +1,7 @@
 package com.weavict.competition.rest
 
+import com.alibaba.fastjson2.JSON
+import com.aliyun.credentials.provider.DefaultCredentialsProvider
 import com.aliyun.dysmsapi20170525.Client
 import com.aliyun.dysmsapi20170525.models.SendSmsRequest
 import com.aliyun.dysmsapi20170525.models.SendSmsResponse
@@ -11,6 +13,9 @@ import com.aliyun.oss.model.ObjectMetadata
 import com.aliyun.oss.model.PolicyConditions
 import com.aliyun.oss.model.PutObjectRequest
 import com.aliyun.oss.model.StorageClass
+import com.aliyun.sdk.service.dypnsapi20170525.AsyncClient
+import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeRequest
+import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeResponse
 import com.aliyun.teaopenapi.models.Config
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -38,6 +43,8 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
+
+import java.util.concurrent.CompletableFuture
 
 /**
  * Created by Justin on 2018/6/10.
@@ -255,36 +262,77 @@ class OtherRest extends BaseRest
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
             ObjectMapper objectMapper = buildObjectMapper();
-            Config config = new Config().setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeyId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeySecret"));
-            config.endpoint = "dysmsapi.aliyuncs.com";
-            Client client = new Client(config);
+//            Config config = new Config().setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeyId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeySecret"));
+//            config.endpoint = "dysmsapi.aliyuncs.com";
+//            Client client = new Client(config);
+//
+//            String templateCode = "";
+//            String templateParam = "";
+//            if (query.accessCode.equals("regist"))
+//            {
+//                templateCode = "SMS_169175064";
+//                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
+//            }
+//            else if (query.accessCode.equals("editPassword"))
+//            {
+//                templateCode = "SMS_169175063";
+//                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
+//            }
+//
+//            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
+//            SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
 
-            String templateCode = "";
-            String templateParam = "";
-            if (query.accessCode.equals("regist"))
+                    // Configure Credentials authentication information
+            DefaultCredentialsProvider provider = DefaultCredentialsProvider.builder().build();
+
+        // Configure the Client
+            try (AsyncClient client = AsyncClient.builder().region("ap-southeast-1") // Region ID
+            //.httpClient(httpClient) // Use the configured HttpClient, otherwise use the default HttpClient (Apache HttpClient)
+                    .credentialsProvider(provider)
+            //.serviceConfiguration(Configuration.create()) // Service-level configuration
+            // Client-level configuration rewrite, can set Endpoint, Http request parameters, etc.
+                    .overrideConfiguration(
+                            ClientOverrideConfiguration.create()
+                            // Endpoint 请参考 https://api.aliyun.com/product/Dypnsapi
+                                    .setEndpointOverride("dypnsapi.aliyuncs.com")
+                            //.setConnectTimeout(Duration.ofSeconds(30))
+                    )
+                    .build())
             {
-                templateCode = "SMS_169175064";
-                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
-            }
-            else if (query.accessCode.equals("editPassword"))
-            {
-                templateCode = "SMS_169175063";
-                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
-            }
 
-            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
-            SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
+                // Parameter settings for API request
+                SendSmsVerifyCodeRequest sendSmsVerifyCodeRequest = SendSmsVerifyCodeRequest.builder()
+                        .phoneNumber("13268990066")
+                        .templateCode("100001")
+                        .templateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
+                        .signName("速通互联验证码")
+                // Request-level configuration rewrite, can set Http request parameters, etc.
+                // .requestConfiguration(RequestConfiguration.create().setHttpHeaders(new HttpHeaders()))
+                        .build();
 
-            return objectMapper.writeValueAsString(
-                    ["status":"OK",
-                     "smsInfo":["returnInfo":({
-                         return "";
-                     }).call(),
-                                "templateParam":({
-                                    DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-                                    return crypt.encrypt(templateParam);
-                                }).call()]
-                    ]);
+                // Asynchronously get the return value of the API request
+                CompletableFuture<SendSmsVerifyCodeResponse> response = client.sendSmsVerifyCode(sendSmsVerifyCodeRequest);
+                // Synchronously get the return value of the API request
+                SendSmsVerifyCodeResponse resp = response.get();
+                println JSON.toJSONString(resp);
+                // Asynchronous processing of return values
+                /*response.thenAccept(resp -> {
+                    System.out.println(new Gson().toJson(resp));
+                }).exceptionally(throwable -> { // Handling exceptions
+                    System.out.println(throwable.getMessage());
+                    return null;
+                });*/
+                return objectMapper.writeValueAsString(
+                        ["status":"OK",
+                         "smsInfo":["returnInfo":({
+                             return "";
+                         }).call(),
+                                    "templateParam":({
+                                        DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
+                                        return crypt.encrypt(resp);
+                                    }).call()]
+                        ]);
+            }
         }
         catch (Exception e)
         {
@@ -379,6 +427,151 @@ class OtherRest extends BaseRest
 //            processExcetion(e);
 //            return """{"status":"FA_ER"}""";
 //        }
+
+//package demo;
+//
+//import com.aliyun.auth.credentials.Credential;
+//import com.aliyun.auth.credentials.provider.DefaultCredentialProvider;
+//import com.aliyun.core.http.HttpClient;
+//import com.aliyun.core.http.HttpMethod;
+//import com.aliyun.core.http.ProxyOptions;
+//import com.aliyun.httpcomponent.httpclient.ApacheAsyncHttpClientBuilder;
+//import com.aliyun.sdk.service.dypnsapi20170525.models.*;
+//import com.aliyun.sdk.service.dypnsapi20170525.*;
+//import com.google.gson.Gson;
+//import darabonba.core.RequestConfiguration;
+//import darabonba.core.client.ClientOverrideConfiguration;
+//import darabonba.core.utils.CommonUtil;
+//import darabonba.core.TeaPair;
+//
+////import javax.net.ssl.KeyManager;
+////import javax.net.ssl.X509TrustManager;
+//import java.net.InetSocketAddress;
+//import java.time.Duration;
+//import java.util.*;
+//import java.util.concurrent.CompletableFuture;
+//import java.io.*;
+//
+//public class SendSmsVerifyCode {
+//    public static void main(String[] args) throws Exception {
+//
+//        // HttpClient Configuration
+//        /*HttpClient httpClient = new ApacheAsyncHttpClientBuilder()
+//                .connectionTimeout(Duration.ofSeconds(10)) // Set the connection timeout time, the default is 10 seconds
+//                .responseTimeout(Duration.ofSeconds(10)) // Set the response timeout time, the default is 20 seconds
+//                .maxConnections(128) // Set the connection pool size
+//                .maxIdleTimeOut(Duration.ofSeconds(50)) // Set the connection pool timeout, the default is 30 seconds
+//                // Configure the proxy
+//                .proxy(new ProxyOptions(ProxyOptions.Type.HTTP, new InetSocketAddress("<your-proxy-hostname>", 9001))
+//                        .setCredentials("<your-proxy-username>", "<your-proxy-password>"))
+//                // If it is an https connection, you need to configure the certificate, or ignore the certificate(.ignoreSSL(true))
+//                .x509TrustManagers(new X509TrustManager[]{})
+//                .keyManagers(new KeyManager[]{})
+//                .ignoreSSL(false)
+//                .build();*/
+//
+//        // Configure Credentials authentication information
+//        DefaultCredentialProvider provider = DefaultCredentialProvider.builder().build();
+//
+//        // Configure the Client
+//        try (AsyncClient client = AsyncClient.builder()
+//                .region("ap-southeast-1") // Region ID
+//        //.httpClient(httpClient) // Use the configured HttpClient, otherwise use the default HttpClient (Apache HttpClient)
+//                .credentialsProvider(provider)
+//        //.serviceConfiguration(Configuration.create()) // Service-level configuration
+//        // Client-level configuration rewrite, can set Endpoint, Http request parameters, etc.
+//                .overrideConfiguration(
+//                        ClientOverrideConfiguration.create()
+//                        // Endpoint 请参考 https://api.aliyun.com/product/Dypnsapi
+//                                .setEndpointOverride("dypnsapi.aliyuncs.com")
+//                        //.setConnectTimeout(Duration.ofSeconds(30))
+//                )
+//                .build()) {
+//
+//            // Parameter settings for API request
+//            SendSmsVerifyCodeRequest sendSmsVerifyCodeRequest = SendSmsVerifyCodeRequest.builder()
+//                    .phoneNumber("13268990066")
+//                    .templateCode("100001")
+//                    .templateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
+//                    .signName("速通互联验证码")
+//            // Request-level configuration rewrite, can set Http request parameters, etc.
+//            // .requestConfiguration(RequestConfiguration.create().setHttpHeaders(new HttpHeaders()))
+//                    .build();
+//
+//            // Asynchronously get the return value of the API request
+//            CompletableFuture<SendSmsVerifyCodeResponse> response = client.sendSmsVerifyCode(sendSmsVerifyCodeRequest);
+//            // Synchronously get the return value of the API request
+//            SendSmsVerifyCodeResponse resp = response.get();
+//            System.out.println(new Gson().toJson(resp));
+//            // Asynchronous processing of return values
+//            /*response.thenAccept(resp -> {
+//                System.out.println(new Gson().toJson(resp));
+//            }).exceptionally(throwable -> { // Handling exceptions
+//                System.out.println(throwable.getMessage());
+//                return null;
+//            });*/
+//
+//        }
+//    }
+//
+//}
+
+
+
+
+//        package com.aliyun.sample;
+//
+//        import com.aliyun.tea.*;
+//
+//        public class Sample {
+//
+//            /**
+//             * <b>description</b> :
+//             * <p>使用凭据初始化账号Client</p>
+//             * @return Client
+//             *
+//             * @throws Exception
+//             */
+//            public static com.aliyun.dypnsapi20170525.Client createClient() throws Exception {
+//                // 工程代码建议使用更安全的无AK方式，凭据配置方式请参见：https://help.aliyun.com/document_detail/378657.html。
+//                com.aliyun.credentials.Client credential = new com.aliyun.credentials.Client();
+//                com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config()
+//                        .setCredential(credential);
+//                // Endpoint 请参考 https://api.aliyun.com/product/Dypnsapi
+//                config.endpoint = "dypnsapi.aliyuncs.com";
+//                return new com.aliyun.dypnsapi20170525.Client(config);
+//            }
+//
+//            public static void main(String[] args_) throws Exception {
+//
+//                com.aliyun.dypnsapi20170525.Client client = Sample.createClient();
+//                com.aliyun.dypnsapi20170525.models.SendSmsVerifyCodeRequest sendSmsVerifyCodeRequest = new com.aliyun.dypnsapi20170525.models.SendSmsVerifyCodeRequest()
+//                        .setPhoneNumber("13268990066")
+//                        .setTemplateCode("100001")
+//                        .setTemplateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
+//                        .setSignName("速通互联验证码");
+//                com.aliyun.teautil.models.RuntimeOptions runtime = new com.aliyun.teautil.models.RuntimeOptions();
+//                try {
+//                    com.aliyun.dypnsapi20170525.models.SendSmsVerifyCodeResponse resp = client.sendSmsVerifyCodeWithOptions(sendSmsVerifyCodeRequest, runtime);
+//                    System.out.println(new com.google.gson.Gson().toJson(resp));
+//                } catch (TeaException error) {
+//                    // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
+//                    // 错误 message
+//                    System.out.println(error.getMessage());
+//                    // 诊断地址
+//                    System.out.println(error.getData().get("Recommend"));
+//                } catch (Exception _error) {
+//                    TeaException error = new TeaException(_error.getMessage(), _error);
+//                    // 此处仅做打印展示，请谨慎对待异常处理，在工程项目中切勿直接忽略异常。
+//                    // 错误 message
+//                    System.out.println(error.getMessage());
+//                    // 诊断地址
+//                    System.out.println(error.getData().get("Recommend"));
+//                }
+//            }
+//        }
+
+
     }
 
 }
