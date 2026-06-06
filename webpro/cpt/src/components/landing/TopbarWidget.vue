@@ -153,7 +153,7 @@ const unsubscribe = bus.on(busListener);
 const { width, height } = useWindowSize();
 
 const shiShowButton = ref(false);
-let userId = "";
+const userId = ref("");
 const treeDatas = ref([]);
 const menuBar = ref([{key:"pingJiang",name:"评奖"},{key:"huoJiangWork",name:"获奖作品"},{key:"userCenter",name:"参赛"}]);
 
@@ -177,7 +177,7 @@ watch(footDatas,async (newValue)=>{
 
 onMounted(() => {
     if (localStorage.getItem("userId")) {
-        userId = util.giveStorgeCry("userId");
+        userId.value = util.giveStorgeCry("userId");
     }
     treeDatas.value = [];
     lodash.forEach(pj.menuTreeDatas(),(v)=>{
@@ -271,12 +271,12 @@ function barButtonClick(id) {
 function logout() {
     dialog.confirm("是否退出当前登录？",()=>{
         localStorage.removeItem("userId");
-        userId = null;
+        userId.value = null;
     },null);
 }
 
 function afterLogin(_userId,_loginToken) {
-    userId = _userId;
+    userId.value = _userId;
     showLoginMode.value = false;
     if (wantTo.value) {
         page.redirectTo(wantTo.value,null);
@@ -294,7 +294,7 @@ function loginRegist() {
     showRegistMode.value = true;
 }
 function afterRegist(_userId,_loginToken) {
-    userId = _userId;
+    userId.value = _userId;
     showRegistMode.value = false;
     if (wantTo.value) {
         page.redirectTo(wantTo.value,null);

@@ -1,6 +1,6 @@
 <template>
 <!--    <FloatingConfigurator />-->
-    <Button label="test" @click="test"/>
+<!--    <Button label="test" @click="test"/>-->
     <div class="overflow-hidden">
         <Form v-slot="$form" :resolver @submit="onFormSubmit" class="grid gap-y-4">
             <IftaLabel>
@@ -193,10 +193,10 @@ const cancel = ()=>{
 function test() {
     // Page.navigateTo("table",{});
     // countDown.start();
-    otherRest.sendSmsPublic(buyer.value.phone,"regist",JSON.stringify({code:vcord.value}),(data)=>{
+    otherRest.sendSmsPublic("13268990066","regist",JSON.stringify({code:vcord.value}),(data)=>{
         console.log(data);
         if (data.status=="OK") {
-
+            console.log(JSON.parse(util.decryptStoreInfo(data.smsInfo.templateParam)));
         }
     });
 }

@@ -260,18 +260,32 @@ class OtherRest extends BaseRest
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
             ObjectMapper objectMapper = buildObjectMapper();
-            Config credentialConfig = new Config().setType("access_key").setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeyId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeySecret"));
+            Config credentialConfig = new Config().setType("sts").setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"accessId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"accessKey")).setSecurityToken(redisApi.ganAliYunStsValue(query.appId as String,"securityToken"));
             Client credentialClient = new Client(credentialConfig);
             com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
             config.setCredential(credentialClient);
-            config.endpoint = "dypnsapi.aliyuncs.com";
+            config.endpoint = redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_endPoint");
             com.aliyun.dypnsapi20170525.Client client = new com.aliyun.dypnsapi20170525.Client(config);
 
+            String templateCode = "";
+            String templateParam = "";
+            if (query.accessCode.equals("regist"))
+            {
+                templateCode = "100001";
+                templateParam = """{"code":"${redisApi.userBean.phoneCode()}","min":"5"}""".toString();
+            }
+            else if (query.accessCode.equals("editPassword"))
+            {
+                templateCode = "100003";
+                templateParam = """{"code":"${redisApi.userBean.phoneCode()}","min":"5"}""".toString();
+            }
+            println templateParam;
             SendSmsVerifyCodeRequest sendSmsVerifyCodeRequest = new SendSmsVerifyCodeRequest()
-                    .setPhoneNumber("13268990066")
-                    .setTemplateCode("100001")
-                    .setTemplateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
-                    .setSignName("速通互联验证码");
+                    .setPhoneNumber(query.phone as String)
+                    .setTemplateCode(templateCode)
+//                    .setTemplateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
+                    .setTemplateParam(templateParam)
+                    .setSignName(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_SignName"));
             com.aliyun.teautil.models.RuntimeOptions runtime = new com.aliyun.teautil.models.RuntimeOptions();
             SendSmsVerifyCodeResponse resp = client.sendSmsVerifyCodeWithOptions(sendSmsVerifyCodeRequest,runtime);
             // Synchronously get the return value of the API request
@@ -300,12 +314,12 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "smsInfo":["returnInfo":({
-                         return "";
+                         return resp;
                      }).call(),
-                                "templateParam":({
-                                    DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-                                    return crypt.encrypt(resp);
-                                }).call()]
+                        "templateParam":({
+                            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
+                            return crypt.encrypt(templateParam);
+                        }).call()]
                     ]);
         }
         catch (Exception e)

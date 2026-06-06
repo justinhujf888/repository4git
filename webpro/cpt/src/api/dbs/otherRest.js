@@ -9,7 +9,7 @@ export default {
         return await Http.callHttpFunction('/r/other/genSignature',{},onfun);
     },
     async sendSmsPublic(phone,accessCode,templateParam,onfun) {
-        return await Http.callHttpFunction('/r/other/sendSmsPublic',{},onfun);
+        return await Http.callHttpFunction('/r/other/sendSmsPublic',{phone:phone,accessCode:accessCode},onfun);
     },
     test(onfun) {
         Http.httpclient_json(
