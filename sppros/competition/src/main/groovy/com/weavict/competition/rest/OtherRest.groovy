@@ -1,11 +1,11 @@
 package com.weavict.competition.rest
 
 import com.alibaba.fastjson2.JSON
-import com.aliyun.auth.credentials.provider.DefaultCredentialProvider
-import com.aliyun.credentials.provider.DefaultCredentialsProvider
-import com.aliyun.dysmsapi20170525.Client
-import com.aliyun.dysmsapi20170525.models.SendSmsRequest
-import com.aliyun.dysmsapi20170525.models.SendSmsResponse
+import com.aliyun.credentials.Client
+import com.aliyun.credentials.models.Config
+import com.aliyun.dypnsapi20170525.models.SendSmsVerifyCodeRequest
+import com.aliyun.dypnsapi20170525.models.SendSmsVerifyCodeResponse
+
 import com.aliyun.oss.OSS
 import com.aliyun.oss.common.utils.BinaryUtil
 import com.aliyun.oss.internal.OSSHeaders
@@ -14,10 +14,6 @@ import com.aliyun.oss.model.ObjectMetadata
 import com.aliyun.oss.model.PolicyConditions
 import com.aliyun.oss.model.PutObjectRequest
 import com.aliyun.oss.model.StorageClass
-import com.aliyun.sdk.service.dypnsapi20170525.AsyncClient
-import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeRequest
-import com.aliyun.sdk.service.dypnsapi20170525.models.SendSmsVerifyCodeResponse
-import com.aliyun.teaopenapi.models.Config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.util.DateUtil
@@ -29,6 +25,7 @@ import com.weavict.competition.module.RedisApi
 //import com.weavict.website.common.ImgCompress
 import com.weavict.website.common.OtherUtils
 import com.yicker.utility.DES
+import darabonba.core.client.ClientOverrideConfiguration
 import groovy.json.JsonSlurper
 import jakarta.ws.rs.GET
 import jodd.datetime.JDateTime
@@ -263,7 +260,24 @@ class OtherRest extends BaseRest
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
             ObjectMapper objectMapper = buildObjectMapper();
-//            Config config = new Config().setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeyId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeySecret"));
+            Config credentialConfig = new Config().setType("access_key").setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeyId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_AccessKeySecret"));
+            Client credentialClient = new Client(credentialConfig);
+            com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
+            config.setCredential(credentialClient);
+            config.endpoint = "dypnsapi.aliyuncs.com";
+            com.aliyun.dypnsapi20170525.Client client = new com.aliyun.dypnsapi20170525.Client(config);
+
+            SendSmsVerifyCodeRequest sendSmsVerifyCodeRequest = new SendSmsVerifyCodeRequest()
+                    .setPhoneNumber("13268990066")
+                    .setTemplateCode("100001")
+                    .setTemplateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
+                    .setSignName("速通互联验证码");
+            com.aliyun.teautil.models.RuntimeOptions runtime = new com.aliyun.teautil.models.RuntimeOptions();
+            SendSmsVerifyCodeResponse resp = client.sendSmsVerifyCodeWithOptions(sendSmsVerifyCodeRequest,runtime);
+            // Synchronously get the return value of the API request
+            println JSON.toJSONString(resp);
+
+
 //            config.endpoint = "dysmsapi.aliyuncs.com";
 //            Client client = new Client(config);
 //
@@ -283,57 +297,16 @@ class OtherRest extends BaseRest
 //            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
 //            SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
 
-                    // Configure Credentials authentication information
-            DefaultCredentialProvider provider = DefaultCredentialProvider.builder().build();
-
-        // Configure the Client
-            try (AsyncClient client = AsyncClient.builder().region("ap-southeast-1") // Region ID
-            //.httpClient(httpClient) // Use the configured HttpClient, otherwise use the default HttpClient (Apache HttpClient)
-                    .credentialsProvider(provider)
-            //.serviceConfiguration(Configuration.create()) // Service-level configuration
-            // Client-level configuration rewrite, can set Endpoint, Http request parameters, etc.
-                    .overrideConfiguration(
-                            ClientOverrideConfiguration.create()
-                            // Endpoint 请参考 https://api.aliyun.com/product/Dypnsapi
-                                    .setEndpointOverride("dypnsapi.aliyuncs.com")
-                            //.setConnectTimeout(Duration.ofSeconds(30))
-                    )
-                    .build())
-            {
-
-                // Parameter settings for API request
-                SendSmsVerifyCodeRequest sendSmsVerifyCodeRequest = SendSmsVerifyCodeRequest.builder()
-                        .phoneNumber("13268990066")
-                        .templateCode("100001")
-                        .templateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
-                        .signName("速通互联验证码")
-                // Request-level configuration rewrite, can set Http request parameters, etc.
-                // .requestConfiguration(RequestConfiguration.create().setHttpHeaders(new HttpHeaders()))
-                        .build();
-
-                // Asynchronously get the return value of the API request
-                CompletableFuture<SendSmsVerifyCodeResponse> response = client.sendSmsVerifyCode(sendSmsVerifyCodeRequest);
-                // Synchronously get the return value of the API request
-                SendSmsVerifyCodeResponse resp = response.get();
-                println JSON.toJSONString(resp);
-                // Asynchronous processing of return values
-                /*response.thenAccept(resp -> {
-                    System.out.println(new Gson().toJson(resp));
-                }).exceptionally(throwable -> { // Handling exceptions
-                    System.out.println(throwable.getMessage());
-                    return null;
-                });*/
-                return objectMapper.writeValueAsString(
-                        ["status":"OK",
-                         "smsInfo":["returnInfo":({
-                             return "";
-                         }).call(),
-                                    "templateParam":({
-                                        DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-                                        return crypt.encrypt(resp);
-                                    }).call()]
-                        ]);
-            }
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "smsInfo":["returnInfo":({
+                         return "";
+                     }).call(),
+                                "templateParam":({
+                                    DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
+                                    return crypt.encrypt(resp);
+                                }).call()]
+                    ]);
         }
         catch (Exception e)
         {
