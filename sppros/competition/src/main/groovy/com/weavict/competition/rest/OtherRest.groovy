@@ -1,6 +1,7 @@
 package com.weavict.competition.rest
 
 import com.alibaba.fastjson2.JSON
+import com.aliyun.auth.credentials.provider.DefaultCredentialProvider
 import com.aliyun.credentials.provider.DefaultCredentialsProvider
 import com.aliyun.dysmsapi20170525.Client
 import com.aliyun.dysmsapi20170525.models.SendSmsRequest
@@ -283,7 +284,7 @@ class OtherRest extends BaseRest
 //            SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
 
                     // Configure Credentials authentication information
-            DefaultCredentialsProvider provider = DefaultCredentialsProvider.builder().build();
+            DefaultCredentialProvider provider = DefaultCredentialProvider.builder().build();
 
         // Configure the Client
             try (AsyncClient client = AsyncClient.builder().region("ap-southeast-1") // Region ID

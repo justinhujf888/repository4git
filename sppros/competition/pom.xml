@@ -115,11 +115,11 @@
             <artifactId>dysmsapi20170525</artifactId>
             <version>4.1.2</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.aliyun</groupId>-->
-<!--            <artifactId>alibabacloud-dypnsapi20170525</artifactId>-->
-<!--            <version>2.0.0</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibabacloud-dypnsapi20170525</artifactId>
+            <version>2.0.0</version>
+        </dependency>
         <dependency>
             <groupId>io.opentracing</groupId>
             <artifactId>opentracing-util</artifactId>
