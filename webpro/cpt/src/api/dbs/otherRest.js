@@ -11,21 +11,7 @@ export default {
     async sendSmsPublic(phone,accessCode,templateParam,onfun) {
         return await Http.callHttpFunction('/r/other/sendSmsPublic',{phone:phone,accessCode:accessCode},onfun);
     },
-    test(onfun) {
-        Http.httpclient_json(
-            '/r/other/test',
-            'post',
-            {},
-            'json',
-            (res) => {
-                if (res.data.status == 'FA_ER') {
-                    dialog.showApiErrorMsg();
-                } else {
-                    onfun(res.data);
-                }
-            },
-            null,
-            true
-        );
+    async test(ds,onfun) {
+        return await Http.callHttpFunction('/r/other/test',ds,onfun);
     }
 }

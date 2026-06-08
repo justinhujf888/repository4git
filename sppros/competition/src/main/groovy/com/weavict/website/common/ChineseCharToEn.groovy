@@ -80,6 +80,6 @@ class ChineseCharToEn
 	}
 
 	static void main(String[] args) {
-		System.out.println("获取拼音首字母："+getFirstLetter("大中国南昌中大china"));
+		System.out.println("获取拼音首字母："+getAllFirstLetter("大中国南昌中大china"));
 	}
 }

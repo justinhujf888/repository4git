@@ -272,6 +272,7 @@ function logout() {
     dialog.confirm("是否退出当前登录？",()=>{
         localStorage.removeItem("userId");
         userId.value = null;
+        page.redirectTo("landing",null);
     },null);
 }
 

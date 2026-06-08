@@ -259,6 +259,7 @@ class OtherRest extends BaseRest
         {
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
+//            query.appId = "temparky";
             ObjectMapper objectMapper = buildObjectMapper();
             Config credentialConfig = new Config().setType("sts").setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"accessId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"accessKey")).setSecurityToken(redisApi.ganAliYunStsValue(query.appId as String,"securityToken"));
             Client credentialClient = new Client(credentialConfig);
@@ -382,8 +383,6 @@ class OtherRest extends BaseRest
                      return new Buyer();
                  }).call()
                 ]);
-
-
 
 //        try
 //        {

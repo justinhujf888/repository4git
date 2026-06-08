@@ -193,6 +193,14 @@ const cancel = ()=>{
 function test() {
     // Page.navigateTo("table",{});
     // countDown.start();
+
+    // otherRest.test({},(data)=>{
+    //     console.log(data);
+    //     if (data.status=="OK") {
+    //     }
+    // });
+    // return;
+
     otherRest.sendSmsPublic("13268990066","regist",JSON.stringify({code:vcord.value}),(data)=>{
         console.log(data);
         if (data.status=="OK") {

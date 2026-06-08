@@ -232,6 +232,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+            </plugin>
             <!-- 将所依赖的第三方jar包打入target下的lib目录 -->
             <!--            <plugin>-->
             <!--                <groupId>org.apache.maven.plugins</groupId>-->
