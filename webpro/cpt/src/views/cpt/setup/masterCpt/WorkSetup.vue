@@ -77,7 +77,7 @@ const props = defineProps({
 
 const mainPage = inject("mainPage");
 const updatePage = useTemplateRef("updatePage");
-const workSetup = ref(null);
+const workSetup = ref({workType: {image: [], "video": []}, "maxWorkCount": 2, "competitionGuiGeCount": 1});
 
 let host = inject("domain");
 

@@ -8,7 +8,7 @@
                     <div ref="refValid">
                         <FloatLabel variant="on" v-if="process=='c' && competition.guiGeList">
                             <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
-                            <Select name="guige" v-model="work.guiGe" :options="competition.guiGeList" optionLabel="name" fluid placeholder="选择分组"/>
+                            <Select name="guige" v-model="work.guiGe" :options="selGuiGeList" optionLabel="temp" fluid placeholder="选择分组"/>
                         </FloatLabel>
                         <IftaLabel variant="on" v-if="process=='u' && work.guiGe">
                             <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium">选择分组</label>
@@ -128,6 +128,7 @@ const workVideoItems = ref([]);
 const imageVaild = ref(false);
 const videoVaild = ref(false);
 const process = ref(null);
+const selGuiGeList = ref([]);
 
 const refPriviewImage = useTemplateRef("refPriviewImage");
 
@@ -401,6 +402,12 @@ const init = (_mainPage,_mePage,_obj)=>{
     obj = lodash.cloneDeep(_obj);
     process.value = obj.process;
     competition.value = obj.data;
+    lodash.forEach(competition.value.guiGeList,(v)=>{
+        v.temp = `${v.name} 【${v.description}】`;
+        if (obj.workGroup[`${competition.value.id}_${v.id}`] < obj.uploadRule.competitionGuiGeCount || !obj.workGroup[`${competition.value.id}_${v.id}`]) {
+            selGuiGeList.value.push(v);
+        }
+    });
     // console.log(obj);
     masterCompetition.value = obj.masterCompetition;
 

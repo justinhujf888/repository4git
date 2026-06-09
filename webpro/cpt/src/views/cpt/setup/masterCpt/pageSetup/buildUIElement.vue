@@ -41,6 +41,9 @@
                     <div v-else-if="col.type=='html'">
                         <div v-html="data[col.key]"></div>
                     </div>
+                    <div v-else-if="col.type=='date'">
+                        <div>{{data[col.key]}}</div>
+                    </div>
                     <span v-else>{{data[col.key]}}</span>
                 </template>
             </Column>
@@ -69,6 +72,7 @@ onMounted(async ()=>{
     //     });
     // }
     await pj.processPageImageJson(element.value);
+    // console.log(element.value);
 });
 
 function buildColors(cry) {

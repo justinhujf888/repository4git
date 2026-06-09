@@ -1,5 +1,6 @@
 import lodash from 'lodash-es';
 import oss from '@/api/oss';
+import dayjs from "dayjs";
 
 export default {
     menuTreeDatas() {
@@ -117,7 +118,10 @@ export default {
     async processPageImageJson(element) {
         if (element.type=="image" && element.value.img) {
             element.value.tempMap = {imgPath:await oss.buildPathAsync(element.value.img,true,null)};
-        } else if (element.type=="box") {
+        } else if (element.type=="date") {
+            element.value = dayjs(element.value).format("YYYY-MM-DD");
+        }
+        else if (element.type=="box") {
             lodash.forEach(element.eltTypes,async (ev)=>{
                 if (ev.type=="image") {
                     ev.value.tempMap = {};
@@ -127,6 +131,12 @@ export default {
                         } else if (item[ev.key].value) {
                             item[ev.key].tempMap = {imgPath:await oss.buildPathAsync(item[ev.key].value,true,null)};
                         }
+                    }
+                } else if (ev.type=="date") {
+                    // console.log(ev);
+                    for (let item of element.value) {
+                        // console.log(item[ev.key]);
+                        item[ev.key] = dayjs(item[ev.key]).format("YYYY-MM-DD");
                     }
                 }
             });

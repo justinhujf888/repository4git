@@ -66,9 +66,13 @@
             </div>
         </div>
         <Dialog v-model:visible="showDialog" header="请选择参赛类别" modal :dismissableMask="true" :pt="{Button:{classd:'!border-none !rounded-none !shadow-none'}}">
-            <div class="flex flex-row items-center w-full gap-4 p-4 mb-4 pb-0">
-                <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return lodash.findIndex(workList,(w)=>{return w.guiGe?.competition?.id==o.id})<0})" :key="index" class="w-48 h-36">
-                    <Button :label="competition.name" severity="secondary" class="w-full h-full !px-8 !border-2 !border-solid !border-gray-200" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);"/>
+            <div class="md:row col items-center w-full gap-4 p-4 mb-4 pb-0">
+<!-- lodash.findIndex(workList,(w)=>{return w.competition?.id==o.id})               lodash.findIndex(workList,(w)=>{return w.competition?.id==o.id})<0-->
+                <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return (workGroup[o?.id] ? workGroup[o?.id] : 0) < uploadRule?.competitionGuiGeCount})" :key="index" class="w-4/5 md:w-48 h-60 gap-4 col">
+                    <Button :label="competition.name" severity="secondary" class="w-full h-48 !px-8 !border-2 !border-solid !border-gray-200" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',workGroup:workGroup,returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);"/>
+                    <div class="text-sm text-gray-900 h-28">
+                        <span>{{competition.description}}</span>
+                    </div>
                 </div>
             </div>
         </Dialog>
@@ -103,6 +107,7 @@ const uploadRule = ref(null);
 
 let host = inject("domain");
 let masterCompetition = null;
+let workGroup = null;
 
 onMounted(async () => {
     // workRest.qyCompetitionList({appId:host,masterCompetitionId:"localhost",shiQyGuiGeList:true},(res)=>{
@@ -116,6 +121,7 @@ onMounted(async () => {
         userId = util.giveStorgeCry("userId");
     }
     uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
+    // console.log(uploadRule.value);
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     competitionList.value = masterCompetition.competitionList;
     loadWorksByUser();
@@ -130,6 +136,7 @@ function loadWorksByUser() {
         if (res.status=="OK") {
             if (res.data!=null) {
                 workList.value = res.data;
+                groupByWorkCount();
                 for (let work of workList.value) {
                     for (let workItem of lodash.filter(work.workItemList,(o)=>{return o.mediaType==0})) {
                         workItem.tempMap = {imgPath:await oss.buildPathAsync(workItem.path,true,null)};
@@ -141,6 +148,16 @@ function loadWorksByUser() {
             }
         }
     });
+}
+
+const groupByWorkCount = () => {
+    workGroup = lodash.mapValues(lodash.groupBy(workList.value,(w)=>{
+        // console.log(w);
+        return `${w.competition?.id}${w.guiGe?.id ? "_"+w.guiGe?.id : ""}`;
+    }),(wu)=>{
+        return wu.length;
+    });
+    // console.log(workGroup);
 }
 
 function showCompetitionList(event) {
@@ -159,6 +176,8 @@ async function returnFunction(obj) {
     }
     if (!work.workItemList) {
         work.workItemList = [];
+    } else {
+        groupByWorkCount();
     }
     if (!work.tempMap?.workItemList) {
         if (!work.tempMap) {

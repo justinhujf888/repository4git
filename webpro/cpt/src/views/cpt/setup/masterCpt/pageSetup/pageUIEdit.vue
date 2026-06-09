@@ -88,7 +88,21 @@
                 }
 
             }">
-            <image-grid v-model:mediaFiles="mediaFiles" v-model:selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas"></image-grid>
+            <Tabs value="0">
+                <TabList>
+                    <Tab value="0">{{mediaFiles[0].name}}</Tab>
+                    <Tab value="1">{{mediaFiles[1].name}}</Tab>
+                </TabList>
+                <TabPanels>
+                    <TabPanel value="0">
+                        <image-grid :mediaFiles="mediaFiles[0].value" v-model:selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas"></image-grid>
+                    </TabPanel>
+                    <TabPanel value="1">
+                        <image-grid :mediaFiles="mediaFiles[1].value" v-model:selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas"></image-grid>
+                    </TabPanel>
+                </TabPanels>
+            </Tabs>
+<!--            <image-grid v-model:mediaFiles="mediaFiles" v-model:selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas"></image-grid>-->
         </ScrollPanel>
     </Popover>
 </template>
@@ -110,6 +124,7 @@ const emit = defineEmits(["deleteRow","updateRow"]);
 
 onMounted(async ()=>{
     await pj.processPageImageJson(element.value);
+    // console.log(element.value);
 });
 
 function deleteRow(element,data,index) {

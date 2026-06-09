@@ -133,7 +133,7 @@ function saveJson() {
     mcPageSetup.mcPageSetupPK.competitionId = props.competitionId;
     mcPageSetup.mcPageSetupPK.key = pageComponentMap[componentIndex.value].key;
     mcPageSetup.setupJson = pj.preProcessPageJson(lodash.cloneDeep(pageJson.value),true);
-    // console.log(mcPageSetup.setupJson);
+    // console.log(mcPageSetup.setupJson);return;
     workRest.savePageSetup({mcPageSetup:mcPageSetup},(res)=>{
         if (res.status=="OK") {
             dialog.toastSuccess("页面设置已保存");

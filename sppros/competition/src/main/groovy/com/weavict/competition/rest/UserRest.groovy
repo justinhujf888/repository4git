@@ -289,7 +289,7 @@ class UserRest extends BaseRest
         try
         {
             Rule rule = this.objToBean(query.rule, Rule.class,null);
-//            println rule.dump();
+//            println rule.rulePK.dump();
             userBean.transactionCall(-1,{
                 userBean.updateObject(rule);
                 userBean.updateTheObjectFilds(Rule.simpleName,"rulePK.appId = :appId and rulePK.ruleId = :ruleId",[name:rule.name],[appId:query.appId,ruleId:rule.rulePK.ruleId],false);

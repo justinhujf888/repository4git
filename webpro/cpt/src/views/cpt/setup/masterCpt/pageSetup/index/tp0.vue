@@ -35,11 +35,25 @@
 
             }">
                 <div v-if="element.yeWuType=='media'">
-                    <span>{{mediaFiles[0].name}}</span>
-                    <image-grid :mediaFiles="mediaFiles[0].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
-                    <Divider/>
-                    <span class="mt-10">{{mediaFiles[1].name}}</span>
-                    <image-grid :mediaFiles="mediaFiles[1].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
+                    <Tabs value="0">
+                        <TabList>
+                            <Tab value="0">{{mediaFiles[0].name}}</Tab>
+                            <Tab value="1">{{mediaFiles[1].name}}</Tab>
+                        </TabList>
+                        <TabPanels>
+                            <TabPanel value="0">
+                                <image-grid :mediaFiles="mediaFiles[0].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
+                            </TabPanel>
+                            <TabPanel value="1">
+                                <image-grid :mediaFiles="mediaFiles[1].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>
+                            </TabPanel>
+                        </TabPanels>
+                    </Tabs>
+<!--                    <span>{{mediaFiles[0].name}}</span>-->
+<!--                    <image-grid :mediaFiles="mediaFiles[0].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>-->
+<!--                    <Divider/>-->
+<!--                    <span class="mt-10">{{mediaFiles[1].name}}</span>-->
+<!--                    <image-grid :mediaFiles="mediaFiles[1].value" :selFiles="element.value" :selCount="1" :funCheckHasIndex="imageGridCheckHas4Media"></image-grid>-->
                 </div>
                 <div v-else-if="element.yeWuType=='judge'">
                     <image-grid :mediaFiles="judgeList" :selFiles="element.value" :selCount="element.count" :funCheckHasIndex="imageGridCheckHas4Judge">
@@ -88,6 +102,8 @@ import oss from "@/api/oss";
 import dialog from "@/api/uniapp/dialog";
 import userRest from "@/api/dbs/userRest";
 import {Config} from "@/api/config";
+import dayjs from "dayjs";
+import pj from "@/datas/pageJson";
 
 const pageJson = defineModel("pageJson",{default:{}});
 const readOnly = defineModel("readOnly",{default:true});
@@ -96,7 +112,7 @@ const element = ref({});
 const showDialog = ref(false);
 const op = useTemplateRef("op");
 const mediaFiles = ref([{sourceType:8,name:"页面素材",value:[]},{sourceType:9,name:"新闻素材",value:[]}]);
-const allMediaFiles = ref([]);
+const allMediaFiles = ref([{sourceType:8,name:"页面素材",value:[]},{sourceType:9,name:"新闻素材",value:[]}]);
 const judgeList = ref([]);
 const orgHumanList = ref([]);
 
@@ -150,7 +166,9 @@ let process = -1;
         });
 
         await new Promise(resolve => {
-            allMediaFiles.value = lodash.concat(mediaFiles.value[0].value,mediaFiles.value[1].value);
+            // allMediaFiles.value = lodash.concat(mediaFiles.value[0].value,mediaFiles.value[1].value);
+            allMediaFiles.value[0].value = mediaFiles.value[0].value;
+            allMediaFiles.value[1].value = mediaFiles.value[1].value;
             resolve();
         });
     })();
@@ -225,7 +243,7 @@ function openPop(event,_eltTypes) {
     eltTypes.value = _eltTypes;
     op.value.toggle(event);
 }
-function saveelm() {
+const saveelm = async ()=>{
     if (element.value.yeWuType=="judge" || element.value.yeWuType=="orgHuman") {
 
     } else {
@@ -241,7 +259,7 @@ function saveelm() {
         } else if (process>-1) {
             element.value.value[process] = obj;
         }
-
+        await pj.processPageImageJson(element.value);
         eltTypes.value = {};
     }
     showDialog.value = false;
@@ -254,8 +272,9 @@ function deleteRow(element,data,index) {
     // console.log(element,data,index);
     element.value.splice(index, 1);
 }
-function updateRow(element,data,index) {
+const updateRow = async (element,data,index)=>{
     // console.log(element,data);
+    // await pj.processPageImageJson(element);
     process = index;
     eltTypes.value = element.eltTypes;
     lodash.forEach(data,(v,k)=>{
