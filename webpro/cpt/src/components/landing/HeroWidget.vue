@@ -44,9 +44,11 @@ const siteDatas = inject("siteDatas");
 const indexDatas = inject("indexDatas");
 watch(siteDatas,async (newValue)=>{
     // console.log(newValue);
-    for(let v of newValue.siteInfo.siteZuTiMediaList) {
-        v.tempMap = {};
-        v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
+    if (newValue.siteInfo?.siteZuTiMediaList) {
+        for(let v of newValue.siteInfo?.siteZuTiMediaList) {
+            v.tempMap = {};
+            v.tempMap.imgPath = await oss.buildPathAsync(v.path,true,null);
+        }
     }
 });
 watch(indexDatas,async (newValue)=>{
@@ -55,8 +57,10 @@ watch(indexDatas,async (newValue)=>{
         v.img.tempMap = {};
         v.img.tempMap.imgPath = await oss.buildPathAsync(v.img.img,false,null);
     }
-    newValue.bannerArea.setup.mImg.value.tempMap = {};
-    newValue.bannerArea.setup.mImg.value.tempMap.imgPath = await oss.buildPathAsync(newValue.bannerArea.setup.mImg.value.img,true,null);
+    if (newValue.bannerArea.setup.mImg) {
+        newValue.bannerArea.setup.mImg.value.tempMap = {};
+        newValue.bannerArea.setup.mImg.value.tempMap.imgPath = await oss.buildPathAsync(newValue.bannerArea.setup.mImg.value.img,true,null);
+    }
 });
 
 onMounted(async () => {

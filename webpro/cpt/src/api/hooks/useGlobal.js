@@ -5,8 +5,10 @@ import dayjs from 'dayjs';
 
 export default {
     async siteDatas() {
-        let siteDatas = null;
-        siteDatas = {cptInfo:await workRest.gainCache8MasterCompetitionInfo(util.getDomainFromUrl(window.location)),siteInfo:await workRest.gainCache8SiteInfo(util.getDomainFromUrl(window.location))};
+        let siteDatas = {cptInfo:await workRest.gainCache8MasterCompetitionInfo(util.getDomainFromUrl(window.location)),siteInfo:await workRest.gainCache8SiteInfo(util.getDomainFromUrl(window.location))};
+        if (!siteDatas.cptInfo.masterCompetitionInfo?.tempMap) {
+            siteDatas.cptInfo.masterCompetitionInfo.tempMap = {};
+        }
         siteDatas.cptInfo.masterCompetitionInfo.tempMap.beginDate = dayjs(siteDatas.cptInfo.masterCompetitionInfo.beginDate).format("YYYY-MM-DD");
         siteDatas.cptInfo.masterCompetitionInfo.tempMap.endDate = dayjs(siteDatas.cptInfo.masterCompetitionInfo.endDate).format("YYYY-MM-DD");
         return siteDatas;

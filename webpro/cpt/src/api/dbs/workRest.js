@@ -135,7 +135,8 @@ export default {
     },
     async gainCache8MasterCompetitionInfo(host) {
         // console.log(host,Config.siteJson,`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
-        return Http.fetchJson(`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
+        // return Http.fetchJson(`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
+        return Http.fetchJson(`${Config.siteJson}/test.arkydesign.cn/masterCompetition.json?${Beans.buildPId("")}`);
         // return fetch(`${Config.siteJson}/masterCompetition.json`)
         //     .then(response => response.json())
         //     .then(data => {return data});
