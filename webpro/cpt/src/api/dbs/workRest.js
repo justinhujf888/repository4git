@@ -134,6 +134,7 @@ export default {
         Http.callHttpFunction('/r/work/buildCacheCpt',ds,onfun);
     },
     async gainCache8MasterCompetitionInfo(host) {
+        // console.log(host,Config.siteJson,`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
         return Http.fetchJson(`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
         // return fetch(`${Config.siteJson}/masterCompetition.json`)
         //     .then(response => response.json())
