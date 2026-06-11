@@ -159,7 +159,7 @@ onMounted(async () => {
     // console.log(masterCompetitionId);
 
     if (masterCompetitionId) {
-        uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
+        uploadRule.value = await workRest.gainJsonSetup(host,"worksetup");
         // console.log(uploadRule.value);
         workRest.qyCompetitionList({masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true},(res)=>{
             if (res.status=="OK") {

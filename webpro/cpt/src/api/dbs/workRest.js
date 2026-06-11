@@ -135,8 +135,7 @@ export default {
     },
     async gainCache8MasterCompetitionInfo(host) {
         // console.log(host,Config.siteJson,`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
-        // return Http.fetchJson(`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
-        return Http.fetchJson(`${Config.siteJson}/test.arkydesign.cn/masterCompetition.json?${Beans.buildPId("")}`);
+        return Http.fetchJson(`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
         // return fetch(`${Config.siteJson}/masterCompetition.json`)
         //     .then(response => response.json())
         //     .then(data => {return data});
@@ -144,7 +143,12 @@ export default {
     async gainCache8SiteInfo(host) {
         return Http.fetchJson(`${Config.siteJson}/${host}/siteInfo.json?${Beans.buildPId("")}`);
     },
+    async gainJsonSetup(host,key) {
+        // console.log(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
+        return Http.fetchJson(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
+    },
     async gainPageSetup(host,key) {
+        // console.log(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
         return Http.fetchJson(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
     },
     async resetPingShen(ds,onfun) {
