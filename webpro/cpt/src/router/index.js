@@ -367,6 +367,7 @@ const router = createRouter({
 router.beforeEach((to, from) => {
     // ...localStorage.getItem("userId")
     // console.log(util.giveStorgeCry("userType"));
+    document.documentElement.setAttribute('data-theme', "ct0");
     if (lodash.includes(to.href,"/manage/")) {
         document.documentElement.classList.add('app-dark');
         if (lodash.toUpper(util.giveStorgeCry("managerId"))!="ADMIN") {
