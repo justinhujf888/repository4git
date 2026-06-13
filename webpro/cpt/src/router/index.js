@@ -70,6 +70,14 @@ const router = createRouter({
                     meta:{
                         name: "评审标准"
                     }
+                },
+                {
+                    path: '/us/cjWorks',
+                    name: 'cjWorks',
+                    component: () => import('@/views/documents/works/cjWorks.vue'),
+                    meta:{
+                        name: "本届优胜作品"
+                    }
                 }
             ]
         },

@@ -13,7 +13,7 @@ export default {
                 ]},
             {key:"huoJiangWork",label:"优胜作品",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
                     {key:"storyWork",label:"往届优胜作品",isUserSetup:true,route:"",isInPageMenu:true},
-                    {key:"theWork",label:"本界优胜作品",isUserSetup:true,route:"",isInPageMenu:true},
+                    {key:"cjWorks",label:"本界优胜作品",isUserSetup:true,route:"cjWorks",isInPageMenu:true},
                     {key:"teBie",label:"特别殊荣",isUserSetup:true,route:"",isInPageMenu:true}
                 ]},
             {key:"userCenter",label:"参赛",menuType:1,route:"",isUserSetup:false,isInPageMenu:true,items:[
@@ -42,7 +42,7 @@ export default {
                           // { label: '系列赛事设置', icon: '', to: '/manage/cpt/site/cptSetup' },
                           { userType: ["manager"], label: '基础信息', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteBase',key:"siteBase" },
                           // { label: '主题图', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteZhuTi' },
-                          { userType: ["manager"], label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem',key:"siteWorkItem" },
+                          // { userType: ["manager"], label: '设置作品', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteWorkItem',key:"siteWorkItem" },
                           { userType: ["manager"], label: '组委会成员', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteOrgHuman',key:"siteOrgHuman" },
                           { userType: ["manager"], label: '作品字段', icon: 'pi pi-fw pi-file', to: '/manage/cpt/site/siteFields',key:"siteFields" },
                       ]

@@ -9,6 +9,7 @@ import ToastService from 'primevue/toastservice';
 import DialogService from 'primevue/dialogservice';
 import StyleClass from 'primevue/styleclass';
 import util from "@/api/util";
+import VueKonva from 'vue-konva';
 
 import '@/assets/styles.scss';
 import zhCN from 'primelocale/zh-CN.json';
@@ -43,5 +44,6 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(DialogService);
+app.use(VueKonva);
 
 app.mount('#app');
