@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" v-model:value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicators="false" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" _containerStyle="max-width: 640px" :pt="{
+        <Galleria ref="galleria" v-model:activeIndex="activeIndex" v-model:visible="shiShow" v-model:value="files" :responsiveOptions="responsiveOptions" :numVisible="5" :circular="true" :fullScreen="fullScreen" :showItemNavigators="showItemNavigators" :showThumbnails="showThumbnails" :showIndicators="false" :showIndicatorsOnItem="true" :thumbnailsPosition="thumbnailsPosition" :showItemNavigatorsOnHover="true" _containerStyle="max-width: 640px" @update:activeIndex="activeIndexChange" :pt="{
             root: {
                 class: [{ 'flex flex-col': fullScreen }]
             },
@@ -19,7 +19,7 @@
 <!--                <div class="h-lvh">-->
 <!--                    <img :src="slotProps.item.tempMap.imgPath" :alt="slotProps.item.tempMap.name" class="block h-full" />-->
 <!--                </div>-->
-                <Image :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" :class="[{'max-w-3xl height-auto object-cover object-top':fullScreen},{'block':!fullScreen}]" />
+                <Image :src="slotProps.item?.tempMap.imgPath" :alt="slotProps.item?.tempMap.name" :class="[{'max-w-7xl height-auto object-cover object-top':fullScreen},{'block':!fullScreen}]" />
             </template>
             <template #thumbnail="slotProps">
                 <div class="grid gap-4 justify-center">
@@ -80,7 +80,8 @@ const props = defineProps({
     responsiveOptions: { type: Array },
     shiShowImgGrid: { type: Boolean, default: true },
     obj: { type: Object }
-})
+});
+const emit = defineEmits(["activeIndexChange"]);
 
 const galleria = useTemplateRef("galleria");
 const activeIndex = ref(props.activeIndex);
@@ -170,6 +171,9 @@ const fullScreenIcon = computed(() => {
 const slideButtonIcon = computed(() => {
     return `pi ${isAutoPlay.value ? 'pi-pause' : 'pi-play'}`;
 });
+const activeIndexChange = (e)=>{
+    emit("activeIndexChange",e);
+};
 
 defineExpose({imagesShow});
 </script>
