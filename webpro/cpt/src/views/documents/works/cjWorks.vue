@@ -1,38 +1,51 @@
 <template>
-    <div class="card center mx-10" :class="{'col':flexLayer==0,'grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4':flexLayer==1}" :_style="{'min-width':flexLayer==1 ? 0.45*layerWidth*3 + 'px' : '100%'}">
-        <div v-for="(work,index) of workList" class="mb-5" :class="{'w-full':flexLayer==1,'w-full md:w-2/3':flexLayer==0}" @click="imagesShow(index)">
-            <div ref="cvsDivRef" _class="bg-blue-300">
-<!--                :config="{width:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
-                <v-stage ref="stageRef" :config="{width:compSize(stageConfig.width),height:compSize(stageConfig.height)}" v-if="work.tempMap?.show" class="hidden">
-<!--                    :config="{scaleX:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1,scaleY:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1}"-->
-                    <v-layer ref="layerRef">
-                        <v-rect :config="{width: compSize(layerWidth),height: compSize(layerHeight),fill: '#000000'}"/>
-                        <v-image v-if="work.tempMap.imgObj" :config="getWorkImgConfig(work.tempMap.imgObj)" :_crop="getWorkImgCrop(work.tempMap.imgObj)"/>
-                        <v-rect :config="{x:0,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1e6c86'}"/>
-                        <v-rect :config="{x:compSize(layerWidth)/4,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1d7b41'}"/>
-                        <v-rect :config="{x:compSize(layerWidth)/4*2,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#62a718'}"/>
-                        <v-rect :config="{x:compSize(layerWidth)/4*3,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#e28e44'}"/>
-                        <v-rect :config="{x:compSize(0),y:compSize(10),width: compSize(layerWidth),height: compSize(80),fill: '#122b3d'}"/>
-                        <v-image v-if="logoImg" :config="{x:compSize(30),y:compSize(30),width:compSize(100),height: compSize(100) * logoImg.height / logoImg.width,image:logoImg,scaleX:1,scaleY:1}"/>
-                        <v-text :config="{x:compSize(150),y:compSize(30),text:siteDatas?.cptInfo?.masterCompetitionInfo.name,fontSize:compSize(35),fill:'#dddddd',fontStyle: 700}"/>
-                        <v-text :config="{x:compSize(246),y:compSize(27),text:'|',fontSize:compSize(35),fill:'#59653d'}"/>
-                        <v-text ref="cpRef" :config="{x:compSize(270),y:compSize(39),text:'微景观组',fontSize:compSize(18),fill:'#ffffff',letterSpacing: 2}"/>
-                        <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(20),y:compSize(37),text:'排名',fontSize:compSize(20),fill:'#bababa',letterSpacing: 1}"/>
-                        <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(80),y:compSize(30),text:work.tempMap.sortStr,fontSize:compSize(35),fill:'#ffffff',fontStyle: 700}"/>
-                        <v-image v-if="work.tempMap.qcjx" :config="{x:compSize(layerWidth-180),y:compSize(22),image:work.tempMap.qcjx,scaleX:compSize(0.6),scaleY:compSize(0.6)}"/>
-                        <!--                    <v-text :config="{x:layerWidth-200,y:22,fontFamily: 'Noto Serif SC',fontStyle: 'bold',text:'全场金奖',fontSize:30,_fill:'#ffffff',width:200,fillLinearGradientStartPoint: { x: 0, y: 0 },fillLinearGradientEndPoint: { x: 200, y: 10 },fillLinearGradientColorStops:[0, '#ff4444',1, '#44ddff']}"/>-->
-                        <v-text :config="{x:compSize(30),y:compSize(layerHeight-65),text:work.name,fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
-                        <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-65),text:'胡纪锋',fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
-<!--                        <v-image v-if="work.tempMap?.imgPath" :config="{x:0,y:0,image:work.tempMap.imgPath}"/>-->
-                    </v-layer>
-                </v-stage>
-                <div>
-                    <img :src="work.tempMap?.imgPath"/>
-                </div>
+    <div class="card">
+        <div class="mx-10 between">
+            <div>
+
             </div>
-            <div class="mt-2 mb-5 col gap-y-2">
-                <span class="text-xl font-semibold">{{work.tempMap.sortStr}}</span>
-                <span class="text-xl font-semibold">胡纪锋</span>
+            <div class="row gap-x-2 text-2xl">
+                <span class="iconfont" @click="changeFlex(0)">&#xe687;</span>
+                <span class="iconfont" @click="changeFlex(1)">&#xe689;</span>
+            </div>
+        </div>
+        <div class="center mx-10 mt-5" :class="{'col':flexLayer==0,'grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4':flexLayer==1}" :_style="{'min-width':flexLayer==1 ? 0.45*layerWidth*3 + 'px' : '100%'}">
+            <div v-for="(work,index) of workList" class="mb-5" :class="{'w-full':flexLayer==1,'w-full md:w-2/3':flexLayer==0}" @click="imagesShow(index)">
+                <div>
+                    <!--                :config="{width:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
+                    <v-stage ref="stageRef" :config="{width:compSize(stageConfig.width),height:compSize(stageConfig.height)}" class="hidden">
+                        <!--                    :config="{scaleX:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1,scaleY:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1}"-->
+                        <v-layer ref="layerRef">
+                            <v-rect :config="{width: compSize(layerWidth),height: compSize(layerHeight),fill: '#000000'}"/>
+                            <v-image v-if="work.tempMap.imgObj" :config="getWorkImgConfig(work.tempMap.imgObj)" :_crop="getWorkImgCrop(work.tempMap.imgObj)"/>
+                            <v-rect :config="{x:0,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1e6c86'}"/>
+                            <v-rect :config="{x:compSize(layerWidth)/4,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1d7b41'}"/>
+                            <v-rect :config="{x:compSize(layerWidth)/4*2,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#62a718'}"/>
+                            <v-rect :config="{x:compSize(layerWidth)/4*3,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#e28e44'}"/>
+                            <v-rect :config="{x:compSize(0),y:compSize(10),width: compSize(layerWidth),height: compSize(80),fill: '#122b3d'}"/>
+                            <v-image v-if="logoImg" :config="{x:compSize(30),y:compSize(30),width:compSize(100),height: compSize(100) * logoImg.height / logoImg.width,image:logoImg,scaleX:1,scaleY:1}"/>
+                            <v-text :config="{x:compSize(150),y:compSize(30),text:siteDatas?.cptInfo?.masterCompetitionInfo.name,fontSize:compSize(35),fill:'#dddddd',fontStyle: 700}"/>
+                            <v-text :config="{x:compSize(246),y:compSize(27),text:'|',fontSize:compSize(35),fill:'#59653d'}"/>
+                            <v-text ref="cpRef" :config="{x:compSize(270),y:compSize(39),text:'微景观组',fontSize:compSize(18),fill:'#ffffff',letterSpacing: 2}"/>
+                            <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(20),y:compSize(37),text:'排名',fontSize:compSize(20),fill:'#bababa',letterSpacing: 1}"/>
+                            <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(80),y:compSize(30),text:work.tempMap.sortStr,fontSize:compSize(35),fill:'#ffffff',fontStyle: 700}"/>
+                            <v-image v-if="work.tempMap.qcjx" :config="{x:compSize(layerWidth-180),y:compSize(22),image:work.tempMap.qcjx,scaleX:compSize(0.6),scaleY:compSize(0.6)}"/>
+                            <!--                    <v-text :config="{x:layerWidth-200,y:22,fontFamily: 'Noto Serif SC',fontStyle: 'bold',text:'全场金奖',fontSize:30,_fill:'#ffffff',width:200,fillLinearGradientStartPoint: { x: 0, y: 0 },fillLinearGradientEndPoint: { x: 200, y: 10 },fillLinearGradientColorStops:[0, '#ff4444',1, '#44ddff']}"/>-->
+                            <v-text :config="{x:compSize(30),y:compSize(layerHeight-65),text:work.name,fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
+                            <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-65),text:'胡纪锋',fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
+                            <!--                        <v-image v-if="work.tempMap?.imgPath" :config="{x:0,y:0,image:work.tempMap.imgPath}"/>-->
+                        </v-layer>
+                    </v-stage>
+                    <div ref="cvsDivRef" class="bg-gray-300 center" :style="{'width':cvsDivRef?.[index].offsetWidth+'px','height':cvsDivRef?.[index].offsetWidth * (layerHeight / layerWidth)+'px'}">
+<!--                        {{cvsDivRef?.[index].offsetWidth}}-->
+                        <img :src="work.tempMap?.imgPath" class="cursor-pointer"/>
+                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>
+                    </div>
+                </div>
+                <div class="mt-2 mb-5 col gap-y-2 text-gray-800">
+                    <span class="text-xl font-semibold">{{work.tempMap.sortStr}}</span>
+                    <span class="text-xl font-semibold">胡纪锋</span>
+                </div>
             </div>
         </div>
         <priviewImage ref="refPriviewImage" v-if="workList?.length>0" :files="workList" :shiShowImgGrid="false" _class="hidden" @activeIndexChange="activeIndexChange"/>
@@ -47,14 +60,14 @@ import useGlobal from "@/api/hooks/useGlobal";
 import { Beans } from '@/api/dbs/beans';
 import lodash from 'lodash-es';
 import priviewImage from "@/components/my/priviewImage.vue";
+import util from "@/api/util";
 
 let footDatas = null;
 let siteDatas = null;
 
-const workList = ref([]);
 const logoImgUrl = ref("");
-const [logoImg] = useImage(logoImgUrl,"anonymous");
-
+const [logoImg,logoImgStatus] = useImage(logoImgUrl,"anonymous");
+const workList = ref([]);
 const layerWidth = 1000;
 const layerHeight = 600;
 const layerMx = 200;
@@ -65,24 +78,15 @@ const stageRef = useTemplateRef("stageRef");
 const layerRef = useTemplateRef("layerRef");
 const cpRef = useTemplateRef("cpRef");
 const cvsDivRef = useTemplateRef("cvsDivRef");
-const flexLayer = ref(1);
+const flexLayer = ref(0);
 const stageConfig = ref({});
 const imgStatusList = ref([]);
 
-(async ()=>{
+onMounted(async () => {
     footDatas = await useGlobal.pageSetupDatas("foot");
     siteDatas = await useGlobal.siteDatas();
-    // console.log(siteDatas.cptInfo.masterCompetitionInfo.name);
-    // let asWorkImg = useImage(await oss.buildPathAsync("cpt/cpt.arkydesign.cn/work/2026/13288888888/88881778664330607HMSdB8wE/1778664330607PtMcjbFZ_版纳森林02.jpg",true,null));
-    // let asLogoImg = useImage(await oss.buildPathAsync(footDatas.boundArea.setup.mImg.value.img));
-    // setTimeout(()=>{
-    //     workImg.value = asWorkImg[0].value;
-    //     logoImg.value = asLogoImg[0].value;
-    // },3000);
     logoImgUrl.value = await oss.buildPathAsync(footDatas.boundArea.setup.mImg.value.img,true,null);
-})();
 
-onMounted(async () => {
     stageConfig.value = {width:layerWidth,height:layerHeight};
     let ary = [
         {id:"0",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/88881778664330607HMSdB8wE/1778664330607PtMcjbFZ_版纳森林02.jpg",name:"版纳森林"},
@@ -94,46 +98,24 @@ onMounted(async () => {
     lodash.forEach(ary,(v,i)=>{
         let w = Beans.work();
         w.id = v.id;
-        w.tempMap = {workImgUrl:v.path,sort:i,sortStr:lodash.padStart(i+1,3,"0"),imgPath:"",imgObj:null,imgStatus:null,show:false};
+        w.tempMap = {workImgUrl:v.path,sort:i,sortStr:lodash.padStart(i+1,3,"0"),imgPath:"",imgObj:null};
         w.name = v.name;
         workList.value.push(w);
+        imgStatusList.value[i] = {id:w.id,status:{logoImg:"",jxImg:"",workImg:""}};
     });
 
-    let index = 0;
-    for(let w of workList.value) {
-        [w.tempMap.imgObj,imgStatusList.value[index]] = useImage(await oss.buildPathAsync(w.tempMap.workImgUrl,true,null),"anonymous");
+    for(let [index,w] of workList.value.entries()) {
+        [w.tempMap.imgObj,imgStatusList.value[index].status.workImg] = useImage(await oss.buildPathAsync(w.tempMap.workImgUrl,true,null),"anonymous");
         if (w.tempMap.sort==0) {
-            [w.tempMap.qcjx] = useImage("/images/qcjj.png","anonymous");
+            [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qcjj.png");
         } else if (w.tempMap.sort==1) {
-            [w.tempMap.qcjx] = useImage("/images/qcyj.png","anonymous");
+            [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qcyj.png");
         } else if (w.tempMap.sort==2) {
-            [w.tempMap.qcjx] = useImage("/images/qctj.png","anonymous");
+            [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qctj.png");
         }
-        index+=1;
     }
 
     await loadFont();
-    lodash.forEach(workList.value,(w,i)=>{
-        w.tempMap.show = true;
-        watch(imgStatusList.value[i],async (v)=>{
-            if (v === 'loaded') {
-                // console.log(v);
-                // stageRef.value[i].getNode().batchDraw();
-
-                // setTimeout(()=>{
-                //     w.tempMap.imgPath = stageRef.value[i].getNode().toDataURL({pixelRatio: 2});
-                // },100);
-
-                w.tempMap.imgPath = await getCanvasDataUrl(stageRef.value[i].getNode())
-            }
-        });
-    });
-
-    // console.log(stageRef.value[0].getNode().toDataURL({pixelRatio: 2}));
-    // console.log(cpRef.value[0].getNode().textWidth);
-    // setTimeout(()=>{
-    //     show.value = true;
-    // },5000);
 });
 
 const getWorkImgConfig = (imgObj)=>{
@@ -168,8 +150,16 @@ const loadFont = ()=>{
     // document.head.appendChild(link);
 
     // 等待字体加载完成
-    return document.fonts.ready.then(() => {
-
+    return document.fonts.ready.then(async () => {
+        for(let i=0;i<=workList.value.length-1;i++) {
+            watch([imgStatusList.value[i],logoImgStatus],async (v)=>{
+                // console.log(v[0],v[1]);
+                if (v[0].status.workImg === 'loaded' && ((v[0].status.jxImg === "loaded" && i<=2) || i>2) && v[1] === "loaded") {
+                    await util.sleep(100);
+                    workList.value[i].tempMap.imgPath = await getCanvasDataUrl(stageRef.value[i].getNode());
+                }
+            });
+        }
     });
 };
 
@@ -224,6 +214,7 @@ async function waitAllImageReady(stage) {
 
 async function getCanvasDataUrl(stage) {
     const images = stage.getLayers().flatMap(l => l.find("Image"));
+    // console.log(images);
     await Promise.all(
         images.map(img => new Promise(res => {
             const dom = img.image();
@@ -232,6 +223,10 @@ async function getCanvasDataUrl(stage) {
     );
     stage.batchDraw();
     return stage.toDataURL({ pixelRatio: 2 });
+}
+
+function changeFlex(v) {
+    flexLayer.value = v;
 }
 </script>
 

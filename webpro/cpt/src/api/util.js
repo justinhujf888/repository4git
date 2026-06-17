@@ -609,6 +609,9 @@ return "cpt.arkydesign.cn";
         });
         return json;
     },
+	sleep(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
+ 	},
     async forEachAsync(arr, handler, isSerial = true){
         if( isSerial ) {
          const result = [];
@@ -626,7 +629,7 @@ return "cpt.arkydesign.cn";
         else {
          return Promise.all(arr.map(handler))
         }
-    }
+    },
     // test - case1
     // forEachAsync([1,2,3], (item)=>{
     //      console.log(item);
