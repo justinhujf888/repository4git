@@ -1,9 +1,9 @@
 <template>
-    <div class="center mx-10" :class="{'col':flexLayer==0,'grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3':flexLayer==1}" :_style="{'min-width':flexLayer==1 ? 0.45*layerWidth*3 + 'px' : '100%'}">
-        <div v-for="(work,index) of workList" class="mb-5" @click="imagesShow(index)">
-            <div ref="cvsDivRef" class="bg-blue-300 w-full">
+    <div class="card center mx-10" :class="{'col':flexLayer==0,'grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4':flexLayer==1}" :_style="{'min-width':flexLayer==1 ? 0.45*layerWidth*3 + 'px' : '100%'}">
+        <div v-for="(work,index) of workList" class="mb-5" :class="{'w-full':flexLayer==1,'w-full md:w-2/3':flexLayer==0}" @click="imagesShow(index)">
+            <div ref="cvsDivRef" _class="bg-blue-300">
 <!--                :config="{width:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
-                <v-stage ref="stageRef"  :config="{width:compSize(stageConfig.width),height:compSize(stageConfig.height)}" v-if="show">
+                <v-stage ref="stageRef" :config="{width:compSize(stageConfig.width),height:compSize(stageConfig.height)}" v-if="work.tempMap?.show" class="hidden">
 <!--                    :config="{scaleX:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1,scaleY:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1}"-->
                     <v-layer ref="layerRef">
                         <v-rect :config="{width: compSize(layerWidth),height: compSize(layerHeight),fill: '#000000'}"/>
@@ -21,13 +21,15 @@
                         <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(80),y:compSize(30),text:work.tempMap.sortStr,fontSize:compSize(35),fill:'#ffffff',fontStyle: 700}"/>
                         <v-image v-if="work.tempMap.qcjx" :config="{x:compSize(layerWidth-180),y:compSize(22),image:work.tempMap.qcjx,scaleX:compSize(0.6),scaleY:compSize(0.6)}"/>
                         <!--                    <v-text :config="{x:layerWidth-200,y:22,fontFamily: 'Noto Serif SC',fontStyle: 'bold',text:'全场金奖',fontSize:30,_fill:'#ffffff',width:200,fillLinearGradientStartPoint: { x: 0, y: 0 },fillLinearGradientEndPoint: { x: 200, y: 10 },fillLinearGradientColorStops:[0, '#ff4444',1, '#44ddff']}"/>-->
-                        <v-text :config="{x:compSize(30),y:compSize(layerHeight-70),text:work.name,fontSize:compSize(30),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
-                        <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-70),text:'胡纪锋',fontSize:compSize(30),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
+                        <v-text :config="{x:compSize(30),y:compSize(layerHeight-65),text:work.name,fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
+                        <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-65),text:'胡纪锋',fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
 <!--                        <v-image v-if="work.tempMap?.imgPath" :config="{x:0,y:0,image:work.tempMap.imgPath}"/>-->
                     </v-layer>
                 </v-stage>
+                <div>
+                    <img :src="work.tempMap?.imgPath"/>
+                </div>
             </div>
-            <img :src="work.tempMap?.imgPath"/>
             <div class="mt-2 mb-5 col gap-y-2">
                 <span class="text-xl font-semibold">{{work.tempMap.sortStr}}</span>
                 <span class="text-xl font-semibold">胡纪锋</span>
@@ -63,7 +65,6 @@ const stageRef = useTemplateRef("stageRef");
 const layerRef = useTemplateRef("layerRef");
 const cpRef = useTemplateRef("cpRef");
 const cvsDivRef = useTemplateRef("cvsDivRef");
-const show = ref(false);
 const flexLayer = ref(1);
 const stageConfig = ref({});
 const imgStatusList = ref([]);
@@ -93,7 +94,7 @@ onMounted(async () => {
     lodash.forEach(ary,(v,i)=>{
         let w = Beans.work();
         w.id = v.id;
-        w.tempMap = {workImgUrl:v.path,sort:i,sortStr:lodash.padStart(i+1,3,"0"),imgPath:"",imgObj:null,imgStatus:null};
+        w.tempMap = {workImgUrl:v.path,sort:i,sortStr:lodash.padStart(i+1,3,"0"),imgPath:"",imgObj:null,imgStatus:null,show:false};
         w.name = v.name;
         workList.value.push(w);
     });
@@ -113,30 +114,20 @@ onMounted(async () => {
 
     await loadFont();
     lodash.forEach(workList.value,(w,i)=>{
-        watch(imgStatusList.value[i],(v)=>{
+        w.tempMap.show = true;
+        watch(imgStatusList.value[i],async (v)=>{
             if (v === 'loaded') {
-                console.log(v);
-                stageRef.value[i].getNode().batchDraw();
-                w.tempMap.imgPath = stageRef.value[i].getNode().toDataURL({pixelRatio: 2});
+                // console.log(v);
+                // stageRef.value[i].getNode().batchDraw();
+
+                // setTimeout(()=>{
+                //     w.tempMap.imgPath = stageRef.value[i].getNode().toDataURL({pixelRatio: 2});
+                // },100);
+
+                w.tempMap.imgPath = await getCanvasDataUrl(stageRef.value[i].getNode())
             }
         });
     });
-
-    setTimeout(()=>{
-        // while (true) {
-        //     let status = lodash.findIndex(workList.value,(o)=>{return o.tempMap.imgStatus!="loaded"});
-        //     console.log(status);
-        //     if (lodash.findIndex(workList.value,(o)=>{return o.tempMap.imgStatus!="loaded"})>-1) {
-        //         break;
-        //     }
-        // }
-
-        // lodash.forEach(workList.value,(v,i)=>{
-        //     v.tempMap.imgPath = stageRef.value[i].getNode().toDataURL({pixelRatio: 2});
-        // });
-
-    },1000);
-
 
     // console.log(stageRef.value[0].getNode().toDataURL({pixelRatio: 2}));
     // console.log(cpRef.value[0].getNode().textWidth);
@@ -178,7 +169,7 @@ const loadFont = ()=>{
 
     // 等待字体加载完成
     return document.fonts.ready.then(() => {
-        show.value = true;
+
     });
 };
 
@@ -195,10 +186,53 @@ const activeIndexChange = (index)=>{
 };
 
 const compSize = (v)=>{
-    // let a = flexLayer.value==1 ? (cvsDivRef.value?.[0].offsetWidth/layerWidth)*v : v;
-    // console.log(a);
-    return flexLayer.value==1 ? (cvsDivRef.value?.[0].offsetWidth/layerWidth)*v : v;
+    // return flexLayer.value==1 ? (cvsDivRef.value?.[0].offsetWidth/layerWidth)*v : v;
+    return v;
 };
+
+/**
+ * 等待单个Konva.Image加载
+ * @param {import('konva').Image} node
+ * @returns {Promise}
+ */
+function waitSingleImage(node) {
+    return new Promise((resolve) => {
+        const domImg = node.image();
+        if (domImg.complete && domImg.naturalWidth > 0) {
+            resolve();
+            return;
+        }
+        domImg.onload = () => resolve();
+        domImg.onerror = () => resolve();
+    });
+}
+
+/**
+ * 等待画布全部图片就绪
+ * @param {import('konva').Stage} stage
+ */
+async function waitAllImageReady(stage) {
+    const allImages = [];
+    stage.getLayers().forEach(layer => {
+        layer.find("Image").forEach(img => {
+            allImages.push(img);
+        });
+    });
+    await Promise.all(allImages.map(waitSingleImage));
+    stage.batchDraw();
+}
+
+async function getCanvasDataUrl(stage) {
+    const images = stage.getLayers().flatMap(l => l.find("Image"));
+    await Promise.all(
+        images.map(img => new Promise(res => {
+            const dom = img.image();
+            dom.complete ? res(1) : dom.onload = () => res(1);
+        }))
+    );
+    stage.batchDraw();
+    return stage.toDataURL({ pixelRatio: 2 });
+}
 </script>
 
 <style scoped lang="scss">
