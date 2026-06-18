@@ -304,6 +304,35 @@ function swap(array, first, second) {
     return array;
 }
 
+ /**
+  * base64图片 生成临时blob url
+  * @param {string} base64Str base64字符串（可带/不带 data:image/png;base64, 前缀）
+  * @returns {string} blob临时地址
+  */
+ function base64ToBlobUrl(base64Str) {
+     let base64 = base64Str;
+     let mime = 'image/png';
+
+     // 分离前缀和纯base64内容
+     if (base64Str.includes(';base64,')) {
+         const arr = base64Str.split(';base64,');
+         mime = arr[0].replace('data:', '');
+         base64 = arr[1];
+     }
+
+     // base64转二进制Uint8Array
+     const byteStr = atob(base64);
+     const len = byteStr.length;
+     const u8Arr = new Uint8Array(len);
+     for (let i = 0; i < len; i++) {
+         u8Arr[i] = byteStr.charCodeAt(i);
+     }
+
+     // 生成blob + 临时url
+     const blob = new Blob([u8Arr], { type: mime });
+     return URL.createObjectURL(blob);
+ }
+
 /**
  * floatObj 包含加减乘除四个方法，能确保浮点数运算不丢失精度
  *
@@ -507,6 +536,7 @@ export default {
 	},
 	exchangeChn2En,
 	exchangeEn2Chn,
+    base64ToBlobUrl,
 	swap,
 	floatObj,
 	isJson,

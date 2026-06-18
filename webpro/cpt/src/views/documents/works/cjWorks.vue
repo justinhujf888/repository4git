@@ -1,51 +1,56 @@
 <template>
-    <div class="card">
-        <div class="mx-10 between">
-            <div>
-
-            </div>
+    <div class="md:px-20 lg:px-32">
+        <div class="between">
+            <div></div>
             <div class="row gap-x-2 text-2xl">
-                <SelectButton v-model="flexLayer" :options="['0','1']" :allowEmpty="false">
+                <SelectButton v-model="flexLayer" :options="['0','1']" :allowEmpty="false" @change="flexLayerChange">
                     <template #option="{ option }">
                         <i :class="[option == '0' ? 'pi pi-bars' : 'pi pi-table']" />
                     </template>
                 </SelectButton>
             </div>
         </div>
-        <div class="center mt-10" :class="{'col md:mx-5 lg:mx-52':flexLayer=='0','grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4':flexLayer=='1'}" :_style="{'min-width':flexLayer=='1' ? 0.45*layerWidth*3 + 'px' : '100%'}">
+        <div>
+            <Paginator :rows="10" :totalRecords="120" :pageLinkSize="10" template="PageLinks" :pt="{page:{class:'text-xl md:text-2xl font-semibold'}}">
+            </Paginator>
+        </div>
+
+        <div class="center mt-10" :class="{'col mx-5 md:mx-10 lg:mx-32':flexLayer=='0','grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4':flexLayer=='1'}">
             <div v-for="(work,index) of workList" class="mb-5 w-full">
+
+                <!--                :config="{width:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
+                <v-stage ref="stageRef" :config="{width:compSize(stageConfig.width),height:compSize(stageConfig.height)}" class="hidden">
+                    <!--                    :config="{scaleX:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth) : 1,scaleY:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth) : 1}"-->
+                    <v-layer>
+                        <v-rect :config="{width: compSize(layerWidth),height: compSize(layerHeight),fill: '#000000'}"/>
+                        <v-image v-if="work.tempMap.imgObj" :config="getWorkImgConfig(work.tempMap.imgObj)" :_crop="getWorkImgCrop(work.tempMap.imgObj)"/>
+                        <v-rect :config="{x:0,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1e6c86'}"/>
+                        <v-rect :config="{x:compSize(layerWidth)/4,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1d7b41'}"/>
+                        <v-rect :config="{x:compSize(layerWidth)/4*2,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#62a718'}"/>
+                        <v-rect :config="{x:compSize(layerWidth)/4*3,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#e28e44'}"/>
+                        <v-rect :config="{x:compSize(0),y:compSize(10),width: compSize(layerWidth),height: compSize(80),fill: '#122b3d'}"/>
+                        <v-image v-if="logoImg" :config="{x:compSize(30),y:compSize(30),width:compSize(100),height: compSize(100) * logoImg.height / logoImg.width,image:logoImg,scaleX:1,scaleY:1}"/>
+                        <v-text :config="{x:compSize(150),y:compSize(30),text:siteDatas?.cptInfo?.masterCompetitionInfo.name,fontSize:compSize(35),fill:'#dddddd',fontStyle: 700}"/>
+                        <v-text :config="{x:compSize(246),y:compSize(27),text:'|',fontSize:compSize(35),fill:'#59653d'}"/>
+                        <v-text ref="cpRef" :config="{x:compSize(270),y:compSize(39),text:'微景观组',fontSize:compSize(18),fill:'#ffffff',letterSpacing: 2}"/>
+                        <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(20),y:compSize(37),text:'排名',fontSize:compSize(20),fill:'#bababa',letterSpacing: 1}"/>
+                        <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(80),y:compSize(30),text:work.tempMap.sortStr,fontSize:compSize(35),fill:'#ffffff',fontStyle: 700}"/>
+                        <v-image v-if="work.tempMap.qcjx" :config="{x:compSize(layerWidth-180),y:compSize(22),image:work.tempMap.qcjx,scaleX:compSize(0.6),scaleY:compSize(0.6)}"/>
+                        <!--                    <v-text :config="{x:layerWidth-200,y:22,fontFamily: 'Noto Serif SC',fontStyle: 'bold',text:'全场金奖',fontSize:30,_fill:'#ffffff',width:200,fillLinearGradientStartPoint: { x: 0, y: 0 },fillLinearGradientEndPoint: { x: 200, y: 10 },fillLinearGradientColorStops:[0, '#ff4444',1, '#44ddff']}"/>-->
+                        <v-text :config="{x:compSize(30),y:compSize(layerHeight-65),text:work.name,fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
+                        <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-65),text:'胡纪锋',fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
+                        <!--                        <v-image v-if="work.tempMap?.imgPath" :config="{x:0,y:0,image:work.tempMap.imgPath}"/>-->
+                    </v-layer>
+                </v-stage>
+
                 <div ref="cvsDivRef" class="w-full">
-                    <!--                :config="{width:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
-                    <v-stage ref="stageRef" :config="{width:compSize(stageConfig.width),height:compSize(stageConfig.height)}" class="hidden">
-                        <!--                    :config="{scaleX:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth) : 1,scaleY:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth) : 1}"-->
-                        <v-layer ref="layerRef">
-                            <v-rect :config="{width: compSize(layerWidth),height: compSize(layerHeight),fill: '#000000'}"/>
-                            <v-image v-if="work.tempMap.imgObj" :config="getWorkImgConfig(work.tempMap.imgObj)" :_crop="getWorkImgCrop(work.tempMap.imgObj)"/>
-                            <v-rect :config="{x:0,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1e6c86'}"/>
-                            <v-rect :config="{x:compSize(layerWidth)/4,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#1d7b41'}"/>
-                            <v-rect :config="{x:compSize(layerWidth)/4*2,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#62a718'}"/>
-                            <v-rect :config="{x:compSize(layerWidth)/4*3,y:0,width: compSize(layerWidth)/4,height: compSize(10),fill: '#e28e44'}"/>
-                            <v-rect :config="{x:compSize(0),y:compSize(10),width: compSize(layerWidth),height: compSize(80),fill: '#122b3d'}"/>
-                            <v-image v-if="logoImg" :config="{x:compSize(30),y:compSize(30),width:compSize(100),height: compSize(100) * logoImg.height / logoImg.width,image:logoImg,scaleX:1,scaleY:1}"/>
-                            <v-text :config="{x:compSize(150),y:compSize(30),text:siteDatas?.cptInfo?.masterCompetitionInfo.name,fontSize:compSize(35),fill:'#dddddd',fontStyle: 700}"/>
-                            <v-text :config="{x:compSize(246),y:compSize(27),text:'|',fontSize:compSize(35),fill:'#59653d'}"/>
-                            <v-text ref="cpRef" :config="{x:compSize(270),y:compSize(39),text:'微景观组',fontSize:compSize(18),fill:'#ffffff',letterSpacing: 2}"/>
-                            <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(20),y:compSize(37),text:'排名',fontSize:compSize(20),fill:'#bababa',letterSpacing: 1}"/>
-                            <v-text v-if="cpRef?.[index]" :config="{x:compSize(270) + cpRef[0].getNode().textWidth + compSize(80),y:compSize(30),text:work.tempMap.sortStr,fontSize:compSize(35),fill:'#ffffff',fontStyle: 700}"/>
-                            <v-image v-if="work.tempMap.qcjx" :config="{x:compSize(layerWidth-180),y:compSize(22),image:work.tempMap.qcjx,scaleX:compSize(0.6),scaleY:compSize(0.6)}"/>
-                            <!--                    <v-text :config="{x:layerWidth-200,y:22,fontFamily: 'Noto Serif SC',fontStyle: 'bold',text:'全场金奖',fontSize:30,_fill:'#ffffff',width:200,fillLinearGradientStartPoint: { x: 0, y: 0 },fillLinearGradientEndPoint: { x: 200, y: 10 },fillLinearGradientColorStops:[0, '#ff4444',1, '#44ddff']}"/>-->
-                            <v-text :config="{x:compSize(30),y:compSize(layerHeight-65),text:work.name,fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
-                            <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-65),text:'胡纪锋',fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
-                            <!--                        <v-image v-if="work.tempMap?.imgPath" :config="{x:0,y:0,image:work.tempMap.imgPath}"/>-->
-                        </v-layer>
-                    </v-stage>
 <!--                    <div v-if="flexLayer=='0'">-->
 <!--                        <img :src="work.tempMap?.imgPath" class="cursor-pointer"/>-->
 <!--                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>-->
 <!--                    </div>-->
-                    <div _v-else-if="flexLayer=='1'" class="bg-gray-500 center" :style="{'width':cvsDivRef?.[index].offsetWidth+'px','height':cvsDivRef?.[index].offsetWidth * (layerHeight / layerWidth)+'px'}">
+                    <div _v-else-if="flexLayer=='1'" class="bg-gray-500 center">
                         <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
-                        <div v-if="!work.tempMap?.imgPath" class="col center">
+                        <div v-if="!work.tempMap?.imgPath" class="col center" :style="{'width':flexWidth+'px','height':flexHeight+'px'}">
                             <span class="iconfont text-9xl">&#xe67f;</span>
                             <span class="text-2xl">{{work.name}}</span>
                         </div>
@@ -53,7 +58,7 @@
                 </div>
                 <div class="mt-2 mb-5 col gap-y-2 text-gray-600">
                     <span class="text-xl font-semibold">{{work.tempMap.sortStr}}</span>
-                    <span class="text-xl font-semibold">胡纪锋</span>
+                    <span class="text-base font-semibold">胡纪锋</span>
                 </div>
             </div>
         </div>
@@ -62,7 +67,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject, useTemplateRef, watch } from 'vue';
+import { ref, onMounted, inject, useTemplateRef, watch, nextTick } from 'vue';
+import { useWindowSize } from '@vueuse/core';
 import {useImage} from "vue-konva";
 import oss from "@/api/oss";
 import useGlobal from "@/api/hooks/useGlobal";
@@ -84,12 +90,14 @@ const layerPaddingTop = 90;
 
 const refPriviewImage = useTemplateRef("refPriviewImage");
 const stageRef = useTemplateRef("stageRef");
-const layerRef = useTemplateRef("layerRef");
 const cpRef = useTemplateRef("cpRef");
 const cvsDivRef = useTemplateRef("cvsDivRef");
 const flexLayer = ref('0');
 const stageConfig = ref({});
 const imgStatusList = ref([]);
+const flexWidth = ref(0);
+const flexHeight = ref(0);
+const { width, height } = useWindowSize();
 
 onMounted(async () => {
     footDatas = await useGlobal.pageSetupDatas("foot");
@@ -160,6 +168,13 @@ const loadFont = ()=>{
 
     // 等待字体加载完成
     return document.fonts.ready.then(async () => {
+        compFlexSize(cvsDivRef.value[0]?.offsetWidth);
+        //
+        // watch(width,async (v)=>{
+        //     // await nextTick();
+        //     compFlexSize(cvsDivRef.value[0]?.offsetWidth);
+        // });
+
         for(let i=0;i<=workList.value.length-1;i++) {
             watch([imgStatusList.value[i],logoImgStatus],async (v)=>{
                 // console.log(v[0],v[1]);
@@ -184,9 +199,21 @@ const activeIndexChange = (index)=>{
     workList.value[index].tempMap.imgPath = stageRef.value[index].getNode().toDataURL({pixelRatio: 2});
 };
 
+const flexLayerChange = async (e)=>{
+    // console.log(e);
+
+    // await nextTick();
+    // compFlexSize(cvsDivRef.value[0]?.offsetWidth);
+};
+
 const compSize = (v)=>{
     // return flexLayer.value=='1' ? (cvsDivRef.value?.[0].offsetWidth/layerWidth)*v : v;
     return v;
+};
+
+const compFlexSize = (width)=>{
+    flexWidth.value = width;
+    flexHeight.value = flexWidth.value * (layerHeight / layerWidth);
 };
 
 /**
