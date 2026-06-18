@@ -5,16 +5,19 @@
 
             </div>
             <div class="row gap-x-2 text-2xl">
-                <span class="iconfont" @click="changeFlex(0)">&#xe687;</span>
-                <span class="iconfont" @click="changeFlex(1)">&#xe689;</span>
+                <SelectButton v-model="flexLayer" :options="['0','1']" :allowEmpty="false">
+                    <template #option="{ option }">
+                        <i :class="[option == '0' ? 'pi pi-bars' : 'pi pi-table']" />
+                    </template>
+                </SelectButton>
             </div>
         </div>
-        <div class="center mx-10 mt-5" :class="{'col':flexLayer==0,'grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4':flexLayer==1}" :_style="{'min-width':flexLayer==1 ? 0.45*layerWidth*3 + 'px' : '100%'}">
-            <div v-for="(work,index) of workList" class="mb-5" :class="{'w-full':flexLayer==1,'w-full md:w-2/3':flexLayer==0}" @click="imagesShow(index)">
-                <div>
-                    <!--                :config="{width:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
+        <div class="center mt-10" :class="{'col md:mx-5 lg:mx-52':flexLayer=='0','grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4':flexLayer=='1'}" :_style="{'min-width':flexLayer=='1' ? 0.45*layerWidth*3 + 'px' : '100%'}">
+            <div v-for="(work,index) of workList" class="mb-5 w-full">
+                <div ref="cvsDivRef" class="w-full">
+                    <!--                :config="{width:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
                     <v-stage ref="stageRef" :config="{width:compSize(stageConfig.width),height:compSize(stageConfig.height)}" class="hidden">
-                        <!--                    :config="{scaleX:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1,scaleY:flexLayer==1 ? (cvsDivRef[index].offsetWidth/layerWidth) : 1}"-->
+                        <!--                    :config="{scaleX:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth) : 1,scaleY:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth) : 1}"-->
                         <v-layer ref="layerRef">
                             <v-rect :config="{width: compSize(layerWidth),height: compSize(layerHeight),fill: '#000000'}"/>
                             <v-image v-if="work.tempMap.imgObj" :config="getWorkImgConfig(work.tempMap.imgObj)" :_crop="getWorkImgCrop(work.tempMap.imgObj)"/>
@@ -36,13 +39,19 @@
                             <!--                        <v-image v-if="work.tempMap?.imgPath" :config="{x:0,y:0,image:work.tempMap.imgPath}"/>-->
                         </v-layer>
                     </v-stage>
-                    <div ref="cvsDivRef" class="bg-gray-300 center" :style="{'width':cvsDivRef?.[index].offsetWidth+'px','height':cvsDivRef?.[index].offsetWidth * (layerHeight / layerWidth)+'px'}">
-<!--                        {{cvsDivRef?.[index].offsetWidth}}-->
-                        <img :src="work.tempMap?.imgPath" class="cursor-pointer"/>
-                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>
+<!--                    <div v-if="flexLayer=='0'">-->
+<!--                        <img :src="work.tempMap?.imgPath" class="cursor-pointer"/>-->
+<!--                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>-->
+<!--                    </div>-->
+                    <div _v-else-if="flexLayer=='1'" class="bg-gray-500 center" :style="{'width':cvsDivRef?.[index].offsetWidth+'px','height':cvsDivRef?.[index].offsetWidth * (layerHeight / layerWidth)+'px'}">
+                        <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
+                        <div v-if="!work.tempMap?.imgPath" class="col center">
+                            <span class="iconfont text-9xl">&#xe67f;</span>
+                            <span class="text-2xl">{{work.name}}</span>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-2 mb-5 col gap-y-2 text-gray-800">
+                <div class="mt-2 mb-5 col gap-y-2 text-gray-600">
                     <span class="text-xl font-semibold">{{work.tempMap.sortStr}}</span>
                     <span class="text-xl font-semibold">胡纪锋</span>
                 </div>
@@ -78,7 +87,7 @@ const stageRef = useTemplateRef("stageRef");
 const layerRef = useTemplateRef("layerRef");
 const cpRef = useTemplateRef("cpRef");
 const cvsDivRef = useTemplateRef("cvsDivRef");
-const flexLayer = ref(0);
+const flexLayer = ref('0');
 const stageConfig = ref({});
 const imgStatusList = ref([]);
 
@@ -176,7 +185,7 @@ const activeIndexChange = (index)=>{
 };
 
 const compSize = (v)=>{
-    // return flexLayer.value==1 ? (cvsDivRef.value?.[0].offsetWidth/layerWidth)*v : v;
+    // return flexLayer.value=='1' ? (cvsDivRef.value?.[0].offsetWidth/layerWidth)*v : v;
     return v;
 };
 
@@ -223,10 +232,6 @@ async function getCanvasDataUrl(stage) {
     );
     stage.batchDraw();
     return stage.toDataURL({ pixelRatio: 2 });
-}
-
-function changeFlex(v) {
-    flexLayer.value = v;
 }
 </script>
 
