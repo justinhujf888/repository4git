@@ -1,5 +1,5 @@
 <template>
-    <div class="md:px-20 lg:px-32">
+    <div class="md:px-10 lg:px-20 xl:px-32">
         <div class="between">
             <div></div>
             <div class="row gap-x-2 text-2xl">
@@ -11,7 +11,7 @@
             </div>
         </div>
         <div>
-            <Paginator :rows="10" :totalRecords="120" :pageLinkSize="10" template="PageLinks" :pt="{page:{class:'text-xl md:text-2xl font-semibold'}}">
+            <Paginator :rows="10" :totalRecords="120" :pageLinkSize="10" template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink" :pt="{page:{class:'text-xl md:text-2xl font-semibold'}}">
             </Paginator>
         </div>
 
@@ -48,11 +48,11 @@
 <!--                        <img :src="work.tempMap?.imgPath" class="cursor-pointer"/>-->
 <!--                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>-->
 <!--                    </div>-->
-                    <div _v-else-if="flexLayer=='1'" class="bg-gray-500 center">
+                    <div _v-else-if="flexLayer=='1'" class="bg-gray-300 center">
                         <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
-                        <div v-if="!work.tempMap?.imgPath" class="col center" :style="{'width':flexWidth+'px','height':flexHeight+'px'}">
+                        <div v-if="!work.tempMap?.imgPath && flexWidth>0 && flexHeight>0" class="col center" :style="{'width':flexWidth+'px','height':flexHeight+'px'}">
                             <span class="iconfont text-9xl">&#xe67f;</span>
-                            <span class="text-2xl">{{work.name}}</span>
+                            <span class="text-xl">{{work.name}}</span>
                         </div>
                     </div>
                 </div>

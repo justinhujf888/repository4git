@@ -1,16 +1,19 @@
 <template>
-    <div class="py-6 px-6 mx-0 flex items-center justify-between lg:static relative">
+    <div class="mx-0 relative h-16 row items-center">
 <!--        md:mx-12 lg:mx-20 lg:px-20-->
-        <div class="row items-center gap-4">
-            <div class="w-12">
-                <Button v-if="shiShowButton" id="tagmismenu"
-                        class="lg:!hidden"
-                        text
-                        severity="secondary"
-                        rounded
-                        _v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')" @click="toggle(null,$event)">
-                    <i class="pi pi-bars !text-2xl"></i>
-                </Button>
+        <div class="absolute lg:left-12 top-4 row items-center" _class="row items-center gap-4">
+            <div class="w-12 center">
+                <div v-if="shiShowButton" class="p-1 lg:!hidden cursor-pointer" @click="toggle(null,$event)">
+                    <span class="pi pi-bars !text-base"></span>
+                </div>
+<!--                <Button v-show="shiShowButton" id="tagmismenu"-->
+<!--                        class="lg:!hidden"-->
+<!--                        text-->
+<!--                        severity="secondary"-->
+<!--                        rounded-->
+<!--                        _v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')" @click="toggle(null,$event)">-->
+<!--                    <i class="pi pi-bars !text-base"></i>-->
+<!--                </Button>-->
             </div>
 <!--            <ProgressSpinner v-else strokeWidth="4" fill="transparent" animationDuration=".5s" class="!w-12 !h-12 lg:!hidden"/>-->
             <div>
@@ -22,18 +25,18 @@
         </div>
 
 <!--    topbar menu    hover:underline hover:underline-offset-8 hover:decoration-orange-500 hover:decoration-solid hover:decoration-4-->
-        <div class="">
-            <ul class="list-none p-0 m-0 flex lg:items-center select-none hidden lg:flex lg:flex-row cursor-pointer gap-8 text-base lg:text-lg text-center">
-                <li v-for="menu of menuBar" v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')">
+        <div class="w-full">
+            <ul class="list-none p-0 m-0 flex lg:items-center select-none hidden lg:flex lg:flex-row gap-8 text-base lg:text-lg text-center center">
+                <li class="cursor-pointer" v-for="menu of menuBar" v-styleclass="{ selector: '#mis', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true } " click="barButtonClick('mis')">
                     <!--                    underline underline-offset-8 decoration-sky-600 decoration-4-->
-                    <a _click="smoothScroll('hero')" class="px-5 py-4 text-surface-900 dark:text-surface-0 font-medium" @mouseenter="toggle(menu,$event)" @click="toggle(menu,$event)">
+                    <a _click="smoothScroll('hero')" class="px-5 py-2 text-surface-900 dark:text-surface-0 font-semibold text-base" @mouseenter="toggle(menu,$event)" @click="toggle(menu,$event)">
                         <span>{{menu.name}}</span>
                     </a>
                 </li>
             </ul>
         </div>
 
-        <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 border-solid border-2 border-gray-200 rounded-border shadow-2xl absolute right-10 top-20 px-12 py-4 z-50 hidden">
+        <div id="usermenu" class="bg-surface-0 dark:bg-surface-900 border-solid border-2 border-gray-200 rounded-border shadow-2xl absolute right-5 top-14 px-12 py-4 z-50 hidden">
             <ul class="list-none p-0 m-0 flex select-none flex-col cursor-pointer gap-8 text-base">
                 <li>
                     <a @click="userBarClick({route:'myWorks',isLogin:true})" class="px-0 py-4 text-surface-900 dark:text-surface-0 font-medium">
@@ -58,7 +61,7 @@
             </ul>
         </div>
 
-        <div class="row items-center gap-4" v-if="shiShowButton">
+        <div class="absolute right-2 md:right-12 top-3" _class="row items-center gap-4" v-if="shiShowButton">
             <div v-if="!userId" class="flex lg:py-0 lg:mt-0 gap-x-2">
                 <Button label="登录" text rounded @click="wantTo='';showLoginMode=true"></Button>
                 <Button label="注册" rounded @click="wantTo='';showRegistMode=true"></Button>
@@ -101,11 +104,11 @@
 
         <Popover ref="op">
 <!--      underline underline-offset-8 decoration-orange-500 decoration-solid decoration-4      -->
-            <div class="px-2 md:px-10 py-5" :style="'width:'+(width)+'px'">
+            <div class="px-2 md:px-10 py-5" :style="{'width':(width)+'px'}">
                 <div class="grid md:grid-cols-4 grid-cols-3 gap-2 md:gap-4 top-10">
                     <div class="col start" v-for="menu in treeDatas">
                         <div class="col">
-                            <span class="text-base md:text-xl px-5 font-semibold cursor-pointer" :class="menu.isHover ? '': ''" @click="userBarClick({isLogin:false,route:menu.route})" @mouseenter="toggle(menu,$event)">{{menu.label}}</span>
+                            <span class="text-base px-5 font-semibold cursor-pointer" :class="menu.isHover ? '': ''" @click="userBarClick({isLogin:false,route:menu.route})" @mouseenter="toggle(menu,$event)">{{menu.label}}</span>
                             <ul v-if="menu.menuType==1" class="mt-5">
                                 <li v-for="item of menu.children" class="col my-4 cursor-pointer" @click="userBarClick(item);">
                                     <span class="text-base px-5">{{item.label}}</span>
@@ -136,7 +139,7 @@ import { useStorage } from '@vueuse/core';
 import { useWindowSize } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
-import { inject, onMounted, ref, watch, useTemplateRef } from 'vue';
+import { inject, onMounted, ref, watch, useTemplateRef, nextTick } from 'vue';
 import oss from '@/api/oss';
 import lodash from 'lodash-es';
 import pj from '@/datas/pageJson';
@@ -150,7 +153,10 @@ import { useEventBus } from '@vueuse/core';
 import pageJson from '@/datas/pageJson';
 const bus = useEventBus('login');
 const unsubscribe = bus.on(busListener);
-const { width, height } = useWindowSize();
+const { width, height } = useWindowSize({
+    type: 'visual',
+    includeScrollbar: false,
+});
 
 const shiShowButton = ref(false);
 const userId = ref("");
@@ -175,10 +181,11 @@ watch(footDatas,async (newValue)=>{
     // }
 });
 
-onMounted(() => {
+onMounted(async () => {
     if (localStorage.getItem("userId")) {
         userId.value = util.giveStorgeCry("userId");
     }
+
     treeDatas.value = [];
     lodash.forEach(pj.menuTreeDatas(),(v)=>{
         if (v.isInPageMenu) {
