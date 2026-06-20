@@ -28,7 +28,7 @@ class CorsWebFilter implements Filter
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 //        println "__________" + request.getHeader("origin");
-        if (request.getHeader("origin") in ["http://192.168.3.162:8080","http://127.0.0.1:35594","http://localhost:9999","http://192.168.0.153:9999","http://localhost:8081","http://m.arkydesign.cn","https://m.arkydesign.cn",
+        if (request.getHeader("origin") in ["http://192.168.3.162:8080","http://127.0.0.1:35594","http://localhost:9999","http://192.168.0.153:9999","http://localhost:8081","http://localhost","http://m.arkydesign.cn","https://m.arkydesign.cn",
                                             "https://m.daxiabang.club","http://m.daxiabang.club","http://image.arkydesign.cn","https://image.arkydesign.cn"])
         {
             httpServletResponse.setHeader("Access-Control-Allow-Origin", request.getHeader("origin"));

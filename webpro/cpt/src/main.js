@@ -23,6 +23,13 @@ app.provide("domain",util.getDomainFromUrl(window.location));
 const routerParams = ()=>{
     return JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));
 };
+async function loadSkin(skinName) {
+    console.log("skin",skinName);
+    let loadCss = Config.skinStyleList[skinName];
+    await loadCss();
+    // 注意：Vite 会把导入的 CSS 自动注入到 <head> 中
+}
+await loadSkin("ct0");
 
 app.config.globalProperties.$router = router;
 app.config.globalProperties.$routerParams = routerParams;

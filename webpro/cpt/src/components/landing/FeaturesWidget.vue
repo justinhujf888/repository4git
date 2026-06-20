@@ -1,7 +1,7 @@
 <!--奖金及奖品-->
 <template>
     <div id="features" class="py-6 px-6 lg:px-20 mt-8 mx-0 lg:mx-20">
-        <title-text :text="indexDatas?.jiangArea.setup.title.value"/>
+        <title-text :text="indexDatas?.jiangArea.setup.title.value" text-class="title-text !text-white"/>
         <jiang :jiang-datas="indexDatas?.jiangArea.setup.jiangItems.value" root-class="mt-20" jiang-text-class="text-white"/>
         <div class="center mt-20">
             <div class="text-base p-1 border-btn">

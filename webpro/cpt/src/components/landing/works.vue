@@ -1,7 +1,7 @@
 <template>
     <div id="works">
         <div class="mt-28 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
-            <title-text :text="indexDatas?.workStoreArea.setup.title.value" text-class="text-gray-900"/>
+            <title-text :text="indexDatas?.workStoreArea.setup.title.value" text-class="title-text"/>
         </div>
         <div class="mt-5 w-full py-3 mx-0 my-12">
             <div class="box w-full" style="height: 36rem;">

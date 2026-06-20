@@ -1,9 +1,9 @@
 <template>
     <div class="mx-0 relative h-16 row items-center">
 <!--        md:mx-12 lg:mx-20 lg:px-20-->
-        <div class="absolute lg:left-12 top-4 row items-center" _class="row items-center gap-4">
-            <div class="w-12 center">
-                <div v-if="shiShowButton" class="p-1 lg:!hidden cursor-pointer" @click="toggle(null,$event)">
+        <div class="absolute left-2 md:left-12 top-4 row items-center" _class="row items-center gap-4">
+            <div class="center">
+                <div v-if="shiShowButton" class="mr-6 lg:!hidden cursor-pointer" @click="toggle(null,$event)">
                     <span class="pi pi-bars !text-base"></span>
                 </div>
 <!--                <Button v-show="shiShowButton" id="tagmismenu"-->

@@ -1,6 +1,6 @@
 <template>
     <div id="highlights" class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
-        <title-text :text="indexDatas?.judgeArea.setup.title.value"/>
+        <title-text :text="indexDatas?.judgeArea.setup.title.value" text-class="title-text !text-white"/>
         <div class="grid xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4 mt-10">
             <div class="overflow-hidden mt-8" v-for="man of indexDatas?.judgeArea.setup.judgeItems.value" v-animateonscroll="{ enterClass: 'animate-enter fade-in-10 slide-in-from-t-20 animate-duration-1000' }" :pt="{body:{class:'bg-transparent'}}">
                 <img :src="man.img.tempMap.imgPath" class="h-60 w-full object-cover object-center"/>

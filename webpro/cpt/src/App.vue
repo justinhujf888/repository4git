@@ -17,7 +17,7 @@ const mydRef = useTemplateRef('mydRef');
 const myLoading = useTemplateRef("myLoading");
 
 var source = null;
-onMounted(() => {
+onMounted(async () => {
     dialog.setup(confirmPopup, toast, dynDialog, mydRef, myLoading);
     if (typeof (EventSource) !== "undefined") {return;
         source = new EventSource(Config.apiBaseURL + "/r/notifications");
@@ -65,7 +65,6 @@ onUnmounted(() => {
         source.close();
     }
 });
-
 </script>
 
 <template>

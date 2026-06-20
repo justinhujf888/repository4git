@@ -1,7 +1,7 @@
 <template>
     <div id="works" class="py-6 px-6 lg:px-20 mx-0 my-12 lg:mx-20">
         <div>
-            <title-text :text="indexDatas?.boundArea.setup.title.value" text-class="text-gray-900"/>
+            <title-text :text="indexDatas?.boundArea.setup.title.value" text-class="title-text"/>
         </div>
         <div class="mt-10">
             <div class="row items-center gap-8 flex-wrap">

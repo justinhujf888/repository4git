@@ -122,12 +122,12 @@ export default {
         }
         if (hasProcess) {
             if (process==null) {
-                return client.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'});
+                return client?.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'});
                 // return new Promise(resolve => {
                 //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'}));
                 // });
             } else {
-                return client.signatureUrl(path,{expires: _tokenExpiredTime,'process': process});
+                return client?.signatureUrl(path,{expires: _tokenExpiredTime,'process': process});
                 // return new Promise(resolve => {
                 //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': process}));
                 // });

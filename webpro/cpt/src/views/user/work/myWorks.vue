@@ -120,7 +120,7 @@ onMounted(async () => {
     if (util.giveStorgeMessage("userId")) {
         userId = util.giveStorgeCry("userId");
     }
-    uploadRule.value = await workRest.gainPageSetup(host,"worksetup");
+    uploadRule.value = await workRest.gainJsonSetup(host,"worksetup");
     // console.log(uploadRule.value);
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     competitionList.value = masterCompetition.competitionList;

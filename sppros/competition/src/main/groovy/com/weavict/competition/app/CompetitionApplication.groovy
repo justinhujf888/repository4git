@@ -80,6 +80,7 @@ class GlobalCorsFilter {
 		CorsConfiguration config = new CorsConfiguration();
 		//支持域
 //		config.addAllowedOriginPattern("*");
+        config.addAllowedOrigin("http://localhost");
 		config.addAllowedOrigin("http://localhost:5173");
 		config.addAllowedOrigin("https://cpt.arkydesign.cn");
 		config.addAllowedOrigin("https://test.arkydesign.cn");
