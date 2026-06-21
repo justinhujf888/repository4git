@@ -541,6 +541,12 @@ export default {
 	floatObj,
 	isJson,
 	callPhone,
+	async loadSkin(skinName) {
+		console.log("skin",skinName);
+		let loadCss = Config.skinStyleList[skinName];
+		await loadCss();
+		// 注意：Vite 会把导入的 CSS 自动注入到 <head> 中
+	},
     getUrlParamJson_2(url) {
         if (decodeURIComponent(url ? url : window.location).split("?param=").length > 1) {
             return JSON.parse(decodeURIComponent(url ? url : window.location).split("?param=")[1]);

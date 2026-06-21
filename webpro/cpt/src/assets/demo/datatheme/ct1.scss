@@ -1,7 +1,7 @@
 :root {
-    --title-text-bg1:var(--p-title-text-bg1,#234534);
-    --title-text-bg2:var(--p-title-text-bg1,#865312);
-    --title-text-bg3:var(--p-title-text-bg1,#133422);
+    --title-text-bg1:var(--p-title-text-bg1,#e28e44);
+    --title-text-bg2:var(--p-title-text-bg1,#62a718);
+    --title-text-bg3:var(--p-title-text-bg1,#1d7b41);
 }
 
 .title-text {
@@ -36,14 +36,14 @@
     background: linear-gradient(75deg, #cab429 0%, #96b02f 10%, #2ca447 60%, #178898 100%);
     //border-radius: 24px;
     border-top-left-radius: 32px;
-    border-bottom-left-radius: 18px;
-    border-top-right-radius: 18px;
+    border-bottom-left-radius: 32px;
+    border-top-right-radius: 32px;
     border-bottom-right-radius: 32px;
     .sub-bg {
         //border-radius: 21px;
         border-top-left-radius: 29px;
-        border-bottom-left-radius: 15px;
-        border-top-right-radius: 15px;
+        border-bottom-left-radius: 29px;
+        border-top-right-radius: 29px;
         border-bottom-right-radius: 29px;
         transition: all .3s ease;
     }
