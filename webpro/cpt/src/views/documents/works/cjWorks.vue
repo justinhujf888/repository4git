@@ -1,21 +1,58 @@
 <template>
     <div class="md:px-10 lg:px-20 xl:px-32">
-        <div class="between">
-            <div></div>
-            <div class="row gap-x-2 text-2xl">
-                <SelectButton v-model="flexLayer" :options="['0','1']" :allowEmpty="false" @change="flexLayerChange">
+        <div class="col md:row between gay-4">
+            <div class="row flex-wrap gap-x-10 gap-y-5 md:gap-y-0">
+                <div class="row items-center font-bold gap-x-4">
+                    <span>赛季年份</span>
+                    <Select v-model="cptYear" size="small" :options="['2025','2026']"/>
+                </div>
+                <div class="row items-center font-semibold gap-x-4">
+                    <span>分组</span>
+                    <Select v-model="selCompetitionGuiGe" :options="competitionList" optionLabel="name" optionGroupLabel="name" optionGroupChildren="guiGeList" placeholder="选择类别分组" class="w-full md:w-56">
+                        <template #optiongroup="slotProps">
+                            <div class="flex items-center">
+                                <span v-if="slotProps.option.guiGeList[0].id!=slotProps.option.id" class="font-semibold text-base">--{{ slotProps.option.name }}--</span>
+                            </div>
+                        </template>
+                        <template #option="slotProps">
+                            <div class="flex items-center">
+                                <span v-if="slotProps.option.type=='c'" class="font-semibold text-base">--{{ slotProps.option.name }}--</span>
+                                <span v-else-if="slotProps.option.type=='g'" class="text-sm ml-5">{{ slotProps.option.name }}</span>
+                            </div>
+                        </template>
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex items-center">
+                                <span v-if="slotProps.value.type=='c'">{{ slotProps.value.competitionName }}</span>
+                                <span v-else-if="slotProps.value.type=='g'">{{ slotProps.value.competitionName }} -- {{slotProps.value.name}}</span>
+                            </div>
+                            <span v-else>
+                                {{ slotProps.placeholder }}
+                            </span>
+                        </template>
+                    </Select>
+                </div>
+                <div class="row items-center font-semibold gap-x-4">
+                    <span>排名范围</span>
+                    <Select v-model="cptYear" size="small" :options="['2025','2026']"/>
+                </div>
+            </div>
+            <div class="row gap-x-2 my-5 md:my-0 text-2xl">
+                <SelectButton v-model="flexLayer" :options="['1','0']" :allowEmpty="false" @change="flexLayerChange">
                     <template #option="{ option }">
                         <i :class="[option == '0' ? 'pi pi-bars' : 'pi pi-table']" />
                     </template>
                 </SelectButton>
             </div>
         </div>
-        <div>
-            <Paginator :rows="10" :totalRecords="120" :pageLinkSize="10" template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink" :pt="{page:{class:'text-xl md:text-2xl font-semibold'}}">
+
+        <Divider class="!my-10"/>
+
+        <div class="row end">
+            <Paginator :rows="10" :totalRecords="120" :pageLinkSize="10" template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink" :pt="{page:{class:'text-xl md:text-xl font-semibold'}}">
             </Paginator>
         </div>
 
-        <div class="center mt-10" :class="{'col mx-5 md:mx-10 lg:mx-32':flexLayer=='0','grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4':flexLayer=='1'}">
+        <div class="center mt-5" :class="{'col _mx-5 _md:mx-10 _lg:mx-32':flexLayer=='0','grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4':flexLayer=='1'}">
             <div v-for="(work,index) of workList" class="mb-5 w-full">
 
                 <!--                :config="{width:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerWidth : 1*layerWidth,height:flexLayer=='1' ? (cvsDivRef[index].offsetWidth/layerWidth)*layerHeight : 1*layerHeight}" scaleX:compSize(1),scaleY:compSize(1)-->
@@ -76,6 +113,7 @@ import { Beans } from '@/api/dbs/beans';
 import lodash from 'lodash-es';
 import priviewImage from "@/components/my/priviewImage.vue";
 import util from "@/api/util";
+import workRest from "@/api/dbs/workRest";
 
 let footDatas = null;
 let siteDatas = null;
@@ -92,16 +130,37 @@ const refPriviewImage = useTemplateRef("refPriviewImage");
 const stageRef = useTemplateRef("stageRef");
 const cpRef = useTemplateRef("cpRef");
 const cvsDivRef = useTemplateRef("cvsDivRef");
-const flexLayer = ref('0');
+const flexLayer = ref('1');
 const stageConfig = ref({});
 const imgStatusList = ref([]);
 const flexWidth = ref(0);
 const flexHeight = ref(0);
 const { width, height } = useWindowSize();
 
+const cptYear = ref("");
+let masterCompetition = null;
+let host = inject("domain");
+const competitionList = ref([]);
+const selCompetitionGuiGe = ref("");
+
 onMounted(async () => {
     footDatas = await useGlobal.pageSetupDatas("foot");
     siteDatas = await useGlobal.siteDatas();
+    masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
+    competitionList.value = masterCompetition.competitionList;
+    lodash.forEach(competitionList.value,(v,i)=>{
+        v.type = "c";
+        if (!v.guiGeList) {
+            v.guiGeList = [{type:"c",id:v.id,name:v.name,competitionId:v.id,competitionName:v.name}];
+        } else {
+            lodash.forEach(v.guiGeList,g=>{
+                g.type = "g";
+                g.competitionId = v.id;
+                g.competitionName = v.name;
+            });
+        }
+    });
+    console.log(host,competitionList.value);
     logoImgUrl.value = await oss.buildPathAsync(footDatas.boundArea.setup.mImg.value.img,true,null);
 
     stageConfig.value = {width:layerWidth,height:layerHeight};
