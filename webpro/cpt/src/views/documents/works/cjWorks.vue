@@ -5,6 +5,7 @@
                 <div class="row items-center font-bold gap-x-4">
                     <span>赛季年份</span>
                     <Select v-model="cptYear" size="small" :options="['2025','2026']"/>
+<!--                    <span style="content: '';display: block;width: 8px;height: 15px;background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4LjA4IDE0Ljc2Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzU2NTY1Njt9PC9zdHlsZT48L2RlZnM+PGcgaWQ9IuODrOOCpOODpOODvF8yIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvCAyIj48ZyBpZD0i44Os44Kk44Ok44O8XzEtMiIgZGF0YS1uYW1lPSLjg6zjgqTjg6Tjg7wgMSI+PHBvbHlnb24gY2xhc3M9ImNscy0xIiBwb2ludHM9IjcgNS4yMyA0LjA0IDIuMTYgMS4wOCA1LjIzIDAgNC4xOCA0LjA0IDAgOC4wOCA0LjE4IDcgNS4yMyIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI0LjA0IDE0Ljc2IDAgMTAuNTcgMS4wOCA5LjUzIDQuMDQgMTIuNiA3IDkuNTMgOC4wOCAxMC41NyA0LjA0IDE0Ljc2Ii8+PC9nPjwvZz48L3N2Zz4=) no-repeat right;z-index: 2;"></span>-->
                 </div>
                 <div class="row items-center font-semibold gap-x-4">
                     <span>分组</span>
@@ -86,7 +87,9 @@
 <!--                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>-->
 <!--                    </div>-->
                     <div _v-else-if="flexLayer=='1'" class="bg-gray-300 center">
-                        <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
+                        <DeferredContent>
+                            <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
+                        </DeferredContent>
                         <div v-if="!work.tempMap?.imgPath && flexWidth>0 && flexHeight>0" class="col center" :style="{'width':flexWidth+'px','height':flexHeight+'px'}">
                             <span class="iconfont text-9xl">&#xe67f;</span>
                             <span class="text-xl">{{work.name}}</span>
@@ -322,6 +325,8 @@ async function getCanvasDataUrl(stage) {
 </script>
 
 <style scoped lang="scss">
-
+.p-select {
+    --p-select-border-color: rgba(0, 0, 0, 0.05);
+}
 </style>
 
