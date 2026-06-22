@@ -3,7 +3,7 @@
         <div class="col w-2">
             <div class="h-3 w-full" style="background-color: var(--title-text-bg1)"></div>
             <div class="h-3 w-full" style="background-color: var(--title-text-bg2)"></div>
-            <div class="h-7 w-full" style="background-color: var(--title-text-bg3)"></div>
+            <div class="h-6 w-full" style="background-color: var(--title-text-bg3)"></div>
         </div>
         <span :class="textClass">{{text}}</span>
     </div>

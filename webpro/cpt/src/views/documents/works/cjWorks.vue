@@ -87,9 +87,8 @@
 <!--                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>-->
 <!--                    </div>-->
                     <div _v-else-if="flexLayer=='1'" class="bg-gray-300 center">
-                        <DeferredContent>
-                            <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
-                        </DeferredContent>
+<!--                        <DeferredContent></DeferredContent>-->
+                        <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
                         <div v-if="!work.tempMap?.imgPath && flexWidth>0 && flexHeight>0" class="col center" :style="{'width':flexWidth+'px','height':flexHeight+'px'}">
                             <span class="iconfont text-9xl">&#xe67f;</span>
                             <span class="text-xl">{{work.name}}</span>
@@ -163,7 +162,7 @@ onMounted(async () => {
             });
         }
     });
-    console.log(host,competitionList.value);
+    // console.log(host,competitionList.value);
     logoImgUrl.value = await oss.buildPathAsync(footDatas.boundArea.setup.mImg.value.img,true,null);
 
     stageConfig.value = {width:layerWidth,height:layerHeight};

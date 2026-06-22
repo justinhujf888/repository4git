@@ -30,7 +30,11 @@
                 <div class="mt-10 col md:row w-full gap-4">
                     <Fieldset legend="上传图片">
                         <div class="gap-2 my-4"><Button label="新增图片类型" size="small" @click="addImageType()"/></div>
-                        <div v-for="(item,index) in workSetup?.workType.image" :key="index" class="my-2 text-base">
+                        <div class="gap-2 my-4 text-red-500 text-sm">
+                            <span>点选一个图片类型，此图片将做为作品的主要显示图片。</span>
+                        </div>
+                        <div v-for="(item,index) in workSetup?.workType.image" :key="index" class="my-2 text-base row gap-4 items-center">
+                            <RadioButton v-model="workSetup.masterImg" name="masterImg" :value="index" />
                             <IftaLabel variant="on">
                                 <label :for="'title_'+index" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">标题</label>
                                 <div class="row">
