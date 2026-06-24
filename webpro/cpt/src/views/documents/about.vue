@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref,useTemplateRef } from 'vue';
+import {nextTick, onMounted, ref, useTemplateRef} from 'vue';
 import animationPage from "@/components/my/animationPage.vue";
 import useGlobal from '@/api/hooks/useGlobal';
 import oss from '@/api/oss';

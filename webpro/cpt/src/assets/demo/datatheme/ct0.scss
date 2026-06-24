@@ -1,11 +1,16 @@
 :root {
     --title-text-bg1:var(--p-title-text-bg1,#e28e44);
-    --title-text-bg2:var(--p-title-text-bg1,#62a718);
-    --title-text-bg3:var(--p-title-text-bg1,#1d7b41);
+    --title-text-bg2:var(--p-title-text-bg2,#62a718);
+    --title-text-bg3:var(--p-title-text-bg3,#1d7b41);
 }
 
 .title-text {
     @apply text-2xl text-gray-800 font-semibold;
+}
+
+.title-css {
+    @apply h-12 w-2;
+    background: linear-gradient(180deg, #e28e44 0% 25%, #62a718 25% 50%, #1d7b41 50% 100%);
 }
 
 .bggradient1 {
