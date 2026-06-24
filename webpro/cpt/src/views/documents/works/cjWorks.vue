@@ -86,7 +86,7 @@
 <!--                        <img :src="work.tempMap?.imgPath" class="cursor-pointer"/>-->
 <!--                        <span v-show="!work.tempMap?.imgPath" class="iconfont text-9xl">&#xe67f;</span>-->
 <!--                    </div>-->
-                    <div _v-else-if="flexLayer=='1'" class="bg-gray-300 center">
+                     <div _v-else-if="flexLayer=='1'" class="bg-gray-300 center">
 <!--                        <DeferredContent></DeferredContent>-->
                         <img :src="work.tempMap?.imgPath" class="cursor-pointer" @click="imagesShow(index)"/>
                         <div v-if="!work.tempMap?.imgPath && flexWidth>0 && flexHeight>0" class="col center" :style="{'width':flexWidth+'px','height':flexHeight+'px'}">
