@@ -4,12 +4,12 @@
             <div class="row flex-wrap gap-x-10 gap-y-5 md:gap-y-0">
                 <div class="row items-center font-bold gap-x-4">
                     <span>赛季年份</span>
-                    <Select v-model="cptYear" size="small" :options="['2025','2026']"/>
+                    <Select v-model="cptYear" size="small" :options="['2025','2026']" @change="cptYearChange"/>
 <!--                    <span style="content: '';display: block;width: 8px;height: 15px;background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4LjA4IDE0Ljc2Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzU2NTY1Njt9PC9zdHlsZT48L2RlZnM+PGcgaWQ9IuODrOOCpOODpOODvF8yIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvCAyIj48ZyBpZD0i44Os44Kk44Ok44O8XzEtMiIgZGF0YS1uYW1lPSLjg6zjgqTjg6Tjg7wgMSI+PHBvbHlnb24gY2xhc3M9ImNscy0xIiBwb2ludHM9IjcgNS4yMyA0LjA0IDIuMTYgMS4wOCA1LjIzIDAgNC4xOCA0LjA0IDAgOC4wOCA0LjE4IDcgNS4yMyIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI0LjA0IDE0Ljc2IDAgMTAuNTcgMS4wOCA5LjUzIDQuMDQgMTIuNiA3IDkuNTMgOC4wOCAxMC41NyA0LjA0IDE0Ljc2Ii8+PC9nPjwvZz48L3N2Zz4=) no-repeat right;z-index: 2;"></span>-->
                 </div>
                 <div class="row items-center font-semibold gap-x-4">
                     <span>分组</span>
-                    <Select v-model="selCompetitionGuiGe" :options="competitionList" optionLabel="name" optionGroupLabel="name" optionGroupChildren="guiGeList" placeholder="选择类别分组" class="w-full md:w-56">
+                    <Select v-model="selCompetitionGuiGe" :options="competitionList" optionLabel="name" optionGroupLabel="name" optionGroupChildren="guiGeList" placeholder="选择类别分组" size="small" class="w-full md:w-56">
                         <template #optiongroup="slotProps">
                             <div class="flex items-center">
                                 <span v-if="slotProps.option.guiGeList[0].id!=slotProps.option.id" class="font-semibold text-base">--{{ slotProps.option.name }}--</span>
@@ -139,6 +139,7 @@ const flexWidth = ref(0);
 const flexHeight = ref(0);
 const { width, height } = useWindowSize();
 
+let currentCptName = "";
 const cptYear = ref("");
 let masterCompetition = null;
 let host = inject("domain");
@@ -149,20 +150,11 @@ onMounted(async () => {
     footDatas = await useGlobal.pageSetupDatas("foot");
     siteDatas = await useGlobal.siteDatas();
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
-    competitionList.value = masterCompetition.competitionList;
-    lodash.forEach(competitionList.value,(v,i)=>{
-        v.type = "c";
-        if (!v.guiGeList) {
-            v.guiGeList = [{type:"c",id:v.id,name:v.name,competitionId:v.id,competitionName:v.name}];
-        } else {
-            lodash.forEach(v.guiGeList,g=>{
-                g.type = "g";
-                g.competitionId = v.id;
-                g.competitionName = v.name;
-            });
-        }
-    });
-    // console.log(host,competitionList.value);
+    // console.log(masterCompetition);
+    currentCptName = masterCompetition.name;
+    cptYear.value = currentCptName;
+    await cptYearChange({value: currentCptName});
+
     logoImgUrl.value = await oss.buildPathAsync(footDatas.boundArea.setup.mImg.value.img,true,null);
 
     stageConfig.value = {width:layerWidth,height:layerHeight};
@@ -258,6 +250,29 @@ const imagesShow = (index)=>{
 
 const activeIndexChange = (index)=>{
     workList.value[index].tempMap.imgPath = stageRef.value[index].getNode().toDataURL({pixelRatio: 2});
+};
+
+const cptYearChange = async (e)=>{
+    selCompetitionGuiGe.value = null;
+    if (cptYear.value == currentCptName) {
+        masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
+        competitionList.value = masterCompetition.competitionList;
+    } else {
+        competitionList.value = await workRest.qyCompetitionList({masterCompetitionId:"",shiQyGuiGeList:true},null)?.data;
+    }
+
+    lodash.forEach(competitionList.value,(v,i)=>{
+        v.type = "c";
+        if (!v.guiGeList) {
+            v.guiGeList = [{type:"c",id:v.id,name:v.name,competitionId:v.id,competitionName:v.name}];
+        } else {
+            lodash.forEach(v.guiGeList,g=>{
+                g.type = "g";
+                g.competitionId = v.id;
+                g.competitionName = v.name;
+            });
+        }
+    });
 };
 
 const flexLayerChange = async (e)=>{
