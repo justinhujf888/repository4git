@@ -1,4 +1,4 @@
-package com.weavict.shop.app
+package com.weavict.light.app
 
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired

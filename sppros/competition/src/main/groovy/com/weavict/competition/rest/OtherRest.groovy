@@ -27,11 +27,16 @@ import com.weavict.website.common.OtherUtils
 import com.yicker.utility.DES
 import darabonba.core.client.ClientOverrideConfiguration
 import groovy.json.JsonSlurper
+import jakarta.websocket.RemoteEndpoint
 import jakarta.ws.rs.GET
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.scheduling.annotation.Async
+import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.RequestBody
 
 import jakarta.servlet.http.HttpServletRequest
@@ -337,7 +342,7 @@ class OtherRest extends BaseRest
     String genAliOssAccessInfo(@RequestBody Map<String,Object> query)
     {
         try
-        {
+        {println Thread.currentThread().isVirtual();
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",

@@ -10,7 +10,6 @@ import com.weavict.competition.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
 import com.weavict.weichat.notifies.WxNotifiesFun
 import jakarta.annotation.PostConstruct
-import jodd.datetime.JDateTime
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 

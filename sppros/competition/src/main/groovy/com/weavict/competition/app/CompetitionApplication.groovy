@@ -14,6 +14,8 @@ import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.task.SimpleAsyncTaskExecutor
+import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -99,5 +101,20 @@ class GlobalCorsFilter {
 		corsConfigurationSource.registerCorsConfiguration("/**", config);
 
 		return new CorsFilter(corsConfigurationSource);
+	}
+}
+
+@Configuration
+@EnableAsync
+class VirtualAsyncConfig {
+
+	@Bean
+	SimpleAsyncTaskExecutor taskExecutor() {
+		// 虚拟线程每任务新建
+		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("virtual-");
+		// 允许无限并发（虚拟线程无OS线程开销）
+		executor.setVirtualThreads(true);
+		executor.setConcurrencyLimit(-1);
+		return executor;
 	}
 }
