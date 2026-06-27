@@ -342,7 +342,7 @@ class OtherRest extends BaseRest
     String genAliOssAccessInfo(@RequestBody Map<String,Object> query)
     {
         try
-        {println Thread.currentThread().isVirtual();
+        {
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory
+import org.springframework.boot.web.embedded.tomcat.TomcatProtocolHandlerCustomizer
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory
@@ -22,6 +23,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
+
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadFactory
 
 @SpringBootApplication
 @EnableScheduling
@@ -44,17 +48,24 @@ class SpringBootConfig
 	@Bean
 	ServletWebServerFactory servletContainer()
 	{
-//		TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
+		TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
 //		tomcatServletWebServerFactory.setPort(8091);
-//		return tomcatServletWebServerFactory;
+		TomcatProtocolHandlerCustomizer customizer = protocolHandler -> {
+			ThreadFactory virtualThreadFactory = Thread.ofVirtual()
+					.name("jersey-vt-", 0)
+					.factory();
+			protocolHandler.setExecutor(Executors.newThreadPerTaskExecutor(virtualThreadFactory));
+		};
+		tomcatServletWebServerFactory.setTomcatProtocolHandlerCustomizers(List.of(customizer));
+		return tomcatServletWebServerFactory;
 
 //		JettyServletWebServerFactory jettyServletWebServerFactory = new JettyServletWebServerFactory();
 //		jettyServletWebServerFactory.setPort(8091);
 //		return jettyServletWebServerFactory;
 
-		UndertowServletWebServerFactory undertowServletWebServerFactory = new UndertowServletWebServerFactory();
+//		UndertowServletWebServerFactory undertowServletWebServerFactory = new UndertowServletWebServerFactory();
 //		undertowServletWebServerFactory.setPort(8091);
-		return undertowServletWebServerFactory;
+//		return undertowServletWebServerFactory;
 	}
 }
 
@@ -101,20 +112,5 @@ class GlobalCorsFilter {
 		corsConfigurationSource.registerCorsConfiguration("/**", config);
 
 		return new CorsFilter(corsConfigurationSource);
-	}
-}
-
-@Configuration
-@EnableAsync
-class VirtualAsyncConfig {
-
-	@Bean
-	SimpleAsyncTaskExecutor taskExecutor() {
-		// 虚拟线程每任务新建
-		SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("virtual-");
-		// 允许无限并发（虚拟线程无OS线程开销）
-		executor.setVirtualThreads(true);
-		executor.setConcurrencyLimit(-1);
-		return executor;
 	}
 }

@@ -16,6 +16,7 @@ import com.weavict.competition.entity.JudgeWork
 import com.weavict.competition.entity.JudgeWorkPK
 import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
+import com.weavict.competition.entity.MasterCompetitionDeployLogs
 import com.weavict.competition.entity.OrgHuman
 import com.weavict.competition.entity.PingFenWork
 import com.weavict.competition.entity.PingFenWorkPK
@@ -96,6 +97,22 @@ class WorkService extends ModuleBean
             masterCompetition.cancelLazyEr();
         }
         return masterCompetitionList;
+    }
+
+    List<MasterCompetitionDeployLogs> qyMasterCompetitionDeployLogs(Map query)
+    {
+        List<MasterCompetitionDeployLogs> masterCompetitionDeployLogsList = this.newQueryUtils(true,true).masterTable("mastercompetitiondeploylogs","mcd",[
+                [sf:"mastercompetitionid",bf:"masterCompetitionId"],
+                [sf:"appid",bf:"appId"],
+                [sf:"deploydate",bf:"deployDate"]
+        ]).joinTable("mastercompetition","mc","left join","mc.id=mcd.mastercompetitionid",[
+                [sf:"name",bf:"tempMap.name"]
+        ])
+                .where("mcd.appid = :appId", ["appId": query.appId], null, { return true })
+                .where("mcd.mastercompetitionid = :masterCompetitionId", ["masterCompetitionId": query.masterCompetitionId], "and", { return !(query.masterCompetitionId in [null,""]) })
+                .beanSetup(MasterCompetitionDeployLogs.class,null,null)
+                .orderBy("mcd.deploydate").buildSql().run().content;
+        return masterCompetitionDeployLogsList;
     }
 
     List<Competition> qyCompetitionList(Map query)

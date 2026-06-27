@@ -88,6 +88,9 @@ export default {
     async qyMasterSiteCompetition(ds,onfun) {
         return await Http.callHttpFunction('/r/work/qyMasterSiteCompetition',ds,onfun);
     },
+    async qyMasterCompetitionDeployLogs(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/qyMasterCompetitionDeployLogs',ds,onfun);
+    },
     updateMasterCompetition(ds,onfun) {
         Http.callHttpFunction('/r/work/updateMasterCompetition',ds,onfun);
     },

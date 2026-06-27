@@ -16,6 +16,7 @@ import com.weavict.competition.entity.JudgeWork
 import com.weavict.competition.entity.JudgeWorkPK
 import com.weavict.competition.entity.MCPageSetup
 import com.weavict.competition.entity.MasterCompetition
+import com.weavict.competition.entity.MasterCompetitionDeployLogs
 import com.weavict.competition.entity.OrgHuman
 import com.weavict.competition.entity.PingFenWork
 import com.weavict.competition.entity.SiteCompetition
@@ -38,6 +39,15 @@ import jakarta.ws.rs.core.MediaType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.TransactionDefinition
 import org.springframework.web.bind.annotation.RequestBody
+
+/*
+        Thread thread = Thread.currentThread();
+        println Map.of(
+                "threadName", thread.getName(),
+                "isVirtual", thread.isVirtual(),
+                "isTomcatWorker", thread.getName().startsWith("http-nio")
+        );
+* */
 
 @Path("/work")
 class WorkRest extends BaseRest
@@ -231,6 +241,29 @@ class WorkRest extends BaseRest
                     ["status":"OK",
                      "data":({
                          return workService.qyMasterSiteCompetitionList(query);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/qyMasterCompetitionDeployLogs")
+    String qyMasterCompetitionDeployLogs(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper4DateTime("yyyy-MM-dd",null);
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.qyMasterCompetitionDeployLogs(query);
                      }).call()
                     ]);
         }
@@ -641,6 +674,11 @@ class WorkRest extends BaseRest
                          masterCompetition.workSetup = null;
                          masterCompetition.tempMap = [:];
                          masterCompetition.tempMap.setupFields = siteCompetition.setupFields;
+                         masterCompetition.tempMap.mcdLogs = [];
+                         for (MasterCompetitionDeployLogs masterCompetitionDeployLogs in workService.qyMasterCompetitionDeployLogs([appId:masterCompetition.appId]))
+                         {
+                             masterCompetition.tempMap.mcdLogs << masterCompetitionDeployLogs.tempMap.name;
+                         }
                          return masterCompetition;
                     }).call()
             ]));
@@ -653,6 +691,12 @@ class WorkRest extends BaseRest
                 writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/${mcPageSetup.mcPageSetupPK.key}.json""".toString(),"utf8");
                 writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString(mcPageSetup.setupJson));
             }
+
+            MasterCompetitionDeployLogs masterCompetitionDeployLogs = new MasterCompetitionDeployLogs();
+            masterCompetitionDeployLogs.masterCompetitionId = masterCompetition.id;
+            masterCompetitionDeployLogs.appId = masterCompetition.appId;
+            masterCompetitionDeployLogs.deployDate = new Date();
+            workService.updateTheObject(masterCompetitionDeployLogs);
             return """{"status":"OK"}""";
         }
         catch (Exception e)

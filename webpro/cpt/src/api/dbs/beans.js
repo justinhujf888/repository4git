@@ -180,6 +180,14 @@ export const Beans = {
         }
 	},
 
+    masterCompetitionDeployLogs() {
+        return {
+            masterCompetitionId: "",
+            deployDate: null,
+            appId: ""
+        }
+    },
+
     mcPageSetupPK() {
         return {
             appId:"",

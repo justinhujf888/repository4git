@@ -4,7 +4,7 @@
             <div class="row flex-wrap gap-x-10 gap-y-5 md:gap-y-0">
                 <div class="row items-center font-bold gap-x-4">
                     <span>赛季年份</span>
-                    <Select v-model="cptYear" size="small" :options="['2025','2026']" @change="cptYearChange"/>
+                    <Select v-model="cptYear" size="small" :options="masterCompetitionList" @change="cptYearChange"/>
 <!--                    <span style="content: '';display: block;width: 8px;height: 15px;background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4LjA4IDE0Ljc2Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzU2NTY1Njt9PC9zdHlsZT48L2RlZnM+PGcgaWQ9IuODrOOCpOODpOODvF8yIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvCAyIj48ZyBpZD0i44Os44Kk44Ok44O8XzEtMiIgZGF0YS1uYW1lPSLjg6zjgqTjg6Tjg7wgMSI+PHBvbHlnb24gY2xhc3M9ImNscy0xIiBwb2ludHM9IjcgNS4yMyA0LjA0IDIuMTYgMS4wOCA1LjIzIDAgNC4xOCA0LjA0IDAgOC4wOCA0LjE4IDcgNS4yMyIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI0LjA0IDE0Ljc2IDAgMTAuNTcgMS4wOCA5LjUzIDQuMDQgMTIuNiA3IDkuNTMgOC4wOCAxMC41NyA0LjA0IDE0Ljc2Ii8+PC9nPjwvZz48L3N2Zz4=) no-repeat right;z-index: 2;"></span>-->
                 </div>
                 <div class="row items-center font-semibold gap-x-4">
@@ -145,11 +145,13 @@ let masterCompetition = null;
 let host = inject("domain");
 const competitionList = ref([]);
 const selCompetitionGuiGe = ref("");
+const masterCompetitionList = ref([]);
 
 onMounted(async () => {
     footDatas = await useGlobal.pageSetupDatas("foot");
     siteDatas = await useGlobal.siteDatas();
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
+    masterCompetitionList.value = masterCompetition.tempMap.mcdLogs;
     // console.log(masterCompetition);
     currentCptName = masterCompetition.name;
     cptYear.value = currentCptName;
@@ -253,6 +255,7 @@ const activeIndexChange = (index)=>{
 };
 
 const cptYearChange = async (e)=>{
+    console.log(cptYear.value);
     selCompetitionGuiGe.value = null;
     if (cptYear.value == currentCptName) {
         masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;

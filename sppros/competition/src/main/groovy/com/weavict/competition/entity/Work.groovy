@@ -223,6 +223,28 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
 
 @Table
 @Entity
+class MasterCompetitionDeployLogs extends BEntity implements Serializable, IEntity
+{
+    static final long serialVersionUID = 1L;
+
+    @Id
+    @Column(length = 30)
+    String masterCompetitionId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date deployDate;
+
+    @Column(length=30)
+    String appId;
+
+    void cancelLazyEr()
+    {
+
+    }
+}
+
+@Table
+@Entity
 //类别赛事
 class Competition extends BEntity implements Serializable, IEntity
 {
