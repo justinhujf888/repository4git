@@ -652,6 +652,11 @@ class WorkRest extends BaseRest
 
             MasterCompetition masterCompetition = workService.qyMasterSiteCompetitionList([appId:query.appId,id:query.masterCompetitionId,siteCompetitionId:query.siteCompetitionId])[0];
             workService.detach(masterCompetition);
+            MasterCompetitionDeployLogs masterCompetitionDeployLogs = new MasterCompetitionDeployLogs();
+            masterCompetitionDeployLogs.masterCompetitionId = masterCompetition.id;
+            masterCompetitionDeployLogs.appId = masterCompetition.appId;
+            masterCompetitionDeployLogs.deployDate = new Date();
+            workService.updateTheObject(masterCompetitionDeployLogs);
 
             writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/worksetup.json""".toString(),"utf8");
             writer.write(buildObjectMapper().writeValueAsString(masterCompetition.workSetup));
@@ -675,9 +680,9 @@ class WorkRest extends BaseRest
                          masterCompetition.tempMap = [:];
                          masterCompetition.tempMap.setupFields = siteCompetition.setupFields;
                          masterCompetition.tempMap.mcdLogs = [];
-                         for (MasterCompetitionDeployLogs masterCompetitionDeployLogs in workService.qyMasterCompetitionDeployLogs([appId:masterCompetition.appId]))
+                         for (MasterCompetitionDeployLogs mcd in workService.qyMasterCompetitionDeployLogs([appId:masterCompetition.appId]))
                          {
-                             masterCompetition.tempMap.mcdLogs << masterCompetitionDeployLogs.tempMap.name;
+                             masterCompetition.tempMap.mcdLogs << mcd.tempMap.name;
                          }
                          return masterCompetition;
                     }).call()
@@ -691,12 +696,6 @@ class WorkRest extends BaseRest
                 writer = new FileWriter("""${OtherUtils.givePropsValue("json_files_dir")}/${query.host}/${mcPageSetup.mcPageSetupPK.key}.json""".toString(),"utf8");
                 writer.write(buildObjectMapper4DateTime(null,null).writeValueAsString(mcPageSetup.setupJson));
             }
-
-            MasterCompetitionDeployLogs masterCompetitionDeployLogs = new MasterCompetitionDeployLogs();
-            masterCompetitionDeployLogs.masterCompetitionId = masterCompetition.id;
-            masterCompetitionDeployLogs.appId = masterCompetition.appId;
-            masterCompetitionDeployLogs.deployDate = new Date();
-            workService.updateTheObject(masterCompetitionDeployLogs);
             return """{"status":"OK"}""";
         }
         catch (Exception e)

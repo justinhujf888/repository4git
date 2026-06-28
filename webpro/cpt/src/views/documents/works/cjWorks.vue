@@ -255,7 +255,7 @@ const activeIndexChange = (index)=>{
 };
 
 const cptYearChange = async (e)=>{
-    console.log(cptYear.value);
+    // console.log(cptYear.value);
     selCompetitionGuiGe.value = null;
     if (cptYear.value == currentCptName) {
         masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
