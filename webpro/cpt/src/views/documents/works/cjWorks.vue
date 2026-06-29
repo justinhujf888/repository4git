@@ -256,12 +256,12 @@ const activeIndexChange = (index)=>{
 
 const cptYearChange = async (e)=>{
     // console.log(cptYear.value);
-    selCompetitionGuiGe.value = null;
     if (cptYear.value == currentCptName) {
         masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
         competitionList.value = masterCompetition.competitionList;
     } else {
         competitionList.value = await workRest.qyCompetitionList({masterCompetitionId:"",shiQyGuiGeList:true},null)?.data;
+        selCompetitionGuiGe.value = null;
     }
 
     lodash.forEach(competitionList.value,(v,i)=>{

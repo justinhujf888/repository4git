@@ -135,7 +135,7 @@
 </template>
 
 <script setup>
-import { useStorage } from '@vueuse/core';
+import { useStorage,useTitle } from '@vueuse/core';
 import { useWindowSize } from '@vueuse/core';
 import page from '@/api/uniapp/page';
 import dialog from "@/api/uniapp/dialog";
@@ -170,8 +170,9 @@ const showLoginMode = ref(false);
 const showRegistMode = ref(false);
 const showForgotMode = ref(false);
 const wantTo = ref("");
+const title = useTitle();
 watch(siteDatas,(newValue)=>{
-    // console.log(newValue);
+    title.value = newValue.siteInfo.siteCompetition.name;
 });
 watch(footDatas,async (newValue)=>{
     // console.log(newValue);
