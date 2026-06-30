@@ -7,6 +7,9 @@
 <!--        </Galleria>-->
         <div>
             <img :src="indexDatas?.bannerArea.setup.banner.value[0].img.tempMap?.imgPath" class="w-full object-cover object-top"/>
+<!--            <video autoplay muted loop playsinline webkit-playsinline x5-playsinline width="100%" object-fit="cover">-->
+<!--                <source src="https://iaplc.com/e/wp-content/uploads/sites/2/2026/04/IAPLC2026_5000kbps_center.mp4" type="video/mp4">-->
+<!--            </video>-->
         </div>
         <div
             id="hero"
