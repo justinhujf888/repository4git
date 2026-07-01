@@ -4,7 +4,7 @@
 <!--  #ifdef H5  -->
         <my-language></my-language>
 <!--  #endif      -->
-<!--		 <button @tap="tempProcess" class="mt-10">testtttttttttttttttt</button>-->
+		 <button _tap="tempProcess" @tap="test2" class="mt-10">testtttttttttttttttt</button>
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">{{$t('page.index.title')}}</text>
@@ -868,7 +868,11 @@
             return null;
         }
     };
-	
+
+    function test2() {
+        deviceRest.test(()=>{});
+    };
+
 	defineExpose({
 		
 	});

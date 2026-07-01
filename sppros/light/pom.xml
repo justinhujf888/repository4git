@@ -142,6 +142,16 @@
             <artifactId>agents-flex-llm-chatglm</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>org.dromara.mica-mqtt</groupId>
+            <artifactId>mica-mqtt-server-spring-boot-starter</artifactId>
+            <version>2.6.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dromara.mica-mqtt</groupId>
+            <artifactId>mica-mqtt-client-spring-boot-starter</artifactId>
+            <version>2.6.7</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

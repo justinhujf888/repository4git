@@ -96,17 +96,17 @@ class GlobalCorsFilter {
     }
 }
 
-@Configuration
-@EnableAsync
-class VirtualAsyncConfig {
-
-    @Bean
-    SimpleAsyncTaskExecutor taskExecutor() {
-        // 虚拟线程每任务新建
-        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("virtual-");
-        // 允许无限并发（虚拟线程无OS线程开销）
-        executor.setVirtualThreads(true);
-        executor.setConcurrencyLimit(-1);
-        return executor;
-    }
-}
+//@Configuration
+//@EnableAsync
+//class VirtualAsyncConfig {
+//
+//    @Bean
+//    SimpleAsyncTaskExecutor taskExecutor() {
+//        // 虚拟线程每任务新建
+//        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor("virtual-");
+//        // 允许无限并发（虚拟线程无OS线程开销）
+//        executor.setVirtualThreads(true);
+//        executor.setConcurrencyLimit(-1);
+//        return executor;
+//    }
+//}

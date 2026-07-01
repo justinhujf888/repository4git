@@ -25,7 +25,6 @@ import com.weavict.competition.entity.SiteWorkItem
 import com.weavict.competition.entity.Work
 import com.weavict.competition.entity.WorkItem
 import com.weavict.competition.entity.WorkLog
-import groovy.ginq.transform.GQ
 import jakarta.transaction.Transactional
 
 //import static org.jooq.impl.DSL.*;

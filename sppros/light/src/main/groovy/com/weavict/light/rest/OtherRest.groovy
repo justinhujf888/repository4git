@@ -32,6 +32,8 @@ import jakarta.inject.Inject
 import jakarta.ws.rs.GET
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
+import org.dromara.mica.mqtt.codec.MqttQoS
+import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 
@@ -54,6 +56,9 @@ class OtherRest extends BaseRest
 
     @Autowired
     RedisApi redisApi;
+
+    @Autowired
+    MqttServerTemplate mqttServerTemplate;
 
     /**
      * 图片上传
@@ -314,7 +319,7 @@ class OtherRest extends BaseRest
     }
 
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/test")
@@ -322,27 +327,28 @@ class OtherRest extends BaseRest
     {
         try
         {
-            ObjectMapper objectMapper = new ObjectMapper();
-            // oss
-            OSS ossClient = OtherUtils.genOSSClient();
-
-
-//            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
-
-            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
-                    """abcde adas"""
-            ).getBytes("UTF-8")));
-
-            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
-            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
-            putObjectRequest.setMetadata(metadata);
-
-            ossClient.putObject(putObjectRequest);
-//            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
-            ossClient.shutdown();
-            //oss end
+            mqttServerTemplate.publish("000001","/device/up/000001","Hello World".bytes, MqttQoS.QOS1);
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            // oss
+//            OSS ossClient = OtherUtils.genOSSClient();
+//
+//
+////            ossClient.deleteObject(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt");
+//
+//            PutObjectRequest putObjectRequest = new PutObjectRequest(OtherUtils.givePropsValue("ali_oss_bucketName"), "a.txt", new ByteArrayInputStream(objectMapper.writeValueAsString(
+//                    """abcde adas"""
+//            ).getBytes("UTF-8")));
+//
+//            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+//            ObjectMetadata metadata = new ObjectMetadata();
+//            metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+//            metadata.setObjectAcl(CannedAccessControlList.PublicRead);
+//            putObjectRequest.setMetadata(metadata);
+//
+//            ossClient.putObject(putObjectRequest);
+////            ossClient.setObjectAcl(OtherUtils.givePropsValue("ali_oss_bucketName"), query.filePathName as String, CannedAccessControlList.PublicRead);
+//            ossClient.shutdown();
+//            //oss end
             return """{"status":"OK"}""";
         }
         catch (Exception e)
