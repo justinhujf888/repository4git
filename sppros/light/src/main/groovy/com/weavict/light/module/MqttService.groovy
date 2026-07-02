@@ -28,11 +28,25 @@ class MqttService
         println event.dump();
     }
 
-    @MqttServerFunction("/device/up/#")
-    void rnDeviceStatusDatas(ChannelContext context, String topic, MqttPublishMessage publishMessage, byte[] message)
+    @MqttServerFunction("/device/up/\${deviceId}")
+    void rnDeviceStatusDatas(ChannelContext context, String topic, MqttPublishMessage publishMessage, Object data)
     {
+        println "---------------server begin----------------";
+        println context;
+        println topic;
+        println publishMessage;
+        println data;
+        println "---------------server end-----------------";
+//        mqttServerTemplate.publish("000001",topic,"Hello World");
+    }
+
+    @MqttServerFunction("/device/test")
+    void rnDeviceTest(String topic, byte[] message)
+    {
+        println "---------------server begin----------------";
         println topic;
         println message;
+        println "---------------server end-----------------";
 //        mqttServerTemplate.publish("000001",topic,"Hello World");
     }
 }

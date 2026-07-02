@@ -1,5 +1,6 @@
 package com.weavict.light.rest
 
+import com.alibaba.fastjson2.JSON
 import com.aliyun.oss.ClientBuilderConfiguration
 import com.aliyun.oss.OSS
 import com.aliyun.oss.OSSClient
@@ -33,6 +34,7 @@ import jakarta.ws.rs.GET
 import jodd.datetime.JDateTime
 import jodd.datetime.Period
 import org.dromara.mica.mqtt.codec.MqttQoS
+import org.dromara.mica.mqtt.spring.client.MqttClientTemplate
 import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
@@ -59,6 +61,9 @@ class OtherRest extends BaseRest
 
     @Autowired
     MqttServerTemplate mqttServerTemplate;
+
+    @Autowired
+    MqttClientTemplate mqttClientTemplate;
 
     /**
      * 图片上传
@@ -327,7 +332,7 @@ class OtherRest extends BaseRest
     {
         try
         {
-            mqttServerTemplate.publish("000001","/device/up/000001","Hello World".bytes, MqttQoS.QOS1);
+            mqttClientTemplate.publish("/device/up/superclient", JSON.toJSON([a:"abc"]), MqttQoS.QOS1);
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            // oss
 //            OSS ossClient = OtherUtils.genOSSClient();
