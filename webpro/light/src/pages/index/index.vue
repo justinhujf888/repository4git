@@ -4,7 +4,7 @@
 <!--  #ifdef H5  -->
         <my-language></my-language>
 <!--  #endif      -->
-		 <button _tap="tempProcess" @tap="test2" class="mt-10">testtttttttttttttttt</button>
+<!--		 <button _tap="tempProcess" @tap="test2" class="mt-10">testtttttttttttttttt</button>-->
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">{{$t('page.index.title')}}</text>
@@ -135,10 +135,10 @@
 	import { ref,getCurrentInstance } from 'vue';
 	import { onShow, onHide,onLoad,onUnload } from "@dcloudio/uni-app";
 	import lodash from "lodash";
-	
+
 	import wxRest from "@/api/uniapp/wx.js";
 	import deviceRest from "@/api/dbs/device.js";
-	
+
 	// #ifdef MP
     import { Blue } from '@/api/bluebooth/index.js';
     // #endif
@@ -856,7 +856,7 @@
 		ff = ff==30 ? 80 : 30;
 		Blue.writeBLEValue(hexTools.bleBuffer(cd[i].cmd,cd[i].d1,cd[i].d2).buffer);
 		i++;
-	};
+	}
 
     const getDeviceImg = (deviceName)=>{
         let imgElt = lodash.find(cmdjson.deviceImage,(o)=>{
@@ -871,7 +871,18 @@
 
     function test2() {
         deviceRest.test(()=>{});
-    };
+        // console.log(mqtt);
+        // const client = mqtt.connect("wss://localhost:8084",{connectItmeout:5000,clientId:"wxclient",clean:false});
+        // client.on("connect", () => {
+        //     client.subscribe("/device/up/wxclient", (err) => {
+        //         if (!err) {
+        //             client.publish("/device/up/wxclient", {clientId:"wxclient"});
+        //         }
+        //     });
+        // }).on("message",(topic,message)=>{
+        //     console.log(topic,message);
+        // });
+    }
 
 	defineExpose({
 		

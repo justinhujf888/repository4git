@@ -1,12 +1,26 @@
 import fs from "fs";
 import { defineConfig } from "vite";
 import uni from "@dcloudio/vite-plugin-uni";
+import { resolve } from 'path'
 // https://vitejs.dev/config/
 export default async () => {
   const UnoCSS = (await import("unocss/vite")).default;
 
   return defineConfig({
     plugins: [uni(), UnoCSS()],
+    resolve: {
+      alias: [
+        {
+          find: '@',
+          replacement: resolve(__dirname, 'src'), //配置@ 路径
+        },
+        // {
+        //  find: 'mqtt',
+        //  replacement: 'mqtt/dist/mqtt.min.js',
+        // },
+
+      ]
+    },
     server: {
       // port: 3000,
       strictPort: true,
@@ -23,7 +37,7 @@ export default async () => {
       //      rewrite: (path) => path.replace(/^\/api/, '')  // 重写路径
       //   }
       // }
-    },
+    }
   });
 };
 
