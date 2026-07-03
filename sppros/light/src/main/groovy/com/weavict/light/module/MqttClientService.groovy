@@ -24,7 +24,7 @@ class MqttClientService
         println topic;
         println message.dump();
         println data;
-        println "---------------client begin----------------";
+        println "---------------client end----------------";
 //        mqttServerTemplate.publish("superclient",topic,data);
     }
 
@@ -34,6 +34,6 @@ class MqttClientService
         println "---------------client begin----------------";
         println topic;
         println new String(payload, StandardCharsets.UTF_8);
-        println "---------------client begin----------------";
+        println "---------------client end----------------";
     }
 }
