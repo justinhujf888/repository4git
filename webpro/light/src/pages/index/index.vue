@@ -4,7 +4,7 @@
 <!--  #ifdef H5  -->
         <my-language></my-language>
 <!--  #endif      -->
-<!--		 <button _tap="tempProcess" @tap="test2" class="mt-10">testtttttttttttttttt</button>-->
+		 <button _tap="tempProcess" @tap="test2" class="mt-10">testtttttttttttttttt</button>
 		<view class="mt-14 p-1">
 			<view class="flex flex-row">
 				<text class="text-base font-semibold">{{$t('page.index.title')}}</text>
@@ -870,7 +870,7 @@
     };
 
     function test2() {
-        deviceRest.test(()=>{});
+        deviceRest.test({clientId:"testid"},()=>{});
         // console.log(mqtt);
         // const client = mqtt.connect("wss://localhost:8084",{connectItmeout:5000,clientId:"wxclient",clean:false});
         // client.on("connect", () => {

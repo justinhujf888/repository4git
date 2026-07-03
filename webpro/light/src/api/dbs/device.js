@@ -150,8 +150,8 @@ export default {
 			},
 			null, true);
 	},
-	test(onfun) {
-		Http.httpclient_json('/r/other/test', 'post',{}, "json",
+	test(ds,onfun) {
+		Http.httpclient_json('/r/other/test', 'post',ds, "json",
 			(res)=>{
 				if (res.data.status == "FA_ER") {
 					dialog.showApiErrorMsg();

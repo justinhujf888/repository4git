@@ -332,7 +332,7 @@ class OtherRest extends BaseRest
     {
         try
         {
-            mqttClientTemplate.publish("/device/up/superclient", JSON.toJSON([a:"abc"]), MqttQoS.QOS1);
+            mqttClientTemplate.publish("/device/up/${query.clientId}", JSON.toJSON([a:"abc"]), MqttQoS.QOS1);
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            // oss
 //            OSS ossClient = OtherUtils.genOSSClient();
