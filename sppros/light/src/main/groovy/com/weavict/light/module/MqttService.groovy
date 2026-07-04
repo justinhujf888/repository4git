@@ -32,7 +32,7 @@ class MqttService
     void rnDeviceStatusDatas(ChannelContext context, String topic, MqttPublishMessage publishMessage, Object data)
     {
         println "---------------server begin----------------";
-        println context.dump();
+        println context.bsId;
         println topic;
         println publishMessage;
         println data;
