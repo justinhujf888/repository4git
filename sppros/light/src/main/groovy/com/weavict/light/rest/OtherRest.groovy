@@ -59,10 +59,10 @@ class OtherRest extends BaseRest
     @Autowired
     RedisApi redisApi;
 
-    @Autowired
+//    @Autowired
     MqttServerTemplate mqttServerTemplate;
 
-    @Autowired
+//    @Autowired
     MqttClientTemplate mqttClientTemplate;
 
     /**

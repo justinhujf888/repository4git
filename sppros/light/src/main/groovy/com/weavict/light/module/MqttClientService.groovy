@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets
 class MqttClientService
 {
 
-    @Autowired
+//    @Autowired
     MqttServerTemplate mqttServerTemplate;
 
     @MqttClientSubscribe(value="/device/up/\${deviceId}",qos = MqttQoS.QOS1)

@@ -1059,4 +1059,27 @@ class WorkRest extends BaseRest
             return """{"status":"FA_ER"}""";
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/getTop1EveryCptCompetitionGuiGe")
+    String getTop1EveryCptCompetitionGuiGe(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "data":({
+                         return workService.getTop1EveryCptCompetitionGuiGe(query.appId as String,query.masterCompetitionId as String);
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 }

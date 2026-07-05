@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 @Service
 class MqttService
 {
-    @Autowired
+//    @Autowired
     MqttServerTemplate mqttServerTemplate;
 
     @EventListener

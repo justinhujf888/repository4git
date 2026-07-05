@@ -233,6 +233,14 @@ const router = createRouter({
                     }
                 },
                 {
+                    path: '/manage/cpt/pingshen/top1',
+                    name: 'top1',
+                    component: () => import('@/views/cpt/pingshen/top1.vue'),
+                    meta:{
+                        name: "设定大奖作品"
+                    }
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

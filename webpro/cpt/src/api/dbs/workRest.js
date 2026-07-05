@@ -201,5 +201,8 @@ export default {
     },
     async obtFlowWorkCount(ds,onfun) {
         return await Http.callHttpFunction('/r/work/obtFlowWorkCount',ds,onfun);
+    },
+    async getTop1EveryCptCompetitionGuiGe(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/getTop1EveryCptCompetitionGuiGe',ds,onfun);
     }
 }

@@ -791,4 +791,38 @@ class WorkService extends ModuleBean
 
         }
     }
+
+    List<Work> getTop1EveryCptCompetitionGuiGe(String appId,String masterCompetitionId)
+    {
+        return this.newQueryUtils(true,true).masterTable("work","work",[
+                [sf:"id",bf:"id"],
+                [sf:"appid",bf:"appId"],
+                [sf:"createdate",bf:"createDate"],
+                [sf:"gousidescription",bf:"gousiDescription"],
+                [sf:"guigeid",bf:"guiGeId"],
+                [sf:"hangyefields",bf:"hangyeFields"],
+                [sf:"lat",bf:"lat"],
+                [sf:"lng",bf:"lng"],
+                [sf:"mymeandescription",bf:"myMeanDescription"],
+                [sf:"name",bf:"name"],
+                [sf:"otherfields",bf:"otherFields"],
+                [sf:"status",bf:"status"],
+                [sf:"buyer_phone",bf:"buyer.phone"],
+                [sf:"guige_id",bf:"guiGe.id"],
+                [sf:"mastercompetitionid",bf:"masterCompetitionId"],
+                [sf:"competition_id",bf:"competition.id"],
+                [sf:"psstatus",bf:"psStatus"]
+        ]).where("""
+                id in (SELECT workid
+FROM (
+    SELECT workid,
+           RANK() OVER (
+               PARTITION BY competitionid,guigeid
+               ORDER BY fen DESC
+           ) AS rk
+    FROM pingfenwork where appid = :appId and mastercompetitionid = :masterCompetitionId
+) t
+WHERE rk = 1)
+""",[appId: appId,masterCompetitionId:masterCompetitionId],null,{return true}).buildSql().run().content;
+    }
 }
