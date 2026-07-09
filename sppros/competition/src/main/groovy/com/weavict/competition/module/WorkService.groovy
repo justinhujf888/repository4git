@@ -169,6 +169,14 @@ class WorkService extends ModuleBean
         }
     }
 
+    List<WorkItem> qyWorkItemList(String workId)
+    {
+        this.newQueryUtils(false).masterTable(WorkItem.class.simpleName,null,null)
+                .where("work.id = :workId",["workId":workId],null,{return true})
+                .orderBy("mediaType,type")
+                .buildSql().run().content;
+    }
+
     List<WorkLog> qyWorkLog8Work(Map query)
     {
         query.listKey = ["masterCompetitionId"];
@@ -794,7 +802,7 @@ class WorkService extends ModuleBean
 
     List<Work> getTop1EveryCptCompetitionGuiGe(String appId,String masterCompetitionId)
     {
-        return this.newQueryUtils(true,true).masterTable("work","work",[
+        List<Work> workList = this.newQueryUtils(true,true).masterTable("work","work",[
                 [sf:"id",bf:"id"],
                 [sf:"appid",bf:"appId"],
                 [sf:"createdate",bf:"createDate"],
@@ -824,5 +832,9 @@ FROM (
 ) t
 WHERE rk = 1)
 """,[appId: appId,masterCompetitionId:masterCompetitionId],null,{return true}).buildSql().run().content;
+        for(Work w in workList)
+        {
+            w.workItemList = this.qyWorkItemList(w.id);
+        }
     }
 }
