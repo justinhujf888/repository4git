@@ -167,6 +167,7 @@ export const Beans = {
             judgeSetup: null,
             workSetup: null,
             flowSetup: null,
+            pxWorks: null,
             cptDate: null,
             beginDate: null,
             bmEndDate: null,

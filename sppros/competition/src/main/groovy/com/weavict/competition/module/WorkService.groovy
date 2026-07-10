@@ -836,5 +836,6 @@ WHERE rk = 1)
         {
             w.workItemList = this.qyWorkItemList(w.id);
         }
+        return workList;
     }
 }

@@ -51,7 +51,7 @@ export default {
                   { userType: ["manager"], label: '评委资料库', icon: 'pi pi-fw pi-user', to: '/manage/judge/judgeList' ,key:"judgeList"},
                   { userType: ["manager"], label: '发布赛事', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/buildCache',key:"buildCache" },
                   { userType: ["manager"], label: '素材库', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/mediaFiles',key:"mediaFiles" },
-                  { userType: ["manager"], label: '管理员权限', icon: 'pi pi-fw pi-file',items:[
+                  { userType: ["manager"], label: '管理员权限', icon: 'pi pi-fw pi-bars',items:[
                       { userType: ["manager"], label: '角色权限', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/rules' ,key:"rules"},
                           { userType: ["manager"], label: '管理员设置', icon: 'pi pi-fw pi-file', to: '/manage/cpt/system/managers' ,key:"managers"}
                       ]},

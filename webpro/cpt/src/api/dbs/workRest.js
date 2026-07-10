@@ -204,5 +204,8 @@ export default {
     },
     async getTop1EveryCptCompetitionGuiGe(ds,onfun) {
         return await Http.callHttpFunction('/r/work/getTop1EveryCptCompetitionGuiGe',ds,onfun);
+    },
+    async updateTop1ForCpt(ds,onfun) {
+        return await Http.callHttpFunction('/r/work/updateTop1ForCpt',ds,onfun);
     }
 }

@@ -1,6 +1,9 @@
 <template>
-    <div class="card">
-        <div class="flex-1 p-2">
+    <animationPage :show="true">
+        <div class="flex-1 p-2 card">
+            <div class="row gap-4">
+                <Button label="提交评审" @click="saveSubmitWorks" :disabled="shiSubmited"/>
+            </div>
             <div v-if="workList?.length>0">
                 <DataView :value="workList" class="mt-5" :pt="{
                                             emptyMessage:{
@@ -12,7 +15,7 @@
                             <div v-for="(item, index) in slotProps.items" :key="index" class="leading-8">
                                 <Panel :header="item.name" toggleable collapsed :pt="{title:{class:'text-2xl font-bold dark:text-yellow-600'}}">
                                     <template #icons>
-                                        <RadioButton v-model="selWorkId" name="radioWork" :value="item.id" />
+                                        <RadioButton v-model="selWorkId" name="radioWork" :value="item.id" class="!h-7"/>
                                     </template>
                                     <div class="grid md:grid-cols-2 gap-4 mt-5">
                                         <div class="col">
@@ -56,13 +59,15 @@
                 <priviewImage ref="refPriviewImage" :shiShowImgGrid="false" _class="hidden"/>
             </div>
         </div>
-    </div>
+    </animationPage>
 </template>
 
 <script setup>
 import {inject, onMounted, ref, useTemplateRef} from "vue";
 import workRest from "@/api/dbs/workRest";
 import lodash from "lodash-es";
+import animationPage from "@/components/my/animationPage.vue";
+import dialog from "@/api/uniapp/dialog";
 
 let host = inject("domain");
 let masterCompetition = null;
@@ -70,16 +75,37 @@ let masterCompetition = null;
 const workList = ref([]);
 const selWorkId = ref('');
 const refPriviewImage = useTemplateRef("refPriviewImage");
+const shiSubmited = ref(false);
 
 onMounted(async () => {
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
-    workList.value = await workRest.getTop1EveryCptCompetitionGuiGe({masterCompetitionId:masterCompetition.id},null);
+    masterCompetition = (await workRest.qyMasterSiteCompetition({id:masterCompetition.id,siteCompetitionId:host},null)).data[0];
+    workList.value = (await workRest.getTop1EveryCptCompetitionGuiGe({masterCompetitionId:masterCompetition.id},null)).data;
+    // console.log(masterCompetition,workList.value);
+    if (masterCompetition.pxWorks) {
+        selWorkId.value = masterCompetition.pxWorks.data;
+        shiSubmited.value = true;
+    }
 });
 
 const viewImg = (workItemList,imgId)=>{
     let l = lodash.filter(workItemList,(o)=>{return o.tempMap?.imgPath && o.mediaType==0});
     refPriviewImage.value.imagesShow(l,lodash.findIndex(l,(o)=>{return o.id==imgId}));
 };
+
+const saveSubmitWorks = async ()=>{
+    // console.log(selWorkId.value);
+    if (!selWorkId.value) {
+        dialog.toastError("必须勾选一个作品");
+        return;
+    }
+    await workRest.updateTop1ForCpt({masterCompetitionId:masterCompetition.id,workId:selWorkId.value},(data)=>{
+        if (data.status=="OK") {
+            shiSubmited.value = true;
+            dialog.toastSuccess("设置已提交");
+        }
+    });
+}
 </script>
 
 <style scoped lang="scss">

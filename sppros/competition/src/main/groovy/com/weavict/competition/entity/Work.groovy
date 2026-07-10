@@ -190,6 +190,10 @@ class MasterCompetition extends BEntity implements Serializable, IEntity
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> flowSetup;
 
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map<String,Object> pxWorks;
+
     @Temporal(TemporalType.TIMESTAMP)
     Date cptDate;
 
