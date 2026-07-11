@@ -34,7 +34,7 @@
                 </div>
                 <div class="row items-center font-semibold gap-x-4">
                     <span>排名范围</span>
-                    <Select v-model="cptYear" size="small" :options="['2025','2026']"/>
+                    <Select v-model="currentPage" size="small" :options="workPageObj" option-label="label" optionValue="value"/>
                 </div>
             </div>
             <div class="row gap-x-2 my-5 md:my-0 text-2xl">
@@ -128,6 +128,10 @@ const layerHeight = 600;
 const layerMx = 200;
 const layerPaddingTop = 90;
 
+const pageSize = 30;
+const workPageObj = ref([]);
+const currentPage = ref(0);
+
 const refPriviewImage = useTemplateRef("refPriviewImage");
 const stageRef = useTemplateRef("stageRef");
 const cpRef = useTemplateRef("cpRef");
@@ -188,6 +192,18 @@ onMounted(async () => {
     }
 
     await loadFont();
+
+    //this.totalPages = totalElements % size == 0 ? totalElements / size : (totalElements / size) + 1;
+    let totalPageCount = 0;
+    if (workList.value.length > pageSize) {
+        totalPageCount = workList.value.length % pageSize == 0 ? workList.value.length / pageSize : (workList.value.length / pageSize) + 1;
+        // console.log(totalPageCount);
+        for(let index = 0; index < totalPageCount; index++) {
+            workPageObj.value.splice(index,0,{label:`${pageSize*index+1}-${pageSize*index+pageSize}`,value:index});
+        }
+    } else {
+        workPageObj.value.splice(0,0,{label:`1-${workList.value.length}`,value:0});
+    }
 });
 
 const getWorkImgConfig = (imgObj)=>{
