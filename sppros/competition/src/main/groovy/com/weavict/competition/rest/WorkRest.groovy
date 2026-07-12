@@ -679,7 +679,7 @@ class WorkRest extends BaseRest
                          masterCompetition.tempMap.mcdLogs = [];
                          for (MasterCompetitionDeployLogs mcd in workService.qyMasterCompetitionDeployLogs([appId:masterCompetition.appId]))
                          {
-                             masterCompetition.tempMap.mcdLogs << mcd.tempMap.name;
+                             masterCompetition.tempMap.mcdLogs << [id:mcd.masterCompetitionId,name:mcd.tempMap.name];
                          }
                          return masterCompetition;
                     }).call()

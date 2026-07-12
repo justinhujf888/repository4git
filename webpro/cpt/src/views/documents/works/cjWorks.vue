@@ -4,12 +4,12 @@
             <div class="row flex-wrap gap-x-10 gap-y-5 md:gap-y-0">
                 <div class="row items-center font-bold gap-x-4">
                     <span>赛季年份</span>
-                    <Select v-model="cptYear" size="small" :options="masterCompetitionList" @change="cptYearChange"/>
+                    <Select v-model="cptYear" size="small" :options="masterCompetitionList" optionLabel="name" optionValue="id" @change="cptYearChange"/>
 <!--                    <span style="content: '';display: block;width: 8px;height: 15px;background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4LjA4IDE0Ljc2Ij48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzU2NTY1Njt9PC9zdHlsZT48L2RlZnM+PGcgaWQ9IuODrOOCpOODpOODvF8yIiBkYXRhLW5hbWU9IuODrOOCpOODpOODvCAyIj48ZyBpZD0i44Os44Kk44Ok44O8XzEtMiIgZGF0YS1uYW1lPSLjg6zjgqTjg6Tjg7wgMSI+PHBvbHlnb24gY2xhc3M9ImNscy0xIiBwb2ludHM9IjcgNS4yMyA0LjA0IDIuMTYgMS4wOCA1LjIzIDAgNC4xOCA0LjA0IDAgOC4wOCA0LjE4IDcgNS4yMyIvPjxwb2x5Z29uIGNsYXNzPSJjbHMtMSIgcG9pbnRzPSI0LjA0IDE0Ljc2IDAgMTAuNTcgMS4wOCA5LjUzIDQuMDQgMTIuNiA3IDkuNTMgOC4wOCAxMC41NyA0LjA0IDE0Ljc2Ii8+PC9nPjwvZz48L3N2Zz4=) no-repeat right;z-index: 2;"></span>-->
                 </div>
                 <div class="row items-center font-semibold gap-x-4">
                     <span>分组</span>
-                    <Select v-model="selCompetitionGuiGe" :options="competitionList" optionLabel="name" optionGroupLabel="name" optionGroupChildren="guiGeList" placeholder="选择类别分组" size="small" class="w-full md:w-56">
+                    <Select v-model="selCompetitionGuiGe" :options="competitionList" optionLabel="name" optionGroupLabel="name" optionGroupChildren="guiGeList" placeholder="选择类别分组" size="small" class="w-full md:w-56" @change="competitionGuiGeChange">
                         <template #optiongroup="slotProps">
                             <div class="flex items-center">
                                 <span v-if="slotProps.option.guiGeList[0].id!=slotProps.option.id" class="font-semibold text-base">--{{ slotProps.option.name }}--</span>
@@ -34,7 +34,7 @@
                 </div>
                 <div class="row items-center font-semibold gap-x-4">
                     <span>排名范围</span>
-                    <Select v-model="currentPage" size="small" :options="workPageObj" option-label="label" optionValue="value"/>
+                    <Select v-model="currentPage" size="small" :options="workPageObj" option-label="label" optionValue="value" @change="currentPageChange"/>
                 </div>
             </div>
             <div class="row gap-x-2 my-5 md:my-0 text-2xl">
@@ -143,12 +143,12 @@ const flexWidth = ref(0);
 const flexHeight = ref(0);
 const { width, height } = useWindowSize();
 
-let currentCptName = "";
+let currentCptId = "";
 const cptYear = ref("");
 let masterCompetition = null;
 let host = inject("domain");
 const competitionList = ref([]);
-const selCompetitionGuiGe = ref("");
+const selCompetitionGuiGe = ref(null);
 const masterCompetitionList = ref([]);
 
 onMounted(async () => {
@@ -157,53 +157,16 @@ onMounted(async () => {
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     masterCompetitionList.value = masterCompetition.tempMap.mcdLogs;
     // console.log(masterCompetition);
-    currentCptName = masterCompetition.name;
-    cptYear.value = currentCptName;
-    await cptYearChange({value: currentCptName});
+    currentCptId = masterCompetition.id;
+    cptYear.value = currentCptId;
+    await cptYearChange({value: currentCptId});
+    // console.log(competitionList.value);
+    selCompetitionGuiGe.value = competitionList.value[0].guiGeList[0];
+    await competitionGuiGeChange({value: selCompetitionGuiGe.value});
 
     logoImgUrl.value = await oss.buildPathAsync(footDatas.boundArea.setup.mImg.value.img,true,null);
 
     stageConfig.value = {width:layerWidth,height:layerHeight};
-    let ary = [
-        {id:"0",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/88881778664330607HMSdB8wE/1778664330607PtMcjbFZ_版纳森林02.jpg",name:"版纳森林"},
-        {id:"1",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/1779085288886hKpdt6Kk_06 - 细节孔雀藓.JPG",name:"细节孔雀藓"},
-        {id:"2",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/17790852888867hNJTimd_08---树林丁达尔视频截图.jpg",name:"树林丁达尔"},
-        {id:"3",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/1779085288886r4cNTb6f_02-右侧45度.JPG",name:"右侧45度"},
-        {id:"4",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/88881778664330607HMSdB8wE/1778664330607XYnrTAPj_版纳森林07.jpg",name:"版纳森林07"},
-        {id:"5",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/1779085288886fJB5tzaH_02-右侧45度.JPG",name:"右侧45度2"}];
-    lodash.forEach(ary,(v,i)=>{
-        let w = Beans.work();
-        w.id = v.id;
-        w.tempMap = {workImgUrl:v.path,sort:i,sortStr:lodash.padStart(i+1,3,"0"),imgPath:"",imgObj:null};
-        w.name = v.name;
-        workList.value.push(w);
-        imgStatusList.value[i] = {id:w.id,status:{logoImg:"",jxImg:"",workImg:""}};
-    });
-
-    for(let [index,w] of workList.value.entries()) {
-        [w.tempMap.imgObj,imgStatusList.value[index].status.workImg] = useImage(await oss.buildPathAsync(w.tempMap.workImgUrl,true,null),"anonymous");
-        if (w.tempMap.sort==0) {
-            [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qcjj.png");
-        } else if (w.tempMap.sort==1) {
-            [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qcyj.png");
-        } else if (w.tempMap.sort==2) {
-            [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qctj.png");
-        }
-    }
-
-    await loadFont();
-
-    //this.totalPages = totalElements % size == 0 ? totalElements / size : (totalElements / size) + 1;
-    let totalPageCount = 0;
-    if (workList.value.length > pageSize) {
-        totalPageCount = workList.value.length % pageSize == 0 ? workList.value.length / pageSize : (workList.value.length / pageSize) + 1;
-        // console.log(totalPageCount);
-        for(let index = 0; index < totalPageCount; index++) {
-            workPageObj.value.splice(index,0,{label:`${pageSize*index+1}-${pageSize*index+pageSize}`,value:index});
-        }
-    } else {
-        workPageObj.value.splice(0,0,{label:`1-${workList.value.length}`,value:0});
-    }
 });
 
 const getWorkImgConfig = (imgObj)=>{
@@ -271,15 +234,16 @@ const activeIndexChange = (index)=>{
 };
 
 const cptYearChange = async (e)=>{
-    // console.log(cptYear.value);
-    if (cptYear.value == currentCptName) {
+    // console.log(cptYear.value,e);
+    if (cptYear.value == currentCptId) {
         masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
         competitionList.value = masterCompetition.competitionList;
     } else {
-        competitionList.value = await workRest.qyCompetitionList({masterCompetitionId:"",shiQyGuiGeList:true},null)?.data;
+        competitionList.value = await workRest.qyCompetitionList({masterCompetitionId:cptYear.value,shiQyGuiGeList:true},null)?.data;
         selCompetitionGuiGe.value = null;
     }
 
+    selCompetitionGuiGe.value = null;
     lodash.forEach(competitionList.value,(v,i)=>{
         v.type = "c";
         if (!v.guiGeList) {
@@ -292,6 +256,65 @@ const cptYearChange = async (e)=>{
             });
         }
     });
+    workPageObj.value = [];
+};
+
+const competitionGuiGeChange = async (e)=>{
+    // console.log(e);
+
+    //this.totalPages = totalElements % size == 0 ? totalElements / size : (totalElements / size) + 1;
+    await loadData();
+    workPageObj.value = [];
+    let totalPageCount = 0;
+    if (workList.value.length > pageSize) {
+        totalPageCount = workList.value.length % pageSize == 0 ? workList.value.length / pageSize : (workList.value.length / pageSize) + 1;
+        // console.log(totalPageCount);
+        for(let index = 0; index < totalPageCount; index++) {
+            workPageObj.value.splice(index,0,{label:`${pageSize*index+1}-${pageSize*index+pageSize}`,value:index});
+        }
+    } else {
+        workPageObj.value.splice(0,0,{label:`1-${workList.value.length}`,value:0});
+    }
+    currentPage.value = workPageObj.value[0].value;
+};
+
+const currentPageChange = async (e) => {
+    await loadData();
+};
+
+const loadData = async () => {
+    // console.log(cptYear.value,selCompetitionGuiGe?.value?.id,currentPage.value);
+    if (cptYear.value!=null && selCompetitionGuiGe?.value?.id!=null && currentPage.value!=null) {
+        workList.value = [];
+        let ary = [
+            {id:"0",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/88881778664330607HMSdB8wE/1778664330607PtMcjbFZ_版纳森林02.jpg",name:"版纳森林"},
+            {id:"1",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/1779085288886hKpdt6Kk_06 - 细节孔雀藓.JPG",name:"细节孔雀藓"},
+            {id:"2",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/17790852888867hNJTimd_08---树林丁达尔视频截图.jpg",name:"树林丁达尔"},
+            {id:"3",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/1779085288886r4cNTb6f_02-右侧45度.JPG",name:"右侧45度"},
+            {id:"4",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/88881778664330607HMSdB8wE/1778664330607XYnrTAPj_版纳森林07.jpg",name:"版纳森林07"},
+            {id:"5",path:"cpt/cpt.arkydesign.cn/work/2026/13288888888/888817790852888868FNiYaWS/1779085288886fJB5tzaH_02-右侧45度.JPG",name:"右侧45度2"}];
+        lodash.forEach(ary,(v,i)=>{
+            let w = Beans.work();
+            w.id = v.id;
+            w.tempMap = {workImgUrl:v.path,sort:i,sortStr:lodash.padStart(i+1,3,"0"),imgPath:"",imgObj:null};
+            w.name = v.name;
+            workList.value.push(w);
+            imgStatusList.value[i] = {id:w.id,status:{logoImg:"",jxImg:"",workImg:""}};
+        });
+
+        for(let [index,w] of workList.value.entries()) {
+            [w.tempMap.imgObj,imgStatusList.value[index].status.workImg] = useImage(await oss.buildPathAsync(w.tempMap.workImgUrl,true,null),"anonymous");
+            if (w.tempMap.sort==0) {
+                [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qcjj.png");
+            } else if (w.tempMap.sort==1) {
+                [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qcyj.png");
+            } else if (w.tempMap.sort==2) {
+                [w.tempMap.qcjx,imgStatusList.value[index].status.jxImg] = useImage("/images/qctj.png");
+            }
+        }
+
+        await loadFont();
+    }
 };
 
 const flexLayerChange = async (e)=>{
