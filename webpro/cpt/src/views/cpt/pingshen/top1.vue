@@ -2,7 +2,7 @@
     <animationPage :show="true">
         <div class="flex-1 p-2 card">
             <div class="row gap-4">
-                <Button label="提交评审" @click="saveSubmitWorks" :disabled="shiSubmited"/>
+                <Button label="设定全场大奖" @click="saveSubmitWorks" :disabled="shiSubmited"/>
             </div>
             <div v-if="workList?.length>0">
                 <DataView :value="workList" class="mt-5" :pt="{
@@ -42,7 +42,7 @@
                                     <div class="row flex-wrap">
                                         <div v-for="img of item.workItemList">
                                             <Button severity="secondary" class="col center w-36 h-32 md:w-44 md:h-28 border-solid border-gray-500 border-2 rounded-xl relative p-2">
-                                                <img v-if="img.mediaType==0" :alt="img.tempMap?.imgPath" :src="img.tempMap?.imgPath" class="absolute top-0 left-0 z-10 w-full h-32 object-cover object-center" :class="{'border border-4 border-red-600 border-solid':!img.tempMap?.exifCheck}" @click="viewImg(item.workItemList,img.id)"/>
+                                                <img v-if="img.mediaType==0" :alt="img.tempMap?.imgPath" :src="img.tempMap?.imgPath" class="absolute top-0 left-0 z-10 w-full h-32 object-cover object-center" @click="viewImg(item.workItemList,img.id)"/>
                                                 <videoInfo v-if="img.mediaType==1" :src="img.tempMap?.imgPath" class="aabsolute top-0 left-0 z-10 w-full h-32 object-cover object-center"/>
                                             </Button>
                                             <div class="col center mt-2">
@@ -68,6 +68,8 @@ import workRest from "@/api/dbs/workRest";
 import lodash from "lodash-es";
 import animationPage from "@/components/my/animationPage.vue";
 import dialog from "@/api/uniapp/dialog";
+import oss from "@/api/oss";
+import {Beans} from "@/api/dbs/beans";
 
 let host = inject("domain");
 let masterCompetition = null;
@@ -81,7 +83,19 @@ onMounted(async () => {
     masterCompetition = (await workRest.gainCache8MasterCompetitionInfo(host)).masterCompetitionInfo;
     masterCompetition = (await workRest.qyMasterSiteCompetition({id:masterCompetition.id,siteCompetitionId:host},null)).data[0];
     workList.value = (await workRest.getTop1EveryCptCompetitionGuiGe({masterCompetitionId:masterCompetition.id},null)).data;
-    // console.log(masterCompetition,workList.value);
+    for (let work of workList.value) {
+        if (!work.workItemList) break;
+        for (let workItem of work.workItemList) {
+            if (workItem.mediaType==0) {
+                workItem.tempMap = {imgPath:await oss.buildPathAsync(workItem.path,(workItem.mediaType==0 ? true : false),null)};
+            } else {
+                  workItem.tempMap = {imgPath:await oss.buildPathAsync(workItem.path,false,null)};
+            }
+        }
+        work.tempMap = {};
+        work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
+    }
+    // console.log(masterCompetition,workList.value); getTop1EveryCptCompetitionGuiGe
     if (masterCompetition.pxWorks) {
         selWorkId.value = masterCompetition.pxWorks.data;
         shiSubmited.value = true;

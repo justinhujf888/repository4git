@@ -97,7 +97,7 @@
                 </div>
                 <div class="mt-2 mb-5 col gap-y-2 text-gray-600">
                     <span class="text-xl font-semibold">{{work.tempMap.sortStr}}</span>
-                    <span class="text-base font-semibold">胡纪锋</span>
+                    <span class="text-base font-semibold">李昂</span>
                 </div>
             </div>
         </div>
