@@ -28,7 +28,7 @@ class MqttService
         println event.dump();
     }
 
-    @MqttServerFunction("/device/up/\${deviceId}")
+    @MqttServerFunction("device/\${deviceId}/cmd")
     void rnDeviceStatusDatas(ChannelContext context, String topic, MqttPublishMessage publishMessage, Object data)
     {
         println "---------------server begin----------------";
@@ -40,7 +40,7 @@ class MqttService
 //        mqttServerTemplate.publish("000001",topic,"Hello World");
     }
 
-    @MqttServerFunction("/device/test")
+    @MqttServerFunction("device/\${deviceId}/reply")
     void rnDeviceTest(String topic, byte[] message)
     {
         println "---------------server begin----------------";

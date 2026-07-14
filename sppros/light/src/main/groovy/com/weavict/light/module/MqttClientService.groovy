@@ -14,10 +14,19 @@ import java.nio.charset.StandardCharsets
 class MqttClientService
 {
 
-//    @Autowired
-    MqttServerTemplate mqttServerTemplate;
+    /*
+    上传：device/{deviceId}/telemetry
+    状态：device/{deviceId}/status
+    事件：device/{deviceId}/event
+    命令：device/{deviceId}/cmd
+    回复：device/{deviceId}/reply
+    OTA：device/{deviceId}/ota
+     */
 
-    @MqttClientSubscribe(value="/device/up/\${deviceId}",qos = MqttQoS.QOS1)
+//    @Autowired
+//    MqttServerTemplate mqttServerTemplate;
+
+    @MqttClientSubscribe(value="device/\${deviceId}/cmd",qos = MqttQoS.QOS1)
     void receiveDeviceData(String topic, MqttPublishMessage message, Object data)
     {
         println "---------------client begin----------------";
@@ -28,7 +37,7 @@ class MqttClientService
 //        mqttServerTemplate.publish("superclient",topic,data);
     }
 
-    @MqttClientSubscribe(value="/device/test",qos = MqttQoS.QOS1)
+    @MqttClientSubscribe(value="device/\${deviceId}/reply",qos = MqttQoS.QOS1)
     void receiveTest(String topic, byte[] payload)
     {
         println "---------------client begin----------------";
