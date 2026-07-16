@@ -37,6 +37,7 @@ import org.dromara.mica.mqtt.codec.MqttQoS
 import org.dromara.mica.mqtt.spring.client.MqttClientTemplate
 import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.web.bind.annotation.RequestBody
 
 import jakarta.servlet.http.HttpServletRequest
@@ -62,7 +63,8 @@ class OtherRest extends BaseRest
 //    @Autowired
     MqttServerTemplate mqttServerTemplate;
 
-//    @Autowired
+    @Autowired
+    @Qualifier(MqttClientTemplate.DEFAULT_CLIENT_TEMPLATE_BEAN)
     MqttClientTemplate mqttClientTemplate;
 
     /**
@@ -332,7 +334,7 @@ class OtherRest extends BaseRest
     {
         try
         {
-            mqttClientTemplate.publish("/device/up/${query.clientId}", JSON.toJSON([a:"abc"]), MqttQoS.QOS1);
+            mqttClientTemplate.publish("device/${query.clientId}/cmd", JSON.toJSON([a:"abc"]), MqttQoS.QOS0);
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            // oss
 //            OSS ossClient = OtherUtils.genOSSClient();
