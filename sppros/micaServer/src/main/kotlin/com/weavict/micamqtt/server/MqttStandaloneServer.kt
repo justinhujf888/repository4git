@@ -84,6 +84,10 @@ object MqttStandaloneServer
             .subscribeValidator(subscribeValidator)
             .publishPermission(publishPermission)
             .start()
+//        mqttServer.schedule({
+//            val message = """{"msg":"mica最牛皮 ${System.currentTimeMillis()}"}"""
+//            mqttServer.publishAll("device/mqttx_a8e885bc/cmd", message.toByteArray(StandardCharsets.UTF_8))
+//        },2000);
     }
 
     /**
