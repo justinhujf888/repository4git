@@ -121,6 +121,11 @@
             <artifactId>opentracing-api</artifactId>
             <version>0.33.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.46</version>
+        </dependency>
 
         <dependency>
             <groupId>com.agentsflex</groupId>

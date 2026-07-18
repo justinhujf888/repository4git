@@ -870,7 +870,8 @@
     };
 
     function test2() {
-        deviceRest.test({clientId:"mqttx_c29dd352"},()=>{});
+        deviceRest.test({deviceId:"mqttx_a8e885bc"},()=>{});
+        // mqttx_c29dd352
         // console.log(mqtt);
         // const client = mqtt.connect("wss://localhost:8084",{connectItmeout:5000,clientId:"wxclient",clean:false});
         // client.on("connect", () => {

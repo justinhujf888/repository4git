@@ -1,5 +1,6 @@
 package com.weavict.com.weavict.micamqtt.server
 
+import cn.hutool.crypto.SecureUtil
 import com.alibaba.fastjson2.JSON
 import io.netty.channel.ChannelHandlerContext
 import net.dreamlu.mica.net.core.ChannelContext
@@ -21,7 +22,8 @@ object MqttStandaloneServer
 {
     private const val MQTT_LISTEN_PORT = 1883
     private const val MQTT_SUPERCLIENT_ID = "superclient-weavict-justin";
-    private const val WEB_SERVER_URL = "http://localhost/r";
+    private const val WEB_SERVER_URL = "http://localhost:8090/light/r";
+    private const val HTTP_PUBLIC_KEY = "vikehoo_public_key_%&%^*&^*";
 
     // 黑名单ClientId集合
     private val BLOCK_CLIENT_ID_SET = HashSet<String>()
@@ -134,8 +136,7 @@ object MqttStandaloneServer
 //        }
 
         // 3. 账号密码校验
-
-        if (checkUserPassword(clientId,username,password)) {
+        if (!checkUserPassword(clientId,username,password)) {
             println("账号密码错误，ClientId：$clientId，输入用户名：$username")
             return false
         }
@@ -178,23 +179,24 @@ object MqttStandaloneServer
             .connectTimeout(java.time.Duration.ofSeconds(2)) // 关键：设置超时防止阻塞
             .build()
         val request = HttpRequest.newBuilder()
-            .uri(URI.create("$WEB_SERVER_URL/test")) // 替换为你的实际地址
+            .uri(URI.create("$WEB_SERVER_URL/other/test")) // 替换为你的实际地址
             .header("Content-Type", "application/json")
             .header("Accept", "application/json")
             .POST(HttpRequest.BodyPublishers.ofString(
-                JSON.toJSONString(
+                SecureUtil.des(HTTP_PUBLIC_KEY.toByteArray()).encryptHex(JSON.toJSONString(
                     mapOf(
                         "deviceId" to clientId,
                         "userName" to username,
                         "password" to password
                     )
-                ))
+                )))
             )
             .build()
         return try {
             val response = client.send(request, HttpResponse.BodyHandlers.ofString())
             // 假设 200 表示鉴权成功
 //            response.statusCode() == 200
+            println("-----------------${response.body()}----------------------------");
             JSON.parseObject(response.body())["status"] == "OK"
         } catch (e: Exception) {
             // 记录日志

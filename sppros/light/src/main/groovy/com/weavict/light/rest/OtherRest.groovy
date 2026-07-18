@@ -1,5 +1,7 @@
 package com.weavict.light.rest
 
+import cn.hutool.crypto.SecureUtil
+import cn.hutool.crypto.asymmetric.RSA
 import com.alibaba.fastjson2.JSON
 import com.aliyun.oss.ClientBuilderConfiguration
 import com.aliyun.oss.OSS
@@ -47,6 +49,8 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
+
+import java.security.KeyPair
 
 /**
  * Created by Justin on 2018/6/10.
@@ -334,7 +338,20 @@ class OtherRest extends BaseRest
     {
         try
         {
-            mqttClientTemplate.publish("device/${query.clientId}/cmd", JSON.toJSON([a:"abc"]), MqttQoS.QOS0);
+            if (query.userName in [null,""])
+            {
+                KeyPair pair = SecureUtil.generateKeyPair("RSA");
+                println pair.getPrivate();
+                println pair.getPublic();
+                mqttClientTemplate.publish("device/${query.deviceId}/cmd", JSON.toJSON([a:"abc"]), MqttQoS.QOS0);
+            }
+            else
+            {
+                println query.deviceId;
+                println query.userName;
+                println query.password;
+            }
+
 //            ObjectMapper objectMapper = new ObjectMapper();
 //            // oss
 //            OSS ossClient = OtherUtils.genOSSClient();

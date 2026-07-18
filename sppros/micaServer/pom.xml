@@ -65,6 +65,14 @@
                     <mainClass>MainKt</mainClass>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -86,6 +94,11 @@
             <artifactId>fastjson2</artifactId>
             <version>2.0.62</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.46</version>
         </dependency>
         <!-- Source: https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <dependency>
