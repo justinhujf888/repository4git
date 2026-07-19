@@ -150,12 +150,12 @@
         <dependency>
             <groupId>org.dromara.mica-mqtt</groupId>
             <artifactId>mica-mqtt-server-spring-boot-starter</artifactId>
-            <version>2.6.7</version>
+            <version>2.6.8</version>
         </dependency>
         <dependency>
             <groupId>org.dromara.mica-mqtt</groupId>
             <artifactId>mica-mqtt-client-spring-boot-starter</artifactId>
-            <version>2.6.7</version>
+            <version>2.6.8</version>
         </dependency>
 
         <dependency>
