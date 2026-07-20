@@ -2,21 +2,16 @@ package com.weavict.micamqtt.server
 
 import cn.hutool.crypto.SecureUtil
 import com.alibaba.fastjson2.JSON
-import io.netty.channel.ChannelHandlerContext
 import net.dreamlu.mica.net.core.ChannelContext
 import org.dromara.mica.mqtt.codec.MqttQoS
 import org.dromara.mica.mqtt.core.server.MqttServer
-import org.dromara.mica.mqtt.core.server.MqttServerCreator
 import org.dromara.mica.mqtt.core.server.auth.IMqttServerAuthHandler
 import org.dromara.mica.mqtt.core.server.auth.IMqttServerPublishPermission
 import org.dromara.mica.mqtt.core.server.auth.IMqttServerSubscribeValidator
-import org.dromara.mica.mqtt.core.server.listener.MqttProtocolListener
-import java.net.InetSocketAddress
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.nio.charset.StandardCharsets
 import kotlin.collections.mapOf
 import kotlin.to
 
