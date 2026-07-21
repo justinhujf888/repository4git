@@ -24,6 +24,7 @@ class DeviceRest: BaseRest() {
     @Path("/qyDeviceTypeList")
     fun qyDeviceTypeList(@RequestBody query: Map<String, Any?>?): String {
         return try {
+            println($$"device/${deviceId}/reply")
             println(query)
             println(redisUtil?.hGet("buyer_13268990066","bean"))
             val objectMapper = buildObjectMapper()
@@ -35,7 +36,7 @@ class DeviceRest: BaseRest() {
             objectMapper.writeValueAsString(
                 mapOf(
                     "status" to "OK",
-                    "deviceTypeList" to listOf("a","b")
+                    "deviceTypeList" to fun():List<String> {return listOf("a","b")}()
                 )
             )
         } catch (e: Exception) {
