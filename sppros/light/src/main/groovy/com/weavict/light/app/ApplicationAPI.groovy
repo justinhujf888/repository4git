@@ -15,10 +15,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.RequestContextFilter
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerResponseContext;
-import jakarta.ws.rs.container.ContainerResponseFilter;
 
 
 /**
@@ -46,7 +42,7 @@ class ApplicationAPI extends ResourceConfig
 //        register(JerseyFeature.class);
 
         property(ServletProperties.FILTER_FORWARD_ON_404, true);
-        setProperties(["jersey.config.server.response.setStatusOverSendError":true]);
+        property("jersey.config.server.response.setStatusOverSendError",true);
     }
 }
 

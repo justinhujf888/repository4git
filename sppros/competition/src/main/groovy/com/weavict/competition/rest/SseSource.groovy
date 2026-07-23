@@ -1,6 +1,6 @@
 package com.weavict.competition.rest
 
-import com.weavict.common.util.MathUtil
+import com.weavict.website.common.OtherUtils
 import jakarta.inject.Singleton
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -29,7 +29,7 @@ class SseSource
         eventBuilder = new OutboundEvent.Builder();
         eventBuilder.id(MathUtil.getPNewId());
         eventBuilder.name("message");
-        eventBuilder.data(String.class,"""current time:${MathUtil.getPNewId()}""".toString());
+        eventBuilder.data(String.class,"""current time:${OtherUtils.getPNewId()}""".toString());
         event = eventBuilder.build();
         try
         {

@@ -8,9 +8,9 @@ import com.weavict.light.module.RedisApi
 import com.weavict.light.module.UserBean
 import com.weavict.light.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
-import com.weavict.weichat.Sign
-import com.weavict.weichat.StoreProperty
-import com.weavict.weichat.notifies.WxNotifiesFun
+//import com.weavict.weichat.Sign
+//import com.weavict.weichat.StoreProperty
+//import com.weavict.weichat.notifies.WxNotifiesFun
 import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
@@ -45,91 +45,91 @@ class WxRest extends BaseRest
     @Autowired
     RedisUtil redisUtil;
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/config")
-    String getMessage(@RequestBody Map<String,Object> query)
-    {
-        def m = [:];
-        if (!(query.url in [null,""]))
-        {
-            m = Sign.sign(redisApi.ganTokenValue(query.appId,0 as byte,"jsTicket"),query.url);
-        }
-        ObjectMapper objectMapper = buildObjectMapper();
-        return objectMapper.writeValueAsString(
-            ["status":"OK",
-                wx:(
-                    {
-                        [timestamp:m["timestamp"] as String,
-                        nonceStr:m["nonceStr"] as String,
-                        signature:m["signature"] as String]
-                    }
-                ).call(),
-                web:(
-                    {
-                        [prxurl:redisApi.ganTokenValue(query.appId,0 as byte,"notiUrl"),//WxNotifiesFun.appurl,
-                        sessid:request.getSession().getId()]
-                    }
-                ).call()
-            ]
-        );
-    }
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Path("/config")
+//    String getMessage(@RequestBody Map<String,Object> query)
+//    {
+//        def m = [:];
+//        if (!(query.url in [null,""]))
+//        {
+//            m = Sign.sign(redisApi.ganTokenValue(query.appId,0 as byte,"jsTicket"),query.url);
+//        }
+//        ObjectMapper objectMapper = buildObjectMapper();
+//        return objectMapper.writeValueAsString(
+//            ["status":"OK",
+//                wx:(
+//                    {
+//                        [timestamp:m["timestamp"] as String,
+//                        nonceStr:m["nonceStr"] as String,
+//                        signature:m["signature"] as String]
+//                    }
+//                ).call(),
+//                web:(
+//                    {
+//                        [prxurl:redisApi.ganTokenValue(query.appId,0 as byte,"notiUrl"),//WxNotifiesFun.appurl,
+//                        sessid:request.getSession().getId()]
+//                    }
+//                ).call()
+//            ]
+//        );
+//    }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/wxloginsec")
-    String getGroupInfo(@RequestBody Map<String,Object> query)
-    {
-        try
-        {
-            SnsToken sk = SnsAPI.oauth2AccessToken(query.appId, redisApi.ganTokenValue(query.appId,0 as byte,"appSecret"), query.code);
-            println """
-access_token:${sk.access_token}<br/>
-expires_in:${sk.expires_in}<br/>
-openid:${sk.openid}<br/>
-refresh_token:${sk.refresh_token}<br/>
-state:${request.getParameter("state").toString()}<br/><br/>
-""";
-            ObjectMapper objectMapper = buildObjectMapper();
-            return objectMapper.writeValueAsString(
-                ["status":"OK",
-                    "sk":(
-                        {
-                            return ["access_token":sk.access_token,
-                            "expires_in":sk.expires_in,
-                            "openid":sk.openid,
-                            "refresh_token":sk.refresh_token]
-                        }
-                    ).call(),
-                    "userinfo":(
-                        {
-                            if (query.userinfo!=null)
-                            {
-                                if (!StoreProperty.checkTokenVaild(sk.access_token, sk.openid))
-                                {
-                                    sk = SnsAPI.oauth2RefreshToken(query.appId, sk.refresh_token);
-                                    println """
-								access_token:${sk.access_token}<br/>
-								expires_in:${sk.expires_in}<br/>
-								openid:${sk.openid}<br/>
-								refresh_token:${sk.refresh_token}<br/>
-								""";
-                                }
-                                return SnsAPI.userinfo(sk.access_token, query.appId, "ZH-CN");
-                            }
-                        }
-                    ).call()
-                ]
-            );
-        }
-        catch (Exception e)
-        {
-            processExcetion(e);
-            return """{"status":"FA_ER"}""";
-        }
-    }
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Path("/wxloginsec")
+//    String getGroupInfo(@RequestBody Map<String,Object> query)
+//    {
+//        try
+//        {
+//            SnsToken sk = SnsAPI.oauth2AccessToken(query.appId, redisApi.ganTokenValue(query.appId,0 as byte,"appSecret"), query.code);
+//            println """
+//access_token:${sk.access_token}<br/>
+//expires_in:${sk.expires_in}<br/>
+//openid:${sk.openid}<br/>
+//refresh_token:${sk.refresh_token}<br/>
+//state:${request.getParameter("state").toString()}<br/><br/>
+//""";
+//            ObjectMapper objectMapper = buildObjectMapper();
+//            return objectMapper.writeValueAsString(
+//                ["status":"OK",
+//                    "sk":(
+//                        {
+//                            return ["access_token":sk.access_token,
+//                            "expires_in":sk.expires_in,
+//                            "openid":sk.openid,
+//                            "refresh_token":sk.refresh_token]
+//                        }
+//                    ).call(),
+//                    "userinfo":(
+//                        {
+//                            if (query.userinfo!=null)
+//                            {
+//                                if (!StoreProperty.checkTokenVaild(sk.access_token, sk.openid))
+//                                {
+//                                    sk = SnsAPI.oauth2RefreshToken(query.appId, sk.refresh_token);
+//                                    println """
+//								access_token:${sk.access_token}<br/>
+//								expires_in:${sk.expires_in}<br/>
+//								openid:${sk.openid}<br/>
+//								refresh_token:${sk.refresh_token}<br/>
+//								""";
+//                                }
+//                                return SnsAPI.userinfo(sk.access_token, query.appId, "ZH-CN");
+//                            }
+//                        }
+//                    ).call()
+//                ]
+//            );
+//        }
+//        catch (Exception e)
+//        {
+//            processExcetion(e);
+//            return """{"status":"FA_ER"}""";
+//        }
+//    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -255,7 +255,7 @@ state:${request.getParameter("state").toString()}<br/><br/>
                                  {
                                      b.phone = obj.purePhoneNumber;
                                      b.createDate = new Date();
-                                     userBean.addTheObject(b);
+                                     userBean.updateTheObject(b);
                                      return b;
                                  }
                                  buyer.cancelLazyEr();
@@ -282,21 +282,21 @@ state:${request.getParameter("state").toString()}<br/><br/>
         }
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/sendSubscribeMsg4WxMp")
-    String sendSubscribeMsg4WxMp(@RequestBody Map<String,Object> query)
-    {
-        try
-        {
-            WxNotifiesFun.send_getProductFromShop_Message(["userOpenId":query.userOpenId,"mxPage":"index","shopName":"中信东泰花园荣华园菜鸟驿站",
-            "productName":"威尔吸尘器","phone_number3":"13268990066","shopAddress":"中信东泰花园荣华园155号"]);
-        }
-        catch (Exception e)
-        {
-            processExcetion(e);
-            return """{"status":"FA_ER"}""";
-        }
-    }
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Path("/sendSubscribeMsg4WxMp")
+//    String sendSubscribeMsg4WxMp(@RequestBody Map<String,Object> query)
+//    {
+//        try
+//        {
+//            WxNotifiesFun.send_getProductFromShop_Message(["userOpenId":query.userOpenId,"mxPage":"index","shopName":"中信东泰花园荣华园菜鸟驿站",
+//            "productName":"威尔吸尘器","phone_number3":"13268990066","shopAddress":"中信东泰花园荣华园155号"]);
+//        }
+//        catch (Exception e)
+//        {
+//            processExcetion(e);
+//            return """{"status":"FA_ER"}""";
+//        }
+//    }
 }

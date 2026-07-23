@@ -16,8 +16,6 @@ import com.aliyun.oss.model.PutObjectRequest
 import com.aliyun.oss.model.StorageClass
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.weavict.common.util.DateUtil
-import com.weavict.common.util.MathUtil
 import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.CompetitionJudge
 import com.weavict.competition.entity.Work
@@ -30,8 +28,6 @@ import darabonba.core.client.ClientOverrideConfiguration
 import groovy.json.JsonSlurper
 import jakarta.websocket.RemoteEndpoint
 import jakarta.ws.rs.GET
-import jodd.datetime.JDateTime
-import jodd.datetime.Period
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties
 import org.springframework.cache.annotation.Cacheable
@@ -81,13 +77,13 @@ class OtherRest extends BaseRest
 //        {
 //            println(new String(buffer, 0, len));
 //        }
-        JDateTime jdt = new JDateTime(new Date());
-        String ym = "${jdt.getYear() as String}/${jdt.getMonth() as String}";
-        File fd = new File("""${request.getSession().getServletContext().getRealPath("/")}uploads/products/images/${ym}""");
-        if (!fd.exists())
-        {
-            fd.mkdir();
-        }
+//        JDateTime jdt = new JDateTime(new Date());
+//        String ym = "${jdt.getYear() as String}/${jdt.getMonth() as String}";
+//        File fd = new File("""${request.getSession().getServletContext().getRealPath("/")}uploads/products/images/${ym}""");
+//        if (!fd.exists())
+//        {
+//            fd.mkdir();
+//        }
 //        boolean userResize,int maxImgPoint,int updateImgPoint,
         RequestStreamUtil.uploadFile(request,fd.getPath(),false,{
             fileName,filePathName,jm ->
@@ -148,35 +144,35 @@ class OtherRest extends BaseRest
         }
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/checkScanCode")
-    String checkScanCode(@RequestBody Map<String,Object> query)
-    {
-        try
-        {
-            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-            def jsonSlpuer = new JsonSlurper();
-            def obj = jsonSlpuer.parseText(crypt.decrypt(query.datas));
-            JDateTime jt = new JDateTime(DateUtil.parse(obj.datas.date as String,"yyyy-MM-dd HH:mm:ss"));
-            JDateTime jd = new JDateTime(new Date());
-            Period period = new Period(jd,jt);
-            if (period.getMinutes() > 5 && obj.datas.overTime as boolean)
-            {
-                return """{"status":"FA_OVERTIME"}""";
-            }
-            else
-            {
-                return """{"status":"OK","qType":"${obj.datas.qType}","url":"${obj.datas.url}","param":"${obj.datas.param}"}""";
-            }
-        }
-        catch (Exception e)
-        {
-            processExcetion(e);
-            return """{"status":"FA_ER"}""";
-        }
-    }
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Path("/checkScanCode")
+//    String checkScanCode(@RequestBody Map<String,Object> query)
+//    {
+//        try
+//        {
+//            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
+//            def jsonSlpuer = new JsonSlurper();
+//            def obj = jsonSlpuer.parseText(crypt.decrypt(query.datas));
+//            JDateTime jt = new JDateTime(DateUtil.parse(obj.datas.date as String,"yyyy-MM-dd HH:mm:ss"));
+//            JDateTime jd = new JDateTime(new Date());
+//            Period period = new Period(jd,jt);
+//            if (period.getMinutes() > 5 && obj.datas.overTime as boolean)
+//            {
+//                return """{"status":"FA_OVERTIME"}""";
+//            }
+//            else
+//            {
+//                return """{"status":"OK","qType":"${obj.datas.qType}","url":"${obj.datas.url}","param":"${obj.datas.param}"}""";
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            processExcetion(e);
+//            return """{"status":"FA_ER"}""";
+//        }
+//    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

@@ -59,9 +59,9 @@ class ApplicationAPI extends ResourceConfig
         register(WorkRest.class);
 //        register(WxRest.class);
         register(OtherRest.class);
-        register(SseSource.class);
-        register(NotificationResource.class);
-
+//        register(SseSource.class);
+//        register(NotificationResource.class);
+ß
 //        register(JerseyFeature.class);
 
         property("jersey.config.server.response.setStatusOverSendError",true);

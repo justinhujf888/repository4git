@@ -1,7 +1,7 @@
 package com.weavict.light.module
 
+import cn.hutool.core.date.DateUtil
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.weavict.common.util.DateUtil
 import com.weavict.light.entity.*
 import com.weavict.light.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
@@ -79,7 +79,7 @@ class RedisApi
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","body",pw.body ?: "");
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","returnDoMain",pw.returnDoMain ?: "");
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","type",pw.payWayInfoEntityPK.type as String);
-            redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","createDate",DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+            redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","createDate", DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
 
             if (!(pw.certPath in [null,""]) && pw.payWayInfoEntityPK.type == (1 as byte))
             {

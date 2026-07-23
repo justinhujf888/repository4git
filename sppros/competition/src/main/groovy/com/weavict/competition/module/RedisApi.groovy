@@ -1,18 +1,14 @@
 package com.weavict.competition.module
 
+
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.weavict.common.util.DateUtil
+import cn.hutool.core.date.DateUtil
 import com.weavict.competition.entity.*
 import com.weavict.competition.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import weixin.popular.api.TicketAPI
-import weixin.popular.api.TokenAPI
-import weixin.popular.bean.ticket.Ticket
-import weixin.popular.bean.token.Token
-import weixin.popular.client.LocalHttpClient
 import jakarta.inject.Inject;
 
 //import com.weavict.website.common.OtherUtils

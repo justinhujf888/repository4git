@@ -1,5 +1,6 @@
 package com.weavict.light.rest
 
+import cn.hutool.core.date.DateUtil
 import cn.hutool.crypto.SecureUtil
 import cn.hutool.crypto.asymmetric.RSA
 import com.alibaba.fastjson2.JSON
@@ -24,7 +25,6 @@ import com.aliyuncs.IAcsClient
 import com.aliyuncs.http.MethodType
 import com.aliyuncs.profile.DefaultProfile
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.weavict.common.util.DateUtil
 import com.weavict.light.module.RedisApi
 
 //import com.weavict.website.common.ImgCompress
@@ -33,11 +33,9 @@ import com.yicker.utility.DES
 import groovy.json.JsonSlurper
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET
-import jodd.datetime.JDateTime
-import jodd.datetime.Period
 import org.dromara.mica.mqtt.codec.MqttQoS
 import org.dromara.mica.mqtt.spring.client.MqttClientTemplate
-import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
+//import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.web.bind.annotation.RequestBody
@@ -65,10 +63,10 @@ class OtherRest extends BaseRest
     RedisApi redisApi;
 
 //    @Autowired
-    MqttServerTemplate mqttServerTemplate;
+//    MqttServerTemplate mqttServerTemplate;
 
-    @Autowired
-    @Qualifier(MqttClientTemplate.DEFAULT_CLIENT_TEMPLATE_BEAN)
+//    @Autowired
+//    @Qualifier(MqttClientTemplate.DEFAULT_CLIENT_TEMPLATE_BEAN)
     MqttClientTemplate mqttClientTemplate;
 
     /**
@@ -90,8 +88,8 @@ class OtherRest extends BaseRest
 //        {
 //            println(new String(buffer, 0, len));
 //        }
-        JDateTime jdt = new JDateTime(new Date());
-        String ym = "${jdt.getYear() as String}/${jdt.getMonth() as String}";
+//        JDateTime jdt = new JDateTime(new Date());
+//        String ym = "${jdt.getYear() as String}/${jdt.getMonth() as String}";
         File fd = new File("""${request.getSession().getServletContext().getRealPath("/")}uploads/products/images/${ym}""");
         if (!fd.exists())
         {
@@ -157,35 +155,35 @@ class OtherRest extends BaseRest
         }
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/checkScanCode")
-    String checkScanCode(@RequestBody Map<String,Object> query)
-    {
-        try
-        {
-            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-            def jsonSlpuer = new JsonSlurper();
-            def obj = jsonSlpuer.parseText(crypt.decrypt(query.datas));
-            JDateTime jt = new JDateTime(DateUtil.parse(obj.datas.date as String,"yyyy-MM-dd HH:mm:ss"));
-            JDateTime jd = new JDateTime(new Date());
-            Period period = new Period(jd,jt);
-            if (period.getMinutes() > 5 && obj.datas.overTime as boolean)
-            {
-                return """{"status":"FA_OVERTIME"}""";
-            }
-            else
-            {
-                return """{"status":"OK","qType":"${obj.datas.qType}","url":"${obj.datas.url}","param":"${obj.datas.param}"}""";
-            }
-        }
-        catch (Exception e)
-        {
-            processExcetion(e);
-            return """{"status":"FA_ER"}""";
-        }
-    }
+//    @POST
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Path("/checkScanCode")
+//    String checkScanCode(@RequestBody Map<String,Object> query)
+//    {
+//        try
+//        {
+//            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
+//            def jsonSlpuer = new JsonSlurper();
+//            def obj = jsonSlpuer.parseText(crypt.decrypt(query.datas));
+//            JDateTime jt = new JDateTime(DateUtil.parse(obj.datas.date as String,"yyyy-MM-dd HH:mm:ss"));
+//            JDateTime jd = new JDateTime(new Date());
+//            Period period = new Period(jd,jt);
+//            if (period.getMinutes() > 5 && obj.datas.overTime as boolean)
+//            {
+//                return """{"status":"FA_OVERTIME"}""";
+//            }
+//            else
+//            {
+//                return """{"status":"OK","qType":"${obj.datas.qType}","url":"${obj.datas.url}","param":"${obj.datas.param}"}""";
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            processExcetion(e);
+//            return """{"status":"FA_ER"}""";
+//        }
+//    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

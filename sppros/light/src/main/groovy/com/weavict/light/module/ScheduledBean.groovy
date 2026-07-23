@@ -1,6 +1,6 @@
 package com.weavict.light.module
 
-import com.weavict.common.util.DateUtil
+import cn.hutool.core.date.DateUtil
 import com.weavict.light.redis.RedisUtil
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service

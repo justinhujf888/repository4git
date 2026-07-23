@@ -1,27 +1,11 @@
 package com.weavict.competition.module
 
 import com.alibaba.fastjson.JSON
-import com.aliyun.oss.OSSClient
-import com.aliyun.oss.model.CannedAccessControlList
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.weavict.common.util.DateUtil
-import com.weavict.common.util.MathUtil
+import cn.hutool.core.date.DateUtil
 import com.weavict.competition.redis.RedisUtil
-import com.weavict.website.common.OtherUtils
-import com.weavict.weichat.notifies.WxNotifiesFun
 import jakarta.annotation.PostConstruct
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
-
-//import org.quartz.Job
-//import org.quartz.JobExecutionContext
-//import org.quartz.JobExecutionException
-
-import org.springframework.transaction.annotation.Transactional
-import weixin.popular.api.PayMchAPI
-import weixin.popular.bean.paymch.SecapiPayRefund
-import weixin.popular.bean.paymch.SecapiPayRefundResult
-
 import jakarta.inject.Inject
 
 @Service("scheduledBean")

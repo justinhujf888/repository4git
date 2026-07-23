@@ -10,7 +10,7 @@ import org.dromara.mica.mqtt.core.client.MqttClientCreator
 import org.dromara.mica.mqtt.spring.client.MqttClientTemplate
 import org.dromara.mica.mqtt.spring.client.event.MqttConnectedEvent
 import org.dromara.mica.mqtt.spring.client.event.MqttDisconnectEvent
-import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
+//import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service
 
 import java.nio.charset.StandardCharsets
 
-@Configuration
+//@Configuration
 class MqttClientConfiguration1 {
 
 //    @Bean("mqttClientTemplate1")
@@ -46,11 +46,11 @@ class MqttClientService
     OTA：device/{deviceId}/ota
      */
 
-    @Autowired
+//    @Autowired
     private MqttClientCreator mqttClientCreator0;
 
-    @Autowired
-    @Qualifier(MqttClientTemplate.DEFAULT_CLIENT_TEMPLATE_BEAN)
+//    @Autowired
+//    @Qualifier(MqttClientTemplate.DEFAULT_CLIENT_TEMPLATE_BEAN)
     MqttClientTemplate mqttClientTemplate0;
 
     @EventListener

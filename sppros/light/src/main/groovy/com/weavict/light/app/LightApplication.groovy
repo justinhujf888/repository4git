@@ -1,10 +1,11 @@
 package com.weavict.light.app
 
-import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
+//import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.domain.EntityScan
 import org.springframework.boot.builder.SpringApplicationBuilder
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
@@ -24,7 +25,7 @@ import java.util.concurrent.Executors
 @EnableScheduling
 @ComponentScan(basePackages = ["com.weavict"])
 @EntityScan(basePackages = ["com.weavict.light.entity"])
-@EnableProcessApplication
+//@EnableProcessApplication
 class LightApplication extends SpringBootServletInitializer {
 
     static void main(String[] args) {
@@ -40,17 +41,17 @@ class SpringBootConfig
     @Bean
     ServletWebServerFactory servletContainer()
     {
-//		TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
+		TomcatServletWebServerFactory tomcatServletWebServerFactory = new TomcatServletWebServerFactory();
 //		tomcatServletWebServerFactory.setPort(8090);
-//		return tomcatServletWebServerFactory;
+		return tomcatServletWebServerFactory;
 
 //		JettyServletWebServerFactory jettyServletWebServerFactory = new JettyServletWebServerFactory();
 //		jettyServletWebServerFactory.setPort(8090);
 //		return jettyServletWebServerFactory;
 
-        UndertowServletWebServerFactory undertowServletWebServerFactory = new UndertowServletWebServerFactory();
+//        UndertowServletWebServerFactory undertowServletWebServerFactory = new UndertowServletWebServerFactory();
 //        undertowServletWebServerFactory.setPort(8090);
-        return undertowServletWebServerFactory;
+//        return undertowServletWebServerFactory;
     }
 }
 

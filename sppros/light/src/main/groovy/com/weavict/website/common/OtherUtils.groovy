@@ -1,7 +1,9 @@
 package com.weavict.website.common
 
 import cn.hutool.core.codec.Base64
+import cn.hutool.core.date.DateUtil
 import cn.hutool.core.io.resource.ClassPathResource
+import cn.hutool.setting.dialect.Props
 import com.aliyun.oss.ClientBuilderConfiguration
 import com.aliyun.oss.ClientException
 import com.aliyun.oss.OSS
@@ -17,7 +19,6 @@ import com.aliyuncs.profile.DefaultProfile
 import com.aliyuncs.profile.IClientProfile
 import com.weavict.light.module.RedisApi
 import jakarta.annotation.PostConstruct
-import jodd.props.Props
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -55,7 +56,7 @@ class OtherUtils
 				props = new Props();
 //				props.load(new File(ClassLoaderUtil.getResourceUrl(
 //						"/config/global.props").getPath()));
-				props.load(new ClassPathResource("/config/global.props").getStream());
+				props.load(new ClassPathResource("config/global.props").getStream());
 			}
 			return props;
 		}
@@ -69,7 +70,7 @@ class OtherUtils
 	{
 		try
 		{
-			return giveTheProps().getValue(key);
+			return giveTheProps().getStr(key);
 		}
 		catch (Exception e)
 		{
@@ -235,4 +236,16 @@ class OtherUtils
 		return null;
 	}
 
+	static String getNewId(String... prefix) {
+		String fix = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS") + (int)(Math.random() * (double)8999.0F + (double)1000.0F);
+		if (prefix != null && prefix.length > 0) {
+			fix = prefix[0] + fix;
+		}
+
+		return fix;
+	}
+
+	static String getPNewId() {
+		return DateUtil.format(new Date(), "yyyyMMddHHmmssSSS") + (int)(Math.random() * (double)8999.0F + (double)1000.0F);
+	}
 }
