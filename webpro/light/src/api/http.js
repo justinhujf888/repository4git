@@ -10,7 +10,7 @@ export const Http = {
 		let str = new Date(+new Date() + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
 		ds.loginState = null;//login.getLoginState();
 		ds.appId = Config.appId;
-		uni.request({
+		return uni.request({
 		    url: Config.apiBaseURL + url,
 			method: "POST",
 			// header: {timestamp:jsEncrypt.encrypt(str),createTime:str,nonceStr:util.encryptStoreInfo(str)},
@@ -20,6 +20,7 @@ export const Http = {
 				// #ifdef APP-PLUS
 				if(typeof(res.data.hasLogin)=="undefined") {
 					returnfun(res);
+					return Promise.resolve(res.data);
 				} else {
 					if(!res.data.hasLogin) {
 						dialog.alertBack("检测到您没有登陆,或者账号在其他设备登陆",false,()=>{
@@ -32,6 +33,7 @@ export const Http = {
 				// #endif
 				// #ifdef MP || H5
 				returnfun(res);
+				return Promise.resolve(res.data);
 				// #endif
 		    },
 			fail: (res) => {
@@ -47,5 +49,25 @@ export const Http = {
 				}
 			}
 		});
+	},
+
+	async callHttpFunction(url,ds,onfun) {
+		return Http.httpclient_json(
+			url,
+			'post',
+			ds,
+			'json',
+			(res) => {
+				if (res.data.status == 'FA_ER') {
+					dialog.showApiErrorMsg();
+				} else {
+					if (onfun) {
+						onfun(res.data);
+					}
+				}
+			},
+			null,
+			true
+		);
 	}
 }
