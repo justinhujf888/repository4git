@@ -65,8 +65,8 @@ class OtherRest extends BaseRest
 //    @Autowired
 //    MqttServerTemplate mqttServerTemplate;
 
-//    @Autowired
-//    @Qualifier(MqttClientTemplate.DEFAULT_CLIENT_TEMPLATE_BEAN)
+    @Autowired
+    @Qualifier(MqttClientTemplate.DEFAULT_CLIENT_TEMPLATE_BEAN)
     MqttClientTemplate mqttClientTemplate;
 
     /**
