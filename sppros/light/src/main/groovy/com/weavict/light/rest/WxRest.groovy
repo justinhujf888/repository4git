@@ -1,11 +1,13 @@
 package com.weavict.light.rest
 
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.light.entity.Buyer
 import com.weavict.light.entity.BuyerAppInfo
 import com.weavict.light.entity.BuyerAppInfoPK
 import com.weavict.light.module.RedisApi
 import com.weavict.light.module.UserBean
+import com.weavict.light.module.WxMaDynamicServiceFactory
 import com.weavict.light.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
 //import com.weavict.weichat.Sign
@@ -14,10 +16,6 @@ import com.weavict.website.common.OtherUtils
 import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
-import weixin.popular.api.SnsAPI
-import weixin.popular.bean.sns.Jscode2sessionResult
-import weixin.popular.bean.sns.SnsToken
-
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -44,6 +42,9 @@ class WxRest extends BaseRest
 
     @Autowired
     RedisUtil redisUtil;
+
+    @Autowired
+    WxMaDynamicServiceFactory wxMaDynamicServiceFactory;
 
 //    @POST
 //    @Produces(MediaType.APPLICATION_JSON)
@@ -140,15 +141,18 @@ class WxRest extends BaseRest
         try
         {
             println query.code;
-            Jscode2sessionResult jr = SnsAPI.jscode2session(query.appId, redisApi.ganTokenValue(query.appId,1 as byte,"appSecret"), query.code);
-            println jr.dump();
+//            Jscode2sessionResult jr = SnsAPI.jscode2session(query.appId, redisApi.ganTokenValue(query.appId,1 as byte,"appSecret"), query.code);
+//            println jr.dump();
+
+            WxMaJscode2SessionResult jr = wxMaDynamicServiceFactory.getServiceByAppId(query.appId).jsCode2SessionInfo(query.code);
+            println jr;
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "jr":(
                              {
-                                 return ["session_key":jr.session_key,
-                                         "expires_in":jr.expires_in,
+                                 return ["session_key":jr.sessionKey,
+                                         "expires_in":-1,
                                          "openid":jr.openid,
                                          "unionid":jr.unionid]
                              }

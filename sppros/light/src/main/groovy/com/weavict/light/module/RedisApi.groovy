@@ -7,10 +7,6 @@ import com.weavict.light.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import weixin.popular.api.TicketAPI
-import weixin.popular.api.TokenAPI
-import weixin.popular.bean.ticket.Ticket
-import weixin.popular.bean.token.Token
 import weixin.popular.client.LocalHttpClient
 import jakarta.inject.Inject;
 
@@ -30,6 +26,9 @@ class RedisApi
 
     @Inject
     UserBean userBean;
+
+    @Inject
+    WxMaDynamicServiceFactory wxMaDynamicServiceFactory;
 
     void buildRedisBuyer(ObjectMapper objectMapper,String buyerId,String field)
     {
@@ -93,11 +92,11 @@ class RedisApi
                 case 0 as byte:
                     try
                     {
-                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
-                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token?.getAccess_token());
-//                    Ticket t = TicketAPI.ticketGetticket(TokenManager.getToken(pw.payWayInfoEntityPK.appId));
-                        Ticket t = TicketAPI.ticketGetticket(token.getAccess_token());
-                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","jsTicket",t?.getTicket());
+//                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
+//                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token?.getAccess_token());
+////                    Ticket t = TicketAPI.ticketGetticket(TokenManager.getToken(pw.payWayInfoEntityPK.appId));
+//                        Ticket t = TicketAPI.ticketGetticket(token.getAccess_token());
+//                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","jsTicket",t?.getTicket());
                     }
                     catch (e)
                     {
@@ -107,8 +106,10 @@ class RedisApi
                 case 1:
                     try
                     {
-                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
-                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token.getAccess_token());
+//                        Token token = TokenAPI.token(pw.payWayInfoEntityPK.appId,pw.appSecret);
+//                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",token.getAccess_token());
+                        wxMaDynamicServiceFactory.createAndCacheService([appId:pw.payWayInfoEntityPK.appId,secret:pw.appSecret]);
+                        redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","accessToken",wxMaDynamicServiceFactory.getServiceByAppId(pw.payWayInfoEntityPK.appId).getAccessToken(false));
                     }
                     catch (e)
                     {
