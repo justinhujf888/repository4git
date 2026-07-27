@@ -2,22 +2,12 @@ package com.weavict.light.rest
 
 import cn.hutool.core.date.DateUtil
 import cn.hutool.crypto.SecureUtil
-import cn.hutool.crypto.asymmetric.RSA
 import com.alibaba.fastjson2.JSON
-import com.aliyun.oss.ClientBuilderConfiguration
+
 import com.aliyun.oss.OSS
-import com.aliyun.oss.OSSClient
-import com.aliyun.oss.OSSClientBuilder
-import com.aliyun.oss.common.auth.CredentialsProvider
-import com.aliyun.oss.common.auth.DefaultCredentialProvider
-import com.aliyun.oss.common.comm.SignVersion
 import com.aliyun.oss.common.utils.BinaryUtil
 import com.aliyun.oss.internal.OSSHeaders
-import com.aliyun.oss.model.CannedAccessControlList
-import com.aliyun.oss.model.ObjectMetadata
-import com.aliyun.oss.model.PolicyConditions
-import com.aliyun.oss.model.PutObjectRequest
-import com.aliyun.oss.model.StorageClass
+import com.aliyun.oss.model.*
 import com.aliyuncs.CommonRequest
 import com.aliyuncs.CommonResponse
 import com.aliyuncs.DefaultAcsClient
@@ -26,19 +16,9 @@ import com.aliyuncs.http.MethodType
 import com.aliyuncs.profile.DefaultProfile
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.light.module.RedisApi
+import com.weavict.website.common.OtherUtils
 
 //import com.weavict.website.common.ImgCompress
-import com.weavict.website.common.OtherUtils
-import com.yicker.utility.DES
-import groovy.json.JsonSlurper
-import jakarta.inject.Inject
-import jakarta.ws.rs.GET
-import org.dromara.mica.mqtt.codec.MqttQoS
-import org.dromara.mica.mqtt.spring.client.MqttClientTemplate
-//import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.web.bind.annotation.RequestBody
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
@@ -47,9 +27,16 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
+import org.dromara.mica.mqtt.codec.MqttQoS
+import org.dromara.mica.mqtt.spring.client.MqttClientTemplate
+import org.springframework.beans.factory.annotation.Autowired
+
+//import org.dromara.mica.mqtt.spring.server.MqttServerTemplate
+
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.web.bind.annotation.RequestBody
 
 import java.security.KeyPair
-
 /**
  * Created by Justin on 2018/6/10.
  */
@@ -292,8 +279,9 @@ class OtherRest extends BaseRest
                          return response;
                      }).call(),
                                 "templateParam":({
-                                    DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-                                    return crypt.encrypt(query.templateParam);
+                                    return SecureUtil.des(OtherUtils.givePropsValue("publickey").bytes).encryptHex(query.templateParam)
+//                                    DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
+//                                    return crypt.encrypt(query.templateParam);
                                 }).call()]
                     ]);
         }

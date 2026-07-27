@@ -7,7 +7,6 @@ import com.weavict.light.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import weixin.popular.client.LocalHttpClient
 import jakarta.inject.Inject;
 
 //import com.weavict.website.common.OtherUtils
@@ -83,7 +82,7 @@ class RedisApi
             if (!(pw.certPath in [null,""]) && pw.payWayInfoEntityPK.type == (1 as byte))
             {
                 println "-------------initMchKeyStore ${pw.payWayInfoEntityPK.appId} begin-----------------";
-                LocalHttpClient.initMchKeyStore(pw.mchId,pw.certPath);
+//                LocalHttpClient.initMchKeyStore(pw.mchId,pw.certPath);
                 println "-------------initMchKeyStore ${pw.payWayInfoEntityPK.appId} end-----------------";
             }
 

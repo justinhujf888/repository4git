@@ -1,6 +1,7 @@
 package com.weavict.light.rest
 
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.light.entity.Buyer
 import com.weavict.light.entity.BuyerAppInfo
@@ -9,11 +10,6 @@ import com.weavict.light.module.RedisApi
 import com.weavict.light.module.UserBean
 import com.weavict.light.module.WxMaDynamicServiceFactory
 import com.weavict.light.redis.RedisUtil
-import com.weavict.website.common.OtherUtils
-//import com.weavict.weichat.Sign
-//import com.weavict.weichat.StoreProperty
-//import com.weavict.weichat.notifies.WxNotifiesFun
-import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 import jakarta.servlet.http.HttpServletRequest
@@ -144,7 +140,7 @@ class WxRest extends BaseRest
 //            Jscode2sessionResult jr = SnsAPI.jscode2session(query.appId, redisApi.ganTokenValue(query.appId,1 as byte,"appSecret"), query.code);
 //            println jr.dump();
 
-            WxMaJscode2SessionResult jr = wxMaDynamicServiceFactory.getServiceByAppId(query.appId).jsCode2SessionInfo(query.code);
+            WxMaJscode2SessionResult jr = wxMaDynamicServiceFactory.getServiceByAppId(query.appId).getUserService().getSessionInfo(query.code as String);
             println jr;
             ObjectMapper objectMapper = buildObjectMapper();
             return objectMapper.writeValueAsString(
@@ -175,14 +171,10 @@ class WxRest extends BaseRest
     {
         try
         {
-            println query.encryptedData;
-            println query.sessionKey;
-            println query.iv;
             ObjectMapper objectMapper = buildObjectMapper();
-            def jsonSlpuer = new JsonSlurper();
-            def obj = jsonSlpuer.parseText(OtherUtils.decodeUserInfo4WxMp(query.encryptedData,query.sessionKey,query.iv));
+            WxMaPhoneNumberInfo wxMaPhoneNumberInfo = wxMaDynamicServiceFactory.getServiceByAppId(query.appId as String).getUserService().getPhoneNumber(query.code as String);
             Buyer b = objToBean(query.buyer,Buyer.class,objectMapper);
-            b.phone = obj.purePhoneNumber;
+            b.phone = wxMaPhoneNumberInfo.purePhoneNumber;
             Buyer buyer8Phone = userBean.findObjectById(Buyer.class,b.phone);
 //            println b.dump();
 //            println buyer8Phone.dump();
@@ -190,7 +182,7 @@ class WxRest extends BaseRest
 
             if (buyer8Phone!=null)
             {
-                BuyerAppInfo buyerAppInfo = userBean.findObjectById(BuyerAppInfo.class,new BuyerAppInfoPK(query.appId,obj.purePhoneNumber));
+                BuyerAppInfo buyerAppInfo = userBean.findObjectById(BuyerAppInfo.class,new BuyerAppInfoPK(query.appId,wxMaPhoneNumberInfo.purePhoneNumber));
                 if (buyerAppInfo!=null && (!(buyerAppInfo.wxid in [null,""]) && buyerAppInfo.wxid!=b.wxid ))
                 {
                     return """{"status":"FA_HASPHONE"}""";
@@ -213,11 +205,11 @@ class WxRest extends BaseRest
                     buyerAppInfo.wxopenid = b.wxopenid;
                     buyerAppInfo.wxid = b.wxid;
                     userBean.updateTheObject(buyerAppInfo);
-                    if (!redisUtil.hExists("buyer_${obj.purePhoneNumber}","bean"))
+                    if (!redisUtil.hExists("buyer_${wxMaPhoneNumberInfo.purePhoneNumber}","bean"))
                     {
-                        redisApi.buildRedisBuyer(objectMapper,obj.purePhoneNumber,"bean");
+                        redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"bean");
                     }
-                    redisApi.buildRedisBuyer(objectMapper,obj.purePhoneNumber,"buyerAppInfo");
+                    redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"buyerAppInfo");
                     return objectMapper.writeValueAsString(
                             ["status":"OK",
                              "buyer":({
@@ -226,7 +218,7 @@ class WxRest extends BaseRest
                              }).call(),
                              "decodeInfo":(
                                      {
-                                         return ["phoneNumber":obj.phoneNumber,"purePhoneNumber":obj.purePhoneNumber,"countryCode":obj.countryCode];
+                                         return ["phoneNumber":wxMaPhoneNumberInfo.purePhoneNumber,"purePhoneNumber":wxMaPhoneNumberInfo.purePhoneNumber,"countryCode":wxMaPhoneNumberInfo.countryCode];
                                      }
                              ).call()
                             ]
@@ -244,11 +236,11 @@ class WxRest extends BaseRest
                 buyerAppInfo.password = b.password;
                 userBean.updateTheObject(b);
                 userBean.updateTheObject(buyerAppInfo);
-                if (!redisUtil.hExists("buyer_${obj.purePhoneNumber}","bean"))
+                if (!redisUtil.hExists("buyer_${wxMaPhoneNumberInfo.purePhoneNumber}","bean"))
                 {
-                    redisApi.buildRedisBuyer(objectMapper,obj.purePhoneNumber,"bean");
+                    redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"bean");
                 }
-                redisApi.buildRedisBuyer(objectMapper,obj.purePhoneNumber,"buyerAppInfo");
+                redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"buyerAppInfo");
                 return objectMapper.writeValueAsString(
                         ["status":"OK",
                          "buyer":({
@@ -257,7 +249,7 @@ class WxRest extends BaseRest
                                  Buyer buyer = userBean.queryTheBuyer8WxId(b.wxid);
                                  if (buyer==null)
                                  {
-                                     b.phone = obj.purePhoneNumber;
+                                     b.phone = wxMaPhoneNumberInfo.purePhoneNumber;
                                      b.createDate = new Date();
                                      userBean.updateTheObject(b);
                                      return b;
@@ -272,7 +264,7 @@ class WxRest extends BaseRest
                          }).call(),
                          "decodeInfo":(
                                  {
-                                     return ["phoneNumber":obj.phoneNumber,"purePhoneNumber":obj.purePhoneNumber,"countryCode":obj.countryCode];
+                                     return ["phoneNumber":wxMaPhoneNumberInfo.phoneNumber,"purePhoneNumber":wxMaPhoneNumberInfo.purePhoneNumber,"countryCode":wxMaPhoneNumberInfo.countryCode];
                                  }
                          ).call()
                         ]

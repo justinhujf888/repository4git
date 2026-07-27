@@ -4,9 +4,11 @@ package com.weavict.competition.module
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
 import cn.hutool.core.date.DateUtil
+import com.weavict.common.aliyun.AliyunStsFactory
 import com.weavict.competition.entity.*
 import com.weavict.competition.redis.RedisUtil
 import com.weavict.website.common.OtherUtils
+import org.camunda.feel.syntaxtree.In
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import jakarta.inject.Inject;
@@ -27,6 +29,9 @@ class RedisApi
 
     @Inject
     UserBean userBean;
+
+    @Inject
+    AliyunStsFactory aliyunStsFactory;
 
     void buildRedisBuyer(ObjectMapper objectMapper,String buyerId,String field)
     {
@@ -62,9 +67,10 @@ class RedisApi
     void buildToken2Redis()
     {
         userBean.queryObject("select pw from PayWayInfoEntity as pw")?.each {pw->
-            if (pw.payWayInfoEntityPK.type = 9 as byte)
+            if (pw.mapJson.aliyun)
             {
-                redisUtil.lLeftPush("ossApps",pw.payWayInfoEntityPK.appId);
+//                redisUtil.lLeftPush("ossApps",pw.payWayInfoEntityPK.appId);
+                aliyunStsFactory.createAndCacheService(pw);
             }
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","appId",pw.payWayInfoEntityPK.appId ?: "");
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","appName",pw.appName ?: "");
@@ -129,7 +135,7 @@ class RedisApi
 
     void buildAliYunSts2Redis(Map map)
     {
-        Map stsMap = OtherUtils.genOssAccessKey(map);
+        Map stsMap = aliyunStsFactory.genOssAccessKey(map);
 //        println stsMap;
         map.each{k,v->
             redisUtil.hPut("${map.appId}_aliyun_sts",k as String,v as String);

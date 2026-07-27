@@ -65,14 +65,13 @@
 	
 	const getphonenumber = (e)=>{
 		if (e.errMsg == "getPhoneNumber:ok") {
+            // console.log(e);
 			let userInfo = wxRest.getUserInfo();
 			let buyer = Beans.buyer();
 			buyer.wxid = userInfo.openid;
 			buyer.wxopenid = userInfo.unionid;
 			
-			wxRest.decodeUserInfo4WxMp(Config.appId,e.encryptedData,
-				userInfo.remark.session_key,
-				e.iv,buyer,(data)=>{
+			wxRest.decodeUserInfo4WxMp({buyer:buyer,code:e.code},(data)=>{
 					if (data.status=="FA_HASPHONE") {
 						dialog.alertBack("此号码已经被注册",false,()=>{
 							cancel();

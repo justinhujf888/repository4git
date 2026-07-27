@@ -131,22 +131,7 @@ export default {
 		uni.setStorageSync('userInfo',util.encryptStoreInfo(JSON.stringify(userInfo)));
 		uni.setStorageSync('state',util.encryptStoreInfo(JSON.stringify(state)));
 	},
-	decodeUserInfo4WxMp(appId,encryptedData,sessionKey,iv,buyer,onfun) {
-		Http.httpclient_json('/r/wx/decodeUserInfo4WxMp', 'post', {
-				"appId": appId,
-				"encryptedData": encryptedData,
-				"sessionKey": sessionKey,
-				"iv":iv,
-				"buyer":buyer
-			}, "json",(res)=>{
-				if (res.data.status == "FA_ER") {
-					dialog.showApiErrorMsg();
-				} else {
-					onfun(res.data);
-				}
-			},
-			(error)=>{
-				dialog.showApiErrorMsg();
-			}, true);
+	async decodeUserInfo4WxMp(ds,onfun) {
+		return await Http.callHttpFunction('/r/wx/decodeUserInfo4WxMp',ds,onfun);
 	}
 }
