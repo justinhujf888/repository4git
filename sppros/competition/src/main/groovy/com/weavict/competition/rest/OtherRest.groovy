@@ -1,41 +1,23 @@
 package com.weavict.competition.rest
 
+import cn.hutool.crypto.SecureUtil
 import com.alibaba.fastjson2.JSON
 import com.aliyun.credentials.Client
 import com.aliyun.credentials.models.Config
 import com.aliyun.dypnsapi20170525.models.SendSmsVerifyCodeRequest
 import com.aliyun.dypnsapi20170525.models.SendSmsVerifyCodeResponse
-
 import com.aliyun.oss.OSS
 import com.aliyun.oss.common.utils.BinaryUtil
 import com.aliyun.oss.internal.OSSHeaders
-import com.aliyun.oss.model.CannedAccessControlList
-import com.aliyun.oss.model.ObjectMetadata
-import com.aliyun.oss.model.PolicyConditions
-import com.aliyun.oss.model.PutObjectRequest
-import com.aliyun.oss.model.StorageClass
-
+import com.aliyun.oss.model.*
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.weavict.competition.entity.Buyer
-import com.weavict.competition.entity.CompetitionJudge
-import com.weavict.competition.entity.Work
-import com.weavict.competition.module.RedisApi
+import com.weavict.common.aliyun.AliyunStsFactory
+import com.weavict.competition.module.UserBean
+import com.weavict.website.common.OtherUtils
 
 //import com.weavict.website.common.ImgCompress
-import com.weavict.website.common.OtherUtils
-import com.yicker.utility.DES
-import darabonba.core.client.ClientOverrideConfiguration
-import groovy.json.JsonSlurper
-import jakarta.websocket.RemoteEndpoint
-import jakarta.ws.rs.GET
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties
-import org.springframework.cache.annotation.Cacheable
-import org.springframework.scheduling.annotation.Async
-import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
 
+import groovy.json.JsonSlurper
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -43,9 +25,9 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
-
-import java.util.concurrent.CompletableFuture
-
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.web.bind.annotation.RequestBody
 /**
  * Created by Justin on 2018/6/10.
  */
@@ -56,7 +38,10 @@ class OtherRest extends BaseRest
     HttpServletRequest request;
 
     @Autowired
-    RedisApi redisApi;
+    UserBean userBean;
+
+    @Autowired
+    AliyunStsFactory aliyunStsFactory;
 
     /**
      * 图片上传
@@ -124,7 +109,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         OSS client = OtherUtils.genOSSClient(query.appId as String);
+                         OSS client = aliyunStsFactory.genOSSClient(query.appId as String);
                          long expireTime = 30;
                          long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
                          PolicyConditions policyConds = new PolicyConditions();
@@ -133,7 +118,7 @@ class OtherRest extends BaseRest
                          String encodedPolicy = BinaryUtil.toBase64String(postPolicy.getBytes("utf-8"));
                          String postSignature = client.calculatePostSignature(postPolicy);
                          client.shutdown();
-                         return ["accessId":redisApi.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":redisApi.ganAliYunStsValue(query.appId as String,"accessKey"),"policy":encodedPolicy,"signature":postSignature,"securityToken":redisApi.ganAliYunStsValue(query.appId as String,"securityToken"),"bucketUrl":redisApi.ganAliYunStsValue(query.appId as String,"bucketUrl"),"expire":String.valueOf(expireEndTime / 1000),"region":OtherUtils.givePropsValue("ali_oss_region"),"bucketName":OtherUtils.givePropsValue("ali_oss_bucketName")];
+                         return ["accessId":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessKey"),"policy":encodedPolicy,"signature":postSignature,"securityToken":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"securityToken"),"bucketUrl":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"bucketUrl"),"expire":String.valueOf(expireEndTime / 1000),"region":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_region"),"bucketName":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName")];
                      }).call()
                     ]);
         }
@@ -200,8 +185,8 @@ class OtherRest extends BaseRest
         try
         {
             //oss
-            OSS ossClient = OtherUtils.genOSSClient(query.appId as String);
-            ossClient.deleteObject(redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"), query.imgPath);
+            OSS ossClient = aliyunStsFactory.genOSSClient(query.appId as String);
+            ossClient.deleteObject(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"), query.imgPath);
             ossClient.shutdown();
             //oss end
             return """{"status":"OK"}""";
@@ -223,8 +208,8 @@ class OtherRest extends BaseRest
         {
             ObjectMapper objectMapper = buildObjectMapper();
             // oss
-            OSS ossClient = OtherUtils.genOSSClient(query.appId);
-            PutObjectRequest putObjectRequest = new PutObjectRequest(redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
+            OSS ossClient = aliyunStsFactory.genOSSClient(query.appId);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"), query.filePathName as String, new ByteArrayInputStream(objectMapper.writeValueAsString(
                     ({return query.fileObj}).call()
             ).getBytes("UTF-8")));
             // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
@@ -263,11 +248,11 @@ class OtherRest extends BaseRest
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
 //            query.appId = "temparky";
             ObjectMapper objectMapper = buildObjectMapper();
-            Config credentialConfig = new Config().setType("sts").setAccessKeyId(redisApi.ganAliYunStsValue(query.appId as String,"accessId")).setAccessKeySecret(redisApi.ganAliYunStsValue(query.appId as String,"accessKey")).setSecurityToken(redisApi.ganAliYunStsValue(query.appId as String,"securityToken"));
+            Config credentialConfig = new Config().setType("sts").setAccessKeyId(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessId")).setAccessKeySecret(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessKey")).setSecurityToken(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"securityToken"));
             Client credentialClient = new Client(credentialConfig);
             com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
             config.setCredential(credentialClient);
-            config.endpoint = redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_endPoint");
+            config.endpoint = aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_sms_endPoint");
             com.aliyun.dypnsapi20170525.Client client = new com.aliyun.dypnsapi20170525.Client(config);
 
             String templateCode = "";
@@ -275,12 +260,12 @@ class OtherRest extends BaseRest
             if (query.accessCode.equals("regist"))
             {
                 templateCode = "100001";
-                templateParam = """{"code":"${redisApi.userBean.phoneCode()}","min":"5"}""".toString();
+                templateParam = """{"code":"${userBean.phoneCode()}","min":"5"}""".toString();
             }
             else if (query.accessCode.equals("editPassword"))
             {
                 templateCode = "100003";
-                templateParam = """{"code":"${redisApi.userBean.phoneCode()}","min":"5"}""".toString();
+                templateParam = """{"code":"${userBean.phoneCode()}","min":"5"}""".toString();
             }
             println templateParam;
             SendSmsVerifyCodeRequest sendSmsVerifyCodeRequest = new SendSmsVerifyCodeRequest()
@@ -288,7 +273,7 @@ class OtherRest extends BaseRest
                     .setTemplateCode(templateCode)
 //                    .setTemplateParam("{\"code\":\"##code##\",\"min\":\"5\"}")
                     .setTemplateParam(templateParam)
-                    .setSignName(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_SignName"));
+                    .setSignName(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_sms_SignName"));
             com.aliyun.teautil.models.RuntimeOptions runtime = new com.aliyun.teautil.models.RuntimeOptions();
             SendSmsVerifyCodeResponse resp = client.sendSmsVerifyCodeWithOptions(sendSmsVerifyCodeRequest,runtime);
             // Synchronously get the return value of the API request
@@ -303,15 +288,15 @@ class OtherRest extends BaseRest
 //            if (query.accessCode.equals("regist"))
 //            {
 //                templateCode = "SMS_169175064";
-//                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
+//                templateParam = """{"code":"${userBean.phoneCode()}"}""".toString();
 //            }
 //            else if (query.accessCode.equals("editPassword"))
 //            {
 //                templateCode = "SMS_169175063";
-//                templateParam = """{"code":"${redisApi.userBean.phoneCode()}"}""".toString();
+//                templateParam = """{"code":"${userBean.phoneCode()}"}""".toString();
 //            }
 //
-//            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(redisApi.ganAliYunStsValue(query.appId as String,"ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
+//            SendSmsRequest sendSmsRequest = new SendSmsRequest().setPhoneNumbers(query.phone).setSignName(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_sms_SignName")).setTemplateCode(templateCode).setTemplateParam(templateParam);
 //            SendSmsResponse sendSmsResponse = client.sendSms(sendSmsRequest);
 
             return objectMapper.writeValueAsString(
@@ -320,8 +305,9 @@ class OtherRest extends BaseRest
                          return resp;
                      }).call(),
                         "templateParam":({
-                            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
-                            return crypt.encrypt(templateParam);
+//                            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
+//                            return crypt.encrypt(templateParam);
+                            return SecureUtil.des(OtherUtils.givePropsValue("publickey").bytes).encryptHex(templateParam);
                         }).call()]
                     ]);
         }
@@ -344,7 +330,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         return ["expiration":redisApi.ganAliYunStsValue(query.appId as String,"expiration"),"accessId":redisApi.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":redisApi.ganAliYunStsValue(query.appId as String,"accessKey"),"securityToken":redisApi.ganAliYunStsValue(query.appId as String,"securityToken"),"requestId":redisApi.ganAliYunStsValue(query.appId as String,"requestId"),"endPoint":redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_endPoint"),"region":redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_region"),"bucketName":redisApi.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"),"bucketUrl":redisApi.ganAliYunStsValue(query.appId as String,"bucketUrl")];
+                         return ["expiration":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"expiration"),"accessId":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessKey"),"securityToken":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"securityToken"),"requestId":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"requestId"),"endPoint":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_endPoint"),"region":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_region"),"bucketName":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"),"bucketUrl":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"bucketUrl")];
                      }).call()
                     ]);
         }
@@ -376,7 +362,7 @@ class OtherRest extends BaseRest
 //        map["org"] = "提供香港CN2 GIA、香港CMI、日本软银、美国CN2 GIA、美国CMIN2、荷兰CUII、加拿大CN2 GIA、迪拜国际BGP系列的VPS。最低1Gbps，最高10Gbps带宽，根据VPS配置从低到高给与1Gbps~10Gbps带宽，支持一键切换IP（收费）、免费快照/备份、可在多个数据中心自由切换。2004年成立运作至今，隶属于加拿大IT7公司";
 //        map["tempMap"] = ["workName":"火山枫林","remark":"三上悠亚","ling":[1,2,3,4,5,6,7,8]]
 //        work.otherFields = map;
-//        redisApi.userBean.updateTheObject(work);
+//        userBean.updateTheObject(work);
 //        return """{"status":"OK"}""";
 
         return objectMapper.writeValueAsString(

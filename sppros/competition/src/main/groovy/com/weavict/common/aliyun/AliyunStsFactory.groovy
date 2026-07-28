@@ -15,6 +15,8 @@ import com.aliyuncs.profile.DefaultProfile
 import com.aliyuncs.profile.IClientProfile
 import com.weavict.competition.entity.PayWayInfoEntity
 import com.weavict.competition.module.RedisApi
+import com.weavict.competition.module.UserBean
+import com.weavict.competition.redis.RedisUtil
 import org.springframework.stereotype.Service
 
 import java.util.concurrent.ConcurrentHashMap
@@ -24,10 +26,10 @@ class AliyunStsFactory
 {
     private final Map<String, Map> stsAppMap = new ConcurrentHashMap<>();
 
-    private final RedisApi redisApi;
+    private final RedisUtil redisUtil;
 
-    AliyunStsFactory(RedisApi redisApi) {
-        this.redisApi = redisApi;
+    AliyunStsFactory(RedisUtil redisUtil) {
+        this.redisUtil = redisUtil;
     }
 
     Map getAliyunStsByAppId(String appId)
@@ -84,10 +86,15 @@ class AliyunStsFactory
         }
     }
 
+    String ganAliYunStsValue(String appId,String field)
+    {
+        return redisUtil.hGet("${appId}_aliyun_sts",field) as String;
+    }
+
     OSS genOSSClient(String appId)
     {
         // 使用DefaultCredentialProvider方法直接设置AK和SK
-        CredentialsProvider credentialsProvider = new DefaultCredentialProvider(redisApi.ganAliYunStsValue(appId,"accessId"), redisApi.ganAliYunStsValue(appId,"accessKey"), redisApi.ganAliYunStsValue(appId,"securityToken"));
+        CredentialsProvider credentialsProvider = new DefaultCredentialProvider(ganAliYunStsValue(appId,"accessId"), ganAliYunStsValue(appId,"accessKey"), ganAliYunStsValue(appId,"securityToken"));
         // 使用credentialsProvider初始化客户端
         ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
         // 显式声明使用 V4 签名算法
@@ -96,11 +103,11 @@ class AliyunStsFactory
         // 当OSSClient实例不再使用时，调用shutdown方法以释放资源。
         return OSSClientBuilder.create()
         // 请设置目的OSS访问域名  例如杭州地域：https://oss-cn-hangzhou.aliyuncs.com
-                .endpoint(redisApi.ganAliYunStsValue(appId,"ali_oss_endPoint"))
+                .endpoint(ganAliYunStsValue(appId,"ali_oss_endPoint"))
                 .credentialsProvider(credentialsProvider)
                 .clientConfiguration(clientBuilderConfiguration)
         // 请设置为目标Bucket所处region  例如杭州地域：cn-hangzhou
-                .region(redisApi.ganAliYunStsValue(appId,"regionId"))
+                .region(ganAliYunStsValue(appId,"regionId"))
                 .build();
     }
 }
