@@ -4,7 +4,7 @@ import cn.hutool.core.io.IoUtil
 import cn.hutool.core.util.URLUtil
 import cn.hutool.crypto.SecureUtil
 import com.weavict.mqttspserver.rest.DeviceRest
-import com.weavict.website.common.OtherUtils
+import com.weavict.common.OtherUtils
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.ws.rs.ApplicationPath
 import jakarta.ws.rs.WebApplicationException

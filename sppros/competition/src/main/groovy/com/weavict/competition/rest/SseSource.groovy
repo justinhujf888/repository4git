@@ -1,6 +1,6 @@
 package com.weavict.competition.rest
 
-import com.weavict.website.common.OtherUtils
+import cn.hutool.core.util.IdUtil
 import jakarta.inject.Singleton
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
@@ -27,9 +27,9 @@ class SseSource
     EventOutput getServerSentEvents()
     {
         eventBuilder = new OutboundEvent.Builder();
-        eventBuilder.id(MathUtil.getPNewId());
+        eventBuilder.id(IdUtil.simpleUUID());
         eventBuilder.name("message");
-        eventBuilder.data(String.class,"""current time:${OtherUtils.getPNewId()}""".toString());
+        eventBuilder.data(String.class,"""current time:${System.currentTimeMillis()}""".toString());
         event = eventBuilder.build();
         try
         {

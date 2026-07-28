@@ -28,7 +28,7 @@ import com.weavict.competition.module.PageUtil
 import com.weavict.competition.module.QueryUtils
 import com.weavict.competition.module.UserBean
 import com.weavict.competition.module.WorkService
-import com.weavict.website.common.OtherUtils
+import com.weavict.common.OtherUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST

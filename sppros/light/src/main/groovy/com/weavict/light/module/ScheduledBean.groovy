@@ -1,6 +1,8 @@
 package com.weavict.light.module
 
 import cn.hutool.core.date.DateUtil
+import com.weavict.common.aliyun.AliyunStsFactory
+import com.weavict.light.entity.PayWayInfoEntity
 import com.weavict.light.redis.RedisUtil
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -21,6 +23,9 @@ class ScheduledBean extends ModuleBean// implements Job
 	@Inject
 	RedisApi redisApi;
 
+    @Inject
+    AliyunStsFactory aliyunStsFactory;
+
 	@Scheduled(fixedDelay = 7080000L)
 //	@PostConstruct
 	void wxInit()
@@ -30,11 +35,21 @@ class ScheduledBean extends ModuleBean// implements Job
 		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
 	}
 
-//	@Scheduled(fixedDelay = 880000L)
-	void aliYunSts()
-	{
-		println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} begin---------------------------------";
-		redisApi.buildAliYunSts2Redis();
-		println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
-	}
+    @Scheduled(fixedDelay = 880000L)
+    void aliYunSts()
+    {
+        println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} begin--------------------------------";
+//		println redisUtil.lLen("apps");
+        for(entry in aliyunStsFactory.getStsApps().entrySet())
+        {
+//			println redisUtil.lIndex("ossApps",i as long);
+//			println redisUtil.hGet("""appToken_${redisUtil.lIndex("ossApps",i as long)}_9""" as String,"mapJson");
+            PayWayInfoEntity payWayInfoEntity = entry.value as PayWayInfoEntity;
+            Map map = payWayInfoEntity.mapJson.aliyun;
+//			println map;
+            map["appId"] = payWayInfoEntity.payWayInfoEntityPK.appId;
+            redisApi.buildAliYunSts2Redis(map);
+        }
+        println "AliYunSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
+    }
 }

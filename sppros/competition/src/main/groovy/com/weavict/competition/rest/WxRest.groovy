@@ -7,7 +7,7 @@ import com.weavict.competition.entity.BuyerAppInfoPK
 import com.weavict.competition.module.RedisApi
 import com.weavict.competition.module.UserBean
 import com.weavict.competition.redis.RedisUtil
-import com.weavict.website.common.OtherUtils
+import com.weavict.common.OtherUtils
 import groovy.json.JsonSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody

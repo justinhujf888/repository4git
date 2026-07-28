@@ -2,7 +2,7 @@ package com.weavict.mqttspserver.mqtt
 
 import cn.hutool.crypto.SecureUtil
 import com.alibaba.fastjson2.JSON
-import com.weavict.website.common.OtherUtils
+import com.weavict.common.OtherUtils
 import net.dreamlu.mica.net.core.ChannelContext
 import org.dromara.mica.mqtt.codec.MqttQoS
 import org.dromara.mica.mqtt.core.server.MqttServerCustomizer

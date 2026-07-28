@@ -1,4 +1,4 @@
-package com.weavict.website.common
+package com.weavict.common
 
 import cn.hutool.core.io.resource.ClassPathResource
 import cn.hutool.core.util.ClassLoaderUtil

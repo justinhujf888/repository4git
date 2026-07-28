@@ -13,7 +13,7 @@ import com.aliyun.oss.model.*
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.aliyun.AliyunStsFactory
 import com.weavict.competition.module.UserBean
-import com.weavict.website.common.OtherUtils
+import com.weavict.common.OtherUtils
 
 //import com.weavict.website.common.ImgCompress
 

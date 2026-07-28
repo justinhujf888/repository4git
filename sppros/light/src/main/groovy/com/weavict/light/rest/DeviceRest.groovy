@@ -6,10 +6,8 @@ import com.weavict.light.entity.BuyerDeviceScriptPK
 import com.weavict.light.entity.Device
 import com.weavict.light.entity.DeviceScript
 import com.weavict.light.module.DeviceService
-import com.weavict.website.common.OtherUtils
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.ws.rs.Consumes
-import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
@@ -133,7 +131,7 @@ class DeviceRest extends BaseRest
                     List<DeviceScript> scriptList = deviceService.qyDeviceScriptList("all",null,device.deviceType.id);
                     for (DeviceScript script in scriptList)
                     {
-                        deviceService.createNativeQuery4Params("insert into devicescript (id,name,script,createdate,buyer_phone,devicetypeid) values (:id,:name,:script,:createdate,:userId,:deviceTypeId)",["id": OtherUtils.getPNewId(), "name":script.name, "script":script.script, "createdate": new Date(), "userId":device.buyer.phone, "deviceTypeId":device.deviceType.id]).executeUpdate();
+                        deviceService.createNativeQuery4Params("insert into devicescript (id,name,script,createdate,buyer_phone,devicetypeid) values (:id,:name,:script,:createdate,:userId,:deviceTypeId)",["id": deviceService.getPNewId(), "name":script.name, "script":script.script, "createdate": new Date(), "userId":device.buyer.phone, "deviceTypeId":device.deviceType.id]).executeUpdate();
                     }
                 }
             });

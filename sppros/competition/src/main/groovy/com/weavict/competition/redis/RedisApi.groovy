@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 //import com.weavict.shop.entity.Orgration
 import org.springframework.stereotype.Service
 
-//import com.weavict.website.common.OtherUtils
+//import com.weavict.common.OtherUtils
 //import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 //import redis.clients.jedis.Jedis
 //import redis.clients.jedis.JedisPool

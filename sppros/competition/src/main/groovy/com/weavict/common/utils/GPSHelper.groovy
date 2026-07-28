@@ -1,4 +1,4 @@
-package com.weavict.website.common
+package com.weavict.common.utils
 
 class GPSHelper
 {

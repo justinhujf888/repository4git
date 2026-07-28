@@ -1,5 +1,6 @@
 package com.weavict.light.module
 
+import cn.hutool.core.date.DateUtil
 import cn.hutool.core.util.StrUtil
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.weavict.common.ejb.BaseBean
@@ -13,6 +14,19 @@ class ModuleBean extends BaseBean
 {
 //	@Resource(mappedName="java:jboss/datasources/mysql")
 //    protected DataSource dataSource;
+
+    String getNewId(String... prefix) {
+        String fix = DateUtil.format(new Date(), "yyyyMMddHHmmssSSS") + (int)(Math.random() * (double)8999.0F + (double)1000.0F);
+        if (prefix != null && prefix.length > 0) {
+            fix = prefix[0] + fix;
+        }
+
+        return fix;
+    }
+
+    String getPNewId() {
+        return DateUtil.format(new Date(), "yyyyMMddHHmmssSSS") + (int)(Math.random() * (double)8999.0F + (double)1000.0F);
+    }
 
     @Transactional
     Object updateTheObject(Object o)

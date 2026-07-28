@@ -7,13 +7,13 @@ import cn.hutool.core.date.DateUtil
 import com.weavict.common.aliyun.AliyunStsFactory
 import com.weavict.competition.entity.*
 import com.weavict.competition.redis.RedisUtil
-import com.weavict.website.common.OtherUtils
+import com.weavict.common.OtherUtils
 import org.camunda.feel.syntaxtree.In
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import jakarta.inject.Inject;
 
-//import com.weavict.website.common.OtherUtils
+//import com.weavict.common.OtherUtils
 //import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 //import redis.clients.jedis.Jedis
 //import redis.clients.jedis.JedisPool

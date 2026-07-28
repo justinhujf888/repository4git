@@ -5,6 +5,8 @@ import jakarta.persistence.Embeddable
 import jakarta.persistence.EmbeddedId
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Embeddable
 class PayWayInfoEntityPK implements Serializable
@@ -111,6 +113,10 @@ class PayWayInfoEntity extends BEntity implements Serializable,IEntity
      */
     @Column(length=50)
     String body;
+
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    Map mapJson;
 
     void cancelLazyEr()
     {
