@@ -3,16 +3,13 @@ package com.weavict.competition.rest
 import cn.hutool.core.io.IoUtil
 import cn.hutool.core.util.URLUtil
 import cn.hutool.crypto.SecureUtil
-import cn.hutool.crypto.asymmetric.RSA
 import com.weavict.common.OtherUtils
-import com.yicker.utility.RSAEncrypt
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.ws.rs.WebApplicationException
 import jakarta.ws.rs.container.ContainerRequestContext
 import jakarta.ws.rs.container.ContainerRequestFilter
 import jakarta.ws.rs.container.ContainerResponseContext
 import jakarta.ws.rs.container.ContainerResponseFilter
-import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.ext.*
 
 /**
