@@ -589,7 +589,6 @@ export default {
         //     return matches[1];
         // }
         // return null;
-return "cpt.arkydesign.cn";
         const parsedUrl = new URL(url);
         return parsedUrl.hostname;
 
@@ -622,6 +621,13 @@ return "cpt.arkydesign.cn";
         // }
         // return url;
     },
+	getAppIdFromUrl(url) {
+		const parsedUrl = new URL(url);
+		let doman = parsedUrl.hostname;
+		return lodash.find([{id:"cpt.arkydesign.cn",doman:"localhost"},{id:"cpt.arkydesign.cn",doman:"www.ivac-hub.com"},{id:"cpt.arkydesign.cn",doman:"ivac-hub.com"}],(o)=>{
+			return o.doman == doman;
+		}).id;
+	},
     checkLoginGoPage(treeNode) {
         if (treeNode.isLogin==true && !localStorage.getItem("userId")) {
             return false;

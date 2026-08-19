@@ -1,7 +1,7 @@
 package com.weavict.competition.module
 
 
-import com.alibaba.fastjson.JSON
+import com.alibaba.fastjson2.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
 import cn.hutool.core.date.DateUtil
 import com.weavict.common.aliyun.AliyunStsFactory
@@ -70,7 +70,7 @@ class RedisApi
             if (pw.mapJson.aliyun)
             {
 //                redisUtil.lLeftPush("ossApps",pw.payWayInfoEntityPK.appId);
-                aliyunStsFactory.createAndCacheService(pw);
+                aliyunStsFactory.createAndCacheService(pw,pw.payWayInfoEntityPK.appId);
             }
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","appId",pw.payWayInfoEntityPK.appId ?: "");
             redisUtil.hPut("appToken_${pw.payWayInfoEntityPK.appId}_${pw.payWayInfoEntityPK.type}","appName",pw.appName ?: "");

@@ -76,7 +76,7 @@
                         <v-image v-if="work.tempMap.qcjx" :config="{x:compSize(layerWidth-180),y:compSize(22),image:work.tempMap.qcjx,scaleX:compSize(0.6),scaleY:compSize(0.6)}"/>
                         <!--                    <v-text :config="{x:layerWidth-200,y:22,fontFamily: 'Noto Serif SC',fontStyle: 'bold',text:'全场金奖',fontSize:30,_fill:'#ffffff',width:200,fillLinearGradientStartPoint: { x: 0, y: 0 },fillLinearGradientEndPoint: { x: 200, y: 10 },fillLinearGradientColorStops:[0, '#ff4444',1, '#44ddff']}"/>-->
                         <v-text :config="{x:compSize(30),y:compSize(layerHeight-65),text:work.name,fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
-                        <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-65),text:'胡纪锋',fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
+                        <v-text :config="{x:compSize(layerWidth-120),y:compSize(layerHeight-65),text:'李昂',fontSize:compSize(22),fill:'#ffffff',letterSpacing: 2,align:'right'}"/>
                         <!--                        <v-image v-if="work.tempMap?.imgPath" :config="{x:0,y:0,image:work.tempMap.imgPath}"/>-->
                     </v-layer>
                 </v-stage>

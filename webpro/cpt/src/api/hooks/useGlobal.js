@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 
 export default {
     async siteDatas() {
-        let siteDatas = {cptInfo:await workRest.gainCache8MasterCompetitionInfo(util.getDomainFromUrl(window.location)),siteInfo:await workRest.gainCache8SiteInfo(util.getDomainFromUrl(window.location))};
+        let siteDatas = {cptInfo:await workRest.gainCache8MasterCompetitionInfo(util.getAppIdFromUrl(window.location)),siteInfo:await workRest.gainCache8SiteInfo(util.getAppIdFromUrl(window.location))};
         if (!siteDatas.cptInfo.masterCompetitionInfo?.tempMap) {
             siteDatas.cptInfo.masterCompetitionInfo.tempMap = {};
         }
@@ -14,7 +14,7 @@ export default {
         return siteDatas;
     },
     async pageSetupDatas(key) {
-        return workRest.gainPageSetup(util.getDomainFromUrl(window.location),key);
+        return workRest.gainPageSetup(util.getAppIdFromUrl(window.location),key);
     },
     getRouteInfo() {
         const instance = getCurrentInstance();

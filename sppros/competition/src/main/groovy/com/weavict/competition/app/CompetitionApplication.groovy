@@ -95,7 +95,8 @@ class GlobalCorsFilter {
 //		config.addAllowedOriginPattern("*");
         config.addAllowedOrigin("http://localhost");
 		config.addAllowedOrigin("http://localhost:5173");
-		config.addAllowedOrigin("https://cpt.arkydesign.cn");
+		config.addAllowedOrigin("https://www.ivac-hub.com");
+		config.addAllowedOrigin("https://ivac-hub.com");
 		config.addAllowedOrigin("https://test.arkydesign.cn");
 		config.addAllowedOrigin("http://test.arkydesign.cn");
 		//是否发送Cookie

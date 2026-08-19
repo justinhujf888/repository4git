@@ -23,7 +23,7 @@ export const Http = {
             .replace(/T/g, ' ')
             .replace(/\.[\d]{3}Z/, '');
         ds.loginState = null; //login.getLoginState();
-        ds.appId = util.getDomainFromUrl(window.location);
+        ds.appId = util.getAppIdFromUrl(window.location);
         if (!ds.appId) {
             return;
         }

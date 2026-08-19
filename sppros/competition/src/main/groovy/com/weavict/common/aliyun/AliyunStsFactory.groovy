@@ -13,18 +13,15 @@ import com.aliyuncs.auth.sts.AssumeRoleResponse
 import com.aliyuncs.http.MethodType
 import com.aliyuncs.profile.DefaultProfile
 import com.aliyuncs.profile.IClientProfile
-import com.weavict.competition.entity.PayWayInfoEntity
-import com.weavict.competition.module.RedisApi
-import com.weavict.competition.module.UserBean
 import com.weavict.competition.redis.RedisUtil
 import org.springframework.stereotype.Service
 
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class AliyunStsFactory
+class AliyunStsFactory<T>
 {
-    private final Map<String, Map> stsAppMap = new ConcurrentHashMap<>();
+    private final Map<String, T> stsAppMap = new ConcurrentHashMap<>();
 
     private final RedisUtil redisUtil;
 
@@ -47,8 +44,8 @@ class AliyunStsFactory
         return stsAppMap;
     }
 
-    void createAndCacheService(PayWayInfoEntity pw) {
-        stsAppMap[pw.payWayInfoEntityPK.appId] = pw;
+    void createAndCacheService(T pw,String pwId) {
+        stsAppMap[pwId] = pw;
     }
 
     Map genOssAccessKey(Map map)

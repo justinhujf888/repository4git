@@ -18,13 +18,15 @@ import dayjs from "dayjs";
 
 const app = createApp(App);
 app.directive('styleclass', StyleClass);
-app.provide("domain",util.getDomainFromUrl(window.location));
+app.provide("domain",util.getAppIdFromUrl(window.location));
 
 const routerParams = ()=>{
     return JSON.parse(decodeURIComponent(router.currentRoute.value.params.param));
 };
 
-await util.loadSkin("ct0");
+(async () => {
+    await util.loadSkin("ct0");
+})();
 
 app.config.globalProperties.$router = router;
 app.config.globalProperties.$routerParams = routerParams;

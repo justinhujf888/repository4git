@@ -1,6 +1,5 @@
 package com.weavict.competition.module
 
-import com.alibaba.fastjson.JSON
 import cn.hutool.core.date.DateUtil
 import com.weavict.common.aliyun.AliyunStsFactory
 import com.weavict.competition.entity.PayWayInfoEntity
