@@ -38,6 +38,7 @@ class CompetitionApplication extends SpringBootServletInitializer
 	static void main(String[] args)
 	{
 //		SpringApplication.run(CompetitionApplication, args);
+//		docker build -t cpt:v1.0.0 .
 		new CompetitionApplication().configure(new SpringApplicationBuilder(CompetitionApplication.class)).run(args);
 	}
 }
