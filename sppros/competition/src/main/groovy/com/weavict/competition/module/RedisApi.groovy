@@ -133,6 +133,7 @@ class RedisApi
         return redisUtil.hGet("appToken_${appId}_${type}",field) as String;
     }
 
+    //Map map是数据库的mapJson设置的值
     void buildAliYunSts2Redis(Map map)
     {
         Map stsMap = aliyunStsFactory.genOssAccessKey(map);
@@ -159,6 +160,18 @@ class RedisApi
     String ganAliYunStsValue(String appId,String field)
     {
         return redisUtil.hGet("${appId}_aliyun_sts",field) as String;
+    }
+
+    Map ganAliYunStsMap(String appId)
+    {
+        return [
+                "appId":appId,
+                "accessId":ganAliYunStsValue(appId,"accessId"),
+                "accessKey":ganAliYunStsValue(appId,"accessKey"),
+                "securityToken":ganAliYunStsValue(appId,"securityToken"),
+                "regionId":ganAliYunStsValue(appId,"regionId"),
+                "ali_oss_endPoint":ganAliYunStsValue(appId,"ali_oss_endPoint")
+        ];
     }
 
     @Transactional
