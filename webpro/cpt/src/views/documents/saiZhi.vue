@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="(pageEls,k,i) in saiZhiDatas" :key="i" :class="{'mt-20':i>0}" class="text-xl leading-10">
-            <div v-for="element of pageEls.setup" class="mt-8 md:px-32" :style="element.type=='image' ? 'max-width:80rem' : ''">
+            <div v-for="element of pageEls.setup" class="mt-8" :style="element.type=='image' ? 'max-width:80rem' : ''">
                 <jiang v-if="element.type=='slot'" :jiang-datas="indexDatas?.jiangArea.setup.jiangItems.value" root-class="mt-20" jiang-text-class="text-gray-800"/>
                 <build-u-i v-else :element="element">
                     <template #box="{data}">

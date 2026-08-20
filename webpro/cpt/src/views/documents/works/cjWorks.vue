@@ -1,5 +1,5 @@
 <template>
-    <div class="md:px-10 lg:px-20 xl:px-32">
+    <div _class="md:px-10 lg:px-20 xl:px-32">
         <div class="col md:row between gay-4">
             <div class="row flex-wrap gap-x-10 gap-y-5 md:gap-y-0">
                 <div class="row items-center font-bold gap-x-4">

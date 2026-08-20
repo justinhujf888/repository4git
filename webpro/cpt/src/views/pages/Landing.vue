@@ -49,7 +49,7 @@ onMounted(async () => {
 
 <template>
     <div v-show="shiShowPage" class="bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn">
-        <div id="home" class="landing-wrapper overflow-hidden">
+        <div id="home" class="_landing-wrapper overflow-hidden">
             <TopbarWidget/>
             <HeroWidget/>
             <slogen />

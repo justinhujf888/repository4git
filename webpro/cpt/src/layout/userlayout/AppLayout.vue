@@ -77,14 +77,14 @@ function isOutsideClicked(event) {
 <template>
     <div class="layout-wrapper bg-surface-0 dark:bg-surface-900 animate__animated animate__fadeIn" :class="containerClass">
 <!--        <app-topbar></app-topbar>-->
-        <div class="w-full h-80 landing-wrapper">
+        <div class="w-full h-80 _landing-wrapper">
             <TopbarWidget/>
             <div class="w-full h-56 bg-center bg-cover relative" :style="'background-image: url(\''+footDatas?.boundArea.setup.subPageImg.value.tempMap.imgPath+'\')'">
                 <h1 class="-text-surface-0 _mix-blend-difference text-white absolute bottom-10 left-20 tracking-widest">{{useGlobal.getRouteInfo().meta.name}}</h1>
             </div>
         </div>
-         <div class="layout-main-container lg:!ml-0 !pt-3">
-            <div class="row">
+         <div class="_layout-main-container landing-wrapper _lg:_!ml-0 !pt-3">
+            <div class="row md:px-20 lg:px-32">
 <!--                <div class="_layout-sidebar !top-80 w-64 h-dvh mr-5 bg-surface-0 hidden md:block">-->
 <!--                    <app-menu></app-menu>-->
 <!--                </div>-->

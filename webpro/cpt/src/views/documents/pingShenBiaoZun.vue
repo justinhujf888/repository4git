@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="(pageEls,k,i) in psbzDatas" :key="i" :class="{'mt-20':i>0}">
-            <div v-for="element of pageEls.setup" class="mt-8" :class="{'md:px-32':element.type!='image'}">
+            <div v-for="element of pageEls.setup" class="mt-8" :class="{'_md:_px-32':element.type!='image'}">
                 <build-u-i :element="element" html-class="text-xl leading-10">
                     <template #groupFoot>
                         <div class="mt-10"></div>
