@@ -13,23 +13,29 @@ import com.aliyuncs.auth.sts.AssumeRoleResponse
 import com.aliyuncs.http.MethodType
 import com.aliyuncs.profile.DefaultProfile
 import com.aliyuncs.profile.IClientProfile
-import com.weavict.light.entity.PayWayInfoEntity
-import com.weavict.light.redis.RedisUtil
 import org.springframework.stereotype.Service
 
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class AliyunStsFactory {
-    private final Map<String, Map> stsAppMap = new ConcurrentHashMap<>();
-
-    private final RedisUtil redisUtil;
-
-    AliyunStsFactory(RedisUtil redisUtil) {
-        this.redisUtil = redisUtil;
+class AliyunStsFactory<T>
+{
+    @FunctionalInterface
+    interface AliYunStsHandler
+    {
+        String ganAliYunStsValue(String appId,String field)
     }
 
-    Map getAliyunStsByAppId(String appId)
+    AliyunStsFactory(AliYunStsHandler aliYunStsHandler)
+    {
+        this.aliYunStsHandler = aliYunStsHandler;
+    }
+
+    AliYunStsHandler aliYunStsHandler;
+
+    private final Map<String, T> stsAppMap = new ConcurrentHashMap<>();
+
+    Map getStsByAppId(String appId)
     {
         return stsAppMap.get(appId);
     }
@@ -44,8 +50,13 @@ class AliyunStsFactory {
         return stsAppMap;
     }
 
-    void createAndCacheService(PayWayInfoEntity pw) {
-        stsAppMap[pw.payWayInfoEntityPK.appId] = pw;
+    void createAndCacheService(T pw,String pwId) {
+        stsAppMap[pwId] = pw;
+    }
+
+    String ganAliYunStsValue(String appId,String field)
+    {
+        return aliYunStsHandler.ganAliYunStsValue(appId,field)
     }
 
     Map genOssAccessKey(Map map)
@@ -81,11 +92,6 @@ class AliyunStsFactory {
             println("Error message: " + e.getErrMsg());
             println("RequestId: " + e.getRequestId());
         }
-    }
-
-    String ganAliYunStsValue(String appId,String field)
-    {
-        return redisUtil.hGet("${appId}_aliyun_sts",field) as String;
     }
 
     OSS genOSSClient(String appId)

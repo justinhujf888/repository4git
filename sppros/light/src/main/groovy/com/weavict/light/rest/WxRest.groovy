@@ -3,12 +3,12 @@ package com.weavict.light.rest
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult
 import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.common.wechat.WxMaDynamicServiceFactory
 import com.weavict.light.entity.Buyer
 import com.weavict.light.entity.BuyerAppInfo
 import com.weavict.light.entity.BuyerAppInfoPK
 import com.weavict.light.module.RedisApi
 import com.weavict.light.module.UserBean
-import com.weavict.light.module.WxMaDynamicServiceFactory
 import com.weavict.light.redis.RedisUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody

@@ -2,8 +2,10 @@ package com.weavict.light.module
 
 import cn.hutool.core.date.DateUtil
 import com.weavict.common.aliyun.AliyunStsFactory
+import com.weavict.common.wechat.WxMaDynamicServiceFactory
 import com.weavict.light.entity.PayWayInfoEntity
 import com.weavict.light.redis.RedisUtil
+import jakarta.annotation.PostConstruct
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
@@ -26,13 +28,27 @@ class ScheduledBean extends ModuleBean// implements Job
     @Inject
     AliyunStsFactory aliyunStsFactory;
 
+    @Inject
+    WxMaDynamicServiceFactory wxMaDynamicServiceFactory;
+
+    @PostConstruct
+    void init()
+    {
+        redisApi.buildToken2Redis();
+    }
+
 	@Scheduled(fixedDelay = 7080000L)
-//	@PostConstruct
 	void wxInit()
 	{
-		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} begin---------------------------------";
-		redisApi.buildToken2Redis();
-		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
+		println "wxSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} begin---------------------------------";
+        for(entry in wxMaDynamicServiceFactory.getStsApps().entrySet())
+        {
+            PayWayInfoEntity payWayInfoEntity = entry.value as PayWayInfoEntity;
+            Map map = payWayInfoEntity.mapJson.wechat;
+            map["appId"] = payWayInfoEntity.payWayInfoEntityPK.appId;
+            redisApi.buildWechatSts2Redis(map);
+        }
+		println "wxSts ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
 	}
 
     @Scheduled(fixedDelay = 880000L)

@@ -1,4 +1,4 @@
-package com.weavict.light.module
+package com.weavict.common.wechat
 
 import cn.binarywang.wx.miniapp.api.WxMaService
 import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl
@@ -8,12 +8,28 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class WxMaDynamicServiceFactory {
+class WxMaDynamicServiceFactory<T> {
     private final Map<String, WxMaService> appIdToServiceMap = new ConcurrentHashMap<>();
+    private final Map<String, T> stsAppMap = new ConcurrentHashMap<>();
 
     WxMaDynamicServiceFactory() {
         // 应用启动时加载所有配置
 //        loadAllConfigs();
+    }
+
+    Map getStsByAppId(String appId)
+    {
+        return stsAppMap.get(appId);
+    }
+
+    int getStsAppCount()
+    {
+        return stsAppMap.entrySet().size();
+    }
+
+    Map getStsApps()
+    {
+        return stsAppMap;
     }
 
     // 获取或创建某个 appId 的服务实例
@@ -34,7 +50,8 @@ class WxMaDynamicServiceFactory {
     }
 
     // 创建并缓存服务实例
-    WxMaService createAndCacheService(Map config) {
+    WxMaService createAndCacheService(T pw,Map config) {
+        stsAppMap[config.appId as String] = pw;
         WxMaDefaultConfigImpl wxConfig = new WxMaDefaultConfigImpl();
         wxConfig.setAppid(config.appId as String);
         wxConfig.setSecret(config.secret as String);
