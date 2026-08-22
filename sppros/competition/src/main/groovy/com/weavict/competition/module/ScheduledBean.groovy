@@ -24,11 +24,9 @@ class ScheduledBean extends ModuleBean// implements Job
 
 //	@Scheduled(fixedDelay = 7080000L)
 	@PostConstruct
-	void wxInit()
+	void init()
 	{
-		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} begin---------------------------------";
-		redisApi.buildToken2Redis();
-		println "wxInit ${DateUtil.format(new Date(),"yyyy-MM-dd HH:mm:ss")} end---------------------------------";
+        redisApi.buildToken2Redis();
 	}
 
 	@Scheduled(fixedDelay = 880000L)
