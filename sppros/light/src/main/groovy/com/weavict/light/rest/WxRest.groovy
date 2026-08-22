@@ -7,9 +7,7 @@ import com.weavict.common.wechat.WxMaDynamicServiceFactory
 import com.weavict.light.entity.Buyer
 import com.weavict.light.entity.BuyerAppInfo
 import com.weavict.light.entity.BuyerAppInfoPK
-import com.weavict.light.module.RedisApi
 import com.weavict.light.module.UserBean
-import com.weavict.light.redis.RedisUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestBody
 import jakarta.servlet.http.HttpServletRequest
@@ -32,12 +30,6 @@ class WxRest extends BaseRest
 
     @Autowired
     UserBean userBean;
-
-    @Autowired
-    RedisApi redisApi
-
-    @Autowired
-    RedisUtil redisUtil;
 
     @Autowired
     WxMaDynamicServiceFactory wxMaDynamicServiceFactory;
@@ -205,11 +197,11 @@ class WxRest extends BaseRest
                     buyerAppInfo.wxopenid = b.wxopenid;
                     buyerAppInfo.wxid = b.wxid;
                     userBean.updateTheObject(buyerAppInfo);
-                    if (!redisUtil.hExists("buyer_${wxMaPhoneNumberInfo.purePhoneNumber}","bean"))
-                    {
-                        redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"bean");
-                    }
-                    redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"buyerAppInfo");
+//                    if (!redisUtil.hExists("buyer_${wxMaPhoneNumberInfo.purePhoneNumber}","bean"))
+//                    {
+//                        redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"bean");
+//                    }
+//                    redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"buyerAppInfo");
                     return objectMapper.writeValueAsString(
                             ["status":"OK",
                              "buyer":({
@@ -236,11 +228,11 @@ class WxRest extends BaseRest
                 buyerAppInfo.password = b.password;
                 userBean.updateTheObject(b);
                 userBean.updateTheObject(buyerAppInfo);
-                if (!redisUtil.hExists("buyer_${wxMaPhoneNumberInfo.purePhoneNumber}","bean"))
-                {
-                    redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"bean");
-                }
-                redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"buyerAppInfo");
+//                if (!redisUtil.hExists("buyer_${wxMaPhoneNumberInfo.purePhoneNumber}","bean"))
+//                {
+//                    redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"bean");
+//                }
+//                redisApi.buildRedisBuyer(objectMapper,wxMaPhoneNumberInfo.purePhoneNumber,"buyerAppInfo");
                 return objectMapper.writeValueAsString(
                         ["status":"OK",
                          "buyer":({

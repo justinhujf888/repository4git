@@ -8,7 +8,21 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.ConcurrentHashMap
 
 @Service
-class WxMaDynamicServiceFactory<T> {
+class WxMaDynamicServiceFactory<T>
+{
+    @FunctionalInterface
+    interface WechatStsHandler
+    {
+        String ganWechatStsValue(String appId,String field)
+    }
+
+    WxMaDynamicServiceFactory(WechatStsHandler wechatStsHandler)
+    {
+        this.wechatStsHandler = wechatStsHandler;
+    }
+
+    WechatStsHandler wechatStsHandler;
+
     private final Map<String, WxMaService> appIdToServiceMap = new ConcurrentHashMap<>();
     private final Map<String, T> stsAppMap = new ConcurrentHashMap<>();
 
@@ -47,6 +61,11 @@ class WxMaDynamicServiceFactory<T> {
 //            throw new RuntimeException("AppId 未配置: " + appId);
 //        }
 //        return createAndCacheService(config);
+    }
+
+    String ganWechatStsValue(String appId,String field)
+    {
+        return wechatStsHandler.ganWechatStsValue(appId,field)
     }
 
     // 创建并缓存服务实例

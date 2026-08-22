@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
  * Created by Justin on 2018/6/10.
  */
 @Component
-class RedisAliYunStsHandler implements AliyunStsFactory.AliYunStsHandler
+class RedisStsHandler implements AliyunStsFactory.AliYunStsHandler,WxMaDynamicServiceFactory.WechatStsHandler
 {
     @Autowired
     RedisUtil redisUtil;
@@ -32,6 +32,11 @@ class RedisAliYunStsHandler implements AliyunStsFactory.AliYunStsHandler
     String ganAliYunStsValue(String appId,String field)
     {
         return redisUtil.hGet("${appId}_aliyun_sts",field) as String;
+    }
+
+    @Override
+    String ganWechatStsValue(String appId, String field) {
+        return redisUtil.hGet("${appId}_wechat_sts",field) as String;
     }
 }
 
@@ -86,8 +91,7 @@ class RedisApi
         userBean.queryObject("select pw from PayWayInfoEntity as pw")?.each {pw->
             if (pw.mapJson?.aliyun)
             {
-//                redisUtil.lLeftPush("ossApps",pw.payWayInfoEntityPK.appId);
-                aliyunStsFactory.createAndCacheService(pw);
+                aliyunStsFactory.createAndCacheService(pw,pw.payWayInfoEntityPK.appId);
             }
             if (pw.mapJson?.wechat)
             {
