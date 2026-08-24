@@ -102,6 +102,7 @@ class AliyunStsFactory<T>
         ClientBuilderConfiguration clientBuilderConfiguration = new ClientBuilderConfiguration();
         // 显式声明使用 V4 签名算法
         clientBuilderConfiguration.setSignatureVersion(SignVersion.V4);
+//        clientBuilderConfiguration.setSupportCname(true);
         // 创建OSSClient实例。
         // 当OSSClient实例不再使用时，调用shutdown方法以释放资源。
         return OSSClientBuilder.create()
