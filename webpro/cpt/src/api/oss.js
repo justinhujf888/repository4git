@@ -6,17 +6,16 @@ import userRest from '@/api/dbs/userRest';
 import dialog from '@/api/uniapp/dialog';
 
 let client = null;
+let priviewClient = null;
 let signatureInfo = {};
 let aliOssAccessInfo = {};
 let  _tokenExpiredTime = 0;
 
 export default {
-    async access() {
-        return await this.buildAliOssAccessInfo(null);
-    },
+    // checkToken没有在使用，改成了需要client的时候判断是否过期
     async checkToken() {
         let times = 0;
-        if (!client) {
+        if (!client || !priviewClient) {
             await this.genClient();
             times = dayjs(_tokenExpiredTime).diff(new Date());
             console.log("init times",times,_tokenExpiredTime);
@@ -24,11 +23,11 @@ export default {
         const timer = setTimeout(async ()=>{
             try {
                 if (Date.now() >= _tokenExpiredTime && client) {
-                    const info = await this.access();
-                    client.options.stsToken = info.securityToken;
-                    client.options.accessKeyId = info.accessId;
-                    client.options.accessKeySecret =  info.accessKey;
-                    _tokenExpiredTime = new Date(info.expiration).getTime();
+                    await this.buildAliOssAccessInfo();
+                    client.options.stsToken = aliOssAccessInfo.securityToken;
+                    client.options.accessKeyId = aliOssAccessInfo.accessId;
+                    client.options.accessKeySecret =  aliOssAccessInfo.accessKey;
+                    _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
                     times = dayjs(_tokenExpiredTime).diff(new Date());
                     console.log("checkToken update token",times,_tokenExpiredTime);
                 }
@@ -64,7 +63,18 @@ export default {
         }
     },
     async genClient() {
-        if (client) {
+        if (client && priviewClient) {
+            if (Date.now() >= _tokenExpiredTime) {
+                await this.buildAliOssAccessInfo(null);
+                client.options.stsToken = aliOssAccessInfo.securityToken;
+                client.options.accessKeyId = aliOssAccessInfo.accessId;
+                client.options.accessKeySecret =  aliOssAccessInfo.accessKey;
+                priviewClient.options.stsToken = aliOssAccessInfo.securityToken;
+                priviewClient.options.accessKeyId = aliOssAccessInfo.accessId;
+                priviewClient.options.accessKeySecret =  aliOssAccessInfo.accessKey;
+                _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
+                console.log("async checkToken update token",_tokenExpiredTime);
+            }
             return client;
         } else {
             await this.buildAliOssAccessInfo(null);
@@ -75,16 +85,41 @@ export default {
                 accessKeySecret: aliOssAccessInfo.accessKey,
                 bucket: aliOssAccessInfo.bucketName,
                 stsToken: aliOssAccessInfo.securityToken,
-                endpoint:aliOssAccessInfo.selfEndPoint,cname:true,
+                endpoint:aliOssAccessInfo.endPoint,
                 refreshSTSToken: async () => {
                     console.log("refreshSTSToken");
-                    const info = await this.access();
+                    await this.buildAliOssAccessInfo();
                     // console.log("info",info);
-                    _tokenExpiredTime = new Date(info.expiration).getTime();
+                    _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
+                    priviewClient.options.stsToken = aliOssAccessInfo.securityToken;
+                    priviewClient.options.accessKeyId = aliOssAccessInfo.accessId;
+                    priviewClient.options.accessKeySecret =  aliOssAccessInfo.accessKey;
                     return {
-                        accessKeyId: info.accessId,
-                        accessKeySecret: info.accessKey,
-                        stsToken: info.securityToken
+                        accessKeyId: aliOssAccessInfo.accessId,
+                        accessKeySecret: aliOssAccessInfo.accessKey,
+                        stsToken: aliOssAccessInfo.securityToken
+                    }
+                },
+                refreshSTSTokenInterval: 400000
+            });
+            priviewClient = new OSS({
+                authorizationV4: true,
+                region: aliOssAccessInfo.region, //换成你自己的
+                accessKeyId: aliOssAccessInfo.accessId,
+                accessKeySecret: aliOssAccessInfo.accessKey,
+                bucket: aliOssAccessInfo.bucketName,
+                stsToken: aliOssAccessInfo.securityToken,
+                endpoint:aliOssAccessInfo.selfEndPoint,
+                cname:true,
+                refreshSTSToken: async () => {
+                    console.log("refreshSTSToken");
+                    await this.buildAliOssAccessInfo();
+                    // console.log("info",info);
+                    _tokenExpiredTime = new Date(aliOssAccessInfo.expiration).getTime();
+                    return {
+                        accessKeyId: aliOssAccessInfo.accessId,
+                        accessKeySecret: aliOssAccessInfo.accessKey,
+                        stsToken: aliOssAccessInfo.securityToken
                     }
                 },
                 refreshSTSTokenInterval: 400000
@@ -95,7 +130,7 @@ export default {
     },
     buildImgPath(imgPath) {
         if (client) {
-            return client.signatureUrl(imgPath,{'process': 'style/mobile'});
+            return priviewClient.signatureUrl(imgPath,{'process': 'style/mobile'});
             // return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600,'process': 'style/mobile'});
         } else {
             return null;
@@ -104,37 +139,40 @@ export default {
     buildPath(imgPath) {
         if (client) {
             // return client.signatureUrl(imgPath,{expires: Date.parse(new Date()) / 1000 + 3600});
-            return client.signatureUrl(imgPath,{expires: _tokenExpiredTime});
+            return priviewClient.signatureUrl(imgPath,{expires: _tokenExpiredTime});
         } else {
             return null;
         }
     },
     async buildPathAsync(path,hasProcess,process) {
-        if (!client) {
+        if (!priviewClient) {
             await this.genClient();
         }
-        if (Date.now() >= _tokenExpiredTime && client) {
-            const info = await this.access();
-            client.options.stsToken = info.securityToken;
-            client.options.accessKeyId = info.accessId;
-            client.options.accessKeySecret =  info.accessKey;
-            _tokenExpiredTime = new Date(info.expiration).getTime();
-            console.log("async checkToken update token",_tokenExpiredTime);
-        }
+        // if (Date.now() >= _tokenExpiredTime && client) {
+        //     const info = await this.access();
+        //     client.options.stsToken = info.securityToken;
+        //     client.options.accessKeyId = info.accessId;
+        //     client.options.accessKeySecret =  info.accessKey;
+        //     priviewClient.options.stsToken = info.securityToken;
+        //     priviewClient.options.accessKeyId = info.accessId;
+        //     priviewClient.options.accessKeySecret =  info.accessKey;
+        //     _tokenExpiredTime = new Date(info.expiration).getTime();
+        //     console.log("async checkToken update token",_tokenExpiredTime);
+        // }
         if (hasProcess) {
             if (process==null) {
-                return client?.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'});
+                return priviewClient?.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'});
                 // return new Promise(resolve => {
                 //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': 'style/mobile'}));
                 // });
             } else {
-                return client?.signatureUrl(path,{expires: _tokenExpiredTime,'process': process});
+                return priviewClient?.signatureUrl(path,{expires: _tokenExpiredTime,'process': process});
                 // return new Promise(resolve => {
                 //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime,'process': process}));
                 // });
             }
         } else {
-            return client.signatureUrl(path,{expires: _tokenExpiredTime});
+            return priviewClient.signatureUrl(path,{expires: _tokenExpiredTime});
             // return new Promise(resolve => {
             //     resolve(client.signatureUrl(path,{expires: _tokenExpiredTime}));
             // });
@@ -186,6 +224,6 @@ export default {
         //     }
         // })();
         await this.genClient();
-        await client.delete(path);
+        await priviewClient.delete(path);
     },
 };
