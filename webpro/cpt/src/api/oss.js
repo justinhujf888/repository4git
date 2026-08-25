@@ -75,6 +75,7 @@ export default {
                 accessKeySecret: aliOssAccessInfo.accessKey,
                 bucket: aliOssAccessInfo.bucketName,
                 stsToken: aliOssAccessInfo.securityToken,
+                endpoint:aliOssAccessInfo.selfEndPoint,cname:true,
                 refreshSTSToken: async () => {
                     console.log("refreshSTSToken");
                     const info = await this.access();
