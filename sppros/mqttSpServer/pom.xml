@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.dromara.mica-mqtt</groupId>
             <artifactId>mica-mqtt-server-spring-boot-starter</artifactId>
-            <version>2.6.8.1</version>
+            <version>2.6.9</version>
         </dependency>
 
         <dependency>
@@ -139,6 +139,42 @@
                         <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.weavict.mqttspserver.MqttSpServerApplication</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 指定输出目录为 target/lib -->
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <!-- 排除我们自己的项目（如果需要） -->
+                            <excludeGroupIds>${project.groupId}</excludeGroupIds>
+                            <!-- 是否复制传递性依赖，通常保持true -->
+                            <includeScope>runtime</includeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

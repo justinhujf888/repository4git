@@ -203,6 +203,7 @@ export default {
     },
     async uploadFileWithClient(file,key,okfun,erfun) {
         try {
+            await this.genClient();
             let res = await client.put(key,file);
             // console.log("res",res);
             if (okfun) {
@@ -224,6 +225,6 @@ export default {
         //     }
         // })();
         await this.genClient();
-        await priviewClient.delete(path);
+        await client.delete(path);
     },
 };
