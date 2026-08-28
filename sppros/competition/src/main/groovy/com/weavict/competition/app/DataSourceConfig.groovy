@@ -15,7 +15,7 @@ class DataSourceConfig
 {
     @Primary
     @Bean(name = "appDataSourceProperties")
-    @ConfigurationProperties(prefix = "spring.datasource")
+    @ConfigurationProperties(prefix = "spring.datasource.primary")
     DataSourceProperties appDataSourceProperties()
     {
         return new DataSourceProperties();

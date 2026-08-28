@@ -116,3 +116,18 @@ class GlobalCorsFilter {
 		return new CorsFilter(corsConfigurationSource);
 	}
 }
+
+
+/*
+docker network connect dockercompose_default 容器名
+
+docker build -t cptapp .
+
+docker run -d --name cptapp --network dockercompose_default -p 8091:8091 -e SPRING_DATASOURCE_PRIMARY_URL=jdbc:postgresql://pgsql:5432/cptdb -e SPRING_DATASOURCE_CAMUNDA_URL=jdbc:postgresql://pgsql:5432/camunda -e SPRING_DATASOURCE_PRIMARY_USERNAME=juser -e SPRING_DATASOURCE_PRIMARY_PASSWORD=weav2880com -e SPRING_DATASOURCE_CAMUNDA_USERNAME=juser -e SPRING_DATASOURCE_CAMUNDA_PASSWORD=weav2880com -e SPRING_DATA_REDIS_HOST=redis -e SPRING_DATA_REDIS_PORT=6379 -e SPRING_DATA_REDIS_PASSWORD=Weav2880com -e SPRING_DATA_REDIS_DATABASE=0 --restart=always cptapp
+
+
+==============================================================
+docker save -o cptapp.tar cptapp
+
+docker load -i /root/cptapp.tar
+ */
