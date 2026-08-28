@@ -130,4 +130,47 @@ docker run -d --name cptapp --network dockercompose_default -p 8091:8091 -e SPRI
 docker save -o cptapp.tar cptapp
 
 docker load -i /root/cptapp.tar
+
+
+
+
+
+============================================================================================
+# ===== 第一阶段：构建 =====
+FROM maven:3.9-eclipse-temurin-22 AS builder
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn package -DskipTests -B
+
+# ===== 第二阶段：提取分层 =====
+FROM eclipse-temurin:22-jdk-jammy AS extractor
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+RUN java -Djarmode=layertools -jar app.jar extract
+
+# ===== 第三阶段：运行 =====
+FROM eclipse-temurin:22-jre-jammy
+WORKDIR /app
+COPY --from=extractor /app/dependencies/ ./
+COPY --from=extractor /app/spring-boot-loader/ ./
+COPY --from=extractor /app/snapshot-dependencies/ ./
+COPY --from=extractor /app/application/ ./
+
+ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75"
+ENTRYPOINT ["java", "com.example.CptApplication"]
+
+
+
+
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <configuration>
+        <layers>
+            <enabled>true</enabled>
+        </layers>
+    </configuration>
+</plugin>
  */
