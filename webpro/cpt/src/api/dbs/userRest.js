@@ -61,11 +61,17 @@ export default {
             true
         );
     },
-    queryJudgeList(ds, onfun) {
-        Http.callHttpFunction('/r/user/queryJudgeList',ds,onfun);
+    async buyerInfo(ds, onfun) {
+        return await Http.callHttpFunction('/r/user/buyerInfo',ds,onfun);
     },
-    updateJudge(ds, onfun) {
-        Http.callHttpFunction('/r/user/updateJudge',ds,onfun);
+    async saveBuyerAppInfo(ds, onfun) {
+        return await Http.callHttpFunction('/r/user/saveBuyerAppInfo',ds,onfun);
+    },
+    async queryJudgeList(ds, onfun) {
+        return await Http.callHttpFunction('/r/user/queryJudgeList',ds,onfun);
+    },
+    async updateJudge(ds, onfun) {
+        return await Http.callHttpFunction('/r/user/updateJudge',ds,onfun);
     },
     async managerLogin(ds,onfun) {
         return await Http.callHttpFunction('/r/user/managerLogin',ds,onfun);

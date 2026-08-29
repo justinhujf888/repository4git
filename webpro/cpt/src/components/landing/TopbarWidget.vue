@@ -279,6 +279,8 @@ function barButtonClick(id) {
 function logout() {
     dialog.confirm("是否退出当前登录？",()=>{
         localStorage.removeItem("userId");
+        localStorage.removeItem("loginToken");
+        localStorage.removeItem("buyerAppInfo");
         userId.value = null;
         page.redirectTo("landing",null);
     },null);

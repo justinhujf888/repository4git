@@ -249,8 +249,8 @@ services:
       redis:
         condition: service_started
     environment:
-      SPRING_DATASOURCE_PRIMARY_JDBC_URL: jdbc:postgresql://pgsql:5432/cptdb
-      SPRING_DATASOURCE_CAMUNDA_JDBC_URL: jdbc:postgresql://pgsql:5432/camunda
+      SPRING_DATASOURCE_PRIMARY_URL: jdbc:postgresql://pgsql:5432/cptdb
+      SPRING_DATASOURCE_CAMUNDA_URL: jdbc:postgresql://pgsql:5432/camunda
       SPRING_DATASOURCE_PRIMARY_USERNAME: juser
       SPRING_DATASOURCE_PRIMARY_PASSWORD: weav2880com
       SPRING_DATASOURCE_CAMUNDA_USERNAME: juser

@@ -87,11 +87,11 @@ const onFormSubmit = ({ valid }) => {
     if (valid) {
         userRest.buyerLogin(buyer.value.phone,buyer.value.password,(data)=>{
             if (data.status=="OK") {
-                loginToken = data.loginToken;
                 // useStorage("userId",buyer.value.phone);
                 // useStorage("loginToken",loginToken);
                 util.intoStorgeCry("userId",buyer.value.phone);
-                util.intoStorgeCry("loginToken",loginToken);
+                util.intoStorgeCry("loginToken",data.loginToken);
+                util.intoStorgeCry("buyerAppInfo",JSON.stringify(data.buyerAppInfo));
                 dialog.alertBack("您已成功登录",()=>{
                     // Page.redirectTo("landing",null);
                     afterLogin();

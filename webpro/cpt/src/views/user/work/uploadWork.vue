@@ -6,6 +6,10 @@
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="w-full grid gap-x-2 gap-y-4">
                     <div ref="refValid">
+                        <FloatLabel variant="on" v-if="!wxNameHas">
+                            <label for="wxnickname" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">作者姓名</label>
+                            <InputText name="wxnickname" class="w-full" v-model="buyerAppInfo.wxNickName" />
+                        </FloatLabel>
                         <FloatLabel variant="on" v-if="process=='c' && competition.guiGeList">
                             <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
                             <Select name="guige" v-model="work.guiGe" :options="selGuiGeList" optionLabel="temp" fluid placeholder="选择分组"/>
@@ -80,7 +84,7 @@
                         <label :for="item.id" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">{{item.name}}</label>
                         <InputText :name="item.id" v-model="item.value" autoResize rows="8" class="w-full" :readonly="work.status==1"/>
                     </FloatLabel>
-                    <div class="center mt-16 sm:row col gap-8" v-if="work.status<1">
+                    <div class="center mt-16 sm:row col gap-8" vv-if="work.status<1">
                         <div class="text-base p-1 border-btn">
                             <Button size="small" type="submit" label="暂时保存" variant="text" class="!center !px-5 !py-2 !w-40 !bg-lime-100 !text-gray-800 !font-semibold sub-bg" @click="preSave(0)"></Button>
                         </div>
@@ -112,6 +116,7 @@ import priviewImage from "@/components/my/priviewImage.vue";
 import videoInfo from "@/components/my/videoInfo.vue";
 import TitleText from '@/components/my/form/titleText.vue';
 import page from '@/api/uniapp/page';
+import util from '@/api/util';
 
 const imageFileUpload = useTemplateRef("imageFileUpload");
 const videoFileUpload = useTemplateRef("videoFileUpload");
@@ -131,6 +136,9 @@ const process = ref(null);
 const selGuiGeList = ref([]);
 
 const refPriviewImage = useTemplateRef("refPriviewImage");
+
+const buyerAppInfo = ref({});
+const wxNameHas = ref(false);
 
 let item = null;
 let shiTempSave = true;
@@ -155,6 +163,14 @@ onMounted(() => {
     //     {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)},
     //     {title:"上传作品其他细节至少2张",text:"",file:null,bean:buildWorkItem(0,3)}
     // ];
+    let userInfo = util.giveStorgeCry("buyerAppInfo");
+    if (userInfo) {
+        buyerAppInfo.value = JSON.parse(userInfo);
+        console.log(buyerAppInfo.value);
+        if (buyerAppInfo.value.wxNickName) {
+            wxNameHas.value = true;
+        }
+    }
 });
 
 function uploadButtonClick(_item,index) {
@@ -187,6 +203,7 @@ function buildWorkItem(mediaType,type) {
 
 const resolver = ({ values }) => {
     let requireList = [];
+    requireList.push({val:buyerAppInfo.value.wxNickName,name:"wxNickName"});
     requireList.push({val:work.value.name,name:"name"});
     if (competition.value.guiGeList && competition.value.guiGeList.length > 0) {
         requireList.push({val:work.value.guiGe.id,name:"guige"});
@@ -280,6 +297,11 @@ const onFormSubmit = ({ valid }) => {
         work.value.workItemList = null;
 
         preUploadFiles = lodash.filter(lodash.concat(workImageItems.value,workVideoItems.value),(o)=>{return o.src});
+        userRest.saveBuyerAppInfo({buyerAppInfo:buyerAppInfo.value},(res)=>{
+            if (res.status=="OK") {
+                util.intoStorgeCry("buyerAppInfo",JSON.stringify(buyerAppInfo.value));
+            }
+        });
         uploadFile(0);
 
         // lodash.forEach(lodash.concat(workImageItems.value,workVideoItems.value),(v)=>{

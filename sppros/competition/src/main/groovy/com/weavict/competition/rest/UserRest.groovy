@@ -110,6 +110,31 @@ class UserRest extends BaseRest
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/buyerInfo")
+    String buyerInfo(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            BuyerAppInfo buyerAppInfo = userBean.findObjectById(BuyerAppInfo.class,new BuyerAppInfoPK(query.appId,query.userId));
+            return objectMapper.writeValueAsString(
+                    ["status":"OK",
+                     "buyerAppInfo":({
+                         buyerAppInfo.password = "";
+                         return buyerAppInfo;
+                     }).call(),
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Path("/resetBuyerPassword")
     String resetBuyerPassword(@RequestBody Map<String,Object> query)
     {
@@ -121,6 +146,26 @@ class UserRest extends BaseRest
                 return """{"status":"ER_NOHAS"}""";
             }
             userBean.ressetBuyerPassword(query.appId,query.userId,query.password);
+            return """{"status":"OK"}""";
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/saveBuyerAppInfo")
+    String saveBuyerAppInfo(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+            ObjectMapper objectMapper = buildObjectMapper();
+            BuyerAppInfo buyerAppInfo = objToBean(query.buyerAppInfo, BuyerAppInfo.class, objectMapper);
+            userBean.updateTheObjectFilds(BuyerAppInfo.simpleName,"buyerAppInfoPK.appId = :appId and buyerAppInfoPK.buyerId = :buyerId",[wxNickName:buyerAppInfo.wxNickName],[appId:query.appId as String,buyerId:buyerAppInfo.buyerAppInfoPK.buyerId],false);
             return """{"status":"OK"}""";
         }
         catch (Exception e)
