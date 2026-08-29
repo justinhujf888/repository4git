@@ -119,6 +119,32 @@ class GlobalCorsFilter {
 
 
 /*
+FROM eclipse-temurin:22-jre
+
+WORKDIR /app
+
+# 先拷贝 lib 依赖（变更频率低，利用 Docker 层缓存）
+COPY target/lib/ ./lib/
+
+# 再拷贝你的应用 jar
+COPY target/cpt-0.0.1-SNAPSHOT.jar ./app.jar
+
+EXPOSE 8091
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
+
+
+
+
+docker network ls
+docker network inspect dockercompose_default
+
+只查看该网络下有哪些容器
+docker network inspect dockercompose_default --format '{{range .Containers}}{{.Name}} {{end}}'
+
+
 docker network connect dockercompose_default 容器名
 
 docker build -t cptapp .
@@ -173,4 +199,77 @@ ENTRYPOINT ["java", "com.example.CptApplication"]
         </layers>
     </configuration>
 </plugin>
+
+version: '3.8'
+
+services:
+  # ===== PostgreSQL 数据库 =====
+  pgsql:
+    image: postgres:16-alpine
+    container_name: pgsql
+    restart: always
+    environment:
+      POSTGRES_USER: juser
+      POSTGRES_PASSWORD: weav2880com
+      POSTGRES_DB: cptdb
+      TZ: Asia/Shanghai
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - cptapp_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U juser -d cptdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== Redis 缓存 =====
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    command: redis-server --requirepass Weav2880com --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - cptapp_net
+
+  # ===== Spring Boot 应用 =====
+  cptapp:
+    image: cptapp:latest
+    container_name: cptapp
+    restart: always
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_PRIMARY_JDBC_URL: jdbc:postgresql://pgsql:5432/cptdb
+      SPRING_DATASOURCE_CAMUNDA_JDBC_URL: jdbc:postgresql://pgsql:5432/camunda
+      SPRING_DATASOURCE_PRIMARY_USERNAME: juser
+      SPRING_DATASOURCE_PRIMARY_PASSWORD: weav2880com
+      SPRING_DATASOURCE_CAMUNDA_USERNAME: juser
+      SPRING_DATASOURCE_CAMUNDA_PASSWORD: weav2880com
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: Weav2880com
+      SPRING_DATA_REDIS_DATABASE: 0
+      TZ: Asia/Shanghai
+    ports:
+      - "8080:8080"
+    networks:
+      - cptapp_net
+
+volumes:
+  pgsql_data:
+  redis_data:
+
+networks:
+  cptapp_net:
+    driver: bridge
  */
