@@ -15,6 +15,7 @@ import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.JudgeWork
 import com.weavict.competition.entity.JudgeWorkPK
 import com.weavict.competition.entity.MCPageSetup
+import com.weavict.competition.entity.MCPageSetupPK
 import com.weavict.competition.entity.MasterCompetition
 import com.weavict.competition.entity.MasterCompetitionDeployLogs
 import com.weavict.competition.entity.OrgHuman
@@ -305,7 +306,53 @@ class WorkRest extends BaseRest
     {
         try
         {
-            workService.updateTheObject(this.objToBean(query.masterCompetition, MasterCompetition.class,null));
+            MasterCompetition masterCompetition = this.objToBean(query.masterCompetition, MasterCompetition.class,null);
+            String masterCompetitionId = null;//最近的一次比赛发布ID
+            Map currentMcMap = workService.giveCurrentMasterCompetitionSetup([appId:query.appId,listKey:["masterCompetitionId"]])?.map;
+            if (currentMcMap!=null && currentMcMap.masterCompetitionId !=null && false)
+            {
+                masterCompetitionId = currentMcMap.masterCompetitionId;
+            }
+            else
+            {
+                List<MasterCompetitionDeployLogs> masterCompetitionDeployLogsList = workService.qyMasterCompetitionDeployLogs([appId:query.appId,shiLimit:true,pageSize:1,currentPageNu:0,countKey:"masterCompetitionId"]);
+                if (masterCompetitionDeployLogsList!=null && masterCompetitionDeployLogsList.size()>0)
+                {
+                    masterCompetitionId = masterCompetitionDeployLogsList[0].masterCompetitionId;
+                }
+            }
+
+            //存在已经发布或者比赛结束的masterCompetition
+            if (masterCompetitionId!=null)
+            {
+                MasterCompetition sampleMc = workService.findObjectById(MasterCompetition.class,masterCompetitionId);
+                workService.detach(sampleMc);
+
+                List<MCPageSetup> mcPageSetupList = workService.qyPageSetup(masterCompetitionId,null,query.appId as String);
+
+                workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                    masterCompetition.description = sampleMc.description;
+                    masterCompetition.judgeSetup = sampleMc.judgeSetup;
+                    masterCompetition.setupFields = sampleMc.setupFields;
+                    masterCompetition.workSetup = sampleMc.workSetup;
+                    masterCompetition.flowSetup = sampleMc.flowSetup;
+                    workService.updateObject(masterCompetition);
+
+                    for(MCPageSetup mc in mcPageSetupList)
+                    {
+                        workService.detach(mc);
+                        MCPageSetup mcPageSetup = new MCPageSetup();
+                        mcPageSetup.mcPageSetupPK = new MCPageSetupPK(masterCompetition.id,mc.mcPageSetupPK.key,mc.mcPageSetupPK.appId);
+                        mcPageSetup.setupJson = mc.setupJson;
+                        workService.updateObject(mcPageSetup);
+                    }
+                });
+            }
+            else //第一次发布
+            {
+                workService.updateTheObject(masterCompetition);
+            }
+
             return """{"status":"OK"}""";
         }
         catch (Exception e)

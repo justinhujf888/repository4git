@@ -298,20 +298,18 @@ let host = inject("domain");
 let selIndex = -1;
 
 onMounted(() => {
-    workRest.qyMasterSiteCompetition({siteCompetitionId:host},(res)=>{
-        if (res.status=="OK") {
-            if (res.data) {
-                masterCompetitionList.value = res.data;
-                // console.log("masterCompetitionList",masterCompetitionList.value);
-            }
-        }
-    });
     systemRest.pingShenFlow({},(res)=>{
         if (res.status=="OK") {
             pingShenflow.value = res.data;
         }
     });
+    loadMasterCpt();
 });
+
+const loadMasterCpt = async () => {
+    masterCompetitionList.value = (await workRest.qyMasterSiteCompetition({siteCompetitionId:host},null)).data;
+    // console.log("masterCompetitionList",masterCompetitionList.value);
+};
 
 const getSplitItems = (data,index)=>{
     selMasterCompetition.value = data;
@@ -496,13 +494,14 @@ const onNodeSelect = (node) => {
     // console.log(masterCompetition.judgeSetup);
 };
 
-const returnFunction = (obj)=>{
+const returnFunction = async (obj)=>{
     obj.masterCompetition.beginDate = dayjs(obj.masterCompetition.beginDate).format("YYYY-MM-DD");
     obj.masterCompetition.endDate = dayjs(obj.masterCompetition.endDate).format("YYYY-MM-DD");
     obj.masterCompetition.pingShenDate = dayjs(obj.masterCompetition.pingShenDate).format("YYYY-MM-DD");
     obj.masterCompetition.cptDate = dayjs(obj.masterCompetition.cptDate).format("YYYY-MM-DD");
     if (obj.process=="c") {
-        masterCompetitionList.value.push(obj.masterCompetition);
+        // masterCompetitionList.value.push(obj.masterCompetition);
+        await loadMasterCpt();
         dialog.toastSuccess(`${obj.masterCompetition.name}年份赛事基本资料已建立，请在列表中进行其它项目设置。`);
     } else if (obj.process=="u") {
         masterCompetitionList.value[obj.index] = obj.masterCompetition;

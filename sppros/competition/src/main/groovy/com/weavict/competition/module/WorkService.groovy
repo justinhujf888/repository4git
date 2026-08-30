@@ -101,7 +101,7 @@ class WorkService extends ModuleBean
 
     List<MasterCompetitionDeployLogs> qyMasterCompetitionDeployLogs(Map query)
     {
-        List<MasterCompetitionDeployLogs> masterCompetitionDeployLogsList = this.newQueryUtils(true,true).masterTable("mastercompetitiondeploylogs","mcd",[
+        QueryUtils queryUtils = this.newQueryUtils(true,true).masterTable("mastercompetitiondeploylogs","mcd",[
                 [sf:"mastercompetitionid",bf:"masterCompetitionId"],
                 [sf:"appid",bf:"appId"],
                 [sf:"deploydate",bf:"deployDate"]
@@ -111,8 +111,12 @@ class WorkService extends ModuleBean
                 .where("mcd.appid = :appId", ["appId": query.appId], null, { return true })
                 .where("mcd.mastercompetitionid = :masterCompetitionId", ["masterCompetitionId": query.masterCompetitionId], "and", { return !(query.masterCompetitionId in [null,""]) })
                 .beanSetup(MasterCompetitionDeployLogs.class,null,null)
-                .orderBy("mcd.deploydate").buildSql().run().content;
-        return masterCompetitionDeployLogsList;
+                .orderBy("mcd.deploydate desc").buildSql();
+        if (query.shiLimit as boolean==true)
+        {
+            queryUtils.pageLimit(query.pageSize as int,query.currentPageNu as int,query.countKey as String);
+        }
+        return queryUtils.run().content as List<MasterCompetitionDeployLogs>;
     }
 
     List<Competition> qyCompetitionList(Map query)
