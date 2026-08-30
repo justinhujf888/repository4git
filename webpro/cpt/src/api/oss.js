@@ -145,9 +145,7 @@ export default {
         }
     },
     async buildPathAsync(path,hasProcess,process) {
-        if (!priviewClient) {
-            await this.genClient();
-        }
+        await this.genClient();
         // if (Date.now() >= _tokenExpiredTime && client) {
         //     const info = await this.access();
         //     client.options.stsToken = info.securityToken;

@@ -298,6 +298,7 @@ export const Beans = {
 
     psStatus() {
         return [
+            {id:-1,name:"评审未开始"},
             {id:0,name:"作品已提交，进入初筛"},
             {id:1,name:"作品通过初筛，进入复审"},
             {id:2,name:"作品进入第二轮复审"}

@@ -166,7 +166,7 @@ onMounted(() => {
     let userInfo = util.giveStorgeCry("buyerAppInfo");
     if (userInfo) {
         buyerAppInfo.value = JSON.parse(userInfo);
-        console.log(buyerAppInfo.value);
+        // console.log(buyerAppInfo.value);
         if (buyerAppInfo.value.wxNickName) {
             wxNameHas.value = true;
         }
@@ -203,7 +203,7 @@ function buildWorkItem(mediaType,type) {
 
 const resolver = ({ values }) => {
     let requireList = [];
-    requireList.push({val:buyerAppInfo.value.wxNickName,name:"wxNickName"});
+    requireList.push({val:buyerAppInfo.value.wxNickName,name:"wxnickname"});
     requireList.push({val:work.value.name,name:"name"});
     if (competition.value.guiGeList && competition.value.guiGeList.length > 0) {
         requireList.push({val:work.value.guiGe.id,name:"guige"});
