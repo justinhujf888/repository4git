@@ -1,7 +1,21 @@
 import util from "@/api/util.js"
 export const Beans = {
-	buildPId(pid) {
-		return pid + new Date().getTime() + util.random_string(8);
+	buildPId(pid="") {
+		// return pid + new Date().getTime() + util.random_string(8);
+        const now = new Date();
+        // yyyyMMddHHmmssSSS
+        const y = now.getFullYear();
+        const M = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        const H = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        const SSS = String(now.getMilliseconds()).padStart(3, '0');
+
+        const dateStr = `${y}${M}${d}${H}${m}${s}${SSS}`;
+        // 1000 ~ 9999
+        const rand = Math.floor(Math.random() * 8999 + 1000);
+        return `${pid}${dateStr}${rand}`;
 	},
 
 	buyer() {

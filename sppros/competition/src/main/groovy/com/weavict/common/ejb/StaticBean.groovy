@@ -19,7 +19,7 @@ class StaticBean
         return objectMapper;
     }
 
-    static ObjectMapper objectMapping4DateTime(String dateFormat,String timeZone)
+    static ObjectMapper objectMapping4DateTime(String dateFormat="yyyy-MM-dd HH:mm:ss",String timeZone="GMT+8")
     {
         if (objectMapperDateTime==null)
         {
