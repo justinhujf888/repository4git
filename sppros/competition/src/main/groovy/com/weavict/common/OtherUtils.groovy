@@ -1,6 +1,6 @@
 package com.weavict.common
 
-
+import cn.hutool.core.date.DateUtil
 import cn.hutool.core.io.resource.ClassPathResource
 import cn.hutool.setting.dialect.Props
 import com.weavict.competition.module.RedisApi
@@ -89,4 +89,32 @@ class OtherUtils
 	{
 		mapDatas = m;
 	}
+
+    static String makePId(String ps="")
+    {
+        return "$ps${DateUtil.format(new Date(),"yyyyMMddHHmmssSSS")}${(int)(Math.random() * (double)8999.0F + (double)1000.0F)}";
+    }
+
+    /**
+     * 多次原地替换，同一个缓冲区，减少字符串拷贝
+     * @param source 原始字符串
+     * @param replaces 待替换map key:原文本 value:替换后文本
+     * @return 处理完成字符串
+     */
+    static String multiReplace(String source, Map<String, String> replaces) {
+        if (source == null || source.isEmpty() || replaces == null || replaces.isEmpty()) {
+            return source;
+        }
+        StringBuilder sb = new StringBuilder(source);
+        for (Map.Entry<String, String> entry : replaces.entrySet()) {
+            String oldStr = entry.getKey();
+            String newStr = entry.getValue();
+            int idx;
+            //循环把当前oldStr全部替换完成
+            while ((idx = sb.indexOf(oldStr)) != -1) {
+                sb.replace(idx, idx + oldStr.length(), newStr);
+            }
+        }
+        return sb.toString();
+    }
 }

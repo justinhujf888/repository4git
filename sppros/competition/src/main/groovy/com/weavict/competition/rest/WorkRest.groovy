@@ -1,17 +1,13 @@
 package com.weavict.competition.rest
 
-import cn.hutool.core.date.DateUtil
-import cn.hutool.core.io.FileUtil
 import cn.hutool.core.io.file.FileWriter
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.weavict.competition.entity.Buyer
 import com.weavict.competition.entity.Competition
 import com.weavict.competition.entity.CompetitionJudge
 import com.weavict.competition.entity.CompetitionJudgePK
 import com.weavict.competition.entity.CurrentMasterCompetitionSetup
 import com.weavict.competition.entity.CurrentMasterCompetitionSetupPK
 import com.weavict.competition.entity.GuiGe
-import com.weavict.competition.entity.Judge
 import com.weavict.competition.entity.JudgeWork
 import com.weavict.competition.entity.JudgeWorkPK
 import com.weavict.competition.entity.MCPageSetup
@@ -330,9 +326,13 @@ class WorkRest extends BaseRest
 
                 List<MCPageSetup> mcPageSetupList = workService.qyPageSetup(masterCompetitionId,null,query.appId as String);
 
+                List<Competition> competitionList = workService.qyCompetitionList([appId:query.appId,masterCompetitionId:masterCompetitionId,shiQyGuiGeList:true]);
+
                 workService.transactionCall(TransactionDefinition.PROPAGATION_REQUIRES_NEW,{
+                    Map replaceMap = [:];
+
                     masterCompetition.description = sampleMc.description;
-                    masterCompetition.judgeSetup = sampleMc.judgeSetup;
+                    masterCompetition.judgeSetup = null;
                     masterCompetition.setupFields = sampleMc.setupFields;
                     masterCompetition.workSetup = sampleMc.workSetup;
                     masterCompetition.flowSetup = sampleMc.flowSetup;
@@ -346,6 +346,37 @@ class WorkRest extends BaseRest
                         mcPageSetup.setupJson = mc.setupJson;
                         workService.updateObject(mcPageSetup);
                     }
+
+                    for(Competition cp in competitionList)
+                    {
+                        workService.detach(cp);
+                        Competition competition = new Competition();
+                        competition.id = OtherUtils.makePId();
+                        competition.appId = query.appId;
+                        competition.description = cp.description;
+                        competition.masterCompetition = new MasterCompetition(id:masterCompetition.id);
+                        competition.name = cp.name;
+                        competition.status = cp.status;
+                        workService.updateObject(competition);
+                        replaceMap.put(cp.id,competition.id);
+
+                        cp.guiGeList = workService.qyGuiGeList8CompetitionId(cp.id);
+                        for(GuiGe gg in cp.guiGeList)
+                        {
+                            workService.detach(gg);
+                            GuiGe guiGe = new GuiGe();
+                            guiGe.id = OtherUtils.makePId();
+                            guiGe.appId = gg.appId;
+                            guiGe.name = gg.name;
+                            guiGe.description = gg.description;
+                            guiGe.guigeFields = gg.guigeFields;
+                            guiGe.competition = competition;
+                            workService.updateObject(guiGe);
+                            replaceMap.put(gg.id,guiGe.id);
+                        }
+                    }
+                    ObjectMapper objectMapper = buildObjectMapper();
+                    workService.updateTheObjectFilds(MasterCompetition.simpleName,"id=:id and appId=:appId",[judgeSetup:objectMapper.readValue(OtherUtils.multiReplace(objectMapper.writeValueAsString(sampleMc.judgeSetup),replaceMap as Map),Map.class)],[id:masterCompetition.id,appId:masterCompetition.appId],false);
                 });
             }
             else //第一次发布
