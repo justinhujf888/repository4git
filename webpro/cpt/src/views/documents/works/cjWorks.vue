@@ -212,6 +212,7 @@ const loadFont = ()=>{
         for(let i=0;i<=workList.value.length-1;i++) {
             watch([imgStatusList.value[i],logoImgStatus],async (v)=>{
                 // console.log(v[0],v[1]);
+                //(v[0].status.jxImg === "loaded" && i<=2) || i>2 : 因为金银铜奖只有前三记录才有，所以判断i是不是前三名
                 if (v[0].status.workImg === 'loaded' && ((v[0].status.jxImg === "loaded" && i<=2) || i>2) && v[1] === "loaded") {
                     await util.sleep(100);
                     workList.value[i].tempMap.imgPath = await getCanvasDataUrl(stageRef.value[i].getNode());

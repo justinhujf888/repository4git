@@ -23,7 +23,7 @@ class DataSourceConfig
 
     @Primary
     @Bean(name = "appDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.hikari")
+    @ConfigurationProperties(prefix = "spring.datasource.primary.hikari")
     DataSource appDataSource()
     {
         DataSourceProperties properties = this.appDataSourceProperties();

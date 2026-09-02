@@ -11,20 +11,11 @@ import org.springframework.stereotype.Component
 @Component
 class OtherUtils
 {
-	@Autowired
-	private RedisApi sourceRedisApi;
-
 	private static RedisApi redisApi;
 
 	private static Props props;
 
 	private static List mapDatas;
-
-	@PostConstruct
-	void init()
-	{
-		redisApi = sourceRedisApi;
-	}
 
 	static Props giveTheProps()
 	{

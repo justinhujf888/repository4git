@@ -2,23 +2,24 @@
     <routerPath :home="null" :items="menuItems"/>
     <div class="card text-xl h-auto">
         <title-text :text="competition?.name" text-class="text-black font-semibold"/>
-        <div class="start overflow-hidden mt-10">
+        <div class="start overflow-hidden mt-5">
             <div class="col center w-full p-2">
                 <Form v-slot="$form" :resolver @submit="onFormSubmit" class="w-full grid gap-x-2 gap-y-4">
-                    <div ref="refValid">
-                        <FloatLabel variant="on" v-if="!wxNameHas">
-                            <label for="wxnickname" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">作者姓名</label>
-                            <InputText name="wxnickname" class="w-full" v-model="buyerAppInfo.wxNickName" />
-                        </FloatLabel>
-                        <FloatLabel variant="on" v-if="process=='c' && competition.guiGeList">
-                            <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
-                            <Select name="guige" v-model="work.guiGe" :options="selGuiGeList" optionLabel="temp" fluid placeholder="选择分组"/>
-                        </FloatLabel>
-                        <IftaLabel variant="on" v-if="process=='u' && work.guiGe">
-                            <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium">选择分组</label>
-                            <InputText name="guige" class="w-full" :value="work.guiGe?.name" readonly />
-                        </IftaLabel>
-                    </div>
+                    <div ref="refValid"></div>
+                    <FloatLabel variant="on" v-if="!wxNameHas">
+                        <label for="wxnickname" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">作者姓名</label>
+                        <InputText name="wxnickname" class="w-full" v-model="buyerAppInfo.wxNickName" />
+                    </FloatLabel>
+
+                    <FloatLabel variant="on" v-if="process=='c' && competition.guiGeList">
+                        <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2 z-30">选择分组</label>
+                        <Select name="guige" v-model="work.guiGe" :options="selGuiGeList" optionLabel="temp" fluid placeholder="选择分组"/>
+                    </FloatLabel>
+                    <IftaLabel variant="on" v-if="process=='u' && work.guiGe">
+                        <label for="guige" class="block text-surface-900 dark:text-surface-0 text-base font-medium">选择分组</label>
+                        <InputText name="guige" class="w-full" :value="work.guiGe?.name" readonly />
+                    </IftaLabel>
+
                     <FloatLabel variant="on">
                         <label for="name" class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">作品名称</label>
                         <InputText name="name" class="w-full" v-model="work.name" :readonly="work.status==1"/>
