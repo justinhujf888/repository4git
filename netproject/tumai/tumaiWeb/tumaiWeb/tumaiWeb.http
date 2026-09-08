@@ -1,0 +1,18 @@
+@tumaiWeb_HostAddress = http://localhost:5230
+#@tumaiWeb_HostAddress = http://localhost:5000
+#GET {{tumaiWeb_HostAddress}}/weatherforecast/
+GET {{tumaiWeb_HostAddress}}/api/stockinfo/324523452
+
+###
+POST {{tumaiWeb_HostAddress}}/api/stockinfo/TestQuery
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id": 1001,
+  "name": "测试商品",
+  "pageIndex": 1,
+  "pageSize": 20
+}
+
+###
