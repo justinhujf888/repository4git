@@ -38,15 +38,15 @@ public class StockBasic : BaseEntity
     /// </summary>
     public bool IsActive { get; set; } = true;
 
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime CreateTime { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime UpdateTime { get; set; } = DateTime.UtcNow;
+    // /// <summary>
+    // /// 创建时间
+    // /// </summary>
+    // public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+    //
+    // /// <summary>
+    // /// 更新时间
+    // /// </summary>
+    // public DateTime UpdateTime { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// 行情快照集合

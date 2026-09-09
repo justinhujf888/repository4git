@@ -115,7 +115,7 @@ public class StockQuoteLatestConfiguration : IEntityTypeConfiguration<StockQuote
             .HasColumnName("stock_code")
             .HasColumnType("varchar(20)")
             .IsRequired();
-
+        // 注意优先用 .HasPrecision(16, 4) 替代 .HasColumnType("numeric(16,4)")；下面示例不规范，迁移不是PGSQL的数据库会有问题
         b.Property(e => e.Price).HasColumnName("p").HasColumnType("numeric(16,4)");
         b.Property(e => e.YesterdayClose).HasColumnName("yc").HasColumnType("numeric(16,4)");
         b.Property(e => e.Open).HasColumnName("o").HasColumnType("numeric(16,4)");
