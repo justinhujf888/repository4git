@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using tumaiWeb.Controller;
 using tumaiWeb.Data.Entities;
 using tumaiWeb.Data.Repository;
 
@@ -95,6 +96,8 @@ if (app.Environment.IsDevelopment())
     // app.UseSwaggerUI();
 }
 
+// 放在路由、MapControllers前面！
+app.UseMiddleware<RequestDecryptMiddleware>();
 // ✅关键：启用控制器路由中间件
 app.MapControllers();
 
