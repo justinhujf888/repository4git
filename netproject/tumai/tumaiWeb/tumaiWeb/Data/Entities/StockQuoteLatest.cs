@@ -93,10 +93,10 @@ public class StockQuoteLatest : BaseEntity
     /// </summary>
     public DateTime SnapshotTime { get; set; }
 
-    /// <summary>
-    /// 最后更新时间
-    /// </summary>
-    public DateTime UpdateTime { get; set; } = DateTime.UtcNow;
+    ///// <summary>
+    ///// 最后更新时间
+    ///// </summary>
+    //public DateTime UpdateTime { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// 关联股票基础信息

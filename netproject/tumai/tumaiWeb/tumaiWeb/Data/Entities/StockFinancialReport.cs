@@ -127,6 +127,31 @@ public class StockFinancialReport : BaseEntity
     /// 关联股票基础信息
     /// </summary>
     public StockBasic? StockBasic { get; set; }
+
+    /// <summary>
+    /// 披露日期
+    /// </summary>
+    public DateOnly? DiscloseDate { get; set; }
+
+    /// <summary>
+    /// 归母净利润(万元)
+    /// </summary>
+    public decimal? ParentCompanyNetProfit { get; set; }
+
+    /// <summary>
+    /// 所得税费用(万元)
+    /// </summary>
+    public decimal? IncomeTaxExpense { get; set; }
+
+    /// <summary>
+    /// 基本每股收益
+    /// </summary>
+    public decimal? BasicEps { get; set; }
+
+    /// <summary>
+    /// 稀释每股收益
+    /// </summary>
+    public decimal? DilutedEps { get; set; }
 }
 
 public class StockFinancialReportConfiguration : IEntityTypeConfiguration<StockFinancialReport>

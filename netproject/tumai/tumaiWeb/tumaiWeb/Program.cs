@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using tumaiWeb.Controller;
 using tumaiWeb.Data.Entities;
 using tumaiWeb.Data.Repository;
+using tumaiWeb.StockService.Mairui;
+using tumaiWeb.StockService.Tushare;
 
 // var builder = WebApplication.CreateBuilder(args);
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -36,6 +38,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 // builder.Services.AddOpenApi();
+
+builder.Services.AddHttpClient<MairuiDataService>();
+builder.Services.AddHttpClient<TushareService>();
 
 var app = builder.Build();
 
@@ -94,10 +99,10 @@ if (app.Environment.IsDevelopment())
 {
     // app.UseSwagger();
     // app.UseSwaggerUI();
-}
+} 
 
 // 放在路由、MapControllers前面！
-app.UseMiddleware<RequestDecryptMiddleware>();
+//app.UseMiddleware<RequestDecryptMiddleware>();
 // ✅关键：启用控制器路由中间件
 app.MapControllers();
 

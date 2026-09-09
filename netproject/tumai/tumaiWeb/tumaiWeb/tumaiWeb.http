@@ -16,3 +16,4 @@ Content-Type: application/json
 }
 
 ###
+GET {{tumaiWeb_HostAddress}}/api/debug/mairui/finance/000001.SZ
