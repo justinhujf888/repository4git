@@ -1,3 +1,4 @@
+using AngleSharp.Dom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -37,6 +38,21 @@ public class StockBasic : BaseEntity
     /// 是否上市有效
     /// </summary>
     public bool IsActive { get; set; } = true;
+
+    /// <summary>
+    /// 行业名称
+    /// </summary>
+    public string? Industry { get; set; }
+
+    /// <summary>
+    /// 上市日期
+    /// </summary>
+    public DateTime? ListDate { get; set; }
+
+    /// <summary>
+    /// 是否退市 0正常 1退市
+    /// </summary>
+    public int IsDelist { get; set; }
 
     // /// <summary>
     // /// 创建时间
@@ -100,6 +116,13 @@ public class StockBasicConfiguration : IEntityTypeConfiguration<StockBasic>
 
         b.Property(e => e.UpdateTime)
             .HasColumnName("update_time");
+
+        b.Property(e => e.Industry)
+        .HasMaxLength(100);
+
+        b.Property(e => e.ListDate);
+
+        b.Property(e => e.IsDelist);
 
         b.HasKey(e => e.Id);
         // AlternateKey 就是备用主键，HasPrincipalKey 必须对应这里

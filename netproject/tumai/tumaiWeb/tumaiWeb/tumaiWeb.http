@@ -17,3 +17,6 @@ Content-Type: application/json
 
 ###
 GET {{tumaiWeb_HostAddress}}/api/debug/mairui/finance/300418.SZ
+
+###
+GET {{tumaiWeb_HostAddress}}/api/debug/mairui/stockbasics

@@ -14,6 +14,16 @@ namespace tumaiWeb.StockService.Mairui
         }
 
         /// <summary>
+        /// 麦蕊股票列表接口，同步股票基础清单（仅代码、名称、交易所，消耗1次licence额度）
+        /// 接口文档：GET https://api.mairuiapi.com/hslt/list/{licence}
+        /// </summary>
+        /// <returns>成功入库数量</returns>
+        public async Task<string> GetStockBasicRawAsync()
+        {
+            return await GetRawAsync($"hslt/list/{_licence}", null, null);
+        }
+
+        /// <summary>
         /// 利润表 沪深 hsstock【income，不支持st/et参数】
         /// </summary>
         public async Task<string> GetProfitStatementRawAsync(string tsCode)

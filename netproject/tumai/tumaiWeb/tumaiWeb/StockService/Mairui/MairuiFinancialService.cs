@@ -20,6 +20,36 @@ namespace tumaiWeb.StockService.Mairui
         };
 
 
+        public async Task SaveStockBasicsData(string stockBasicsJson)
+        {
+            var stockDictList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(stockBasicsJson) ?? new();
+            List<StockBasic> stockBasicEntities = new();
+            var now = DateTime.UtcNow;
+            foreach (var dict in stockDictList)
+            {
+                var dm = MairuiDictHelper.GetString(dict,"dm");
+                var mc = MairuiDictHelper.GetString(dict,"mc");
+                var jys = MairuiDictHelper.GetString(dict!,"jys").Trim().ToUpper(); // 接口返回小写sh/sz，统一转为大写 SH/SZ
+
+                var entity = new StockBasic
+                {
+                    StockCode = dm.Split(".")[0],
+                    StockName = mc,
+                    Exchange = jys,
+                    ListDate = null,
+                    IsDelist = 0,
+                    IsActive = true,
+                    Industry = null,
+                    CreateTime = now,
+                    UpdateTime = now
+                };
+                stockBasicEntities.Add(entity);
+            }
+
+            await UpsertStockBasics(stockBasicEntities);
+        }
+
+
         /// <summary>
         /// 麦蕊财报入库入口
         /// </summary>
@@ -504,6 +534,46 @@ SET
             }
         }
         #endregion
+
+        /// <summary>
+        /// 从麦蕊API拉取股票基础列表，批量Upsert到StockBasics
+        /// </summary>
+        /// <param name="stockList">麦蕊返回的股票基础列表</param>
+        public async Task UpsertStockBasics(List<StockBasic> stockList)
+        {
+
+            foreach (var item in stockList)
+            {
+                const string sql = @"
+INSERT INTO ""StockBasics"" (
+    ""StockCode"", ""StockName"", ""Exchange"", ""Industry"",
+    ""ListDate"", ""IsDelist"", ""CreateTime"", ""UpdateTime""
+)
+VALUES (
+    @StockCode, @StockName, @Exchange, @Industry,
+    @ListDate, @IsDelist, @CreateTime, @UpdateTime
+)
+ON CONFLICT (""StockCode"") DO UPDATE
+SET
+    ""StockName"" = EXCLUDED.""StockName"",
+    ""Exchange"" = EXCLUDED.""Exchange"",
+    ""Industry"" = EXCLUDED.""Industry"",
+    ""ListDate"" = EXCLUDED.""ListDate"",
+    ""IsDelist"" = EXCLUDED.""IsDelist"",
+    ""UpdateTime"" = EXCLUDED.""UpdateTime"";
+";
+                await _db.Database.ExecuteSqlRawAsync(sql,
+                    new NpgsqlParameter("@StockCode", item.StockCode),
+                    new NpgsqlParameter("@StockName", item.StockName),
+                    new NpgsqlParameter("@Exchange", item.Exchange),
+                    new NpgsqlParameter("@Industry", item.Industry ?? (object)DBNull.Value),
+                    new NpgsqlParameter("@ListDate", item.ListDate ?? (object)DBNull.Value),
+                    new NpgsqlParameter("@IsDelist", item.IsDelist),
+                    new NpgsqlParameter("@CreateTime", item.CreateTime),
+                    new NpgsqlParameter("@UpdateTime", item.UpdateTime)
+                );
+            }
+        }
 
     }
 }

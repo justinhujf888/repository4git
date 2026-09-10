@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+builder.Services.AddScoped<MairuiFinancialService>();
 // 注册Postgres EF上下文
 builder.Services.AddDbContext<AppDbContext>(options =>
 {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using tumaiWeb.StockService.Mairui;
 
 
@@ -9,9 +10,11 @@ namespace tumaiWeb.Controller
     public class MairuiDebugController : ControllerBase
     {
         private readonly MairuiDataService _mairuiDataService;
-        public MairuiDebugController(MairuiDataService mairuiDataService)
+        private readonly MairuiFinancialService _mairuiFinancialService;
+        public MairuiDebugController(MairuiDataService mairuiDataService, MairuiFinancialService mairuiFinancialService)
         {
             _mairuiDataService = mairuiDataService;
+            _mairuiFinancialService = mairuiFinancialService;
         }
 
         /// <summary>
@@ -100,5 +103,26 @@ namespace tumaiWeb.Controller
                 return BadRequest($"K线接口调用失败：{ex.Message}");
             }
         }
+
+        [HttpGet("stockbasics")]
+        public async Task<IActionResult> GetStockBasicsRawJson()
+        {
+            try
+            {
+                //var stockBasicsJson = await _mairuiDataService.GetStockBasicRawAsync();
+                //await Utils.ToFile.SaveLargeStrToFileAsync(stockBasicsJson, $"{AppContext.BaseDirectory}/json/stockbasics.json");
+                // 放到后台执行，不阻塞http请求
+                _ = Task.Run(async () =>
+                {
+                    await _mairuiFinancialService.SaveStockBasicsData(await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/stockbasics.json"));
+                });
+                return Accepted(new { msg = "任务已提交，后台处理" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"股票接口调用失败：{ex.Message}");
+            }
+        }
+
     }
 }
