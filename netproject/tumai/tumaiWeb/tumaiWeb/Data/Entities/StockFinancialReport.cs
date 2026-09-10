@@ -16,7 +16,12 @@ public class StockFinancialReport : BaseEntity
     /// <summary>
     /// 股票代码，外键关联stock_basic
     /// </summary>
-    public string StockCode { get; set; } = string.Empty;
+    public required string StockCode { get; set; }
+
+    /// <summary>
+    /// 市场标识 SH/SZ/BJ，和StockBasic联合外键
+    /// </summary>
+    public required string Market { get; set; }
 
     /// <summary>
     /// 财报期截止日，如2025-12-31年报
@@ -158,44 +163,40 @@ public class StockFinancialReportConfiguration : IEntityTypeConfiguration<StockF
 {
     public void Configure(EntityTypeBuilder<StockFinancialReport> b)
     {
-b.ToTable("stock_financial_report");
-
             b.Property(e => e.Id).HasColumnName("id");
-            b.Property(e => e.StockCode).HasColumnName("stock_code").HasColumnType("varchar(20)").IsRequired();
-            b.Property(e => e.ReportDate).HasColumnName("report_date").HasColumnType("date").IsRequired();
-            b.Property(e => e.ReportType).HasColumnName("report_type").HasColumnType("varchar(20)");
+            b.Property(e => e.StockCode).HasColumnType("varchar(20)").IsRequired();
+        b.Property(e => e.Market).HasColumnType("varchar(4)").IsRequired();
+        b.Property(e => e.ReportDate).HasColumnType("date").IsRequired();
+            b.Property(e => e.ReportType).HasColumnType("varchar(20)");
 
-            b.Property(e => e.Income).HasColumnName("income").HasColumnType("numeric(24,2)");
-            b.Property(e => e.Cost).HasColumnName("cost").HasColumnType("numeric(24,2)");
-            b.Property(e => e.Profit).HasColumnName("profit").HasColumnType("numeric(24,2)");
-            b.Property(e => e.TotalProfit).HasColumnName("totalp").HasColumnType("numeric(24,2)");
-            b.Property(e => e.NetProfit).HasColumnName("reprofit").HasColumnType("numeric(24,2)");
-            b.Property(e => e.DeductedProfit).HasColumnName("kcfj").HasColumnType("numeric(24,2)");
+            b.Property(e => e.Income).HasColumnType("numeric(24,2)");
+            b.Property(e => e.Cost).HasColumnType("numeric(24,2)");
+            b.Property(e => e.Profit).HasColumnType("numeric(24,2)");
+            b.Property(e => e.TotalProfit).HasColumnType("numeric(24,2)");
+            b.Property(e => e.NetProfit).HasColumnType("numeric(24,2)");
+            b.Property(e => e.DeductedProfit).HasColumnType("numeric(24,2)");
+            b.Property(e => e.TotalAssets).HasColumnType("numeric(24,2)");
+            b.Property(e => e.TotalLiabilities).HasColumnType("numeric(24,2)");
+            b.Property(e => e.ShareholdersEquity).HasColumnType("numeric(24,2)");
+            b.Property(e => e.NetAssetPerShare).HasColumnType("numeric(14,4)");
+            b.Property(e => e.OperatingCashFlow).HasColumnType("numeric(24,2)");
+            b.Property(e => e.InvestingCashFlow).HasColumnType("numeric(24,2)");
+            b.Property(e => e.FinancingCashFlow).HasColumnType("numeric(24,2)");
 
-            b.Property(e => e.TotalAssets).HasColumnName("total").HasColumnType("numeric(24,2)");
-            b.Property(e => e.TotalLiabilities).HasColumnName("fuzai").HasColumnType("numeric(24,2)");
-            b.Property(e => e.ShareholdersEquity).HasColumnName("gqqy").HasColumnType("numeric(24,2)");
-            b.Property(e => e.NetAssetPerShare).HasColumnName("sasset").HasColumnType("numeric(14,4)");
+            b.Property(e => e.GrossRate).HasColumnType("numeric(10,4)");
+            b.Property(e => e.NetRate).HasColumnType("numeric(10,4)");
+            b.Property(e => e.DebtRate).HasColumnType("numeric(10,4)");
+            b.Property(e => e.Roe).HasColumnType("numeric(10,4)");
 
-            b.Property(e => e.OperatingCashFlow).HasColumnName("jyfinal").HasColumnType("numeric(24,2)");
-            b.Property(e => e.InvestingCashFlow).HasColumnName("tzfinal").HasColumnType("numeric(24,2)");
-            b.Property(e => e.FinancingCashFlow).HasColumnName("czfinal").HasColumnType("numeric(24,2)");
-
-            b.Property(e => e.GrossRate).HasColumnName("gross_rate").HasColumnType("numeric(10,4)");
-            b.Property(e => e.NetRate).HasColumnName("net_rate").HasColumnType("numeric(10,4)");
-            b.Property(e => e.DebtRate).HasColumnName("debt_rate").HasColumnType("numeric(10,4)");
-            b.Property(e => e.Roe).HasColumnName("roe").HasColumnType("numeric(10,4)");
-
-            b.Property(e => e.PullTime).HasColumnName("pull_time");
+            b.Property(e => e.PullTime);
 
             b.Property(e => e.RawJson)
-                .HasColumnName("raw_json")
                 .HasColumnType("jsonb");
 
             b.HasKey(e => e.Id);
-            b.HasAlternateKey(e => new { e.StockCode, e.ReportDate }).HasName("uk_stock_report");
-            b.HasIndex(e => new { e.StockCode, e.ReportDate })
+            b.HasAlternateKey(e => new { e.StockCode, e.ReportDate,e.Market }).HasName("uk_stock_report");
+            b.HasIndex(e => new { e.StockCode, e.ReportDate, e.Market })
                 .HasDatabaseName("idx_fin_stock_date")
-                .IsDescending(false, true);
+                .IsDescending(false, true, true);
     }
 }

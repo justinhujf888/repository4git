@@ -1,5 +1,7 @@
+using AngleSharp.Dom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SharpCompress.Common;
 
 namespace tumaiWeb.Data.Entities;
 
@@ -16,7 +18,12 @@ public class StockQuoteSnapshot : BaseEntity
     /// <summary>
     /// 股票代码，外键关联stock_basic
     /// </summary>
-    public string StockCode { get; set; } = string.Empty;
+    public required string StockCode { get; set; }
+
+    /// <summary>
+    /// 市场标识 SH/SZ/BJ，和StockBasic联合外键
+    /// </summary>
+    public required string Market { get; set; }
 
     /// <summary>
     /// 当前现价(元)
@@ -118,37 +125,40 @@ public class StockQuoteSnapshotConfiguration : IEntityTypeConfiguration<StockQuo
 {
     public void Configure(EntityTypeBuilder<StockQuoteSnapshot> b)
     {
-        b.ToTable("stock_quote_snapshot");
+        b.Property(e => e.Id);
+        b.Property(e => e.StockCode).HasColumnType("varchar(20)").IsRequired();
+        b.Property(x => x.Market).HasColumnType("varchar(4)")
+        .IsRequired();
+        b.Property(e => e.Price).HasColumnType("numeric(16,4)");
+        b.Property(e => e.YesterdayClose).HasColumnType("numeric(16,4)");
+        b.Property(e => e.Open).HasColumnType("numeric(16,4)");
+        b.Property(e => e.High).HasColumnType("numeric(16,4)");
+        b.Property(e => e.Low).HasColumnType("numeric(16,4)");
+        b.Property(e => e.ChangePercent).HasColumnType("numeric(10,4)");
+        b.Property(e => e.ChangeAmount).HasColumnType("numeric(16,4)");
+        b.Property(e => e.Volume);
+        b.Property(e => e.Turnover).HasColumnType("numeric(24,2)");
+        b.Property(e => e.TotalMarketValue).HasColumnType("numeric(24,2)");
+        b.Property(e => e.Pe).HasColumnType("numeric(12,4)");
+        b.Property(e => e.PbRatio).HasColumnType("numeric(12,4)");
+        b.Property(e => e.TurnoverRate).HasColumnType("numeric(10,4)");
+        b.Property(e => e.Amplitude).HasColumnType("numeric(10,4)");
+        b.Property(e => e.FiveMinChange).HasColumnType("numeric(10,4)");
 
-        b.Property(e => e.Id).HasColumnName("id");
-        b.Property(e => e.StockCode).HasColumnName("stock_code").HasColumnType("varchar(20)").IsRequired();
-
-        b.Property(e => e.Price).HasColumnName("p").HasColumnType("numeric(16,4)");
-        b.Property(e => e.YesterdayClose).HasColumnName("yc").HasColumnType("numeric(16,4)");
-        b.Property(e => e.Open).HasColumnName("o").HasColumnType("numeric(16,4)");
-        b.Property(e => e.High).HasColumnName("h").HasColumnType("numeric(16,4)");
-        b.Property(e => e.Low).HasColumnName("l").HasColumnType("numeric(16,4)");
-        b.Property(e => e.ChangePercent).HasColumnName("pc").HasColumnType("numeric(10,4)");
-        b.Property(e => e.ChangeAmount).HasColumnName("ud").HasColumnType("numeric(16,4)");
-        b.Property(e => e.Volume).HasColumnName("v");
-        b.Property(e => e.Turnover).HasColumnName("cje").HasColumnType("numeric(24,2)");
-        b.Property(e => e.TotalMarketValue).HasColumnName("sz").HasColumnType("numeric(24,2)");
-        b.Property(e => e.Pe).HasColumnName("pe").HasColumnType("numeric(12,4)");
-        b.Property(e => e.PbRatio).HasColumnName("pb_ratio").HasColumnType("numeric(12,4)");
-        b.Property(e => e.TurnoverRate).HasColumnName("hs").HasColumnType("numeric(10,4)");
-        b.Property(e => e.Amplitude).HasColumnName("zf").HasColumnType("numeric(10,4)");
-        b.Property(e => e.FiveMinChange).HasColumnName("fm").HasColumnType("numeric(10,4)");
-
-        b.Property(e => e.SnapshotTime).HasColumnName("snapshot_time").IsRequired();
-        b.Property(e => e.PullTime).HasColumnName("pull_time");
+        b.Property(e => e.SnapshotTime).IsRequired();
+        b.Property(e => e.PullTime);
 
         b.Property(e => e.RawJson)
-            .HasColumnName("raw_json")
             .HasColumnType("jsonb");
 
         b.HasKey(e => e.Id);
-        b.HasIndex(e => new { e.StockCode, e.SnapshotTime })
-            .HasDatabaseName("idx_quote_stock_time")
-            .IsDescending(false, true);
+        // 联合外键，引用StockBasic备用键(StockCode,Market)
+        b.HasOne(x => x.StockBasic)
+            .WithMany(x => x.QuoteSnapshots)
+            .HasForeignKey(x => new { x.StockCode, x.Market })
+            .HasPrincipalKey(x => new { x.StockCode, x.Market });
+        // 唯一索引：同一只股票 + 快照时间，防止同一时刻重复入库
+        b.HasIndex(x => new { x.StockCode, x.Market, x.SnapshotTime })
+            .IsUnique();
     }
 }

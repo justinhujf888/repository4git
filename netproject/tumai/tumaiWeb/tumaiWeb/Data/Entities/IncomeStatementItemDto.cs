@@ -8,8 +8,15 @@ namespace tumaiWeb.Data.Entities
     {
         // 主键ID
         public long Id { get; set; }
-        // 股票代码，如600036.SH
-        public string StockCode { get; set; } = string.Empty;
+        /// <summary>
+        /// 股票代码，外键关联stock_basic
+        /// </summary>
+        public required string StockCode { get; set; }
+
+        /// <summary>
+        /// 市场标识 SH/SZ/BJ，和StockBasic联合外键
+        /// </summary>
+        public required string Market { get; set; }
         // 报告期/截止日期 yyyy-MM-dd，对应接口jzrq
         public string ReportDate { get; set; } = string.Empty;
         // 披露日期，对应接口plrq，财报对外发布时间
@@ -73,9 +80,9 @@ public class IncomeStatementItemDtoConfiguration : IEntityTypeConfiguration<Inco
 {
     public void Configure(EntityTypeBuilder<IncomeStatementItemDto> entity)
     {
-        entity.ToTable("stock_income_statement");
         entity.HasKey(x => x.Id);
         entity.Property(x => x.StockCode).HasColumnType("varchar(32)").IsRequired();
+        entity.Property(x => x.Market).HasColumnType("varchar(4)").IsRequired();
         entity.Property(x => x.ReportDate).HasColumnType("varchar(32)").IsRequired();
         entity.Property(x => x.PublishDate).HasColumnType("varchar(32)");
         entity.Property(x => x.ReportType).HasColumnType("varchar(32)").IsRequired();
@@ -106,6 +113,6 @@ public class IncomeStatementItemDtoConfiguration : IEntityTypeConfiguration<Inco
         entity.Property(x => x.CreateTime).HasColumnType("timestamp without time zone");
 
         // 唯一索引：股票代码 + 报告截止日期（Upsert用）
-        entity.HasIndex(x => new { x.StockCode, x.ReportDate }).IsUnique();
+        entity.HasIndex(x => new { x.StockCode, x.ReportDate, x.Market  }).IsUnique();
     }
 }

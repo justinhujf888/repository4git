@@ -57,6 +57,14 @@ namespace tumaiWeb.StockService.Mairui
         }
 
         /// <summary>
+        /// GetStockQuoteSnapshotRawAsync 行情快照
+        /// </summary>
+        public async Task<string> GetStockQuoteSnapshotRawAsync(string tsCode)
+        {
+            return await GetRawAsync($"hsstock/real/time/{tsCode}/{_licence}", null, null);
+        }
+
+        /// <summary>
         /// Pro版沪深K线【必须ts_code，000001.SZ / 600036.SH】
         /// </summary>
         /// <param name="tsCode">带后缀代码</param>

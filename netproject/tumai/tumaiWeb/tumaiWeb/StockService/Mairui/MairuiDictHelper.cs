@@ -21,6 +21,15 @@ namespace tumaiWeb.StockService.Mairui
             return null;
         }
 
+        public static long? GetLong(Dictionary<string, object?> dict, string key)
+        {
+            if (!dict.TryGetValue(key, out var val) || val == null) return null;
+            var s = val.ToString()?.Trim();
+            if (s == "-" || string.IsNullOrWhiteSpace(s)) return null;
+            if (long.TryParse(s, out var l)) return l;
+            return null;
+        }
+
         /// <summary>
         /// 从字典安全读取字符串
         /// </summary>

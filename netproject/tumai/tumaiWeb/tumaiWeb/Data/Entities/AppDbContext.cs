@@ -47,6 +47,15 @@ public partial class AppDbContext : DbContext
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             var clrType = entityType.ClrType;
+
+            // 表名
+            entityType.SetTableName(clrType.Name.ToLower());
+            // 字段名
+            foreach (var prop in entityType.GetProperties())
+            {
+                prop.SetColumnName(prop.Name.ToLower());
+            }
+
             // 不是BaseEntity子类，跳过
             if (!clrType.IsSubclassOf(baseEntityType))
                 continue;
@@ -63,6 +72,12 @@ public partial class AppDbContext : DbContext
         
 
         OnModelCreatingPartial(modelBuilder);
+    }
+
+    // 蛇形命名辅助方法
+    static string ToSnakeCase(string name)
+    {
+        return System.Text.RegularExpressions.Regex.Replace(name, @"([a-z0-9])([A-Z])", "$1_$2").ToLower();
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

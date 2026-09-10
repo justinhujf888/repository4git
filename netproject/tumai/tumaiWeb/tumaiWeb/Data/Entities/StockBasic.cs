@@ -15,24 +15,25 @@ public class StockBasic : BaseEntity
     public long Id { get; set; }
 
     /// <summary>
-    /// 股票代码，带市场前缀 sh600519
+    /// 股票代码，外键关联stock_basic
     /// </summary>
-    public string StockCode { get; set; } = string.Empty;
+    public required string StockCode { get; set; }
+
+    /// <summary>
+    /// 市场标识 SH/SZ/BJ，和StockBasic联合外键
+    /// </summary>
+    public required string Market { get; set; }
 
     /// <summary>
     /// 股票中文名称
     /// </summary>
     public string StockName { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 市场 sh / sz
-    /// </summary>
-    public string Exchange { get; set; } = string.Empty;
 
     /// <summary>
     /// 兼容tushare的ts_code（备用）
     /// </summary>
-    public string? TsCode { get; set; }
+    //public string? TsCode { get; set; }
 
     /// <summary>
     /// 是否上市有效
@@ -84,38 +85,25 @@ public class StockBasicConfiguration : IEntityTypeConfiguration<StockBasic>
 {
     public void Configure(EntityTypeBuilder<StockBasic> b)
     {
-        b.ToTable("stock_basic");
-
-        b.Property(e => e.Id)
-            .HasColumnName("id");
+        b.Property(e => e.Id);
 
         b.Property(e => e.StockCode)
-            .HasColumnName("stock_code")
             .HasColumnType("varchar(20)")
             .IsRequired();
 
         b.Property(e => e.StockName)
-            .HasColumnName("stock_name")
             .HasColumnType("varchar(100)")
             .IsRequired();
 
-        b.Property(e => e.Exchange)
-            .HasColumnName("exchange")
-            .HasColumnType("varchar(10)")
+        b.Property(e => e.Market)
+            .HasColumnType("varchar(4)")
             .IsRequired();
 
-        b.Property(e => e.TsCode)
-            .HasColumnName("ts_code")
-            .HasColumnType("varchar(30)");
+        b.Property(e => e.IsActive);
 
-        b.Property(e => e.IsActive)
-            .HasColumnName("is_active");
+        b.Property(e => e.CreateTime);
 
-        b.Property(e => e.CreateTime)
-            .HasColumnName("create_time");
-
-        b.Property(e => e.UpdateTime)
-            .HasColumnName("update_time");
+        b.Property(e => e.UpdateTime);
 
         b.Property(e => e.Industry)
         .HasMaxLength(100);
@@ -126,26 +114,26 @@ public class StockBasicConfiguration : IEntityTypeConfiguration<StockBasic>
 
         b.HasKey(e => e.Id);
         // AlternateKey 就是备用主键，HasPrincipalKey 必须对应这里
-        b.HasAlternateKey(e => e.StockCode).HasName("uk_stock_code");
-        b.HasIndex(e => e.Exchange).HasDatabaseName("idx_stock_basic_exchange");
+        b.HasAlternateKey(e => new { e.StockCode, e.Market }).HasName("uk_stock_code_market");
+        b.HasIndex(e => e.Market).HasDatabaseName("idx_stock_basic_market");
 
         // ========= 全部导航加上 HasPrincipalKey =========
         b.HasMany(e => e.QuoteSnapshots)
             .WithOne(s => s.StockBasic)
-            .HasForeignKey(s => s.StockCode)
-            .HasPrincipalKey(sb => sb.StockCode)
+            .HasForeignKey(s => new { s.StockCode, s.Market })
+            .HasPrincipalKey(sb => new { sb.StockCode, sb.Market })
             .HasConstraintName("fk_quote_stock");
 
         b.HasMany(e => e.QuoteLatests)
             .WithOne(l => l.StockBasic)
-            .HasForeignKey(l => l.StockCode)
-            .HasPrincipalKey(sb => sb.StockCode)
+            .HasForeignKey(l => new { l.StockCode, l.Market })
+            .HasPrincipalKey(sb => new { sb.StockCode, sb.Market })
             .HasConstraintName("fk_latest_stock");
 
         b.HasMany(e => e.FinancialReports)
             .WithOne(f => f.StockBasic)
-            .HasForeignKey(f => f.StockCode)
-            .HasPrincipalKey(sb => sb.StockCode)
+            .HasForeignKey(f => new { f.StockCode, f.Market }  )
+            .HasPrincipalKey(sb => new { sb.StockCode, sb.Market })
             .HasConstraintName("fk_fin_stock");
     }
 }

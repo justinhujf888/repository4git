@@ -3,15 +3,18 @@ using System.Text.Json;
 using tumaiWeb.Data.Entities;
 using Npgsql;
 using NpgsqlTypes;
+using tumaiWeb.Data.Repository;
 
 namespace tumaiWeb.StockService.Mairui
 {
     public class MairuiFinancialService
     {
         private readonly AppDbContext _db;
-        public MairuiFinancialService(AppDbContext db)
+        private readonly IBaseService _baseService;
+        public MairuiFinancialService(AppDbContext db, IBaseService baseService)
         {
             _db = db;
+            _baseService = baseService;
         }
 
         private static readonly JsonSerializerOptions _jsonOpts = new()
@@ -35,17 +38,17 @@ namespace tumaiWeb.StockService.Mairui
                 {
                     StockCode = dm.Split(".")[0],
                     StockName = mc,
-                    Exchange = jys,
+                    Market = jys,
                     ListDate = null,
                     IsDelist = 0,
                     IsActive = true,
                     Industry = null,
                     CreateTime = now,
-                    UpdateTime = now
+                    UpdateTime = now,
+                    Deleted = false
                 };
                 stockBasicEntities.Add(entity);
             }
-
             await UpsertStockBasics(stockBasicEntities);
         }
 
@@ -59,6 +62,7 @@ namespace tumaiWeb.StockService.Mairui
         /// <param name="cashJson">现金流量表接口返回json</param>
         public async Task SaveFinancialData(string stockCode, string profitJson, string balanceJson, string cashJson)
         {
+            var sm = stockCode.Split(".");
             // 1. 直接反序列成字典列表，无任何DTO
             var incomeDictList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(profitJson) ?? new();
             var balanceDictList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(balanceJson) ?? new();
@@ -73,7 +77,8 @@ namespace tumaiWeb.StockService.Mairui
 
                 var entity = new IncomeStatementItemDto
                 {
-                    StockCode = stockCode,
+                    StockCode = sm[0],
+                    Market = sm[1],
                     ReportDate = jzrq,
                     PublishDate = plrq,
                     ReportType = MairuiDictHelper.GetReportType(jzrq),
@@ -117,7 +122,8 @@ namespace tumaiWeb.StockService.Mairui
 
                 var entity = new BalanceSheetItemDto
                 {
-                    StockCode = stockCode,
+                    StockCode = sm[0],
+                    Market = sm[1],
                     ReportDate = jzrq,
                     PublishDate = plrq,
                     ReportType = MairuiDictHelper.GetReportType(jzrq),
@@ -173,7 +179,8 @@ namespace tumaiWeb.StockService.Mairui
 
                 var entity = new CashFlowItemDto
                 {
-                    StockCode = stockCode,
+                    StockCode = sm[0],
+                    Market = sm[1],
                     ReportDate = jzrq,
                     PublishDate = plrq,
                     ReportType = MairuiDictHelper.GetReportType(jzrq),
@@ -223,7 +230,11 @@ namespace tumaiWeb.StockService.Mairui
             await UpsertCashFlow(cashEntities);
         }
 
+        public async Task SaveStockQuoteSnapshotData(string stockCode, string stockQuoteSnapshotJson)
+        {
+            var rawDict = JsonSerializer.Deserialize<Dictionary<string, object>>(stockQuoteSnapshotJson) ?? new();
 
+        }
 
         #region 原生PostgreSQL Upsert（无第三方包，适配新版Npgsql，JsonB修复）
         private async Task UpsertIncome(List<IncomeStatementItemDto> list)
@@ -231,7 +242,7 @@ namespace tumaiWeb.StockService.Mairui
             foreach (var item in list)
             {
                 const string sql = @"
-INSERT INTO ""IncomeStatements"" (
+INSERT INTO ""stock_income_statement"" (
     ""StockCode"", ""ReportDate"", ""PublishDate"", ""ReportType"",
     ""TotalRevenue"", ""OperatingRevenue"", ""OperatingCost"", ""TaxAndSurcharges"",
     ""SellingExpense"", ""AdminExpense"", ""RndExpense"", ""FinanceExpense"",
@@ -317,7 +328,7 @@ SET
             foreach (var item in list)
             {
                 const string sql = @"
-INSERT INTO ""BalanceSheets"" (
+INSERT INTO ""stock_balance_sheet"" (
     ""StockCode"", ""ReportDate"", ""PublishDate"", ""ReportType"",
     ""TotalCurrentAsset"", ""MonetaryFund"", ""TradingFinancialAsset"", ""BillReceivable"",
     ""AccountReceivable"", ""Prepayment"", ""Inventory"", ""OtherCurrentAsset"",
@@ -433,7 +444,7 @@ SET
             foreach (var item in list)
             {
                 const string sql = @"
-INSERT INTO ""CashFlows"" (
+INSERT INTO ""stock_cash_flow"" (
     ""StockCode"", ""ReportDate"", ""PublishDate"", ""ReportType"",
     ""OperateCashIn"", ""OperateCashOut"", ""NetOperateCashFlow"", ""CashFromSales"",
     ""TaxRefundReceived"", ""OtherOperateCashIn"", ""CashPayForGoods"", ""CashPayToStaff"",
@@ -541,37 +552,39 @@ SET
         /// <param name="stockList">麦蕊返回的股票基础列表</param>
         public async Task UpsertStockBasics(List<StockBasic> stockList)
         {
-
+            Console.WriteLine($"UpsertStockBasics: {stockList.Count} items");
             foreach (var item in stockList)
             {
-                const string sql = @"
-INSERT INTO ""StockBasics"" (
-    ""StockCode"", ""StockName"", ""Exchange"", ""Industry"",
-    ""ListDate"", ""IsDelist"", ""CreateTime"", ""UpdateTime""
-)
-VALUES (
-    @StockCode, @StockName, @Exchange, @Industry,
-    @ListDate, @IsDelist, @CreateTime, @UpdateTime
-)
-ON CONFLICT (""StockCode"") DO UPDATE
-SET
-    ""StockName"" = EXCLUDED.""StockName"",
-    ""Exchange"" = EXCLUDED.""Exchange"",
-    ""Industry"" = EXCLUDED.""Industry"",
-    ""ListDate"" = EXCLUDED.""ListDate"",
-    ""IsDelist"" = EXCLUDED.""IsDelist"",
-    ""UpdateTime"" = EXCLUDED.""UpdateTime"";
-";
-                await _db.Database.ExecuteSqlRawAsync(sql,
-                    new NpgsqlParameter("@StockCode", item.StockCode),
-                    new NpgsqlParameter("@StockName", item.StockName),
-                    new NpgsqlParameter("@Exchange", item.Exchange),
-                    new NpgsqlParameter("@Industry", item.Industry ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@ListDate", item.ListDate ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@IsDelist", item.IsDelist),
-                    new NpgsqlParameter("@CreateTime", item.CreateTime),
-                    new NpgsqlParameter("@UpdateTime", item.UpdateTime)
-                );
+                await _baseService.AddObjectAsync(item);
+                //                const string sql = @"
+                //INSERT INTO ""StockBasics"" (
+                //    ""StockCode"", ""StockName"", ""Exchange"", ""Industry"",
+                //    ""ListDate"", ""IsDelist"", ""CreateTime"", ""UpdateTime""
+                //)
+                //VALUES (
+                //    @StockCode, @StockName, @Exchange, @Industry,
+                //    @ListDate, @IsDelist, @CreateTime, @UpdateTime
+                //)
+                //ON CONFLICT (""StockCode"") DO UPDATE
+                //SET
+                //    ""StockName"" = EXCLUDED.""StockName"",
+                //    ""Exchange"" = EXCLUDED.""Exchange"",
+                //    ""Industry"" = EXCLUDED.""Industry"",
+                //    ""ListDate"" = EXCLUDED.""ListDate"",
+                //    ""IsDelist"" = EXCLUDED.""IsDelist"",
+                //    ""UpdateTime"" = EXCLUDED.""UpdateTime"";
+                //";
+                //                int affected = await _db.Database.ExecuteSqlRawAsync(sql,
+                //                    new NpgsqlParameter("@StockCode", item.StockCode),
+                //                    new NpgsqlParameter("@StockName", item.StockName),
+                //                    new NpgsqlParameter("@Exchange", item.Exchange),
+                //                    new NpgsqlParameter("@Industry", item.Industry ?? (object)DBNull.Value),
+                //                    new NpgsqlParameter("@ListDate", item.ListDate ?? (object)DBNull.Value),
+                //                    new NpgsqlParameter("@IsDelist", item.IsDelist),
+                //                    new NpgsqlParameter("@CreateTime", item.CreateTime),
+                //                    new NpgsqlParameter("@UpdateTime", item.UpdateTime)
+                //                );
+                //                Console.WriteLine($"StockCode:{item.StockCode}, affected rows:{affected}");
             }
         }
 

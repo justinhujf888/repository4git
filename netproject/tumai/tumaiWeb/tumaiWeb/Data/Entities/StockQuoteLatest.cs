@@ -1,3 +1,4 @@
+using AngleSharp.Dom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,9 +10,14 @@ namespace tumaiWeb.Data.Entities;
 public class StockQuoteLatest : BaseEntity
 {
     /// <summary>
-    /// 股票代码，主键
+    /// 股票代码，外键关联stock_basic
     /// </summary>
-    public string StockCode { get; set; } = string.Empty;
+    public required string StockCode { get; set; }
+
+    /// <summary>
+    /// 市场标识 SH/SZ/BJ，和StockBasic联合外键
+    /// </summary>
+    public required string Market { get; set; }
 
     /// <summary>
     /// 当前现价(元)
@@ -108,31 +114,29 @@ public class StockQuoteLatestConfiguration : IEntityTypeConfiguration<StockQuote
 {
     public void Configure(EntityTypeBuilder<StockQuoteLatest> b)
     {
-        b.ToTable("stock_quote_latest");
-
         b.HasKey(e => e.StockCode);
         b.Property(e => e.StockCode)
-            .HasColumnName("stock_code")
             .HasColumnType("varchar(20)")
             .IsRequired();
+        b.Property(x => x.Market).HasColumnType("varchar(4)").IsRequired();
         // 注意优先用 .HasPrecision(16, 4) 替代 .HasColumnType("numeric(16,4)")；下面示例不规范，迁移不是PGSQL的数据库会有问题
-        b.Property(e => e.Price).HasColumnName("p").HasColumnType("numeric(16,4)");
-        b.Property(e => e.YesterdayClose).HasColumnName("yc").HasColumnType("numeric(16,4)");
-        b.Property(e => e.Open).HasColumnName("o").HasColumnType("numeric(16,4)");
-        b.Property(e => e.High).HasColumnName("h").HasColumnType("numeric(16,4)");
-        b.Property(e => e.Low).HasColumnName("l").HasColumnType("numeric(16,4)");
-        b.Property(e => e.ChangePercent).HasColumnName("pc").HasColumnType("numeric(10,4)");
-        b.Property(e => e.ChangeAmount).HasColumnName("ud").HasColumnType("numeric(16,4)");
-        b.Property(e => e.Volume).HasColumnName("v");
-        b.Property(e => e.Turnover).HasColumnName("cje").HasColumnType("numeric(24,2)");
-        b.Property(e => e.TotalMarketValue).HasColumnName("sz").HasColumnType("numeric(24,2)");
-        b.Property(e => e.Pe).HasColumnName("pe").HasColumnType("numeric(12,4)");
-        b.Property(e => e.PbRatio).HasColumnName("pb_ratio").HasColumnType("numeric(12,4)");
-        b.Property(e => e.TurnoverRate).HasColumnName("hs").HasColumnType("numeric(10,4)");
-        b.Property(e => e.Amplitude).HasColumnName("zf").HasColumnType("numeric(10,4)");
-        b.Property(e => e.FiveMinChange).HasColumnName("fm").HasColumnType("numeric(10,4)");
+        b.Property(e => e.Price).HasColumnType("numeric(16,4)");
+        b.Property(e => e.YesterdayClose).HasColumnType("numeric(16,4)");
+        b.Property(e => e.Open).HasColumnType("numeric(16,4)");
+        b.Property(e => e.High).HasColumnType("numeric(16,4)");
+        b.Property(e => e.Low).HasColumnType("numeric(16,4)");
+        b.Property(e => e.ChangePercent).HasColumnType("numeric(10,4)");
+        b.Property(e => e.ChangeAmount).HasColumnType("numeric(16,4)");
+        b.Property(e => e.Volume);
+        b.Property(e => e.Turnover).HasColumnType("numeric(24,2)");
+        b.Property(e => e.TotalMarketValue).HasColumnType("numeric(24,2)");
+        b.Property(e => e.Pe).HasColumnType("numeric(12,4)");
+        b.Property(e => e.PbRatio).HasColumnType("numeric(12,4)");
+        b.Property(e => e.TurnoverRate).HasColumnType("numeric(10,4)");
+        b.Property(e => e.Amplitude).HasColumnType("numeric(10,4)");
+        b.Property(e => e.FiveMinChange).HasColumnType("numeric(10,4)");
 
-        b.Property(e => e.SnapshotTime).HasColumnName("snapshot_time").IsRequired();
-        b.Property(e => e.UpdateTime).HasColumnName("update_time");
+        b.Property(e => e.SnapshotTime).IsRequired();
+        b.Property(e => e.UpdateTime);
     }
 }

@@ -8,8 +8,15 @@ namespace tumaiWeb.Data.Entities
     {
         // 主键ID
         public long Id { get; set; }
-        // 股票代码，如600036.SH
-        public string StockCode { get; set; } = string.Empty;
+        /// <summary>
+        /// 股票代码，外键关联stock_basic
+        /// </summary>
+        public required string StockCode { get; set; }
+
+        /// <summary>
+        /// 市场标识 SH/SZ/BJ，和StockBasic联合外键
+        /// </summary>
+        public required string Market { get; set; }
         // 报告期，yyyy-MM-dd，对应接口jzrq
         public string ReportDate { get; set; } = string.Empty;
         // 披露日期，对应接口plrq
@@ -91,9 +98,9 @@ public class CashFlowItemDtoConfiguration : IEntityTypeConfiguration<CashFlowIte
 {
     public void Configure(EntityTypeBuilder<CashFlowItemDto> entity)
     {
-        entity.ToTable("stock_cash_flow");
         entity.HasKey(x => x.Id);
         entity.Property(x => x.StockCode).HasColumnType("varchar(32)").IsRequired();
+        entity.Property(x => x.Market).HasColumnType("varchar(4)").IsRequired();
         entity.Property(x => x.ReportDate).HasColumnType("varchar(32)").IsRequired();
         entity.Property(x => x.PublishDate).HasColumnType("varchar(32)");
         entity.Property(x => x.ReportType).HasColumnType("varchar(32)").IsRequired();
@@ -130,6 +137,6 @@ public class CashFlowItemDtoConfiguration : IEntityTypeConfiguration<CashFlowIte
 
         entity.Property(x => x.RawJson).HasColumnType("jsonb");
         entity.Property(x => x.CreateTime).HasColumnType("timestamp without time zone");
-        entity.HasIndex(x => new { x.StockCode, x.ReportDate }).IsUnique();
+        entity.HasIndex(x => new { x.StockCode, x.ReportDate, x.Market }).IsUnique();
     }
 }

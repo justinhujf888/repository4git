@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
+using tumaiWeb.Data.Entities;
+using tumaiWeb.Data.Repository;
 using tumaiWeb.StockService.Mairui;
 
 
@@ -11,10 +14,12 @@ namespace tumaiWeb.Controller
     {
         private readonly MairuiDataService _mairuiDataService;
         private readonly MairuiFinancialService _mairuiFinancialService;
-        public MairuiDebugController(MairuiDataService mairuiDataService, MairuiFinancialService mairuiFinancialService)
+        private readonly IBaseService _baseService;
+        public MairuiDebugController(MairuiDataService mairuiDataService, MairuiFinancialService mairuiFinancialService,IBaseService baseService)
         {
             _mairuiDataService = mairuiDataService;
             _mairuiFinancialService = mairuiFinancialService;
+            _baseService = baseService;
         }
 
         /// <summary>
@@ -22,33 +27,36 @@ namespace tumaiWeb.Controller
         /// GET api/debug/mairui/finance/000001.SZ?st=20240101&et=20260630
         /// </summary>
         [HttpGet("finance/{tsCode}")]
+        [RequestTimeout(1200000)]
         public async Task<IActionResult> GetFinanceRawJson(string tsCode)
         {
             try
             {
-                Console.WriteLine($"==== 请求麦蕊财报 tsCode:{tsCode} ====");
+                //Console.WriteLine($"==== 请求麦蕊财报 tsCode:{tsCode} ====");
 
-                var profitJson = await _mairuiDataService.GetProfitStatementRawAsync(tsCode);
-                var balanceJson = await _mairuiDataService.GetBalanceSheetRawAsync(tsCode);
-                var cashJson = await _mairuiDataService.GetCashflowRawAsync(tsCode);
+                //var profitJson = await _mairuiDataService.GetProfitStatementRawAsync(tsCode);
+                //var balanceJson = await _mairuiDataService.GetBalanceSheetRawAsync(tsCode);
+                //var cashJson = await _mairuiDataService.GetCashflowRawAsync(tsCode);
 
-                Console.WriteLine("【利润表JSON】\n" + profitJson);
-                Console.WriteLine("\n【资产负债表JSON】\n" + balanceJson);
-                Console.WriteLine("\n【现金流量表JSON】\n" + cashJson);
+                //Console.WriteLine("【利润表JSON】\n" + profitJson);
+                //Console.WriteLine("\n【资产负债表JSON】\n" + balanceJson);
+                //Console.WriteLine("\n【现金流量表JSON】\n" + cashJson);
 
-                await Utils.ToFile.SaveLargeStrToFileAsync(profitJson, $"{AppContext.BaseDirectory}/json/profit.json");
-                await Utils.ToFile.SaveLargeStrToFileAsync(balanceJson, $"{AppContext.BaseDirectory}/json/balance.json");
-                await Utils.ToFile.SaveLargeStrToFileAsync(cashJson, $"{AppContext.BaseDirectory}/json/cash.json");
+                //await Utils.ToFile.SaveLargeStrToFileAsync(profitJson, $"{AppContext.BaseDirectory}/json/profit.json");
+                //await Utils.ToFile.SaveLargeStrToFileAsync(balanceJson, $"{AppContext.BaseDirectory}/json/balance.json");
+                //await Utils.ToFile.SaveLargeStrToFileAsync(cashJson, $"{AppContext.BaseDirectory}/json/cash.json");
 
+                //var result = new
+                //{
+                //    TsCode = tsCode,
+                //    ProfitStatement = profitJson,
+                //    BalanceSheet = balanceJson,
+                //    CashFlow = cashJson
+                //};
+                //return Ok(result);
 
-                var result = new
-                {
-                    TsCode = tsCode,
-                    ProfitStatement = profitJson,
-                    BalanceSheet = balanceJson,
-                    CashFlow = cashJson
-                };
-                return Ok(result);
+                await _mairuiFinancialService.SaveFinancialData(tsCode, await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/profit.json"), await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/balance.json"), await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/cash.json"));
+                return Ok(new { Message = "财报数据已保存到数据库" });
             }
             catch (HttpRequestException ex)
             {
@@ -105,6 +113,7 @@ namespace tumaiWeb.Controller
         }
 
         [HttpGet("stockbasics")]
+        [RequestTimeout(1200000)]
         public async Task<IActionResult> GetStockBasicsRawJson()
         {
             try
@@ -112,11 +121,9 @@ namespace tumaiWeb.Controller
                 //var stockBasicsJson = await _mairuiDataService.GetStockBasicRawAsync();
                 //await Utils.ToFile.SaveLargeStrToFileAsync(stockBasicsJson, $"{AppContext.BaseDirectory}/json/stockbasics.json");
                 // 放到后台执行，不阻塞http请求
-                _ = Task.Run(async () =>
-                {
-                    await _mairuiFinancialService.SaveStockBasicsData(await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/stockbasics.json"));
-                });
-                return Accepted(new { msg = "任务已提交，后台处理" });
+
+                await _mairuiFinancialService.SaveStockBasicsData(await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/stockbasics.json"));
+                return Ok(new { Message = "股票基础信息已保存到数据库" });
             }
             catch (Exception ex)
             {
@@ -124,5 +131,23 @@ namespace tumaiWeb.Controller
             }
         }
 
+        [HttpGet("stockQuoteSnapshot")]
+        [RequestTimeout(1200000)]
+        public async Task<IActionResult> GetStockQuoteSnapshotRawJson(string tsCode)
+        {
+            try
+            {
+                var stockQuoteSnapshotJson = await _mairuiDataService.GetStockQuoteSnapshotRawAsync(tsCode);
+                await Utils.ToFile.SaveLargeStrToFileAsync(stockQuoteSnapshotJson, $"{AppContext.BaseDirectory}/json/stockquotesnapshot.json");
+                return Ok(new { Message = "获取行情快照" });
+
+                //await _mairuiFinancialService.SaveStockBasicsData(await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/stockbasics.json"));
+                //return Ok(new { Message = "股票基础信息已保存到数据库" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"股票接口调用失败：{ex.Message}");
+            }
+        }
     }
 }
