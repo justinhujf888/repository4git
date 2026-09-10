@@ -10,7 +10,7 @@ namespace tumaiWeb.Utils
         /// <param name="str">文本，可以很长</param>
         /// <param name="filePath">完整路径，例如 @"/data/json/result.json"</param>
         /// <returns></returns>
-        public static async Task SaveJsonToFileAsync(string str, string filePath)
+        public static async Task SaveStrToFileAsync(string str, string filePath)
         {
             // 获取目录路径
             string? dir = Path.GetDirectoryName(filePath);
@@ -24,7 +24,7 @@ namespace tumaiWeb.Utils
         }
 
         //同步版本（控制台 / 简单后台任务使用，Controller 尽量不要用阻塞 IO）
-        public static void SaveJsonToFile(string str, string filePath)
+        public static void SaveStrToFile(string str, string filePath)
         {
             string? dir = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(dir))
@@ -35,7 +35,7 @@ namespace tumaiWeb.Utils
         }
 
         //超大 JSON 场景：流式写入（内容几 MB~ 几十 MB 推荐，减少内存占用）
-        public static async Task SaveLargeJsonToFileAsync(string str, string filePath)
+        public static async Task SaveLargeStrToFileAsync(string str, string filePath)
         {
             string? dir = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(dir))
@@ -67,7 +67,7 @@ namespace tumaiWeb.Utils
 
 
         //补充小工具：读取文件回到 JSON 字符串
-        public static async Task<string> ReadJsonFromFileAsync(string filePath)
+        public static async Task<string> ReadStrFromFileAsync(string filePath)
         {
             if (!File.Exists(filePath))
             {

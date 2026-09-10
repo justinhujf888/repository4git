@@ -33,6 +33,10 @@ namespace tumaiWeb.Controller
                 Console.WriteLine("\n【资产负债表JSON】\n" + balanceJson);
                 Console.WriteLine("\n【现金流量表JSON】\n" + cashJson);
 
+                await Utils.ToFile.SaveLargeStrToFileAsync(profitJson, $"{AppContext.BaseDirectory}/json/profit.json");
+                await Utils.ToFile.SaveLargeStrToFileAsync(balanceJson, $"{AppContext.BaseDirectory}/json/balance.json");
+                await Utils.ToFile.SaveLargeStrToFileAsync(cashJson, $"{AppContext.BaseDirectory}/json/cash.json");
+
 
                 var result = new
                 {
