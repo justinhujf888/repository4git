@@ -27,10 +27,10 @@ public partial class AppDbContext : DbContext
     {
     }
 
-    public DbSet<StockBasic> StockBasics => Set<StockBasic>();
-    public DbSet<StockQuoteSnapshot> StockQuoteSnapshots => Set<StockQuoteSnapshot>();
-    public DbSet<StockQuoteLatest> StockQuoteLatests => Set<StockQuoteLatest>();
-    public DbSet<StockFinancialReport> StockFinancialReports => Set<StockFinancialReport>();
+    //public DbSet<StockBasic> StockBasics => Set<StockBasic>();
+    //public DbSet<StockQuoteSnapshot> StockQuoteSnapshots => Set<StockQuoteSnapshot>();
+    //public DbSet<StockQuoteLatest> StockQuoteLatests => Set<StockQuoteLatest>();
+    //public DbSet<StockFinancialReport> StockFinancialReports => Set<StockFinancialReport>();
 
 //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.

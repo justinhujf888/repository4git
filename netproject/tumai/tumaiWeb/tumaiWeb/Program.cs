@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using tumaiWeb.Controller;
+using StackExchange.Redis.Extensions.Core.Configuration;
+using StackExchange.Redis.Extensions.System.Text.Json;
 using tumaiWeb.Data.Entities;
 using tumaiWeb.Data.Repository;
 using tumaiWeb.StockService.Mairui;
@@ -35,6 +36,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     });
     options.EnableSensitiveDataLogging();
 });
+
+// 读取redis连接串
+// 读取配置
+var redisCfg = builder.Configuration.GetSection("Redis").Get<RedisConfiguration>();
+// 注册，指定序列化器
+builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redisCfg!);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
