@@ -64,6 +64,30 @@ namespace tumaiWeb.StockService.Mairui
             return await GetRawAsync($"hsstock/real/time/{tsCode}/{_licence}", null, null);
         }
 
+        public async Task<string> GetStockSsjy4ManyStkRawAsync(List<String> slist)
+        {
+            if (slist.Count > 20)
+            {
+                throw new ArgumentException($"麦蕊ssjy_more单次最多支持20只，当前传入{slist.Count}只，请分组调用");
+            }
+
+            // 提取纯数字代码，剔除 .SH/.SZ
+            var codeList = new List<string>();
+            foreach (var fullCode in slist)
+            {
+                var parts = fullCode.Split('.');
+                if (parts.Length != 2 || string.IsNullOrWhiteSpace(parts[0]))
+                {
+                    throw new ArgumentException($"股票代码格式错误，示例 000001.SZ，错误项：{fullCode}");
+                }
+                codeList.Add(parts[0]);
+            }
+
+            var codeParam = string.Join(",", codeList);
+
+            return await GetRawAsync($"hsrl/ssjy_more/{_licence}?stock_codes={codeParam}", null, null);
+        }
+
         /// <summary>
         /// Pro版沪深K线【必须ts_code，000001.SZ / 600036.SH】
         /// </summary>

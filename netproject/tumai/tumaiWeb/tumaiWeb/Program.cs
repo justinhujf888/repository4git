@@ -30,9 +30,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     // 打印基础信息
     Console.WriteLine($"ContentRootPath:{builder.Environment.ContentRootPath}");
     Console.WriteLine($"GetConnectionString(Default)=[{connStr}]");
-    options.UseNpgsql(connStr,b =>
+    options.UseNpgsql(connStr, npgsqlOpt =>
     {
-        
+        // 关键这一行：允许 Dictionary<string,object> 直接映射 jsonb
+        // 重点在这里：ConfigureDataSource 里面才能调用 EnableDynamicJson
+        npgsqlOpt.ConfigureDataSource(dsBuilder =>
+        {
+            dsBuilder.EnableDynamicJson();
+        });
     });
     options.EnableSensitiveDataLogging();
 });

@@ -137,12 +137,11 @@ namespace tumaiWeb.Controller
         {
             try
             {
-                var stockQuoteSnapshotJson = await _mairuiDataService.GetStockQuoteSnapshotRawAsync(tsCode);
-                await Utils.ToFile.SaveLargeStrToFileAsync(stockQuoteSnapshotJson, $"{AppContext.BaseDirectory}/json/stockquotesnapshot.json");
-                return Ok(new { Message = "获取行情快照" });
-
-                //await _mairuiFinancialService.SaveStockBasicsData(await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/stockbasics.json"));
-                //return Ok(new { Message = "股票基础信息已保存到数据库" });
+                //var stockQuoteSnapshotJson = await _mairuiDataService.GetStockSsjy4ManyStkRawAsync([tsCode]);
+                //await Utils.ToFile.SaveLargeStrToFileAsync(stockQuoteSnapshotJson, $"{AppContext.BaseDirectory}/json/stockquotesnapshot.json");
+                //return Ok(new { Message = "获取行情快照" });
+                await _mairuiFinancialService.SaveStockSsjy4ManyStkData([tsCode], await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/stockquotesnapshot.json"));
+                return Ok(new { Message = "股票基础信息已保存到数据库" });
             }
             catch (Exception ex)
             {

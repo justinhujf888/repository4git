@@ -61,9 +61,19 @@ public class StockQuoteSnapshot : BaseEntity
     public decimal? ChangeAmount { get; set; }
 
     /// <summary>
-    /// 成交量，单位：手，1手=100股
+    /// 成交总量，单位：手，1手=100股
     /// </summary>
     public long? Volume { get; set; }
+
+    /// <summary>
+    /// tv 成交量（麦蕊ssjy_more接口）
+    /// </summary>
+    public long? TvVolume { get; set; }
+
+    /// <summary>
+    /// 原始成交量（麦蕊ssjy_more接口）
+    /// </summary>
+    public long? PvVolume { get; set; }
 
     /// <summary>
     /// 成交额，单位：元
@@ -137,6 +147,8 @@ public class StockQuoteSnapshotConfiguration : IEntityTypeConfiguration<StockQuo
         b.Property(e => e.ChangePercent).HasColumnType("numeric(10,4)");
         b.Property(e => e.ChangeAmount).HasColumnType("numeric(16,4)");
         b.Property(e => e.Volume);
+        b.Property(e => e.TvVolume);
+        b.Property(e => e.PvVolume);
         b.Property(e => e.Turnover).HasColumnType("numeric(24,2)");
         b.Property(e => e.TotalMarketValue).HasColumnType("numeric(24,2)");
         b.Property(e => e.Pe).HasColumnType("numeric(12,4)");

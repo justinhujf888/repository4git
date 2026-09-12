@@ -138,6 +138,12 @@ public class BaseService : IBaseService
         await _dbContext.SaveChangesAsync();
     }
 
+    public async Task AddObjectRangeAsync<T>(IEnumerable<T> entities) where T : class
+    {
+        await _dbContext.AddRangeAsync(entities);
+        await _dbContext.SaveChangesAsync();
+    }
+
     public void Evit()
     {
         _dbContext.ChangeTracker.Clear();

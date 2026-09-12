@@ -46,6 +46,8 @@ public interface IBaseService
     /// </summary>
     Task AddObjectAsync(object obj);
 
+    Task AddObjectRangeAsync<T>(IEnumerable<T> entities) where T : class;
+
     /// <summary>
     /// 清空一级缓存，对标evit() → em.clear()
     /// </summary>

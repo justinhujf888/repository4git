@@ -4,7 +4,7 @@ using tumaiWeb.Data.Entities;
 
 namespace tumaiWeb.Data.Entities
 {
-    public class CashFlowItemDto
+    public class CashFlowItemDto : BaseEntity
     {
         // 主键ID
         public long Id { get; set; }
@@ -89,8 +89,6 @@ namespace tumaiWeb.Data.Entities
 
         // 原始单条行json，存入PostgreSQL jsonb
         public Dictionary<string, object> RawJson { get; set; } = new();
-        // 入库时间
-        public DateTime CreateTime { get; set; }
     }
 }
 
@@ -136,7 +134,6 @@ public class CashFlowItemDtoConfiguration : IEntityTypeConfiguration<CashFlowIte
         entity.Property(x => x.EndCashBalance).HasColumnType("numeric(20,4)");
 
         entity.Property(x => x.RawJson).HasColumnType("jsonb");
-        entity.Property(x => x.CreateTime).HasColumnType("timestamp without time zone");
         entity.HasIndex(x => new { x.StockCode, x.ReportDate, x.Market }).IsUnique();
     }
 }

@@ -4,7 +4,7 @@ using tumaiWeb.Data.Entities;
 
 namespace tumaiWeb.Data.Entities
 {
-    public class IncomeStatementItemDto
+    public class IncomeStatementItemDto : BaseEntity
     {
         // 主键ID
         public long Id { get; set; }
@@ -71,8 +71,6 @@ namespace tumaiWeb.Data.Entities
 
         // 原始单条行json，存入PostgreSQL jsonb
         public Dictionary<string, object> RawJson { get; set; } = new();
-        // 入库时间
-        public DateTime CreateTime { get; set; }
     }
 }
 
@@ -110,7 +108,6 @@ public class IncomeStatementItemDtoConfiguration : IEntityTypeConfiguration<Inco
         entity.Property(x => x.DilutedEps).HasColumnType("numeric(12,6)");
 
         entity.Property(x => x.RawJson).HasColumnType("jsonb");
-        entity.Property(x => x.CreateTime).HasColumnType("timestamp without time zone");
 
         // 唯一索引：股票代码 + 报告截止日期（Upsert用）
         entity.HasIndex(x => new { x.StockCode, x.ReportDate, x.Market  }).IsUnique();

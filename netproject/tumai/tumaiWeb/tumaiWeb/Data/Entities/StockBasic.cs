@@ -55,16 +55,6 @@ public class StockBasic : BaseEntity
     /// </summary>
     public int IsDelist { get; set; }
 
-    // /// <summary>
-    // /// 创建时间
-    // /// </summary>
-    // public DateTime CreateTime { get; set; } = DateTime.UtcNow;
-    //
-    // /// <summary>
-    // /// 更新时间
-    // /// </summary>
-    // public DateTime UpdateTime { get; set; } = DateTime.UtcNow;
-
     /// <summary>
     /// 行情快照集合
     /// </summary>
@@ -100,10 +90,6 @@ public class StockBasicConfiguration : IEntityTypeConfiguration<StockBasic>
             .IsRequired();
 
         b.Property(e => e.IsActive);
-
-        b.Property(e => e.CreateTime);
-
-        b.Property(e => e.UpdateTime);
 
         b.Property(e => e.Industry)
         .HasMaxLength(100);

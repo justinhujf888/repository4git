@@ -15,10 +15,12 @@ public abstract class BaseEntity
     //public bool Deleted { get; set; }
 
     /// <summary>创建时间（UTC）</summary>
-    public DateTime CreateTime { get; set; }
+    [Column("createtime")]
+    public DateTime CreateTime { get; set; } = DateTime.UtcNow;
 
     /// <summary>更新时间（UTC）</summary>
-    public DateTime? UpdateTime { get; set; }
+    [Column("updatetime")]
+    public DateTime? UpdateTime { get; set; } = DateTime.UtcNow;
 
     [NotMapped]
     public Dictionary<string,object> TempMap { get; set; } = new();

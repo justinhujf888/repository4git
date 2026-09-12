@@ -224,15 +224,56 @@ namespace tumaiWeb.StockService.Mairui
             }
 
             // ========== Upsert批量入库 ==========
-            await UpsertIncome(incomeEntities);
-            await UpsertBalance(balanceEntities);
-            await UpsertCashFlow(cashEntities);
+            await UpsertIncome(DistinctKeepMaxDateString(incomeEntities,
+    groupKeySelector: x => new { x.StockCode, x.ReportDate, x.Market },
+    dateStrSelector: x => x.PublishDate
+));
+            await UpsertBalance(DistinctKeepMaxDateString(balanceEntities, groupKeySelector: x => new { x.StockCode, x.ReportDate, x.Market },
+    dateStrSelector: x => x.PublishDate));
+            await UpsertCashFlow(DistinctKeepMaxDateString(cashEntities, groupKeySelector: x => new { x.StockCode, x.ReportDate, x.Market },
+    dateStrSelector: x => x.PublishDate));
         }
 
-        public async Task SaveStockQuoteSnapshotData(string stockCode, string stockQuoteSnapshotJson)
+        public async Task SaveStockSsjy4ManyStkData(List<string> stockCodeWithMarketList, string stockQuoteJsonArray)
         {
-            var rawDict = JsonSerializer.Deserialize<Dictionary<string, object>>(stockQuoteSnapshotJson) ?? new();
+            var rawDataArray = JsonSerializer.Deserialize<List<Dictionary<string, object?>>>(stockQuoteJsonArray) ?? new();
+            var snapshotEntities = new List<StockQuoteSnapshot>();
+            for (int i = 0; i < rawDataArray.Count; i++)
+            {
+                var dict = rawDataArray[i];
+                var sm = stockCodeWithMarketList[i].Split(".");
+                var entity = new StockQuoteSnapshot
+                {
+                    StockCode = sm[0],
+                    Market = sm[1],
+                    CreateTime = DateTime.UtcNow,
 
+                    Price = MairuiDictHelper.GetDecimal(dict, "p"),
+                    YesterdayClose = MairuiDictHelper.GetDecimal(dict, "yc"),
+                    Open = MairuiDictHelper.GetDecimal(dict, "o"),
+                    High = MairuiDictHelper.GetDecimal(dict, "h"),
+                    Low = MairuiDictHelper.GetDecimal(dict, "l"),
+                    ChangePercent = MairuiDictHelper.GetDecimal(dict, "pc"),
+                    ChangeAmount = MairuiDictHelper.GetDecimal(dict, "ud"),
+
+                    Volume = MairuiDictHelper.GetLong(dict, "v"),
+                    Turnover = MairuiDictHelper.GetDecimal(dict, "cje"),
+                    TotalMarketValue = null,
+                    TvVolume = MairuiDictHelper.GetLong(dict, "tv"),
+                    PvVolume = MairuiDictHelper.GetLong(dict, "pv"),
+
+                    Pe = MairuiDictHelper.GetDecimal(dict, "pe"),
+                    PbRatio = MairuiDictHelper.GetDecimal(dict, "pb_ratio"),
+                    TurnoverRate = MairuiDictHelper.GetDecimal(dict, "tr"),
+                    Amplitude = MairuiDictHelper.GetDecimal(dict, "zf"),
+                    FiveMinChange = null,
+
+                    SnapshotTime = MairuiDictHelper.GetDateTime(dict, "t") ?? DateTime.UtcNow,
+                    RawJson = dict
+                };
+                snapshotEntities.Add(entity);
+            }
+            await _baseService.AddObjectRangeAsync(snapshotEntities);
         }
 
         #region 原生PostgreSQL Upsert（无第三方包，适配新版Npgsql，JsonB修复）
@@ -240,85 +281,7 @@ namespace tumaiWeb.StockService.Mairui
         {
             foreach (var item in list)
             {
-                const string sql = @"
-INSERT INTO ""stock_income_statement"" (
-    ""StockCode"", ""ReportDate"", ""PublishDate"", ""ReportType"",
-    ""TotalRevenue"", ""OperatingRevenue"", ""OperatingCost"", ""TaxAndSurcharges"",
-    ""SellingExpense"", ""AdminExpense"", ""RndExpense"", ""FinanceExpense"",
-    ""InterestExpense"", ""InterestIncome"", ""OperatingProfit"", ""NonOperatingIncome"",
-    ""NonOperatingExpense"", ""TotalProfit"", ""IncomeTaxExpense"", ""NetProfit"",
-    ""NetProfitParent"", ""MinorityProfit"", ""DeductNonProfit"", ""BasicEps"",
-    ""DilutedEps"", ""RawJson"", ""CreateTime""
-)
-VALUES (
-    @StockCode, @ReportDate, @PublishDate, @ReportType,
-    @TotalRevenue, @OperatingRevenue, @OperatingCost, @TaxAndSurcharges,
-    @SellingExpense, @AdminExpense, @RndExpense, @FinanceExpense,
-    @InterestExpense, @InterestIncome, @OperatingProfit, @NonOperatingIncome,
-    @NonOperatingExpense, @TotalProfit, @IncomeTaxExpense, @NetProfit,
-    @NetProfitParent, @MinorityProfit, @DeductNonProfit, @BasicEps,
-    @DilutedEps, @RawJson, @CreateTime
-)
-ON CONFLICT (""StockCode"", ""ReportDate"") DO UPDATE
-SET
-    ""PublishDate"" = EXCLUDED.""PublishDate"",
-    ""ReportType"" = EXCLUDED.""ReportType"",
-    ""TotalRevenue"" = EXCLUDED.""TotalRevenue"",
-    ""OperatingRevenue"" = EXCLUDED.""OperatingRevenue"",
-    ""OperatingCost"" = EXCLUDED.""OperatingCost"",
-    ""TaxAndSurcharges"" = EXCLUDED.""TaxAndSurcharges"",
-    ""SellingExpense"" = EXCLUDED.""SellingExpense"",
-    ""AdminExpense"" = EXCLUDED.""AdminExpense"",
-    ""RndExpense"" = EXCLUDED.""RndExpense"",
-    ""FinanceExpense"" = EXCLUDED.""FinanceExpense"",
-    ""InterestExpense"" = EXCLUDED.""InterestExpense"",
-    ""InterestIncome"" = EXCLUDED.""InterestIncome"",
-    ""OperatingProfit"" = EXCLUDED.""OperatingProfit"",
-    ""NonOperatingIncome"" = EXCLUDED.""NonOperatingIncome"",
-    ""NonOperatingExpense"" = EXCLUDED.""NonOperatingExpense"",
-    ""TotalProfit"" = EXCLUDED.""TotalProfit"",
-    ""IncomeTaxExpense"" = EXCLUDED.""IncomeTaxExpense"",
-    ""NetProfit"" = EXCLUDED.""NetProfit"",
-    ""NetProfitParent"" = EXCLUDED.""NetProfitParent"",
-    ""MinorityProfit"" = EXCLUDED.""MinorityProfit"",
-    ""DeductNonProfit"" = EXCLUDED.""DeductNonProfit"",
-    ""BasicEps"" = EXCLUDED.""BasicEps"",
-    ""DilutedEps"" = EXCLUDED.""DilutedEps"",
-    ""RawJson"" = EXCLUDED.""RawJson"",
-    ""CreateTime"" = EXCLUDED.""CreateTime"";
-";
-                await _db.Database.ExecuteSqlRawAsync(sql,
-                    new NpgsqlParameter("@StockCode", item.StockCode),
-                    new NpgsqlParameter("@ReportDate", item.ReportDate),
-                    new NpgsqlParameter("@PublishDate", item.PublishDate ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@ReportType", item.ReportType),
-                    new NpgsqlParameter("@TotalRevenue", item.TotalRevenue ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@OperatingRevenue", item.OperatingRevenue ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@OperatingCost", item.OperatingCost ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TaxAndSurcharges", item.TaxAndSurcharges ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@SellingExpense", item.SellingExpense ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@AdminExpense", item.AdminExpense ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@RndExpense", item.RndExpense ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@FinanceExpense", item.FinanceExpense ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@InterestExpense", item.InterestExpense ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@InterestIncome", item.InterestIncome ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@OperatingProfit", item.OperatingProfit ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NonOperatingIncome", item.NonOperatingIncome ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NonOperatingExpense", item.NonOperatingExpense ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TotalProfit", item.TotalProfit ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@IncomeTaxExpense", item.IncomeTaxExpense ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NetProfit", item.NetProfit ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NetProfitParent", item.NetProfitParent ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@MinorityProfit", item.MinorityProfit ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@DeductNonProfit", item.DeductNonProfit ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@BasicEps", item.BasicEps ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@DilutedEps", item.DilutedEps ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@RawJson", JsonSerializer.Serialize(item.RawJson, _jsonOpts))
-                    {
-                        NpgsqlDbType = NpgsqlDbType.Jsonb
-                    },
-                    new NpgsqlParameter("@CreateTime", item.CreateTime)
-                );
+                await _baseService.UpdateObjectAsync(item);
             }
         }
 
@@ -326,115 +289,7 @@ SET
         {
             foreach (var item in list)
             {
-                const string sql = @"
-INSERT INTO ""stock_balance_sheet"" (
-    ""StockCode"", ""ReportDate"", ""PublishDate"", ""ReportType"",
-    ""TotalCurrentAsset"", ""MonetaryFund"", ""TradingFinancialAsset"", ""BillReceivable"",
-    ""AccountReceivable"", ""Prepayment"", ""Inventory"", ""OtherCurrentAsset"",
-    ""TotalNonCurrentAsset"", ""FixedAssetOriginal"", ""FixedAssetNet"", ""IntangibleAsset"",
-    ""Goodwill"", ""LongTermEquityInvest"", ""TotalAsset"", ""TotalCurrentLiability"",
-    ""ShortTermLoan"", ""BillPayable"", ""AccountPayable"", ""AdvanceReceived"",
-    ""SalaryPayable"", ""TaxPayable"", ""TotalNonCurrentLiability"", ""LongTermLoan"",
-    ""BondPayable"", ""TotalLiability"", ""TotalEquity"", ""PaidInCapital"",
-    ""CapitalReserve"", ""SurplusReserve"", ""UndistributedProfit"", ""ParentEquity"",
-    ""MinorityEquity"", ""RawJson"", ""CreateTime""
-)
-VALUES (
-    @StockCode, @ReportDate, @PublishDate, @ReportType,
-    @TotalCurrentAsset, @MonetaryFund, @TradingFinancialAsset, @BillReceivable,
-    @AccountReceivable, @Prepayment, @Inventory, @OtherCurrentAsset,
-    @TotalNonCurrentAsset, @FixedAssetOriginal, @FixedAssetNet, @IntangibleAsset,
-    @Goodwill, @LongTermEquityInvest, @TotalAsset, @TotalCurrentLiability,
-    @ShortTermLoan, @BillPayable, @AccountPayable, @AdvanceReceived,
-    @SalaryPayable, @TaxPayable, @TotalNonCurrentLiability, @LongTermLoan,
-    @BondPayable, @TotalLiability, @TotalEquity, @PaidInCapital,
-    @CapitalReserve, @SurplusReserve, @UndistributedProfit, @ParentEquity,
-    @MinorityEquity, @RawJson, @CreateTime
-)
-ON CONFLICT (""StockCode"", ""ReportDate"") DO UPDATE
-SET
-    ""PublishDate"" = EXCLUDED.""PublishDate"",
-    ""ReportType"" = EXCLUDED.""ReportType"",
-    ""TotalCurrentAsset"" = EXCLUDED.""TotalCurrentAsset"",
-    ""MonetaryFund"" = EXCLUDED.""MonetaryFund"",
-    ""TradingFinancialAsset"" = EXCLUDED.""TradingFinancialAsset"",
-    ""BillReceivable"" = EXCLUDED.""BillReceivable"",
-    ""AccountReceivable"" = EXCLUDED.""AccountReceivable"",
-    ""Prepayment"" = EXCLUDED.""Prepayment"",
-    ""Inventory"" = EXCLUDED.""Inventory"",
-    ""OtherCurrentAsset"" = EXCLUDED.""OtherCurrentAsset"",
-    ""TotalNonCurrentAsset"" = EXCLUDED.""TotalNonCurrentAsset"",
-    ""FixedAssetOriginal"" = EXCLUDED.""FixedAssetOriginal"",
-    ""FixedAssetNet"" = EXCLUDED.""FixedAssetNet"",
-    ""IntangibleAsset"" = EXCLUDED.""IntangibleAsset"",
-    ""Goodwill"" = EXCLUDED.""Goodwill"",
-    ""LongTermEquityInvest"" = EXCLUDED.""LongTermEquityInvest"",
-    ""TotalAsset"" = EXCLUDED.""TotalAsset"",
-    ""TotalCurrentLiability"" = EXCLUDED.""TotalCurrentLiability"",
-    ""ShortTermLoan"" = EXCLUDED.""ShortTermLoan"",
-    ""BillPayable"" = EXCLUDED.""BillPayable"",
-    ""AccountPayable"" = EXCLUDED.""AccountPayable"",
-    ""AdvanceReceived"" = EXCLUDED.""AdvanceReceived"",
-    ""SalaryPayable"" = EXCLUDED.""SalaryPayable"",
-    ""TaxPayable"" = EXCLUDED.""TaxPayable"",
-    ""TotalNonCurrentLiability"" = EXCLUDED.""TotalNonCurrentLiability"",
-    ""LongTermLoan"" = EXCLUDED.""LongTermLoan"",
-    ""BondPayable"" = EXCLUDED.""BondPayable"",
-    ""TotalLiability"" = EXCLUDED.""TotalLiability"",
-    ""TotalEquity"" = EXCLUDED.""TotalEquity"",
-    ""PaidInCapital"" = EXCLUDED.""PaidInCapital"",
-    ""CapitalReserve"" = EXCLUDED.""CapitalReserve"",
-    ""SurplusReserve"" = EXCLUDED.""SurplusReserve"",
-    ""UndistributedProfit"" = EXCLUDED.""UndistributedProfit"",
-    ""ParentEquity"" = EXCLUDED.""ParentEquity"",
-    ""MinorityEquity"" = EXCLUDED.""MinorityEquity"",
-    ""RawJson"" = EXCLUDED.""RawJson"",
-    ""CreateTime"" = EXCLUDED.""CreateTime"";
-";
-                await _db.Database.ExecuteSqlRawAsync(sql,
-                    new NpgsqlParameter("@StockCode", item.StockCode),
-                    new NpgsqlParameter("@ReportDate", item.ReportDate),
-                    new NpgsqlParameter("@PublishDate", item.PublishDate ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@ReportType", item.ReportType),
-                    new NpgsqlParameter("@TotalCurrentAsset", item.TotalCurrentAsset ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@MonetaryFund", item.MonetaryFund ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TradingFinancialAsset", item.TradingFinancialAsset ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@BillReceivable", item.BillReceivable ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@AccountReceivable", item.AccountReceivable ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@Prepayment", item.Prepayment ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@Inventory", item.Inventory ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@OtherCurrentAsset", item.OtherCurrentAsset ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TotalNonCurrentAsset", item.TotalNonCurrentAsset ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@FixedAssetOriginal", item.FixedAssetOriginal ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@FixedAssetNet", item.FixedAssetNet ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@IntangibleAsset", item.IntangibleAsset ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@Goodwill", item.Goodwill ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@LongTermEquityInvest", item.LongTermEquityInvest ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TotalAsset", item.TotalAsset ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TotalCurrentLiability", item.TotalCurrentLiability ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@ShortTermLoan", item.ShortTermLoan ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@BillPayable", item.BillPayable ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@AccountPayable", item.AccountPayable ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@AdvanceReceived", item.AdvanceReceived ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@SalaryPayable", item.SalaryPayable ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TaxPayable", item.TaxPayable ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TotalNonCurrentLiability", item.TotalNonCurrentLiability ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@LongTermLoan", item.LongTermLoan ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@BondPayable", item.BondPayable ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TotalLiability", item.TotalLiability ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TotalEquity", item.TotalEquity ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@PaidInCapital", item.PaidInCapital ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CapitalReserve", item.CapitalReserve ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@SurplusReserve", item.SurplusReserve ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@UndistributedProfit", item.UndistributedProfit ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@ParentEquity", item.ParentEquity ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@MinorityEquity", item.MinorityEquity ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@RawJson", JsonSerializer.Serialize(item.RawJson, _jsonOpts))
-                    {
-                        NpgsqlDbType = NpgsqlDbType.Jsonb
-                    },
-                    new NpgsqlParameter("@CreateTime", item.CreateTime)
-                );
+                await _baseService.AddObjectAsync(item);
             }
         }
 
@@ -442,105 +297,7 @@ SET
         {
             foreach (var item in list)
             {
-                const string sql = @"
-INSERT INTO ""stock_cash_flow"" (
-    ""StockCode"", ""ReportDate"", ""PublishDate"", ""ReportType"",
-    ""OperateCashIn"", ""OperateCashOut"", ""NetOperateCashFlow"", ""CashFromSales"",
-    ""TaxRefundReceived"", ""OtherOperateCashIn"", ""CashPayForGoods"", ""CashPayToStaff"",
-    ""TaxPaid"", ""OtherOperateCashOut"", ""InvestCashIn"", ""InvestCashOut"",
-    ""NetInvestCashFlow"", ""CashFromInvestRecall"", ""CashFromInvestIncome"", ""CashFromDisposeLongAsset"",
-    ""Capex"", ""CashPayForInvest"", ""FinanceCashIn"", ""FinanceCashOut"",
-    ""NetFinanceCashFlow"", ""CashFromEquity"", ""CashFromBorrow"", ""CashRepayDebt"",
-    ""CashPayDividendInterest"", ""ForexEffectOnCash"", ""NetIncreaseCash"", ""BeginCashBalance"",
-    ""EndCashBalance"", ""RawJson"", ""CreateTime""
-)
-VALUES (
-    @StockCode, @ReportDate, @PublishDate, @ReportType,
-    @OperateCashIn, @OperateCashOut, @NetOperateCashFlow, @CashFromSales,
-    @TaxRefundReceived, @OtherOperateCashIn, @CashPayForGoods, @CashPayToStaff,
-    @TaxPaid, @OtherOperateCashOut, @InvestCashIn, @InvestCashOut,
-    @NetInvestCashFlow, @CashFromInvestRecall, @CashFromInvestIncome, @CashFromDisposeLongAsset,
-    @Capex, @CashPayForInvest, @FinanceCashIn, @FinanceCashOut,
-    @NetFinanceCashFlow, @CashFromEquity, @CashFromBorrow, @CashRepayDebt,
-    @CashPayDividendInterest, @ForexEffectOnCash, @NetIncreaseCash, @BeginCashBalance,
-    @EndCashBalance, @RawJson, @CreateTime
-)
-ON CONFLICT (""StockCode"", ""ReportDate"") DO UPDATE
-SET
-    ""PublishDate"" = EXCLUDED.""PublishDate"",
-    ""ReportType"" = EXCLUDED.""ReportType"",
-    ""OperateCashIn"" = EXCLUDED.""OperateCashIn"",
-    ""OperateCashOut"" = EXCLUDED.""OperateCashOut"",
-    ""NetOperateCashFlow"" = EXCLUDED.""NetOperateCashFlow"",
-    ""CashFromSales"" = EXCLUDED.""CashFromSales"",
-    ""TaxRefundReceived"" = EXCLUDED.""TaxRefundReceived"",
-    ""OtherOperateCashIn"" = EXCLUDED.""OtherOperateCashIn"",
-    ""CashPayForGoods"" = EXCLUDED.""CashPayForGoods"",
-    ""CashPayToStaff"" = EXCLUDED.""CashPayToStaff"",
-    ""TaxPaid"" = EXCLUDED.""TaxPaid"",
-    ""OtherOperateCashOut"" = EXCLUDED.""OtherOperateCashOut"",
-    ""InvestCashIn"" = EXCLUDED.""InvestCashIn"",
-    ""InvestCashOut"" = EXCLUDED.""InvestCashOut"",
-    ""NetInvestCashFlow"" = EXCLUDED.""NetInvestCashFlow"",
-    ""CashFromInvestRecall"" = EXCLUDED.""CashFromInvestRecall"",
-    ""CashFromInvestIncome"" = EXCLUDED.""CashFromInvestIncome"",
-    ""CashFromDisposeLongAsset"" = EXCLUDED.""CashFromDisposeLongAsset"",
-    ""Capex"" = EXCLUDED.""Capex"",
-    ""CashPayForInvest"" = EXCLUDED.""CashPayForInvest"",
-    ""FinanceCashIn"" = EXCLUDED.""FinanceCashIn"",
-    ""FinanceCashOut"" = EXCLUDED.""FinanceCashOut"",
-    ""NetFinanceCashFlow"" = EXCLUDED.""NetFinanceCashFlow"",
-    ""CashFromEquity"" = EXCLUDED.""CashFromEquity"",
-    ""CashFromBorrow"" = EXCLUDED.""CashFromBorrow"",
-    ""CashRepayDebt"" = EXCLUDED.""CashRepayDebt"",
-    ""CashPayDividendInterest"" = EXCLUDED.""CashPayDividendInterest"",
-    ""ForexEffectOnCash"" = EXCLUDED.""ForexEffectOnCash"",
-    ""NetIncreaseCash"" = EXCLUDED.""NetIncreaseCash"",
-    ""BeginCashBalance"" = EXCLUDED.""BeginCashBalance"",
-    ""EndCashBalance"" = EXCLUDED.""EndCashBalance"",
-    ""RawJson"" = EXCLUDED.""RawJson"",
-    ""CreateTime"" = EXCLUDED.""CreateTime"";
-";
-                await _db.Database.ExecuteSqlRawAsync(sql,
-                    new NpgsqlParameter("@StockCode", item.StockCode),
-                    new NpgsqlParameter("@ReportDate", item.ReportDate),
-                    new NpgsqlParameter("@PublishDate", item.PublishDate ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@ReportType", item.ReportType),
-                    new NpgsqlParameter("@OperateCashIn", item.OperateCashIn ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@OperateCashOut", item.OperateCashOut ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NetOperateCashFlow", item.NetOperateCashFlow ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashFromSales", item.CashFromSales ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TaxRefundReceived", item.TaxRefundReceived ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@OtherOperateCashIn", item.OtherOperateCashIn ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashPayForGoods", item.CashPayForGoods ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashPayToStaff", item.CashPayToStaff ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@TaxPaid", item.TaxPaid ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@OtherOperateCashOut", item.OtherOperateCashOut ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@InvestCashIn", item.InvestCashIn ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@InvestCashOut", item.InvestCashOut ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NetInvestCashFlow", item.NetInvestCashFlow ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashFromInvestRecall", item.CashFromInvestRecall ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashFromInvestIncome", item.CashFromInvestIncome ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashFromDisposeLongAsset", item.CashFromDisposeLongAsset ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@Capex", item.Capex ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashPayForInvest", item.CashPayForInvest ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@FinanceCashIn", item.FinanceCashIn ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@FinanceCashOut", item.FinanceCashOut ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NetFinanceCashFlow", item.NetFinanceCashFlow ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashFromEquity", item.CashFromEquity ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashFromBorrow", item.CashFromBorrow ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashRepayDebt", item.CashRepayDebt ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@CashPayDividendInterest", item.CashPayDividendInterest ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@ForexEffectOnCash", item.ForexEffectOnCash ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@NetIncreaseCash", item.NetIncreaseCash ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@BeginCashBalance", item.BeginCashBalance ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@EndCashBalance", item.EndCashBalance ?? (object)DBNull.Value),
-                    new NpgsqlParameter("@RawJson", JsonSerializer.Serialize(item.RawJson, _jsonOpts))
-                    {
-                        NpgsqlDbType = NpgsqlDbType.Jsonb
-                    },
-                    new NpgsqlParameter("@CreateTime", item.CreateTime)
-                );
+                await _baseService.AddObjectAsync(item);
             }
         }
         #endregion
@@ -549,43 +306,47 @@ SET
         /// 从麦蕊API拉取股票基础列表，批量Upsert到StockBasics
         /// </summary>
         /// <param name="stockList">麦蕊返回的股票基础列表</param>
-        public async Task UpsertStockBasics(List<StockBasic> stockList)
+        private async Task UpsertStockBasics(List<StockBasic> stockList)
         {
             Console.WriteLine($"UpsertStockBasics: {stockList.Count} items");
             foreach (var item in stockList)
             {
                 await _baseService.AddObjectAsync(item);
-                //                const string sql = @"
-                //INSERT INTO ""StockBasics"" (
-                //    ""StockCode"", ""StockName"", ""Exchange"", ""Industry"",
-                //    ""ListDate"", ""IsDelist"", ""CreateTime"", ""UpdateTime""
-                //)
-                //VALUES (
-                //    @StockCode, @StockName, @Exchange, @Industry,
-                //    @ListDate, @IsDelist, @CreateTime, @UpdateTime
-                //)
-                //ON CONFLICT (""StockCode"") DO UPDATE
-                //SET
-                //    ""StockName"" = EXCLUDED.""StockName"",
-                //    ""Exchange"" = EXCLUDED.""Exchange"",
-                //    ""Industry"" = EXCLUDED.""Industry"",
-                //    ""ListDate"" = EXCLUDED.""ListDate"",
-                //    ""IsDelist"" = EXCLUDED.""IsDelist"",
-                //    ""UpdateTime"" = EXCLUDED.""UpdateTime"";
-                //";
-                //                int affected = await _db.Database.ExecuteSqlRawAsync(sql,
-                //                    new NpgsqlParameter("@StockCode", item.StockCode),
-                //                    new NpgsqlParameter("@StockName", item.StockName),
-                //                    new NpgsqlParameter("@Exchange", item.Exchange),
-                //                    new NpgsqlParameter("@Industry", item.Industry ?? (object)DBNull.Value),
-                //                    new NpgsqlParameter("@ListDate", item.ListDate ?? (object)DBNull.Value),
-                //                    new NpgsqlParameter("@IsDelist", item.IsDelist),
-                //                    new NpgsqlParameter("@CreateTime", item.CreateTime),
-                //                    new NpgsqlParameter("@UpdateTime", item.UpdateTime)
-                //                );
-                //                Console.WriteLine($"StockCode:{item.StockCode}, affected rows:{affected}");
             }
         }
 
+        /// <summary>
+        /// 通用去重：按分组键分组，每组保留时间字段最大的一条（无反射，高性能）
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="source">数据源</param>
+        /// <param name="groupKeySelector">分组联合键</param>
+        /// <param name="timeSelector">用来比较的时间字段</param>
+        private List<T> DistinctKeepMaxDateString<T, TKey>(
+            IEnumerable<T> source,
+            Func<T, TKey> groupKeySelector,
+            Func<T, string?> dateStrSelector)
+        {
+            if (source == null)
+                return new List<T>();
+
+            return source
+                .GroupBy(groupKeySelector)
+                .Select(g =>
+                {
+                    // 每组内部：尝试把字符串转DateTime，解析失败当作最小时间
+                    var ordered = g.OrderByDescending(item =>
+                    {
+                        var dateStr = dateStrSelector(item);
+                        if (DateTime.TryParse(dateStr, out var dt))
+                        {
+                            return dt;
+                        }
+                        return DateTime.MinValue;
+                    });
+                    return ordered.First();
+                })
+                .ToList();
+        }
     }
 }

@@ -99,11 +99,6 @@ public class StockQuoteLatest : BaseEntity
     /// </summary>
     public DateTime SnapshotTime { get; set; }
 
-    ///// <summary>
-    ///// 最后更新时间
-    ///// </summary>
-    //public DateTime UpdateTime { get; set; } = DateTime.UtcNow;
-
     /// <summary>
     /// 关联股票基础信息
     /// </summary>
@@ -137,6 +132,5 @@ public class StockQuoteLatestConfiguration : IEntityTypeConfiguration<StockQuote
         b.Property(e => e.FiveMinChange).HasColumnType("numeric(10,4)");
 
         b.Property(e => e.SnapshotTime).IsRequired();
-        b.Property(e => e.UpdateTime);
     }
 }

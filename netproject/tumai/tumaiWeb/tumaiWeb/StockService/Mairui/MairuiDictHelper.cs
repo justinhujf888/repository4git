@@ -40,6 +40,21 @@ namespace tumaiWeb.StockService.Mairui
             return val.ToString()?.Trim();
         }
 
+        public static DateTime? GetDateTime(Dictionary<string, object?> dict, string key)
+        {
+            if (!dict.TryGetValue(key, out var val) || val is null)
+                return null;
+            var str = val.ToString();
+            if (DateTime.TryParseExact(str, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dtCst))
+            {
+                // dtCst 是【北京时间CST(+8)】
+                TimeZoneInfo cstTz = TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai");
+                DateTime utcTime = TimeZoneInfo.ConvertTimeToUtc(dtCst, cstTz);
+                return utcTime; // 此时Kind=Utc，可以存入PG timestamptz
+            }
+            return null;
+        }
+
         /// <summary>
         /// 根据财报截止日期字符串，获取报告类型
         /// </summary>

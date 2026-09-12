@@ -93,7 +93,7 @@ namespace tumaiWeb.Data.Repository
             var entity = await FindByIdAsync(id);
             if (entity != null)
             {
-                entity.Deleted = true;
+                //entity.Deleted = true;
                 entity.UpdateTime = DateTime.UtcNow;
                 MarkAsCreateOrUpdate(entity);
             }
@@ -108,7 +108,7 @@ namespace tumaiWeb.Data.Repository
         private void FillCreateAudit(T entity)
         {
             entity.CreateTime = DateTime.UtcNow;
-            entity.Deleted = false;
+            //entity.Deleted = false;
         }
     }
 }
