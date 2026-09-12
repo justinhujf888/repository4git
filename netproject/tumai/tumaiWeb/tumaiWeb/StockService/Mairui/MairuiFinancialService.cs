@@ -44,8 +44,7 @@ namespace tumaiWeb.StockService.Mairui
                     IsActive = true,
                     Industry = null,
                     CreateTime = now,
-                    UpdateTime = now,
-                    Deleted = false
+                    UpdateTime = now
                 };
                 stockBasicEntities.Add(entity);
             }

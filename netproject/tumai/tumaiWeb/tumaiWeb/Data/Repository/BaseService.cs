@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Transactions;
 using tumaiWeb.Data.Entities;
 
 namespace tumaiWeb.Data.Repository;
@@ -213,84 +212,150 @@ public class BaseService : IBaseService
     }
 
     /// <summary>
-    /// 原生SQL查询实体，多余查询字段自动放入实体Temps字典
-    /// 实体必须包含 [NotMapped] public Dictionary<string,object> Temps {get;set;}
+    /// LINQ投影查询，自动映射到实体T，不在实体的字段自动放入 Temps。
+    /// 匹配规则：投影属性名（小写） == 实体属性名（ToLower()）。
+    /// 已处理：空行跳过、DBNull转null、赋值异常包装。
     /// </summary>
     /// <typeparam name="T">目标实体</typeparam>
-    /// <param name="sql">支持命名参数 @xxx</param>
-    /// <param name="paramsMap">参数字典</param>
-    /// <returns></returns>
+    /// <typeparam name="TProjection">投影类型（匿名类/DTO）</typeparam>
+    public async Task<List<T>> QueryLinqWithTempsAsync<T, TProjection>(IQueryable<TProjection> query)
+        where T : class, new()
+    {
+        var projectionList = await query.ToListAsync();
+        if (projectionList.Count == 0)
+        {
+            return new List<T>();
+        }
+
+        var (entityPropDict, tempsProperty) = GetEntityTypeInfo(typeof(T));
+        if (tempsProperty == null)
+        {
+            throw new InvalidOperationException(
+                $"实体 {typeof(T).Name} 缺少 [NotMapped] public Dictionary<string,object> Temps {{ get; set; }}");
+        }
+
+        var result = new List<T>();
+        foreach (var projItem in projectionList)
+        {
+            if (projItem == null)   // 左连接 DefaultIfEmpty 场景，跳过空行
+                continue;
+
+            T entity = new T();
+            var tempsDict = new Dictionary<string, object>();
+            tempsProperty.SetValue(entity, tempsDict);
+
+            var projProps = projItem.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var projProp in projProps)
+            {
+                object? rawVal = projProp.GetValue(projItem);
+                object? val = rawVal is DBNull ? null : rawVal;   // DBNull 转 null
+
+                string projNameLower = projProp.Name.ToLower();
+
+                if (entityPropDict.TryGetValue(projNameLower, out var entityProp))
+                {
+                    try
+                    {
+                        entityProp.SetValue(entity, val);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidOperationException(
+                            $"实体【{typeof(T).Name}】属性 {entityProp.Name} 赋值失败，" +
+                            $"投影属性:{projProp.Name}，值类型:{val?.GetType().Name ?? "null"}",
+                            ex);
+                    }
+                }
+                else
+                {
+                    tempsDict[projNameLower] = val;
+                }
+            }
+            result.Add(entity);
+        }
+        return result;
+    }
+
+    /// <summary>重载：省略第二个泛型参数，直接传 IQueryable&lt;object&gt;</summary>
+    public async Task<List<T>> QueryLinqWithTempsAsync<T>(IQueryable<object> query)
+        where T : class, new()
+    {
+        return await QueryLinqWithTempsAsync<T, object>(query);
+    }
+
+    /// <summary>
+    /// 手写原生SQL查询，读取全部返回列。
+    /// 自动映射到实体T的属性，多余列自动放入实体 Temps 字典。
+    /// 匹配规则：数据库列名（小写） == 实体属性名（ToLower()）。
+    /// 已处理：DBNull转null、参数通用化、赋值异常包装。
+    /// </summary>
+    /// <typeparam name="T">目标实体，必须带无参构造，包含 [NotMapped] Temps 字典</typeparam>
+    /// <param name="sql">原生SQL（支持 @xxx 命名参数，写法与驱动一致）</param>
+    /// <param name="paramsMap">命名参数字典</param>
     public async Task<List<T>> QueryWithExtraColsAsync<T>(string sql, Dictionary<string, object>? paramsMap = null)
         where T : class, new()
     {
-        // 1. 解析命名参数，得到最终sql和Npgsql参数数组（复用你原有方法）
-        var (realSql, pars) = RewriteNamedSql(sql, paramsMap);
-
-        // 2. 读取或缓存当前T类型的属性信息
-        var typeInfo = _typePropertyCache.GetOrAdd(typeof(T), type =>
-        {
-            var props = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            var normalProps = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
-            PropertyInfo? tempsProp = null;
-
-            foreach (var p in props)
-            {
-                // 跳过带NotMapped特性的属性，除了Temps
-                var notMappedAttr = p.GetCustomAttribute<NotMappedAttribute>();
-                if (notMappedAttr != null)
-                {
-                    if (p.Name == "TempMap" && p.PropertyType == typeof(Dictionary<string, object>))
-                    {
-                        tempsProp = p;
-                    }
-                    continue;
-                }
-                normalProps[p.Name] = p;
-            }
-            return (normalProps, tempsProp);
-        });
-
-        var (propertyDict, tempsProperty) = typeInfo;
+        var (entityPropDict, tempsProperty) = GetEntityTypeInfo(typeof(T));
         if (tempsProperty == null)
         {
-            throw new InvalidOperationException($"类型 {typeof(T).Name} 没有定义 [NotMapped] 的 Temps 字典属性");
+            throw new InvalidOperationException(
+                $"实体 {typeof(T).Name} 缺少 [NotMapped] public Dictionary<string,object> Temps {{ get; set; }}");
         }
 
         var resultList = new List<T>();
+
         await using var conn = _dbContext.Database.GetDbConnection();
-        if (conn.State != System.Data.ConnectionState.Open)
-        {
-            await conn.OpenAsync();
-        }
+        await conn.OpenAsync();
 
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = realSql;
-        cmd.Parameters.AddRange(pars);
+        cmd.CommandText = sql;
+
+        // ========== 通用参数组装（不依赖 Npgsql，适配 PG/MySQL/SqlServer）==========
+        if (paramsMap != null && paramsMap.Count > 0)
+        {
+            foreach (var kv in paramsMap)
+            {
+                var dbParam = cmd.CreateParameter();          // 由当前驱动生成对应的 DbParameter
+                dbParam.ParameterName = kv.Key;
+                dbParam.Value = kv.Value ?? DBNull.Value;     // null 转 DBNull，避免数据库收到 CLR null 报错
+                cmd.Parameters.Add(dbParam);
+            }
+        }
 
         await using var reader = await cmd.ExecuteReaderAsync();
-
         while (await reader.ReadAsync())
         {
             T item = new T();
             var tempsDict = new Dictionary<string, object>();
             tempsProperty.SetValue(item, tempsDict);
 
+            // 遍历这一行的所有数据库列
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                string dbCol = reader.GetName(i);
-                object rawVal = reader.IsDBNull(i) ? null! : reader.GetValue(i);
+                string colName = reader.GetName(i).ToLower();
+                object rawVal = reader.GetValue(i);
 
-                // 【PG兼容】下划线列名转驼峰：stock_code → StockCode
-                //string camelName = ToCamelCaseFromUnderscore(dbCol);
+                // DBNull 统一转 C# null，避免反射赋值报错
+                object? val = rawVal is DBNull ? null : rawVal;
 
-                if (propertyDict.TryGetValue(dbCol, out var propInfo))
+                if (entityPropDict.TryGetValue(colName, out var propInfo))
                 {
-                    propInfo.SetValue(item, rawVal);
+                    try
+                    {
+                        propInfo.SetValue(item, val);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidOperationException(
+                            $"实体【{typeof(T).Name}】属性 {propInfo.Name} 赋值失败，" +
+                            $"原始列名:{reader.GetName(i)}，值类型:{val?.GetType().Name ?? "null"}",
+                            ex);
+                    }
                 }
                 else
                 {
-                    // 多余字段，丢入Temps字典
-                    tempsDict[dbCol] = rawVal;
+                    // 不在实体属性中的额外列，放入 Temps（key 为小写列名）
+                    tempsDict[colName] = val;
                 }
             }
             resultList.Add(item);
@@ -397,11 +462,48 @@ public class BaseService : IBaseService
         return _dbContext.Set<T>().FromSqlRaw(realSql, pars);
     }
 
-    // 静态全局属性缓存，程序生命周期只反射一次
+    /// <summary>
+    /// 实体属性缓存，QueryLinqWithTempsAsync 和 QueryWithExtraColsAsync 共用
+    /// key: 实体类型 => (小写属性名->PropertyInfo, Temps属性元数据)
+    /// </summary>
     private static readonly ConcurrentDictionary<Type, (
-        Dictionary<string, PropertyInfo> NormalProps,
+        Dictionary<string, PropertyInfo> LowerNameToProperty,
         PropertyInfo? TempsProperty
-    )> _typePropertyCache = new();
+    )> _entityPropCache = new();
+
+    /// <summary>
+    /// 构建/读取实体T的元数据缓存
+    /// </summary>
+    private static (
+        Dictionary<string, PropertyInfo> LowerNameToProperty,
+        PropertyInfo? TempsProperty
+    ) GetEntityTypeInfo(Type type)
+    {
+        return _entityPropCache.GetOrAdd(type, t =>
+        {
+            var props = t.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var lowerDict = new Dictionary<string, PropertyInfo>();
+            PropertyInfo? tempsProp = null;
+
+            foreach (var p in props)
+            {
+                var notMappedAttr = p.GetCustomAttribute<NotMappedAttribute>();
+                if (notMappedAttr != null)
+                {
+                    // 修复：用字符串字面量 "Temps"，不能 nameof(Temps)（当前作用域无此符号，会编译报错）
+                    if (p.Name == "Temps" && p.PropertyType == typeof(Dictionary<string, object>))
+                    {
+                        tempsProp = p;
+                    }
+                    continue; // NotMapped 属性不加入数据库字段映射字典
+                }
+
+                string lowerPropName = p.Name.ToLower();
+                lowerDict[lowerPropName] = p;
+            }
+            return (lowerDict, tempsProp);
+        });
+    }
 
     #endregion
 }
