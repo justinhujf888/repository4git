@@ -94,4 +94,15 @@ public interface IBaseService
     /// 事务回调，对标groovy closure
     /// </summary>
     Task TransactionCallAsync(int propagationBehavior, Func<Task> closure);
+
+    /// <summary>
+    /// 原生SQL查询实体，多余查询字段自动放入实体Temps字典
+    /// 实体必须包含 [NotMapped] public Dictionary<string,object> Temps {get;set;}
+    /// </summary>
+    /// <typeparam name="T">目标实体</typeparam>
+    /// <param name="sql">支持命名参数 @xxx</param>
+    /// <param name="paramsMap">参数字典</param>
+    /// <returns></returns>
+    Task<List<T>> QueryWithExtraColsAsync<T>(string sql, Dictionary<string, object>? paramsMap = null)
+        where T : class, new();
 }

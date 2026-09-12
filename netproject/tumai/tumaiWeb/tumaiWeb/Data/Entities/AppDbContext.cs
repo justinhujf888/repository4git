@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -11,13 +12,16 @@ public abstract class BaseEntity
     // public long Id { get; set; }
 
     /// <summary>软删除标记</summary>
-    public bool Deleted { get; set; }
+    //public bool Deleted { get; set; }
 
     /// <summary>创建时间（UTC）</summary>
     public DateTime CreateTime { get; set; }
 
     /// <summary>更新时间（UTC）</summary>
     public DateTime? UpdateTime { get; set; }
+
+    [NotMapped]
+    public Dictionary<string,object> TempMap { get; set; } = new();
 }
 
 public partial class AppDbContext : DbContext
@@ -63,10 +67,10 @@ public partial class AppDbContext : DbContext
             if (entityType.BaseType is not null)
                 continue;
 
-            var param = Expression.Parameter(clrType);
-            var propExpr = Expression.Property(param, nameof(BaseEntity.Deleted));
-            var filterExpr = Expression.Lambda(Expression.Equal(propExpr, Expression.Constant(false)), param);
-            modelBuilder.Entity(clrType).HasQueryFilter(filterExpr);
+            //var param = Expression.Parameter(clrType);
+            //var propExpr = Expression.Property(param, nameof(BaseEntity.Deleted));
+            //var filterExpr = Expression.Lambda(Expression.Equal(propExpr, Expression.Constant(false)), param);
+            //modelBuilder.Entity(clrType).HasQueryFilter(filterExpr);
         }
 
         

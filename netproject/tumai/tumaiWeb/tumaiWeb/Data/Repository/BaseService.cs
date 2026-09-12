@@ -1,7 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Transactions;
-using Microsoft.EntityFrameworkCore;
 using tumaiWeb.Data.Entities;
 
 namespace tumaiWeb.Data.Repository;
@@ -190,7 +193,7 @@ public class BaseService : IBaseService
 
     #endregion
 
-    #region NativeSQL Delete / Insert
+    #region NativeSQL Delete / Insert / Query
 
     public async Task RemoveObjectByNativeSQLAsync(string tableName, Dictionary<string, object> paramsMap)
     {
@@ -207,6 +210,93 @@ public class BaseService : IBaseService
         var paramStr = string.Join(",", cols.Select(x => $"@{x}"));
         string sql = $"INSERT INTO {tableName} ({colStr}) VALUES ({paramStr})";
         await ExecuteEQLAsync(sql, paramsMap);
+    }
+
+    /// <summary>
+    /// 原生SQL查询实体，多余查询字段自动放入实体Temps字典
+    /// 实体必须包含 [NotMapped] public Dictionary<string,object> Temps {get;set;}
+    /// </summary>
+    /// <typeparam name="T">目标实体</typeparam>
+    /// <param name="sql">支持命名参数 @xxx</param>
+    /// <param name="paramsMap">参数字典</param>
+    /// <returns></returns>
+    public async Task<List<T>> QueryWithExtraColsAsync<T>(string sql, Dictionary<string, object>? paramsMap = null)
+        where T : class, new()
+    {
+        // 1. 解析命名参数，得到最终sql和Npgsql参数数组（复用你原有方法）
+        var (realSql, pars) = RewriteNamedSql(sql, paramsMap);
+
+        // 2. 读取或缓存当前T类型的属性信息
+        var typeInfo = _typePropertyCache.GetOrAdd(typeof(T), type =>
+        {
+            var props = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var normalProps = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
+            PropertyInfo? tempsProp = null;
+
+            foreach (var p in props)
+            {
+                // 跳过带NotMapped特性的属性，除了Temps
+                var notMappedAttr = p.GetCustomAttribute<NotMappedAttribute>();
+                if (notMappedAttr != null)
+                {
+                    if (p.Name == "TempMap" && p.PropertyType == typeof(Dictionary<string, object>))
+                    {
+                        tempsProp = p;
+                    }
+                    continue;
+                }
+                normalProps[p.Name] = p;
+            }
+            return (normalProps, tempsProp);
+        });
+
+        var (propertyDict, tempsProperty) = typeInfo;
+        if (tempsProperty == null)
+        {
+            throw new InvalidOperationException($"类型 {typeof(T).Name} 没有定义 [NotMapped] 的 Temps 字典属性");
+        }
+
+        var resultList = new List<T>();
+        await using var conn = _dbContext.Database.GetDbConnection();
+        if (conn.State != System.Data.ConnectionState.Open)
+        {
+            await conn.OpenAsync();
+        }
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = realSql;
+        cmd.Parameters.AddRange(pars);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            T item = new T();
+            var tempsDict = new Dictionary<string, object>();
+            tempsProperty.SetValue(item, tempsDict);
+
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                string dbCol = reader.GetName(i);
+                object rawVal = reader.IsDBNull(i) ? null! : reader.GetValue(i);
+
+                // 【PG兼容】下划线列名转驼峰：stock_code → StockCode
+                //string camelName = ToCamelCaseFromUnderscore(dbCol);
+
+                if (propertyDict.TryGetValue(dbCol, out var propInfo))
+                {
+                    propInfo.SetValue(item, rawVal);
+                }
+                else
+                {
+                    // 多余字段，丢入Temps字典
+                    tempsDict[dbCol] = rawVal;
+                }
+            }
+            resultList.Add(item);
+        }
+
+        return resultList;
     }
 
     #endregion
@@ -306,6 +396,12 @@ public class BaseService : IBaseService
         var (realSql, pars) = RewriteNamedSql(sql, parameters);
         return _dbContext.Set<T>().FromSqlRaw(realSql, pars);
     }
+
+    // 静态全局属性缓存，程序生命周期只反射一次
+    private static readonly ConcurrentDictionary<Type, (
+        Dictionary<string, PropertyInfo> NormalProps,
+        PropertyInfo? TempsProperty
+    )> _typePropertyCache = new();
 
     #endregion
 }
