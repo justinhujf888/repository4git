@@ -276,6 +276,92 @@ namespace tumaiWeb.StockService.Mairui
             await _baseService.AddObjectRangeAsync(snapshotEntities);
         }
 
+        /// <summary>
+        /// 单只个股计算估值指标，Upsert入库
+        /// </summary>
+        public async Task CalcAndUpsertOneAsync(string stockCode, DateOnly tradeDate, CancellationToken ct)
+        {
+            // 1. 根据SnapshotTime日期取当日行情快照
+            var dayStart = tradeDate.ToDateTime(TimeOnly.MinValue);
+            var dayEnd = tradeDate.ToDateTime(TimeOnly.MaxValue);
+            var sm = stockCode.Split(".");
+            // 1. 获取当日行情快照
+            var quote = await _db.StockQuoteSnapshots
+                .FirstOrDefaultAsync(q => q.StockCode == sm[0] && q.Market == sm[1] && q.SnapshotTime >= dayStart
+                && q.SnapshotTime <= dayEnd, ct);
+            if (quote == null || !quote.TotalMarketValue.HasValue)
+                return;
+
+            // 总市值：元 → 转为【万元】和财报口径对齐
+            decimal totalMarketCapWan = quote.TotalMarketValue.Value / 10000;
+
+            // 2. 取最近4个季度财报（按报告日期倒序）
+            var last4Reports = await _db.StockFinancialReports
+                .Where(f => f.StockCode == sm[0] && f.Market == sm[1])
+                .OrderByDescending(f => f.ReportDate)
+                .Take(4)
+                .ToListAsync(ct);
+
+            if (last4Reports.Count < 4)
+                return;
+
+            // TTM：4期归母净利润之和（优先用ParentCompanyNetProfit）
+            decimal sumParentNetProfit = last4Reports.Sum(r => r.ParentCompanyNetProfit ?? 0);
+            // TTM：4期营业收入之和
+            decimal sumIncomeTtm = last4Reports.Sum(r => r.Income ?? 0);
+
+            // 最新一期：股东权益合计（净资产，万元）
+            var latestReport = last4Reports[0];
+            decimal? shareholdersEquity = latestReport.ShareholdersEquity;
+
+            // 指标计算，负数/缺失直接置null，避免无效值入库
+            decimal? peTtm = sumParentNetProfit > 0 ? totalMarketCapWan / sumParentNetProfit : null;
+            decimal? pb = (shareholdersEquity.HasValue && shareholdersEquity > 0) ? totalMarketCapWan / shareholdersEquity.Value : null;
+            decimal? psTtm = sumIncomeTtm > 0 ? totalMarketCapWan / sumIncomeTtm : null;
+
+            // Upsert
+            var existValuation = await _db.StockValuations
+                .FirstOrDefaultAsync(v => v.StockCode == sm[0] && v.Market == sm[1] && v.TradeDate == tradeDate, ct);
+            
+            if (existValuation == null)
+            {
+                existValuation = new StockValuation
+                {
+                    StockCode = sm[0],
+                    Market = sm[1],
+                    TradeDate = tradeDate,
+                };
+                _db.StockValuations.Add(existValuation);
+            }
+
+            existValuation.TotalMarketCap = totalMarketCapWan;
+            existValuation.PeTtm = peTtm;
+            existValuation.Pb = pb;
+            existValuation.PsTtm = psTtm;
+            existValuation.CalcTime = DateTime.Now;
+
+            await _db.SaveChangesAsync(ct);
+        }
+
+        /// <summary>
+        /// 批量计算当日全市场个股估值
+        /// </summary>
+        public async Task BatchCalcAllStockAsync(DateOnly tradeDate, CancellationToken ct)
+        {
+            var stockList = await _db.StockBasics
+                .Select(s => new
+                {
+                    s.StockCode,
+                    s.Market
+                })
+                .ToListAsync(ct);
+
+            foreach (var stock in stockList)
+            {
+                await CalcAndUpsertOneAsync($"{stock.StockCode}{stock.Market}", tradeDate, ct);
+            }
+        }
+
         #region 原生PostgreSQL Upsert（无第三方包，适配新版Npgsql，JsonB修复）
         private async Task UpsertIncome(List<IncomeStatementItemDto> list)
         {

@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using StackExchange.Redis.Extensions.Core.Configuration;
 using StackExchange.Redis.Extensions.System.Text.Json;
 using tumaiWeb.Data.Entities;
 using tumaiWeb.Data.Repository;
+using tumaiWeb.Jobs;
 using tumaiWeb.StockService.Mairui;
 using tumaiWeb.StockService.Tushare;
 
@@ -54,6 +56,20 @@ builder.Services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redis
 
 builder.Services.AddHttpClient<MairuiDataService>();
 builder.Services.AddHttpClient<TushareService>();
+
+builder.Services.AddQuartz(q =>
+{
+    //q.UseMicrosoftDependencyInjectionJobFactory();
+    // 配置任务
+    q.AddJob<StockBasicQuotePullJob>(opts => opts.WithIdentity("StockBasicQuotePullJob"));
+    q.AddTrigger(opts => opts
+        .ForJob("StockBasicQuotePullJob")
+        .WithIdentity("StockBasicQuotePullJob-trigger")
+        .WithCronSchedule("0 30 15 ? * MON-FRI",
+            x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai")))
+    );
+});
+builder.Services.AddQuartzHostedService(o => o.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
