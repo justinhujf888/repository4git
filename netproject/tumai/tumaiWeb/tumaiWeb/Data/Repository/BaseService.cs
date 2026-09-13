@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using tumaiWeb.Data.Entities;
 
 namespace tumaiWeb.Data.Repository;
@@ -11,10 +13,12 @@ namespace tumaiWeb.Data.Repository;
 public class BaseService : IBaseService
 {
     private readonly AppDbContext _dbContext;
+    protected readonly ILogger<BaseService> _logger;
 
-    public BaseService(AppDbContext dbContext)
+    public BaseService(AppDbContext dbContext, ILogger<BaseService> logger)
     {
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     #region QueryObject
@@ -426,10 +430,60 @@ public class BaseService : IBaseService
         }
     }
 
+    public Task UpsertAsync<T>(T entity, string[] conflictPropertyNames, CancellationToken cancellationToken = default)
+        where T : class
+    {
+        return UpsertAsync(entity, conflictPropertyNames, Array.Empty<string>(), cancellationToken);
+    }
+
+    public async Task UpsertAsync<T>(T entity, string[] conflictPropertyNames, string[] skipUpdateProperties, CancellationToken cancellationToken = default)
+        where T : class
+    {
+        await InternalUpsertCore(entity, conflictPropertyNames, skipUpdateProperties, null, cancellationToken);
+    }
+
+    public async Task UpsertOnlyUpdateAsync<T>(T entity, string[] conflictPropertyNames, string[] onlyUpdateProperties, CancellationToken cancellationToken = default)
+        where T : class
+    {
+        await InternalUpsertCore(entity, conflictPropertyNames, null, onlyUpdateProperties, cancellationToken);
+    }
+
+
+    public async Task<List<(T Item, Exception Ex)>> BatchUpsertAsync<T>(
+        IEnumerable<T> entities,
+        string[] conflictPropertyNames,
+        string[]? skipUpdateProperties = null,
+        string[]? onlyUpdateProperties = null,
+        CancellationToken cancellationToken = default) where T : class
+    {
+        var failedList = new List<(T Item, Exception Ex)>();
+
+        foreach (var item in entities)
+        {
+            try
+            {
+                if (onlyUpdateProperties != null)
+                {
+                    await UpsertOnlyUpdateAsync(item, conflictPropertyNames, onlyUpdateProperties, cancellationToken);
+                }
+                else
+                {
+                    await UpsertAsync(item, conflictPropertyNames, skipUpdateProperties ?? Array.Empty<string>(), cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                failedList.Add((item, ex));
+                _logger.LogError(ex, "BatchUpsert 单条实体执行失败 {EntityType}", typeof(T).Name);
+            }
+        }
+        return failedList;
+    }
+
     #endregion
 
     #region 内部工具
-    
+
     /// <summary>
     /// 将SQL中的 @Key 命名占位符转换为 EF {0}序号占位，返回处理后的sql+参数值数组
     /// 数据库无关，不依赖Npgsql
@@ -496,8 +550,8 @@ public class BaseService : IBaseService
                 var notMappedAttr = p.GetCustomAttribute<NotMappedAttribute>();
                 if (notMappedAttr != null)
                 {
-                    // 修复：用字符串字面量 "Temps"，不能 nameof(Temps)（当前作用域无此符号，会编译报错）
-                    if (p.Name == "Temps" && p.PropertyType == typeof(Dictionary<string, object>))
+                    // 修复：用字符串字面量 "TempMap"，不能 nameof(TempMap)（当前作用域无此符号，会编译报错）
+                    if (p.Name == "TempMap" && p.PropertyType == typeof(Dictionary<string, object>))
                     {
                         tempsProp = p;
                     }
@@ -509,6 +563,109 @@ public class BaseService : IBaseService
             }
             return (lowerDict, tempsProp);
         });
+    }
+
+    /// <summary>
+    /// 内部核心构建SQL逻辑
+    /// skipUpdateProperties 和 onlyUpdateProperties 互斥，一个传值另一个必须null
+    /// 【改造点：复用 GetEntityTypeInfo 反射缓存，不再使用EF Metadata读取属性】
+    /// </summary>
+    private async Task InternalUpsertCore<T>(
+        T entity,
+        string[] conflictPropertyNames,
+        string[]? skipUpdateProperties,
+        string[]? onlyUpdateProperties,
+        CancellationToken cancellationToken) where T : class
+    {
+        // 参数互斥校验
+        if (skipUpdateProperties != null && onlyUpdateProperties != null)
+        {
+            throw new ArgumentException("skipUpdateProperties 和 onlyUpdateProperties 不能同时传入，二者互斥");
+        }
+
+        Type entityClrType = typeof(T);
+        var (lowerNameToProp, _) = GetEntityTypeInfo(entityClrType);
+        var entityType = _dbContext.Model.FindEntityType(entityClrType)!;
+        string tableName = entityType.GetTableName()!;
+
+        // 1. 拿到【数据库字段名 <=> PropertyInfo】映射
+        var propDbMapping = new List<(PropertyInfo Prop, string DbColumnName)>();
+        foreach (var kv in lowerNameToProp)
+        {
+            var propInfo = kv.Value;
+            // EF获取该属性对应的数据库列名（支持 HasColumnName）
+            var efProp = entityType.FindProperty(propInfo.Name);
+            if (efProp == null) continue;
+
+            // 判断：数据库插入自动生成值（自增主键），跳过INSERT字段
+            if (efProp.ValueGenerated == ValueGenerated.OnAdd)
+                continue;
+
+            string dbColName = efProp.GetColumnName()!;
+            propDbMapping.Add((propInfo, dbColName));
+        }
+
+        // 冲突字段：C#属性名 => PG列名
+        var conflictDbColumns = conflictPropertyNames
+            .Select(propName =>
+            {
+                var efProp = entityType.FindProperty(propName)!;
+                return efProp.GetColumnName()!;
+            })
+            .ToArray();
+
+        StringBuilder colNamesSb = new StringBuilder();
+        StringBuilder paramNamesSb = new StringBuilder();
+        StringBuilder updateSb = new StringBuilder();
+        List<object?> parameters = new List<object?>();
+
+        for (int i = 0; i < propDbMapping.Count; i++)
+        {
+            var (propInfo, dbCol) = propDbMapping[i];
+            string propName = propInfo.Name;
+            string paramName = $"@p{i}";
+
+            // ========= INSERT 部分：所有非NotMapped、非自增字段全部插入 =========
+            if (i > 0)
+            {
+                colNamesSb.Append(",");
+                paramNamesSb.Append(",");
+            }
+            colNamesSb.Append(dbCol);
+            paramNamesSb.Append(paramName);
+
+            // 反射读取实体属性值
+            var val = propInfo.GetValue(entity);
+            parameters.Add(val);
+
+            // ========= DO UPDATE SET 逻辑 =========
+            bool needAddUpdateSql;
+            if (onlyUpdateProperties != null)
+            {
+                // 模式：只更新指定字段
+                needAddUpdateSql = onlyUpdateProperties.Contains(propName);
+            }
+            else
+            {
+                // 模式：跳过指定字段，其余更新
+                needAddUpdateSql = skipUpdateProperties == null || !skipUpdateProperties.Contains(propName);
+            }
+
+            if (!needAddUpdateSql) continue;
+
+            if (updateSb.Length > 0)
+                updateSb.Append(",");
+            updateSb.Append($"{dbCol}=EXCLUDED.{dbCol}");
+        }
+
+        string conflictSql = string.Join(",", conflictDbColumns);
+        string sql = $"""
+            INSERT INTO {tableName} ({colNamesSb})
+            VALUES ({paramNamesSb})
+            ON CONFLICT ({conflictSql}) DO UPDATE SET {updateSb};
+            """;
+
+        await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
     }
 
     #endregion

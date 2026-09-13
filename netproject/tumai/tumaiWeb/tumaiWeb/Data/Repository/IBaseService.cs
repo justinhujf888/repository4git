@@ -105,4 +105,54 @@ public interface IBaseService
 
     Task<List<T>> QueryLinqWithTempsAsync<T>(IQueryable<object> query)
         where T : class, new();
+
+    /// <summary>
+    /// PG Upsert：无冲突新增，有冲突更新
+    /// </summary>
+    /// <typeparam name="T">实体</typeparam>
+    /// <param name="entity">实体</param>
+    /// <param name="conflictPropertyNames">冲突判断属性名</param>
+    /// <param name="cancellationToken"></param>
+    Task UpsertAsync<T>(T entity, string[] conflictPropertyNames, CancellationToken cancellationToken = default)
+        where T : class;
+
+    /// <summary>
+    /// PG Upsert：无冲突新增，有冲突更新
+    /// </summary>
+    /// <typeparam name="T">实体</typeparam>
+    /// <param name="entity">实体</param>
+    /// <param name="conflictPropertyNames">冲突判断属性名</param>
+    /// <param name="skipUpdateProperties">更新跳过字段，新增照常写入</param>
+    /// <param name="cancellationToken"></param>
+    Task UpsertAsync<T>(T entity, string[] conflictPropertyNames, string[] skipUpdateProperties, CancellationToken cancellationToken = default)
+        where T : class;
+
+    /// <summary>
+    /// PG Upsert：无冲突新增，有冲突更新【只更新指定字段】
+    /// </summary>
+    /// <typeparam name="T">实体</typeparam>
+    /// <param name="entity">实体</param>
+    /// <param name="conflictPropertyNames">冲突判断属性名</param>
+    /// <param name="onlyUpdateProperties">冲突时仅更新这些字段，其他字段不改动；新增全部字段写入</param>
+    /// <param name="cancellationToken"></param>
+    Task UpsertOnlyUpdateAsync<T>(T entity, string[] conflictPropertyNames, string[] onlyUpdateProperties, CancellationToken cancellationToken = default)
+        where T : class;
+
+    /// <summary>
+    /// 批量Upsert，循环单条执行；单条异常不中断整批，返回失败条目
+    /// </summary>
+    /// <typeparam name="T">实体</typeparam>
+    /// <param name="entities">实体集合</param>
+    /// <param name="conflictPropertyNames">冲突字段</param>
+    /// <param name="skipUpdateProperties">更新跳过字段，和onlyUpdateProperties二选一，传null不启用</param>
+    /// <param name="onlyUpdateProperties">仅更新指定字段，和skipUpdateProperties二选一，传null不启用</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>失败实体+异常信息列表</returns>
+    Task<List<(T Item, Exception Ex)>> BatchUpsertAsync<T>(
+        IEnumerable<T> entities,
+        string[] conflictPropertyNames,
+        string[]? skipUpdateProperties = null,
+        string[]? onlyUpdateProperties = null,
+        CancellationToken cancellationToken = default)
+        where T : class;
 }
