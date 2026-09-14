@@ -65,7 +65,7 @@ builder.Services.AddQuartz(q =>
     q.AddTrigger(opts => opts
         .ForJob("StockBasicQuotePullJob")
         .WithIdentity("StockBasicQuotePullJob-trigger")
-        .WithCronSchedule("0 30 15 ? * MON-FRI",
+        .WithCronSchedule("0 0 2 ? * SUN",
             x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai")))
     );
 });

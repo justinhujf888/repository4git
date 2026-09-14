@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 using tumaiWeb.Data.Entities;
-using Npgsql;
-using NpgsqlTypes;
 using tumaiWeb.Data.Repository;
 
 namespace tumaiWeb.StockService.Mairui
@@ -283,9 +281,9 @@ namespace tumaiWeb.StockService.Mairui
             // ========== Upsert批量入库 ==========
             await _baseService.TransactionCallAsync(-1, async () => {
                 await UpsertIncome(qcIncomeList);
-                await UpsertBalance(qcBalanceList);
-                await UpsertCashFlow(qcCashList);
-                await _baseService.AddObjectRangeAsync(stockFinancialReportList);
+                //await UpsertBalance(qcBalanceList);
+                //await UpsertCashFlow(qcCashList);
+                //await _baseService.AddObjectRangeAsync(stockFinancialReportList);
             });
         }
 
@@ -477,7 +475,8 @@ namespace tumaiWeb.StockService.Mairui
         {
             foreach (var item in list)
             {
-                await _baseService.AddObjectAsync(item);
+                //await _baseService.AddObjectAsync(item);
+                await _baseService.UpsertAsync(item, [nameof(IncomeStatementItemDto.StockCode), nameof(IncomeStatementItemDto.Market), nameof(IncomeStatementItemDto.ReportDate)]);
             }
         }
 

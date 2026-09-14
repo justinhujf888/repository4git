@@ -20,10 +20,13 @@ namespace tumaiWeb.Jobs
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var svc = scope.ServiceProvider.GetRequiredService<MairuiFinancialService>();
+                var dataService = scope.ServiceProvider.GetRequiredService<MairuiDataService>();
+                var financialService = scope.ServiceProvider.GetRequiredService<MairuiFinancialService>();
 
-                var watchList = new List<string> { "000001.SZ", "000002.SZ" };
-                //await svc.PullAndSaveQuoteBatchAsync(watchList, cancellationToken);
+                var stockBasicsJson = await dataService.GetStockBasicRawAsync();
+                await Utils.ToFile.SaveLargeStrToFileAsync(stockBasicsJson, $"{AppContext.BaseDirectory}/json/stockbasics.json");
+                await financialService.SaveStockBasicsData(stockBasicsJson);
+
                 _logger.LogInformation("StockBasicQuotePullJob 执行完毕");
             }
             catch (OperationCanceledException)
