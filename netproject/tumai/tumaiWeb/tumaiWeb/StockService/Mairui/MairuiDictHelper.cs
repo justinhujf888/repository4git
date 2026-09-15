@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace tumaiWeb.StockService.Mairui
 {
@@ -249,6 +250,11 @@ namespace tumaiWeb.StockService.Mairui
                 12 => "Annual",
                 _ => "Other"
             };
+        }
+
+        public static JsonObject ToJsonObject(JsonElement element)
+        {
+            return JsonNode.Parse(element.GetRawText())!.AsObject();
         }
     }
 }

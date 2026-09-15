@@ -431,8 +431,8 @@ namespace tumaiWeb.StockService.Mairui
             // ========== Upsert批量入库 ==========
             await _baseService.TransactionCallAsync(-1, async () => {
                 await UpsertIncome(qcIncomeList);
-                //await UpsertBalance(qcBalanceList);
-                //await UpsertCashFlow(qcCashList);
+                await UpsertBalance(qcBalanceList);
+                await UpsertCashFlow(qcCashList);
                 //await _baseService.AddObjectRangeAsync(stockFinancialReportList);
             });
         }
@@ -661,7 +661,8 @@ namespace tumaiWeb.StockService.Mairui
         {
             foreach (var item in list)
             {
-                await _baseService.AddObjectAsync(item);
+                //await _baseService.AddObjectAsync(item);
+                await _baseService.UpsertAsync(item, [nameof(BalanceSheetItemDto.StockCode), nameof(BalanceSheetItemDto.Market), nameof(BalanceSheetItemDto.ReportDate)]);
             }
         }
 
@@ -669,7 +670,8 @@ namespace tumaiWeb.StockService.Mairui
         {
             foreach (var item in list)
             {
-                await _baseService.AddObjectAsync(item);
+                //await _baseService.AddObjectAsync(item);
+                await _baseService.UpsertAsync(item, [nameof(CashFlowItemDto.StockCode), nameof(CashFlowItemDto.Market), nameof(CashFlowItemDto.ReportDate)]);
             }
         }
         #endregion
@@ -683,7 +685,8 @@ namespace tumaiWeb.StockService.Mairui
             Console.WriteLine($"UpsertStockBasics: {stockList.Count} items");
             foreach (var item in stockList)
             {
-                await _baseService.AddObjectAsync(item);
+                //await _baseService.AddObjectAsync(item);
+                await _baseService.UpsertAsync(item, [nameof(StockBasic.StockCode), nameof(StockBasic.Market)]);
             }
         }
 
