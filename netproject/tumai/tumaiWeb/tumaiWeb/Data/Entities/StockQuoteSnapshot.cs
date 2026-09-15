@@ -2,6 +2,7 @@ using AngleSharp.Dom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SharpCompress.Common;
+using System.Text.Json;
 
 namespace tumaiWeb.Data.Entities;
 
@@ -123,7 +124,7 @@ public class StockQuoteSnapshot : BaseEntity
     /// <summary>
     /// 原始接口返回jsonb，排错使用
     /// </summary>
-    public Dictionary<string, object?>? RawJson { get; set; }
+    public JsonDocument RawJson { get; set; }
 
     /// <summary>
     /// 关联股票基础信息
@@ -160,8 +161,7 @@ public class StockQuoteSnapshotConfiguration : IEntityTypeConfiguration<StockQuo
         b.Property(e => e.SnapshotTime).IsRequired();
         b.Property(e => e.PullTime);
 
-        b.Property(e => e.RawJson)
-            .HasColumnType("jsonb");
+        b.Property(e => e.RawJson).HasColumnType("jsonb");
 
         b.HasKey(e => e.Id);
         // 联合外键，引用StockBasic备用键(StockCode,Market)

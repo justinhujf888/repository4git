@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Text.Json;
 
 namespace tumaiWeb.Data.Entities;
 
@@ -126,7 +127,7 @@ public class StockFinancialReport : BaseEntity
     /// <summary>
     /// 原始接口返回jsonb片段，用于校验排错
     /// </summary>
-    public Dictionary<string, object?>? RawJson { get; set; }
+    public JsonDocument RawJson { get; set; }
 
     /// <summary>
     /// 关联股票基础信息
@@ -194,8 +195,7 @@ public class StockFinancialReportConfiguration : IEntityTypeConfiguration<StockF
 
         b.Property(e => e.PullTime);
 
-        b.Property(e => e.RawJson)
-            .HasColumnType("jsonb");
+        b.Property(e => e.RawJson).HasColumnType("jsonb");
 
         b.HasKey(e => e.Id);
         b.HasAlternateKey(e => new { e.StockCode, e.ReportDate,e.Market }).HasName("uk_stock_report");

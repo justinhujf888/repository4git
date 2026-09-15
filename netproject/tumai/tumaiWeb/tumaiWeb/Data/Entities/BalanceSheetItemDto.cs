@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Dom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Text.Json;
 using tumaiWeb.Data.Entities;
 
 namespace tumaiWeb.Data.Entities
@@ -99,7 +100,7 @@ namespace tumaiWeb.Data.Entities
         public decimal? MinorityEquity { get; set; }
 
         // 原始单条行json，存入PostgreSQL jsonb
-        public Dictionary<string, object> RawJson { get; set; } = new();
+        public JsonDocument RawJson { get; set; }
     }
 }
 

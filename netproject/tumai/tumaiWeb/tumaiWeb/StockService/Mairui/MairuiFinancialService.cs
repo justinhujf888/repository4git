@@ -29,29 +29,43 @@ namespace tumaiWeb.StockService.Mairui
          */
         public async Task SaveStockBasicsData(string stockBasicsJson)
         {
-            var stockDictList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(stockBasicsJson) ?? new();
-            List<StockBasic> stockBasicEntities = new();
+            using var document = JsonDocument.Parse(stockBasicsJson);
+
+            if (document.RootElement.ValueKind != JsonValueKind.Array)
+                throw new ArgumentException("stockBasicsJson 必须是 JSON 数组");
+
+            var stockBasicEntities = new List<StockBasic>();
             var now = DateTime.UtcNow;
-            foreach (var dict in stockDictList)
+
+            foreach (var element in document.RootElement.EnumerateArray())
             {
-                var dm = MairuiDictHelper.GetString(dict,"dm");
-                var mc = MairuiDictHelper.GetString(dict,"mc");
-                var jys = MairuiDictHelper.GetString(dict!,"jys").Trim().ToUpper(); // 接口返回小写sh/sz，统一转为大写 SH/SZ
+                var dm = MairuiDictHelper.GetString(element, "dm");
+                var mc = MairuiDictHelper.GetString(element, "mc");
+                var jys = MairuiDictHelper.GetString(element, "jys");
+
+                if (string.IsNullOrWhiteSpace(dm))
+                    continue;
+
+                var market = jys?.Trim().ToUpperInvariant();
 
                 var entity = new StockBasic
                 {
-                    StockCode = dm.Split(".")[0],
+                    StockCode = dm.Split('.')[0],
                     StockName = mc,
-                    Market = jys,
+                    Market = market,
+
                     ListDate = null,
                     IsDelist = 0,
                     IsActive = true,
                     Industry = null,
+
                     CreateTime = now,
                     UpdateTime = now
                 };
+
                 stockBasicEntities.Add(entity);
             }
+
             await UpsertStockBasics(stockBasicEntities);
         }
 
@@ -89,16 +103,16 @@ namespace tumaiWeb.StockService.Mairui
         {
             var sm = stockCode.Split(".");
             // 1. 直接反序列成字典列表，无任何DTO
-            var incomeDictList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(profitJson) ?? new();
-            var balanceDictList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(balanceJson) ?? new();
-            var cashDictList = JsonSerializer.Deserialize<List<Dictionary<string, object>>>(cashJson) ?? new();
+            using var profitDocument = JsonDocument.Parse(profitJson);
+            using var balanceDocument = JsonDocument.Parse(balanceJson);
+            using var cashDocument = JsonDocument.Parse(cashJson);
 
             // 2. 利润表：字典映射到EF实体
             List<IncomeStatementItemDto> incomeEntities = new();
-            foreach (var dict in incomeDictList)
+            foreach (var element in profitDocument.RootElement.EnumerateArray())
             {
-                var jzrq = MairuiDictHelper.GetString(dict, "jzrq")!;
-                var plrq = MairuiDictHelper.GetString(dict, "plrq");
+                var jzrq = MairuiDictHelper.GetString(element, "jzrq")!;
+                var plrq = MairuiDictHelper.GetString(element, "plrq");
 
                 var entity = new IncomeStatementItemDto
                 {
@@ -109,49 +123,58 @@ namespace tumaiWeb.StockService.Mairui
                     ReportType = MairuiDictHelper.GetReportType(jzrq),
 
                     // 收入
-                    TotalRevenue = MairuiDictHelper.GetDecimal(dict, "yyzsr"),        // 营业总收入
-                    OperatingRevenue = MairuiDictHelper.GetDecimal(dict, "yysr"),     // 营业收入
+                    TotalRevenue = MairuiDictHelper.GetDecimal(element, "yyzsr"),
+                    OperatingRevenue = MairuiDictHelper.GetDecimal(element, "yysr"),
 
                     // 成本费用
-                    OperatingCost = MairuiDictHelper.GetDecimal(dict, "yycb"),        // 营业成本
-                    TaxAndSurcharges = MairuiDictHelper.GetDecimal(dict, "yysjjfj"),  // 营业税金及附加
-                    SellingExpense = MairuiDictHelper.GetDecimal(dict, "xsfy"),       // 销售费用
-                    AdminExpense = MairuiDictHelper.GetDecimal(dict, "glfy"),         // 管理费用
-                    RndExpense = MairuiDictHelper.GetDecimal(dict, "yffy"),           // 研发费用
-                    FinanceExpense = MairuiDictHelper.GetDecimal(dict, "cwfy"),       // 财务费用
-                    InterestExpense = MairuiDictHelper.GetDecimal(dict, "lxzc"),      // 利息支出
-                    InterestIncome = MairuiDictHelper.GetDecimal(dict, "lxsr"),       // 利息收入
+                    OperatingCost = MairuiDictHelper.GetDecimal(element, "yycb"),
+                    TaxAndSurcharges = MairuiDictHelper.GetDecimal(element, "yysjjfj"),
+                    SellingExpense = MairuiDictHelper.GetDecimal(element, "xsfy"),
+                    AdminExpense = MairuiDictHelper.GetDecimal(element, "glfy"),
+                    RndExpense = MairuiDictHelper.GetDecimal(element, "yffy"),
+                    FinanceExpense = MairuiDictHelper.GetDecimal(element, "cwfy"),
+                    InterestExpense = MairuiDictHelper.GetDecimal(element, "lxzc"),
+                    InterestIncome = MairuiDictHelper.GetDecimal(element, "lxsr"),
 
                     // 利润
-                    OperatingProfit = MairuiDictHelper.GetDecimal(dict, "yylr"),      // 营业利润
-                    NonOperatingIncome = MairuiDictHelper.GetDecimal(dict, "ywsr"),   // 营业外收入
-                    NonOperatingExpense = MairuiDictHelper.GetDecimal(dict, "ywzc"),  // 营业外支出
-                    TotalProfit = MairuiDictHelper.GetDecimal(dict, "lrzef")          // 利润总额（带 f）
-                 ?? MairuiDictHelper.GetDecimal(dict, "lrze"),        // 双 key 兜底
-                    IncomeTaxExpense = MairuiDictHelper.GetDecimal(dict, "sdsfy"),    // 所得税费用
+                    OperatingProfit = MairuiDictHelper.GetDecimal(element, "yylr"),
+                    NonOperatingIncome = MairuiDictHelper.GetDecimal(element, "ywsr"),
+                    NonOperatingExpense = MairuiDictHelper.GetDecimal(element, "ywzc"),
+
+                    TotalProfit =
+                        MairuiDictHelper.GetDecimal(element, "lrzef")
+                        ?? MairuiDictHelper.GetDecimal(element, "lrze"),
+
+                    IncomeTaxExpense = MairuiDictHelper.GetDecimal(element, "sdsfy"),
 
                     // 净利润
-                    NetProfit = MairuiDictHelper.GetDecimal(dict, "jlr"),             // 净利润
-                    NetProfitParent = MairuiDictHelper.GetDecimal(dict, "gsmgsyzzdjlr"), // 归母净利润
-                    MinorityProfit = MairuiDictHelper.GetDecimal(dict, "ssgdsy"),     // 少数股东损益
-                    DeductNonProfit = MairuiDictHelper.GetDecimal(dict, "jlrhfcjcx"), // 扣非净利润
+                    NetProfit = MairuiDictHelper.GetDecimal(element, "jlr"),
+                    NetProfitParent =
+                        MairuiDictHelper.GetDecimal(element, "gsmgsyzzdjlr"),
+                    MinorityProfit =
+                        MairuiDictHelper.GetDecimal(element, "ssgdsy"),
+                    DeductNonProfit =
+                        MairuiDictHelper.GetDecimal(element, "jlrhfcjcx"),
 
                     // 每股收益
-                    BasicEps = MairuiDictHelper.GetDecimal(dict, "jbmgsy"),           // 基本每股收益
-                    DilutedEps = MairuiDictHelper.GetDecimal(dict, "xsmgsy"),         // 稀释每股收益
+                    BasicEps = MairuiDictHelper.GetDecimal(element, "jbmgsy"),
+                    DilutedEps = MairuiDictHelper.GetDecimal(element, "xsmgsy"),
 
-                    RawJson = dict,
+                    // 直接保存当前 JSON 对象
+                    RawJson = JsonDocument.Parse(element.GetRawText()),
+
                     CreateTime = DateTime.UtcNow
                 };
+
                 incomeEntities.Add(entity);
             }
 
             // 3. 资产负债表：字典映射到EF实体
             List<BalanceSheetItemDto> balanceEntities = new();
-            foreach (var dict in balanceDictList)
+            foreach (var element in balanceDocument.RootElement.EnumerateArray())
             {
-                var jzrq = MairuiDictHelper.GetString(dict, "jzrq")!;
-                var plrq = MairuiDictHelper.GetString(dict, "plrq");
+                var jzrq = MairuiDictHelper.GetString(element, "jzrq")!;
+                var plrq = MairuiDictHelper.GetString(element, "plrq");
 
                 var entity = new BalanceSheetItemDto
                 {
@@ -161,59 +184,123 @@ namespace tumaiWeb.StockService.Mairui
                     PublishDate = plrq,
                     ReportType = MairuiDictHelper.GetReportType(jzrq),
 
-                    //===== 资产部分 =====
-                    TotalCurrentAsset = MairuiDictHelper.GetDecimal(dict, "ldzchj"),           //流动资产合计
-                    MonetaryFund = MairuiDictHelper.GetDecimal(dict, "hbzj"),                  //货币资金
-                    TradingFinancialAsset = MairuiDictHelper.GetDecimal(dict, "jyxjrzcf"),    //交易性金融资产
-                    BillReceivable = MairuiDictHelper.GetDecimal(dict, "yspj"),               //应收票据
-                    AccountReceivable = MairuiDictHelper.GetDecimal(dict, "yszk"),            //应收账款
-                    Prepayment = MairuiDictHelper.GetDecimal(dict, "yfkx"),                   //预付款项
-                    Inventory = MairuiDictHelper.GetDecimal(dict, "ch"),                      //存货
-                    OtherCurrentAsset = MairuiDictHelper.GetDecimal(dict, "qtldzcf"),          //其他流动资产
+                    // ===== 资产部分 =====
+                    TotalCurrentAsset =
+                        MairuiDictHelper.GetDecimal(element, "ldzchj"),
 
-                    TotalNonCurrentAsset = MairuiDictHelper.GetDecimal(dict, "fldzchj"),      //非流动资产合计
-                    FixedAssetOriginal = MairuiDictHelper.GetDecimal(dict, "gdzcyz"),         //固定资产原值
-                    FixedAssetNet = MairuiDictHelper.GetDecimal(dict, "gdzcjz"),              //固定资产净值
-                    IntangibleAsset = MairuiDictHelper.GetDecimal(dict, "wxzcf"),             //无形资产
-                    Goodwill = MairuiDictHelper.GetDecimal(dict, "sy"),                       //商誉
-                    LongTermEquityInvest = MairuiDictHelper.GetDecimal(dict, "cqgqtz"),       //长期股权投资
-                    TotalAsset = MairuiDictHelper.GetDecimal(dict, "zczj"),                   //资产总计
+                    MonetaryFund =
+                        MairuiDictHelper.GetDecimal(element, "hbzj"),
 
-                    //===== 负债部分 =====
-                    TotalCurrentLiability = MairuiDictHelper.GetDecimal(dict, "ldfzhj"),      //流动负债合计
-                    ShortTermLoan = MairuiDictHelper.GetDecimal(dict, "dqjk"),                 //短期借款
-                    BillPayable = MairuiDictHelper.GetDecimal(dict, "yfpj"),                  //应付票据
-                    AccountPayable = MairuiDictHelper.GetDecimal(dict, "yfzk"),               //应付账款
-                    AdvanceReceived = MairuiDictHelper.GetDecimal(dict, "ysk"),               //预收账款
-                    SalaryPayable = MairuiDictHelper.GetDecimal(dict, "yfgzxcf"),             //应付职工薪酬
-                    TaxPayable = MairuiDictHelper.GetDecimal(dict, "yjsf"),                   //应交税费
+                    TradingFinancialAsset =
+                        MairuiDictHelper.GetDecimal(element, "jyxjrzcf"),
 
-                    TotalNonCurrentLiability = MairuiDictHelper.GetDecimal(dict, "fldfzhj"),  //非流动负债合计
-                    LongTermLoan = MairuiDictHelper.GetDecimal(dict, "cqjk"),                 //长期借款
-                    BondPayable = MairuiDictHelper.GetDecimal(dict, "yfzq"),                  //应付债券
-                    TotalLiability = MairuiDictHelper.GetDecimal(dict, "fzhj"),              //负债合计
+                    BillReceivable =
+                        MairuiDictHelper.GetDecimal(element, "yspj"),
 
-                    //===== 所有者权益 =====
-                    TotalEquity = MairuiDictHelper.GetDecimal(dict, "syzqyhj"),               //所有者权益合计
-                    PaidInCapital = MairuiDictHelper.GetDecimal(dict, "sszbf"),               //实收资本(或股本)
-                    CapitalReserve = MairuiDictHelper.GetDecimal(dict, "zbgj"),               //资本公积
-                    SurplusReserve = MairuiDictHelper.GetDecimal(dict, "ylgj"),               //盈余公积
-                    UndistributedProfit = MairuiDictHelper.GetDecimal(dict, "wfplr"),         //未分配利润
-                    ParentEquity = MairuiDictHelper.GetDecimal(dict, "gsmgdqsyhj"),           //归属于母公司股东权益合计
-                    MinorityEquity = MairuiDictHelper.GetDecimal(dict, "ssgdqy"),             //少数股东权益
+                    AccountReceivable =
+                        MairuiDictHelper.GetDecimal(element, "yszk"),
 
-                    RawJson = dict,
+                    Prepayment =
+                        MairuiDictHelper.GetDecimal(element, "yfkx"),
+
+                    Inventory =
+                        MairuiDictHelper.GetDecimal(element, "ch"),
+
+                    OtherCurrentAsset =
+                        MairuiDictHelper.GetDecimal(element, "qtldzcf"),
+
+                    TotalNonCurrentAsset =
+                        MairuiDictHelper.GetDecimal(element, "fldzchj"),
+
+                    FixedAssetOriginal =
+                        MairuiDictHelper.GetDecimal(element, "gdzcyz"),
+
+                    FixedAssetNet =
+                        MairuiDictHelper.GetDecimal(element, "gdzcjz"),
+
+                    IntangibleAsset =
+                        MairuiDictHelper.GetDecimal(element, "wxzcf"),
+
+                    Goodwill =
+                        MairuiDictHelper.GetDecimal(element, "sy"),
+
+                    LongTermEquityInvest =
+                        MairuiDictHelper.GetDecimal(element, "cqgqtz"),
+
+                    TotalAsset =
+                        MairuiDictHelper.GetDecimal(element, "zczj"),
+
+                    // ===== 负债部分 =====
+                    TotalCurrentLiability =
+                        MairuiDictHelper.GetDecimal(element, "ldfzhj"),
+
+                    ShortTermLoan =
+                        MairuiDictHelper.GetDecimal(element, "dqjk"),
+
+                    BillPayable =
+                        MairuiDictHelper.GetDecimal(element, "yfpj"),
+
+                    AccountPayable =
+                        MairuiDictHelper.GetDecimal(element, "yfzk"),
+
+                    AdvanceReceived =
+                        MairuiDictHelper.GetDecimal(element, "ysk"),
+
+                    SalaryPayable =
+                        MairuiDictHelper.GetDecimal(element, "yfgzxcf"),
+
+                    TaxPayable =
+                        MairuiDictHelper.GetDecimal(element, "yjsf"),
+
+                    TotalNonCurrentLiability =
+                        MairuiDictHelper.GetDecimal(element, "fldfzhj"),
+
+                    LongTermLoan =
+                        MairuiDictHelper.GetDecimal(element, "cqjk"),
+
+                    BondPayable =
+                        MairuiDictHelper.GetDecimal(element, "yfzq"),
+
+                    TotalLiability =
+                        MairuiDictHelper.GetDecimal(element, "fzhj"),
+
+                    // ===== 所有者权益 =====
+                    TotalEquity =
+                        MairuiDictHelper.GetDecimal(element, "syzqyhj"),
+
+                    PaidInCapital =
+                        MairuiDictHelper.GetDecimal(element, "sszbf"),
+
+                    CapitalReserve =
+                        MairuiDictHelper.GetDecimal(element, "zbgj"),
+
+                    SurplusReserve =
+                        MairuiDictHelper.GetDecimal(element, "ylgj"),
+
+                    UndistributedProfit =
+                        MairuiDictHelper.GetDecimal(element, "wfplr"),
+
+                    ParentEquity =
+                        MairuiDictHelper.GetDecimal(element, "gsmgdqsyhj"),
+
+                    MinorityEquity =
+                        MairuiDictHelper.GetDecimal(element, "ssgdqy"),
+
+                    // 直接保存当前 JSON 对象
+                    RawJson = JsonDocument.Parse(element.GetRawText()),
+
                     CreateTime = DateTime.UtcNow
                 };
+
                 balanceEntities.Add(entity);
             }
 
             //4. 现金流量表：字典映射到EF实体
             List<CashFlowItemDto> cashEntities = new();
-            foreach (var dict in cashDictList)
+            foreach (var element in cashDocument.RootElement.EnumerateArray())
             {
-                var jzrq = MairuiDictHelper.GetString(dict, "jzrq")!;
-                var plrq = MairuiDictHelper.GetString(dict, "plrq");
+                var jzrq = MairuiDictHelper.GetString(element, "jzrq")!;
+                var plrq = MairuiDictHelper.GetString(element, "plrq");
 
                 var entity = new CashFlowItemDto
                 {
@@ -224,45 +311,108 @@ namespace tumaiWeb.StockService.Mairui
                     ReportType = MairuiDictHelper.GetReportType(jzrq),
 
                     // ===== 经营活动 =====
-                    OperateCashIn = MairuiDictHelper.GetDecimal(dict, "jyhdxjlrxj"),       // 经营活动现金流入小计
-                    OperateCashOut = MairuiDictHelper.GetDecimal(dict, "jyhdxjlcxj"),      // 经营活动现金流出小计
-                    NetOperateCashFlow = MairuiDictHelper.GetDecimal(dict, "jyhdcsdxjlxj"),// 经营净额（JSON实际有值，优先用它）
-                    CashFromSales = MairuiDictHelper.GetDecimal(dict, "xssptglwsddxj"),    // 销售商品、提供劳务收到的现金
-                    TaxRefundReceived = MairuiDictHelper.GetDecimal(dict, "sddsfyfh"),     // 收到的税费返还
-                    OtherOperateCashIn = MairuiDictHelper.GetDecimal(dict, "sdqtyjyghdxj"),// 收到其他与经营活动有关的现金
-                    CashPayForGoods = MairuiDictHelper.GetDecimal(dict, "gmspjslwzfdxj"),  // 购买商品、接受劳务支付的现金
-                    CashPayToStaff = MairuiDictHelper.GetDecimal(dict, "zfgzyjwzgzfdxj"),  // 支付给职工以及为职工支付的现金
-                    TaxPaid = MairuiDictHelper.GetDecimal(dict, "zfdgxsf"),                // 支付的各项税费
-                    OtherOperateCashOut = MairuiDictHelper.GetDecimal(dict, "zfqtyjyghdxj"),// 支付其他与经营活动有关的现金
+                    OperateCashIn =
+                        MairuiDictHelper.GetDecimal(element, "jyhdxjlrxj"),
+
+                    OperateCashOut =
+                        MairuiDictHelper.GetDecimal(element, "jyhdxjlcxj"),
+
+                    NetOperateCashFlow =
+                        MairuiDictHelper.GetDecimal(element, "jyhdcsdxjlxj"),
+
+                    CashFromSales =
+                        MairuiDictHelper.GetDecimal(element, "xssptglwsddxj"),
+
+                    TaxRefundReceived =
+                        MairuiDictHelper.GetDecimal(element, "sddsfyfh"),
+
+                    OtherOperateCashIn =
+                        MairuiDictHelper.GetDecimal(element, "sdqtyjyghdxj"),
+
+                    CashPayForGoods =
+                        MairuiDictHelper.GetDecimal(element, "gmspjslwzfdxj"),
+
+                    CashPayToStaff =
+                        MairuiDictHelper.GetDecimal(element, "zfgzyjwzgzfdxj"),
+
+                    TaxPaid =
+                        MairuiDictHelper.GetDecimal(element, "zfdgxsf"),
+
+                    OtherOperateCashOut =
+                        MairuiDictHelper.GetDecimal(element, "zfqtyjyghdxj"),
 
                     // ===== 投资活动 =====
-                    InvestCashIn = MairuiDictHelper.GetDecimal(dict, "tzhdxjlrxj"),        // 投资活动现金流入小计
-                    InvestCashOut = MairuiDictHelper.GetDecimal(dict, "tzhdxjlcxj"),       // 投资活动现金流出小计
-                    NetInvestCashFlow = MairuiDictHelper.GetDecimal(dict, "tzhdcsdxjlxj"), // 投资净额
-                    CashFromInvestRecall = MairuiDictHelper.GetDecimal(dict, "shtzssddxj"),// 收回投资收到的现金
-                    CashFromInvestIncome = MairuiDictHelper.GetDecimal(dict, "qdtzsysddxj"),// 取得投资收益收到的现金
-                    CashFromDisposeLongAsset = MairuiDictHelper.GetDecimal(dict, "czgdzcwxzhqtqctzssddxj"), // 处置长期资产收到的现金
-                    Capex = MairuiDictHelper.GetDecimal(dict, "gjgdzcwxzhqtqctzzfdxj"),    // 资本开支
-                    CashPayForInvest = MairuiDictHelper.GetDecimal(dict, "tzszfdxj"),      // 投资支付的现金（JSON里有值）
+                    InvestCashIn =
+                        MairuiDictHelper.GetDecimal(element, "tzhdxjlrxj"),
+
+                    InvestCashOut =
+                        MairuiDictHelper.GetDecimal(element, "tzhdxjlcxj"),
+
+                    NetInvestCashFlow =
+                        MairuiDictHelper.GetDecimal(element, "tzhdcsdxjlxj"),
+
+                    CashFromInvestRecall =
+                        MairuiDictHelper.GetDecimal(element, "shtzssddxj"),
+
+                    CashFromInvestIncome =
+                        MairuiDictHelper.GetDecimal(element, "qdtzsysddxj"),
+
+                    CashFromDisposeLongAsset =
+                        MairuiDictHelper.GetDecimal(
+                            element,
+                            "czgdzcwxzhqtqctzssddxj"),
+
+                    Capex =
+                        MairuiDictHelper.GetDecimal(
+                            element,
+                            "gjgdzcwxzhqtqctzzfdxj"),
+
+                    CashPayForInvest =
+                        MairuiDictHelper.GetDecimal(element, "tzszfdxj"),
 
                     // ===== 筹资活动 =====
-                    FinanceCashIn = MairuiDictHelper.GetDecimal(dict, "czhdxjlrxj"),       // 筹资活动现金流入小计
-                    FinanceCashOut = MairuiDictHelper.GetDecimal(dict, "czhdxjlcxj"),      // 筹资活动现金流出小计
-                    NetFinanceCashFlow = MairuiDictHelper.GetDecimal(dict, "czhdcsdxjlxj"),// 筹资净额
-                    CashFromEquity = MairuiDictHelper.GetDecimal(dict, "xstzsdj"),         // 吸收投资收到的现金
-                    CashFromBorrow = MairuiDictHelper.GetDecimal(dict, "qdjkjddxj"),       // 取得借款收到的现金
-                    CashRepayDebt = MairuiDictHelper.GetDecimal(dict, "chzwzfxj"),         // 偿还债务支付的现金
-                    CashPayDividendInterest = MairuiDictHelper.GetDecimal(dict, "fpglrlhcllxzfdxj"), // 分配股利、利润或偿付利息
+                    FinanceCashIn =
+                        MairuiDictHelper.GetDecimal(element, "czhdxjlrxj"),
+
+                    FinanceCashOut =
+                        MairuiDictHelper.GetDecimal(element, "czhdxjlcxj"),
+
+                    NetFinanceCashFlow =
+                        MairuiDictHelper.GetDecimal(element, "czhdcsdxjlxj"),
+
+                    CashFromEquity =
+                        MairuiDictHelper.GetDecimal(element, "xstzsdj"),
+
+                    CashFromBorrow =
+                        MairuiDictHelper.GetDecimal(element, "qdjkjddxj"),
+
+                    CashRepayDebt =
+                        MairuiDictHelper.GetDecimal(element, "chzwzfxj"),
+
+                    CashPayDividendInterest =
+                        MairuiDictHelper.GetDecimal(
+                            element,
+                            "fpglrlhcllxzfdxj"),
 
                     // ===== 现金及现金等价物 =====
-                    ForexEffectOnCash = MairuiDictHelper.GetDecimal(dict, "hlbddxjdxy"),   // 汇率变动对现金的影响
-                    NetIncreaseCash = MairuiDictHelper.GetDecimal(dict, "xjxjdhwjzje"),    // 现金及现金等价物净增加额
-                    BeginCashBalance = MairuiDictHelper.GetDecimal(dict, "qcxjjxjdhwye"),  // 期初余额
-                    EndCashBalance = MairuiDictHelper.GetDecimal(dict, "qmxjjxjdhwye"),    // 期末余额
+                    ForexEffectOnCash =
+                        MairuiDictHelper.GetDecimal(element, "hlbddxjdxy"),
 
-                    RawJson = dict,
+                    NetIncreaseCash =
+                        MairuiDictHelper.GetDecimal(element, "xjxjdhwjzje"),
+
+                    BeginCashBalance =
+                        MairuiDictHelper.GetDecimal(element, "qcxjjxjdhwye"),
+
+                    EndCashBalance =
+                        MairuiDictHelper.GetDecimal(element, "qmxjjxjdhwye"),
+
+                    // 直接保存当前 JSON 对象
+                    RawJson = JsonDocument.Parse(element.GetRawText()),
+
                     CreateTime = DateTime.UtcNow
                 };
+
                 cashEntities.Add(entity);
             }
 
@@ -308,46 +458,73 @@ namespace tumaiWeb.StockService.Mairui
 > 
 > 业务说明：行情快照表每次拉取直接 Add 新增记录，**不 Upsert**，保留时序历史
          */
-        public async Task SaveStockSsjy4ManyStkData(List<string> stockCodeWithMarketList, string stockQuoteJsonArray)
+        public async Task SaveStockSsjy4ManyStkData(
+    List<string> stockCodeWithMarketList,
+    string stockQuoteJsonArray)
         {
-            var rawDataArray = JsonSerializer.Deserialize<List<Dictionary<string, object?>>>(stockQuoteJsonArray) ?? new();
+            using var document = JsonDocument.Parse(stockQuoteJsonArray);
+
             var snapshotEntities = new List<StockQuoteSnapshot>();
-            for (int i = 0; i < rawDataArray.Count; i++)
+
+            var elements = document.RootElement.EnumerateArray();
+
+            int i = 0;
+
+            foreach (var element in elements)
             {
-                var dict = rawDataArray[i];
+                if (i >= stockCodeWithMarketList.Count)
+                    break;
+
                 var sm = stockCodeWithMarketList[i].Split(".");
+
+                var pullTime = DateTime.UtcNow;
+
                 var entity = new StockQuoteSnapshot
                 {
                     StockCode = sm[0],
                     Market = sm[1],
-                    PullTime = DateTime.UtcNow,
 
-                    Price = MairuiDictHelper.GetDecimal(dict, "p"),
-                    YesterdayClose = MairuiDictHelper.GetDecimal(dict, "yc"),
-                    Open = MairuiDictHelper.GetDecimal(dict, "o"),
-                    High = MairuiDictHelper.GetDecimal(dict, "h"),
-                    Low = MairuiDictHelper.GetDecimal(dict, "l"),
-                    ChangePercent = MairuiDictHelper.GetDecimal(dict, "pc"),
-                    ChangeAmount = MairuiDictHelper.GetDecimal(dict, "ud"),
+                    PullTime = pullTime,
 
-                    Volume = MairuiDictHelper.GetLong(dict, "v"),
-                    Turnover = MairuiDictHelper.GetDecimal(dict, "cje"),
+                    Price = MairuiDictHelper.GetDecimal(element, "p"),
+                    YesterdayClose = MairuiDictHelper.GetDecimal(element, "yc"),
+                    Open = MairuiDictHelper.GetDecimal(element, "o"),
+                    High = MairuiDictHelper.GetDecimal(element, "h"),
+                    Low = MairuiDictHelper.GetDecimal(element, "l"),
+
+                    ChangePercent = MairuiDictHelper.GetDecimal(element, "pc"),
+                    ChangeAmount = MairuiDictHelper.GetDecimal(element, "ud"),
+
+                    Volume = MairuiDictHelper.GetLong(element, "v"),
+                    Turnover = MairuiDictHelper.GetDecimal(element, "cje"),
+
                     TotalMarketValue = null,
-                    TvVolume = MairuiDictHelper.GetLong(dict, "tv"),
-                    PvVolume = MairuiDictHelper.GetLong(dict, "pv"),
 
-                    Pe = MairuiDictHelper.GetDecimal(dict, "pe"),
-                    PbRatio = MairuiDictHelper.GetDecimal(dict, "pb_ratio"),
-                    TurnoverRate = MairuiDictHelper.GetDecimal(dict, "tr"),
-                    Amplitude = MairuiDictHelper.GetDecimal(dict, "zf"),
+                    TvVolume = MairuiDictHelper.GetLong(element, "tv"),
+                    PvVolume = MairuiDictHelper.GetLong(element, "pv"),
+
+                    Pe = MairuiDictHelper.GetDecimal(element, "pe"),
+                    PbRatio = MairuiDictHelper.GetDecimal(element, "pb_ratio"),
+                    TurnoverRate = MairuiDictHelper.GetDecimal(element, "tr"),
+                    Amplitude = MairuiDictHelper.GetDecimal(element, "zf"),
+
                     FiveMinChange = null,
 
-                    SnapshotTime = MairuiDictHelper.GetDateTime(dict, "t") ?? DateTime.UtcNow,
-                    RawJson = dict
+                    SnapshotTime =
+                        MairuiDictHelper.GetDateTime(element, "t")
+                        ?? DateTime.UtcNow,
+
+                    // 当前这一条行情的完整 JSON
+                    RawJson = JsonDocument.Parse(element.GetRawText()),
+
+                    CreateTime = pullTime
                 };
-                entity.CreateTime = entity.PullTime;
+
                 snapshotEntities.Add(entity);
+
+                i++;
             }
+
             await _baseService.AddObjectRangeAsync(snapshotEntities);
         }
 
@@ -579,11 +756,11 @@ namespace tumaiWeb.StockService.Mairui
         /// <param name="cashItems">现金流量表Dto集合（已去重）</param>
         /// <returns>合并后的StockFinancialReport列表</returns>
         private List<StockFinancialReport> MergeToStockFinancialReport(
-            List<IncomeStatementItemDto> incomeItems,
-            List<BalanceSheetItemDto> balanceItems,
-            List<CashFlowItemDto> cashItems)
+    List<IncomeStatementItemDto> incomeItems,
+    List<BalanceSheetItemDto> balanceItems,
+    List<CashFlowItemDto> cashItems)
         {
-            // 1. 构建字典：key=ReportDate字符串 yyyy-MM-dd
+            // key = ReportDate，例如 yyyy-MM-dd
             var incomeDict = incomeItems.ToDictionary(x => x.ReportDate);
             var balanceDict = balanceItems.ToDictionary(x => x.ReportDate);
             var cashDict = cashItems.ToDictionary(x => x.ReportDate);
@@ -592,12 +769,12 @@ namespace tumaiWeb.StockService.Mairui
 
             foreach (var (reportDateStr, incomeDto) in incomeDict)
             {
-                // 尝试取出同期资产负债、现金流
+                // 尝试获取同期资产负债表、现金流量表
                 balanceDict.TryGetValue(reportDateStr, out var balanceDto);
                 cashDict.TryGetValue(reportDateStr, out var cashDto);
 
-                // 字符串日期转为DateOnly
-                if (!DateOnly.TryParse(reportDateStr, out DateOnly reportDate))
+                // 字符串日期转 DateOnly
+                if (!DateOnly.TryParse(reportDateStr, out var reportDate))
                 {
                     continue;
                 }
@@ -606,11 +783,16 @@ namespace tumaiWeb.StockService.Mairui
                 {
                     StockCode = incomeDto.StockCode,
                     Market = incomeDto.Market,
+
                     ReportDate = reportDate,
                     ReportType = incomeDto.ReportType,
-                    DiscloseDate = DateOnly.TryParse(incomeDto.PublishDate, out var dt) ? dt : null,
 
-                    // ========== 利润表映射（IncomeStatementItemDto） ==========
+                    DiscloseDate =
+                        DateOnly.TryParse(incomeDto.PublishDate, out var dt)
+                            ? dt
+                            : null,
+
+                    // ========== 利润表 ==========
                     Income = incomeDto.OperatingRevenue,
                     Cost = incomeDto.OperatingCost,
                     Profit = incomeDto.OperatingProfit,
@@ -622,42 +804,85 @@ namespace tumaiWeb.StockService.Mairui
                     BasicEps = incomeDto.BasicEps,
                     DilutedEps = incomeDto.DilutedEps,
 
-                    // ========== 资产负债表映射（BalanceSheetItemDto） ==========
+                    // ========== 资产负债表 ==========
                     TotalAssets = balanceDto?.TotalAsset,
                     TotalLiabilities = balanceDto?.TotalLiability,
                     ShareholdersEquity = balanceDto?.TotalEquity,
 
-                    // ========== 现金流量表映射（CashFlowItemDto） ==========
+                    // ========== 现金流量表 ==========
                     OperatingCashFlow = cashDto?.NetOperateCashFlow,
                     InvestingCashFlow = cashDto?.NetInvestCashFlow,
                     FinancingCashFlow = cashDto?.NetFinanceCashFlow,
 
                     PullTime = DateTime.UtcNow,
 
-                    // 原始jsonb合并存储
-                    RawJson = new Dictionary<string, object?>
-                    {
-                        ["income"] = incomeDto.RawJson,
-                        ["balance"] = balanceDto?.RawJson,
-                        ["cashflow"] = cashDto?.RawJson
-                    }
+                    // ========== 原始 JSON ==========
+                    RawJson = BuildRawJson(
+                        incomeDto.RawJson,
+                        balanceDto?.RawJson,
+                        cashDto?.RawJson)
                 };
 
-                // shareholdersEquity 来自资产负债表，totalShare 来自StockBasic总股本
-                //if (report.ShareholdersEquity.HasValue && totalShare.HasValue && totalShare != 0)
-                //{
-                //    report.NetAssetPerShare = report.ShareholdersEquity / totalShare;
-                //}
-                //else
-                //{
-                //    report.NetAssetPerShare = null;
-                //}
-                // 计算衍生指标：毛利率、净利率、资产负债率、ROE
+                // shareholdersEquity 来自资产负债表，
+                // totalShare 来自 StockBasic 总股本
+                //
+                // if (report.ShareholdersEquity.HasValue &&
+                //     totalShare.HasValue &&
+                //     totalShare != 0)
+                // {
+                //     report.NetAssetPerShare =
+                //         report.ShareholdersEquity / totalShare;
+                // }
+                // else
+                // {
+                //     report.NetAssetPerShare = null;
+                // }
+
+                // 计算衍生指标：
+                // 毛利率、净利率、资产负债率、ROE
                 CalcFinancialInnerIndicator(report);
+
                 resultList.Add(report);
             }
 
             return resultList;
+        }
+
+        private static JsonDocument BuildRawJson(
+    JsonDocument? incomeJson,
+    JsonDocument? balanceJson,
+    JsonDocument? cashFlowJson)
+        {
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("income");
+
+            if (incomeJson != null)
+                incomeJson.RootElement.WriteTo(writer);
+            else
+                writer.WriteNullValue();
+
+            writer.WritePropertyName("balance");
+
+            if (balanceJson != null)
+                balanceJson.RootElement.WriteTo(writer);
+            else
+                writer.WriteNullValue();
+
+            writer.WritePropertyName("cashflow");
+
+            if (cashFlowJson != null)
+                cashFlowJson.RootElement.WriteTo(writer);
+            else
+                writer.WriteNullValue();
+
+            writer.WriteEndObject();
+            writer.Flush();
+
+            return JsonDocument.Parse(stream.ToArray());
         }
     }
 }
