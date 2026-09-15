@@ -1,6 +1,7 @@
 using AngleSharp.Dom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace tumaiWeb.Data.Entities;
 
@@ -98,6 +99,14 @@ public class StockQuoteLatest : BaseEntity
     /// 快照时间
     /// </summary>
     public DateTime SnapshotTime { get; set; }
+
+    /// <summary>创建时间（UTC）</summary>
+    [Column("createtime")]
+    public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+
+    /// <summary>更新时间（UTC）</summary>
+    [Column("updatetime")]
+    public DateTime? UpdateTime { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// 关联股票基础信息

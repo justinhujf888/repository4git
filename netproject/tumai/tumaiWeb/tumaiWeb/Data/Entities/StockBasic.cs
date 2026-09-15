@@ -1,6 +1,7 @@
 using AngleSharp.Dom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace tumaiWeb.Data.Entities;
 
@@ -54,6 +55,14 @@ public class StockBasic : BaseEntity
     /// 是否退市 0正常 1退市
     /// </summary>
     public int IsDelist { get; set; }
+
+    /// <summary>创建时间（UTC）</summary>
+    [Column("createtime")]
+    public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+
+    /// <summary>更新时间（UTC）</summary>
+    [Column("updatetime")]
+    public DateTime? UpdateTime { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// 行情快照集合

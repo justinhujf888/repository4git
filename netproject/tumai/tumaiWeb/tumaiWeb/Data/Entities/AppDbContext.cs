@@ -19,14 +19,6 @@ public abstract class BaseEntity
     /// <summary>软删除标记</summary>
     //public bool Deleted { get; set; }
 
-    /// <summary>创建时间（UTC）</summary>
-    [Column("createtime")]
-    public DateTime CreateTime { get; set; } = DateTime.UtcNow;
-
-    /// <summary>更新时间（UTC）</summary>
-    [Column("updatetime")]
-    public DateTime? UpdateTime { get; set; } = DateTime.UtcNow;
-
     [NotMapped]
     public Dictionary<string, object> TempMap { get; set; } = new();
 }

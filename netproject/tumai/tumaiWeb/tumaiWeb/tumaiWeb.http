@@ -15,6 +15,10 @@ Content-Type: application/json
   "pageSize": 20
 }
 
+
+###
+GET {{tumaiWeb_HostAddress}}/api/debug/mairui/mystocklist
+
 ###
 GET {{tumaiWeb_HostAddress}}/api/debug/mairui/finance/300418.SZ
 

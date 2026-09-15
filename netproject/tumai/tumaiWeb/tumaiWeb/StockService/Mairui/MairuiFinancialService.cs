@@ -20,6 +20,12 @@ namespace tumaiWeb.StockService.Mairui
             WriteIndented = false
         };
 
+        public async Task<List<StockSelect>> QuerySelfStockListAsync()
+        {
+            var sList = await _baseService.QueryObjectAsync<StockSelect>("select * from stockselect",null);
+            return sList;
+        }
+
 
         /*
          - **推荐：每周 1 次，周日凌晨 02:00 执行**

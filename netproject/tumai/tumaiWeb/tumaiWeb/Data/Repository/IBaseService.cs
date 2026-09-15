@@ -13,12 +13,12 @@ public interface IBaseService
     /// <summary>
     /// 原生SQL查询，返回List[object]
     /// </summary>
-    Task<List<object>> QueryObjectAsync(string sql, Dictionary<string, object>? paramsMap = null);
+    Task<List<T>> QueryObjectAsync<T>(string sql, Dictionary<string, object>? paramsMap = null) where T : class;
 
     /// <summary>
     /// 分页查询
     /// </summary>
-    Task<List<object>> QueryObjectAsync(string sql, Dictionary<string, object>? paramsMap, int firstRecord, int pageSize);
+    Task<List<T>> QueryObjectAsync<T>(string sql, Dictionary<string, object>? paramsMap, int firstRecord, int pageSize) where T : class;
 
     Task<T?> QuerySingleObjectAsync<T>(Func<DbContext, IQueryable<T>> queryBuilder) where T : class;
     /// <summary>
@@ -39,7 +39,7 @@ public interface IBaseService
     /// <summary>
     /// 分页封装返回：CURRENT_PAGE_NUMBER,PAGE_SIZE_NUMBER,TOTAL_PAGE_NUMBER,TOTAL_RECORD_NUMBER,PAGE_RECORDS
     /// </summary>
-    Task<Dictionary<string, object>> QueryRecordsInfoForPagerAsync(string dataSql, string countSql, Dictionary<string, object>? paramsMap, int currentPage, int pageSize);
+    Task<Dictionary<string, object>> QueryRecordsInfoForPagerAsync<T>(string dataSql, string countSql, Dictionary<string, object>? paramsMap, int currentPage, int pageSize) where T : class;
 
     /// <summary>
     /// 新增实体

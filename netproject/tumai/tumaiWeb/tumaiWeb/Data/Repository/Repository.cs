@@ -61,7 +61,7 @@ namespace tumaiWeb.Data.Repository
             {
                 // 主键有值 → 标记修改
                 entry.State = EntityState.Modified;
-                entity.UpdateTime = DateTime.UtcNow;
+                //entity.UpdateTime = DateTime.UtcNow;
             }
             else
             {
@@ -94,7 +94,7 @@ namespace tumaiWeb.Data.Repository
             if (entity != null)
             {
                 //entity.Deleted = true;
-                entity.UpdateTime = DateTime.UtcNow;
+                //entity.UpdateTime = DateTime.UtcNow;
                 MarkAsCreateOrUpdate(entity);
             }
         }
@@ -107,7 +107,7 @@ namespace tumaiWeb.Data.Repository
         /// <summary>填充创建审计字段</summary>
         private void FillCreateAudit(T entity)
         {
-            entity.CreateTime = DateTime.UtcNow;
+            //entity.CreateTime = DateTime.UtcNow;
             //entity.Deleted = false;
         }
     }

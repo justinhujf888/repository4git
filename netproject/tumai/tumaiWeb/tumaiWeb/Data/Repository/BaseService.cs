@@ -40,28 +40,27 @@ public class BaseService : IBaseService
         return result;
     }
 
-    public async Task<List<object>> QueryObjectAsync(string sql, Dictionary<string, object>? paramsMap = null)
+    public async Task<List<T>> QueryObjectAsync<T>(string sql, Dictionary<string, object>? paramsMap = null) where T : class
     {
         if (string.IsNullOrWhiteSpace(sql))
-            return new List<object>();
+            return new List<T>();
 
-        var query = BuildRawSqlQuery<object>(sql, paramsMap);
-        var list = await query.ToListAsync();
-        return list.Count == 0 ? new List<object>() : list;
+        var query = BuildRawSqlQuery<T>(sql, paramsMap);
+        return await query.ToListAsync();
     }
 
-    public async Task<List<object>> QueryObjectAsync(string sql, Dictionary<string, object>? paramsMap, int firstRecord, int pageSize)
+    public async Task<List<T>> QueryObjectAsync<T>(string sql, Dictionary<string, object>? paramsMap, int firstRecord, int pageSize) where T : class
     {
         if (string.IsNullOrWhiteSpace(sql))
-            return new List<object>();
+            return new List<T>();
 
-        var query = BuildRawSqlQuery<object>(sql, paramsMap)
+        var query = BuildRawSqlQuery<T>(sql, paramsMap)
             .Skip(firstRecord)
             .Take(pageSize);
 
         var list = await query.ToListAsync();
         Evit();
-        return list.Count == 0 ? new List<object>() : list;
+        return list.Count == 0 ? new List<T>() : list;
     }
     
     public async Task<T?> QuerySingleObjectAsync<T>(Func<DbContext, IQueryable<T>> queryBuilder) where T : class
@@ -106,7 +105,7 @@ public class BaseService : IBaseService
 
     #region Pager
 
-    public async Task<Dictionary<string, object>> QueryRecordsInfoForPagerAsync(string dataSql, string countSql, Dictionary<string, object>? paramsMap, int currentPage, int pageSize)
+    public async Task<Dictionary<string, object>> QueryRecordsInfoForPagerAsync<T>(string dataSql, string countSql, Dictionary<string, object>? paramsMap, int currentPage, int pageSize) where T : class
     {
         int currentPageNumber = currentPage - 1;
         int firstRecord = currentPageNumber * pageSize;
@@ -119,7 +118,7 @@ public class BaseService : IBaseService
         if (totalPageNumber * pageSize < totalRecords)
             totalPageNumber++;
 
-        var results = await QueryObjectAsync(dataSql, paramsMap, firstRecord, pageSize);
+        var results = await QueryObjectAsync<T>(dataSql, paramsMap, firstRecord, pageSize);
 
         var pagerInfo = new Dictionary<string, object>
         {

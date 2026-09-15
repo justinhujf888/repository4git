@@ -22,6 +22,20 @@ namespace tumaiWeb.Controller
             _baseService = baseService;
         }
 
+        [HttpGet("mystocklist")]
+        public async Task<IActionResult> GetMyStockList()
+        {
+            try
+            {
+                var stockBasics = await _mairuiFinancialService.QuerySelfStockListAsync();
+                return Ok(stockBasics);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"获取股票基础信息失败：{ex.Message}");
+            }
+        }
+
         /// <summary>
         /// 调试接口：获取沪深三大财报，入参直接传 ts_code（带.SZ/.SH）
         /// GET api/debug/mairui/finance/000001.SZ?st=20240101&et=20260630

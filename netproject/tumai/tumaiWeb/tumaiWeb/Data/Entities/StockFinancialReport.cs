@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 
 namespace tumaiWeb.Data.Entities;
@@ -158,6 +159,14 @@ public class StockFinancialReport : BaseEntity
     /// 稀释每股收益
     /// </summary>
     public decimal? DilutedEps { get; set; }
+
+    /// <summary>创建时间（UTC）</summary>
+    [Column("createtime")]
+    public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+
+    /// <summary>更新时间（UTC）</summary>
+    [Column("updatetime")]
+    public DateTime? UpdateTime { get; set; } = DateTime.UtcNow;
 }
 
 public class StockFinancialReportConfiguration : IEntityTypeConfiguration<StockFinancialReport>

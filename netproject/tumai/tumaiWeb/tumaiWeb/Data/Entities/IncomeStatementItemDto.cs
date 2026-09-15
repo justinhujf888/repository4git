@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using tumaiWeb.Data.Entities;
 
@@ -69,6 +70,14 @@ namespace tumaiWeb.Data.Entities
         public decimal? BasicEps { get; set; }
         // 稀释每股收益
         public decimal? DilutedEps { get; set; }
+
+        /// <summary>创建时间（UTC）</summary>
+        [Column("createtime")]
+        public DateTime CreateTime { get; set; } = DateTime.UtcNow;
+
+        /// <summary>更新时间（UTC）</summary>
+        [Column("updatetime")]
+        public DateTime? UpdateTime { get; set; } = DateTime.UtcNow;
 
         // 原始单条行json，存入PostgreSQL jsonb
         public JsonDocument RawJson { get; set; }
