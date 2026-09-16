@@ -439,7 +439,7 @@ namespace tumaiWeb.StockService.Mairui
                 await UpsertIncome(qcIncomeList);
                 await UpsertBalance(qcBalanceList);
                 await UpsertCashFlow(qcCashList);
-                //await _baseService.AddObjectRangeAsync(stockFinancialReportList);
+                await UpsertFinancialReport(stockFinancialReportList);
             });
         }
 
@@ -678,6 +678,14 @@ namespace tumaiWeb.StockService.Mairui
             {
                 //await _baseService.AddObjectAsync(item);
                 await _baseService.UpsertAsync(item, [nameof(CashFlowItemDto.StockCode), nameof(CashFlowItemDto.Market), nameof(CashFlowItemDto.ReportDate)]);
+            }
+        }
+
+        private async Task UpsertFinancialReport(List<StockFinancialReport> list)
+        {
+            foreach(var item in list)
+            {
+                await _baseService.UpsertAsync(item, [nameof(StockFinancialReport.StockCode),nameof(StockFinancialReport.Market),nameof(StockFinancialReport.ReportDate)]);
             }
         }
         #endregion

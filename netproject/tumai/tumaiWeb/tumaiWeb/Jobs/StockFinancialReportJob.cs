@@ -19,21 +19,30 @@ namespace tumaiWeb.Jobs
             _logger.LogInformation("StockFinancialReportJob 任务开始执行");
             try
             {
+                TimeZoneInfo cnZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai");
+                DateTime cnNow = TimeZoneInfo.ConvertTime(DateTime.UtcNow, cnZone);
+                int m = cnNow.Month;
+                if (new[] { 1, 4, 7, 10 }.Contains(m) == false)
+                {
+                    _logger.LogInformation("StockFinancialReportJob 当前月份不是报表月份");
+                    return;
+                }
+
                 using var scope = _serviceProvider.CreateScope();
-                var dataService = scope.ServiceProvider.GetRequiredService<MairuiDataService>();
-                var financialService = scope.ServiceProvider.GetRequiredService<MairuiFinancialService>();
-                var stockList = await financialService.QuerySelfStockListAsync();
+                var _mairuiDataService = scope.ServiceProvider.GetRequiredService<MairuiDataService>();
+                var _mairuiFinancialService = scope.ServiceProvider.GetRequiredService<MairuiFinancialService>();
+                var stockList = await _mairuiFinancialService.QuerySelfStockListAsync();
                 //var tsCode = context.MergedJobDataMap.GetString("ts_code");
                 var tsCodes = stockList.Select(x => new {x.StockCode,x.Market}).ToArray();
                 foreach (var ts in tsCodes)
                 {
-                    var profitJson = await dataService.GetProfitStatementRawAsync($"{ts.StockCode}.{ts.Market}");
-                    var balanceJson = await dataService.GetBalanceSheetRawAsync($"{ts.StockCode}.{ts.Market}");
-                    var cashJson = await dataService.GetCashflowRawAsync($"{ts.StockCode}.{ts.Market}");
+                    var profitJson = await _mairuiDataService.GetProfitStatementRawAsync($"{ts.StockCode}.{ts.Market}");
+                    var balanceJson = await _mairuiDataService.GetBalanceSheetRawAsync($"{ts.StockCode}.{ts.Market}");
+                    var cashJson = await _mairuiDataService.GetCashflowRawAsync($"{ts.StockCode}.{ts.Market}");
                     await Utils.ToFile.SaveLargeStrToFileAsync(profitJson, $"{AppContext.BaseDirectory}/json/fr/profit_{ts.StockCode}.{ts.Market}.json");
                     await Utils.ToFile.SaveLargeStrToFileAsync(balanceJson, $"{AppContext.BaseDirectory}/json/fr/balance_{ts.StockCode}.{ts.Market}.json");
                     await Utils.ToFile.SaveLargeStrToFileAsync(cashJson, $"{AppContext.BaseDirectory}/json/fr/cash_{ts.StockCode}.{ts.Market}.json");
-                    await financialService.SaveFinancialData($"{ts.StockCode}.{ts.Market}", profitJson, balanceJson, cashJson);
+                    await _mairuiFinancialService.SaveFinancialData($"{ts.StockCode}.{ts.Market}", profitJson, balanceJson, cashJson);
                 }
                 
                 _logger.LogInformation("StockFinancialReportJob 执行完毕");

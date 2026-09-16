@@ -207,7 +207,7 @@ public class StockFinancialReportConfiguration : IEntityTypeConfiguration<StockF
         b.Property(e => e.RawJson).HasColumnType("jsonb");
 
         b.HasKey(e => e.Id);
-        b.HasAlternateKey(e => new { e.StockCode, e.ReportDate,e.Market }).HasName("uk_stock_report");
+        b.HasAlternateKey(e => new { e.StockCode, e.Market, e.ReportDate }).HasName("uk_stock_report");
         b.HasIndex(e => new { e.StockCode, e.Market, e.ReportDate })
             .IsUnique()
             .HasDatabaseName("uk_fin_stock_mkt_rptdate")

@@ -20,12 +20,12 @@ namespace tumaiWeb.Jobs
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var dataService = scope.ServiceProvider.GetRequiredService<MairuiDataService>();
-                var financialService = scope.ServiceProvider.GetRequiredService<MairuiFinancialService>();
+                var _mairuiDataService = scope.ServiceProvider.GetRequiredService<MairuiDataService>();
+                var _mairuiFinancialService = scope.ServiceProvider.GetRequiredService<MairuiFinancialService>();
 
-                var stockBasicsJson = await dataService.GetStockBasicRawAsync();
+                var stockBasicsJson = await _mairuiDataService.GetStockBasicRawAsync();
                 await Utils.ToFile.SaveLargeStrToFileAsync(stockBasicsJson, $"{AppContext.BaseDirectory}/json/stockbasics.json");
-                await financialService.SaveStockBasicsData(stockBasicsJson);
+                await _mairuiFinancialService.SaveStockBasicsData(stockBasicsJson);
 
                 _logger.LogInformation("StockBasicQuotePullJob 执行完毕");
             }

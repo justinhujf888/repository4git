@@ -68,6 +68,14 @@ builder.Services.AddQuartz(q =>
         .WithCronSchedule("0 0 2 ? * SUN",
             x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai")))
     );
+
+    q.AddJob<StockFinancialReportJob>(opts => opts.WithIdentity("StockFinancialReportJob"));
+    q.AddTrigger(opts => opts
+        .ForJob("StockFinancialReportJob")
+        .WithIdentity("StockFinancialReportJob-trigger")
+        .WithCronSchedule("0 0 1 ? * SUN",
+            x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai")))
+    );
 });
 builder.Services.AddQuartzHostedService(o => o.WaitForJobsToComplete = true);
 

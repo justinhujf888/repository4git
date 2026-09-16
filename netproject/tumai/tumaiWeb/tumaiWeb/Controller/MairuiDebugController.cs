@@ -27,8 +27,13 @@ namespace tumaiWeb.Controller
         {
             try
             {
-                var stockBasics = await _mairuiFinancialService.QuerySelfStockListAsync();
-                return Ok(stockBasics);
+                var stockList = await _mairuiFinancialService.QuerySelfStockListAsync();
+                var tsCodes = stockList.Select(x => new { x.StockCode, x.Market }).ToArray();
+                foreach (var ts in tsCodes)
+                {
+                    Console.WriteLine($"{ts.StockCode}.{ts.Market}");
+                }
+                return Ok(tsCodes);
             }
             catch (Exception ex)
             {
@@ -69,7 +74,23 @@ namespace tumaiWeb.Controller
                 //};
                 //return Ok(result);
 
-                await _mairuiFinancialService.SaveFinancialData(tsCode, await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/profit.json"), await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/balance.json"), await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/cash.json"));
+                //await _mairuiFinancialService.SaveFinancialData(tsCode, await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/profit.json"), await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/balance.json"), await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/cash.json"));
+                
+
+                var stockList = await _mairuiFinancialService.QuerySelfStockListAsync();
+                //var tsCode = context.MergedJobDataMap.GetString("ts_code");
+                var tsCodes = stockList.Select(x => new { x.StockCode, x.Market }).ToArray();
+                foreach (var ts in tsCodes)
+                {
+                    var profitJson = await _mairuiDataService.GetProfitStatementRawAsync($"{ts.StockCode}.{ts.Market}");
+                    var balanceJson = await _mairuiDataService.GetBalanceSheetRawAsync($"{ts.StockCode}.{ts.Market}");
+                    var cashJson = await _mairuiDataService.GetCashflowRawAsync($"{ts.StockCode}.{ts.Market}");
+                    await Utils.ToFile.SaveLargeStrToFileAsync(profitJson, $"{AppContext.BaseDirectory}/json/fr/profit_{ts.StockCode}.{ts.Market}.json");
+                    await Utils.ToFile.SaveLargeStrToFileAsync(balanceJson, $"{AppContext.BaseDirectory}/json/fr/balance_{ts.StockCode}.{ts.Market}.json");
+                    await Utils.ToFile.SaveLargeStrToFileAsync(cashJson, $"{AppContext.BaseDirectory}/json/fr/cash_{ts.StockCode}.{ts.Market}.json");
+                    await _mairuiFinancialService.SaveFinancialData($"{ts.StockCode}.{ts.Market}", profitJson, balanceJson, cashJson);
+                }
+
                 return Ok(new { Message = "财报数据已保存到数据库" });
             }
             catch (HttpRequestException ex)
