@@ -76,6 +76,20 @@ builder.Services.AddQuartz(q =>
         .WithCronSchedule("0 0 1 ? * SUN",
             x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai")))
     );
+
+    q.AddJob<StockSsjy4ManyStkJob>(opts => opts.WithIdentity("StockSsjy4ManyStkJob"));
+    q.AddTrigger(opts => opts
+        .ForJob("StockSsjy4ManyStkJob")
+        .WithIdentity("StockSsjy4ManyStkJob-trigger0")
+        .WithCronSchedule("0 0/5 9-11,13-15 ? * MON-FRI",
+            x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai")))
+    );
+    q.AddTrigger(opts => opts
+        .ForJob("StockSsjy4ManyStkJob")
+        .WithIdentity("StockSsjy4ManyStkJob-trigger1")
+        .WithCronSchedule("0 5 15 ? * MON-FRI",
+            x => x.InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai")))
+    );
 });
 builder.Services.AddQuartzHostedService(o => o.WaitForJobsToComplete = true);
 

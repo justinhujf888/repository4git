@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using tumaiWeb.Data.Entities;
 using tumaiWeb.Data.Repository;
+using tumaiWeb.StockService;
 using tumaiWeb.StockService.Mairui;
 
 
@@ -29,11 +31,16 @@ namespace tumaiWeb.Controller
             {
                 var stockList = await _mairuiFinancialService.QuerySelfStockListAsync();
                 var tsCodes = stockList.Select(x => new { x.StockCode, x.Market }).ToArray();
-                foreach (var ts in tsCodes)
+                var groups = tsCodes.Chunk(20);
+                foreach (var group in groups)
                 {
-                    Console.WriteLine($"{ts.StockCode}.{ts.Market}");
+                    // group 是数组，每组最多20个
+                    foreach (var item in group)
+                    {
+                        Console.WriteLine($"{item.StockCode}.{item.Market}");
+                    }
                 }
-                return Ok(tsCodes);
+                return Ok(groups);
             }
             catch (Exception ex)
             {
@@ -80,6 +87,7 @@ namespace tumaiWeb.Controller
                 var stockList = await _mairuiFinancialService.QuerySelfStockListAsync();
                 //var tsCode = context.MergedJobDataMap.GetString("ts_code");
                 var tsCodes = stockList.Select(x => new { x.StockCode, x.Market }).ToArray();
+                var reportDates = StockUtil.GetRecentFinancialReportDates(DateTime.Now, 4);
                 foreach (var ts in tsCodes)
                 {
                     var profitJson = await _mairuiDataService.GetProfitStatementRawAsync($"{ts.StockCode}.{ts.Market}");
@@ -89,6 +97,10 @@ namespace tumaiWeb.Controller
                     await Utils.ToFile.SaveLargeStrToFileAsync(balanceJson, $"{AppContext.BaseDirectory}/json/fr/balance_{ts.StockCode}.{ts.Market}.json");
                     await Utils.ToFile.SaveLargeStrToFileAsync(cashJson, $"{AppContext.BaseDirectory}/json/fr/cash_{ts.StockCode}.{ts.Market}.json");
                     await _mairuiFinancialService.SaveFinancialData($"{ts.StockCode}.{ts.Market}", profitJson, balanceJson, cashJson);
+                    foreach (var rDate in reportDates)
+                    {
+                       await _mairuiFinancialService.CalcAndUpsertOneAsync($"{ts.StockCode}.{ts.Market}", rDate, CancellationToken.None);
+                    }
                 }
 
                 return Ok(new { Message = "财报数据已保存到数据库" });
@@ -168,15 +180,25 @@ namespace tumaiWeb.Controller
 
         [HttpGet("stockQuoteSnapshot")]
         [RequestTimeout(1200000)]
-        public async Task<IActionResult> GetStockQuoteSnapshotRawJson(string tsCode)
+        public async Task<IActionResult> GetStockQuoteSnapshotRawJson()
         {
             try
             {
                 //var stockQuoteSnapshotJson = await _mairuiDataService.GetStockSsjy4ManyStkRawAsync([tsCode]);
                 //await Utils.ToFile.SaveLargeStrToFileAsync(stockQuoteSnapshotJson, $"{AppContext.BaseDirectory}/json/stockquotesnapshot.json");
                 //return Ok(new { Message = "获取行情快照" });
-                await _mairuiFinancialService.SaveStockSsjy4ManyStkData([tsCode], await Utils.ToFile.ReadStrFromFileAsync($"{AppContext.BaseDirectory}/json/stockquotesnapshot.json"));
-                return Ok(new { Message = "股票基础信息已保存到数据库" });
+                var stockList = await _mairuiFinancialService.QuerySelfStockListAsync();
+                var tsCodes = stockList.Select(x => new { x.StockCode, x.Market }).ToArray();
+                // 每20条一组
+                var groups = tsCodes.Chunk(20);
+                foreach (var group in groups)
+                {
+                    // group 是数组，每组最多20个
+                    List<string> sList = group.Select(item => $"{item.StockCode}.{item.Market}").ToList();
+                    var stockQuoteSnapshotJson = await _mairuiDataService.GetStockSsjy4ManyStkRawAsync(sList);
+                    await _mairuiFinancialService.SaveStockSsjy4ManyStkData(sList, stockQuoteSnapshotJson);
+                }
+                return Ok(new { Message = "股票实时交易信息已保存到数据库" });
             }
             catch (Exception ex)
             {

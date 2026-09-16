@@ -527,11 +527,9 @@ namespace tumaiWeb.StockService.Mairui
                 };
 
                 snapshotEntities.Add(entity);
-
+                await _baseService.UpsertAsync<StockQuoteSnapshot>(entity, [nameof(StockQuoteSnapshot.StockCode), nameof(StockQuoteSnapshot.Market), nameof(StockQuoteSnapshot.SnapshotTime)]);
                 i++;
             }
-
-            await _baseService.AddObjectRangeAsync(snapshotEntities);
         }
 
         /// <summary>
@@ -539,29 +537,46 @@ namespace tumaiWeb.StockService.Mairui
         /// </summary>
         public async Task CalcAndUpsertOneAsync(string stockCode, DateOnly tradeDate, CancellationToken ct)
         {
-            // 1. 根据SnapshotTime日期取当日行情快照
-            var dayStart = tradeDate.ToDateTime(TimeOnly.MinValue);
-            var dayEnd = tradeDate.ToDateTime(TimeOnly.MaxValue);
+            // 校验股票代码格式
             var sm = stockCode.Split(".");
-            // 1. 获取当日行情快照
-            var quote = await _db.StockQuoteSnapshots
-                .FirstOrDefaultAsync(q => q.StockCode == sm[0] && q.Market == sm[1] && q.SnapshotTime >= dayStart
-                && q.SnapshotTime <= dayEnd, ct);
-            if (quote == null || !quote.TotalMarketValue.HasValue)
+            if (sm.Length != 2)
+            {
+                //_logger.LogWarning("股票代码格式错误，预期如300131.SZ，输入:{stockCode}", stockCode);
                 return;
+            }
+            string code = sm[0];
+            string market = sm[1];
+
+            // 1. 根据SnapshotTime日期取当日行情快照（修复DateTimeKind.Unspecified问题）
+            var dayStart = tradeDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+            var dayEnd = tradeDate.ToDateTime(TimeOnly.MaxValue, DateTimeKind.Utc);
+
+            // 获取当日行情快照
+            var quote = await _db.StockQuoteSnapshots
+                .FirstOrDefaultAsync(q => q.StockCode == code && q.Market == market
+                    && q.SnapshotTime >= dayStart && q.SnapshotTime <= dayEnd, ct);
+
+            if (quote == null || !quote.TotalMarketValue.HasValue)
+            {
+                //_logger.LogDebug("{code}|{market} {tradeDate} 无行情快照或总市值为空，跳过估值计算", code, market, tradeDate);
+                return;
+            }
 
             // 总市值：元 → 转为【万元】和财报口径对齐
             decimal totalMarketCapWan = quote.TotalMarketValue.Value / 10000;
 
-            // 2. 取最近4个季度财报（按报告日期倒序）
+            // 2. 取最新4个财报（按报告日期倒序）
             var last4Reports = await _db.StockFinancialReports
-                .Where(f => f.StockCode == sm[0] && f.Market == sm[1])
+                .Where(f => f.StockCode == code && f.Market == market)
                 .OrderByDescending(f => f.ReportDate)
                 .Take(4)
                 .ToListAsync(ct);
 
             if (last4Reports.Count < 4)
+            {
+                //_logger.LogDebug("{code}|{market} {tradeDate} 财报不足4期，无法计算TTM，跳过", code, market, tradeDate);
                 return;
+            }
 
             // TTM：4期归母净利润之和（优先用ParentCompanyNetProfit）
             decimal sumParentNetProfit = last4Reports.Sum(r => r.ParentCompanyNetProfit ?? 0);
@@ -579,14 +594,14 @@ namespace tumaiWeb.StockService.Mairui
 
             // Upsert
             var existValuation = await _db.StockValuations
-                .FirstOrDefaultAsync(v => v.StockCode == sm[0] && v.Market == sm[1] && v.TradeDate == tradeDate, ct);
-            
+                .FirstOrDefaultAsync(v => v.StockCode == code && v.Market == market && v.TradeDate == tradeDate, ct);
+
             if (existValuation == null)
             {
                 existValuation = new StockValuation
                 {
-                    StockCode = sm[0],
-                    Market = sm[1],
+                    StockCode = code,
+                    Market = market,
                     TradeDate = tradeDate,
                 };
                 _db.StockValuations.Add(existValuation);
@@ -596,7 +611,7 @@ namespace tumaiWeb.StockService.Mairui
             existValuation.PeTtm = peTtm;
             existValuation.Pb = pb;
             existValuation.PsTtm = psTtm;
-            existValuation.CalcTime = DateTime.Now;
+            existValuation.CalcTime = DateTime.UtcNow; // 使用UTC时间
 
             await _db.SaveChangesAsync(ct);
         }
@@ -604,19 +619,17 @@ namespace tumaiWeb.StockService.Mairui
         /// <summary>
         /// 批量计算当日全市场个股估值
         /// </summary>
-        public async Task BatchCalcAllStockAsync(DateOnly tradeDate, CancellationToken ct)
+        public async Task BatchCalcAllStockAsync(CancellationToken ct)
         {
-            var stockList = await _db.StockBasics
-                .Select(s => new
-                {
-                    s.StockCode,
-                    s.Market
-                })
-                .ToListAsync(ct);
+            var stockList = (await QuerySelfStockListAsync()).Select(x => new { x.StockCode, x.Market }).ToArray();
 
             foreach (var stock in stockList)
             {
-                await CalcAndUpsertOneAsync($"{stock.StockCode}.{stock.Market}", tradeDate, ct);
+                var reportDates = StockUtil.GetRecentFinancialReportDates(DateTime.Now, takeCount: 4);
+                foreach (var rDate in reportDates)
+                {
+                    await CalcAndUpsertOneAsync($"{stock.StockCode}.{stock.Market}", rDate, ct);
+                }
             }
         }
 
