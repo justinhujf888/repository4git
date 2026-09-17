@@ -275,6 +275,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <skip>true</skip>
                     <layers>
                         <enabled>true</enabled>
                     </layers>
@@ -336,7 +337,7 @@
                             <!-- 排除我们自己的项目（如果需要） -->
                             <excludeGroupIds>${project.groupId}</excludeGroupIds>
                             <!-- 是否复制传递性依赖，通常保持true -->
-                            <includeScope>runtime</includeScope>
+                            <includeScope>compile</includeScope>
                         </configuration>
                     </execution>
                 </executions>
