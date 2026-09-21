@@ -276,12 +276,16 @@ function barButtonClick(id) {
     }
 }
 
+function clearLocalStorage() {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("loginToken");
+    localStorage.removeItem("buyerAppInfo");
+    userId.value = null;
+}
+
 function logout() {
     dialog.confirm("是否退出当前登录？",()=>{
-        localStorage.removeItem("userId");
-        localStorage.removeItem("loginToken");
-        localStorage.removeItem("buyerAppInfo");
-        userId.value = null;
+        clearLocalStorage();
         page.redirectTo("landing",null);
     },null);
 }
@@ -319,6 +323,7 @@ function afterForgot4Login(_userId) {
 }
 function afterForgot4Save() {
     showForgotMode.value = false;
+    clearLocalStorage();
     showLoginMode.value = true;
 }
 function cancelForgot() {

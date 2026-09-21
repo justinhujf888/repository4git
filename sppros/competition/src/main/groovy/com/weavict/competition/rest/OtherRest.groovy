@@ -247,7 +247,9 @@ class OtherRest extends BaseRest
 //            String vcode = "" + ((Math.random()) * 899999.0D + 100000.0D).toInteger();
 //            println OtherUtils.givePropsValue("ali_sms_SignName");
 //            query.appId = "temparky";
+
             ObjectMapper objectMapper = buildObjectMapper();
+
             Config credentialConfig = new Config().setType("sts").setAccessKeyId(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessId")).setAccessKeySecret(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessKey")).setSecurityToken(aliyunStsFactory.ganAliYunStsValue(query.appId as String,"securityToken"));
             Client credentialClient = new Client(credentialConfig);
             com.aliyun.teaopenapi.models.Config config = new com.aliyun.teaopenapi.models.Config();
@@ -307,7 +309,8 @@ class OtherRest extends BaseRest
                         "templateParam":({
 //                            DES crypt = new DES(OtherUtils.givePropsValue("publickey"));
 //                            return crypt.encrypt(templateParam);
-                            return SecureUtil.des(OtherUtils.givePropsValue("publickey").bytes).encryptHex(templateParam);
+
+                            return SecureUtil.des(OtherUtils.givePropsValue("publickey").bytes).encryptBase64(templateParam);
                         }).call()]
                     ]);
         }

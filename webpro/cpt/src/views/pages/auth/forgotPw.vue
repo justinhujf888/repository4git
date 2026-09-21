@@ -34,6 +34,7 @@
             <div class="flex justify-end gap-2 mt-5 !border-btn">
                 <Button type="submit" label="重置密码" _as="router-link" _to="/" class="!bg-green-600 !rounded-full"></Button>
                 <Button severity="warn" label="返回" class="!bg-orange-400 !border-0 !rounded-full" _as="router-link" _to="/" @click="cancel"></Button>
+                <Button label="test" @click="afterSave()"></Button>
             </div>
         </Form>
     </div>
@@ -82,6 +83,7 @@ let countDown = null;
 let phoneCode = "";
 
 onMounted(()=>{
+    userId.value = util.decryptStoreInfo(userId.value);
     shiLogin.value = userId.value ? true : false;
     // console.log(userId.value,shiLogin.value);
     if (!shiLogin.value) {
@@ -183,6 +185,7 @@ const onFormSubmit = ({ valid }) => {
                 return;
             }
         } else {
+            // console.log(userId.value,buyer.value.phone);
             if (userId.value!=buyer.value.phone) {
                 dialog.toastError("手机号码输入错误，请确认为您登录的手机号码");
                 return;
@@ -190,12 +193,13 @@ const onFormSubmit = ({ valid }) => {
         }
         userRest.resetBuyerPassword(buyer.value.phone,buyer.value.password,(data)=>{
             if (data.status=="OK") {
-                dialog.alertBack("您已重置密码",()=>{
-                    if (shiLogin) {
-                        afterLogin();
-                    } else {
-                        afterSave();
-                    }
+                dialog.alertBack("您已重置密码，请重新登录。",()=>{
+                    // if (shiLogin) {
+                    //     afterForgot4Login();
+                    // } else {
+                    //     afterSave();
+                    // }
+                    afterSave();
                 });
             } else if (data.status=="ER_NOHAS") {
                 dialog.toastError("此账号未注册");
@@ -204,7 +208,7 @@ const onFormSubmit = ({ valid }) => {
     }
 };
 
-const afterLogin = ()=>{
+const afterForgot4Login = ()=>{
     emit("afterLogin",buyer.value.phone);
 }
 const afterSave = ()=>{
