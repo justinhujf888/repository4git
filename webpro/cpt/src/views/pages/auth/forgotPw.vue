@@ -134,7 +134,7 @@ const startCountdown = ()=>{
 
         await new Promise((resolve,reject) => {
             otherRest.sendSmsPublic(buyer.value.phone,"regist",JSON.stringify({code:vcord.value}),(data)=>{
-                // console.log(data);
+                console.log(data);
                 if (data.status=="OK") {
                     phoneCode = data.smsInfo.templateParam;
                     totalSeconds = 180;
@@ -170,7 +170,14 @@ const resolver = ({ values }) => {
 const onFormSubmit = ({ valid }) => {
     if (valid) {
         if (!shiLogin.value) {
-            let pi = JSON.parse(util.decryptStoreInfo(phoneCode));
+            if (!phoneCode.trim()) {
+                // console.log("trim",phoneCode);
+                phoneCode = "{}";
+            } else {
+                // console.log("else",phoneCode);
+                phoneCode = util.decryptStoreInfo(phoneCode);
+            }
+            let pi = JSON.parse(phoneCode);
             if (pi.code!=vcord.value) {
                 dialog.toastError("验证码输入错误");
                 return;
