@@ -427,9 +427,14 @@ const init = (_mainPage,_mePage,_obj)=>{
     competition.value = obj.data;
     lodash.forEach(competition.value.guiGeList,(v)=>{
         v.temp = `${v.name} 【${v.description}】`;
-        if (obj.workGroup[`${competition.value.id}_${v.id}`] < obj.uploadRule.competitionGuiGeCount || !obj.workGroup[`${competition.value.id}_${v.id}`]) {
+        if (obj.workGroup) {
+            if (obj.workGroup[`${competition.value.id}_${v.id}`] < obj.uploadRule.competitionGuiGeCount || !obj.workGroup[`${competition.value.id}_${v.id}`]) {
+                selGuiGeList.value.push(v);
+            }
+        } else {
             selGuiGeList.value.push(v);
         }
+
     });
     // console.log(obj);
     masterCompetition.value = obj.masterCompetition;

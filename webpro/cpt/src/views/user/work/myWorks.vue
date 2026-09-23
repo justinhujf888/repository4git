@@ -68,7 +68,7 @@
         <Dialog v-model:visible="showDialog" header="请选择参赛类别" modal :dismissableMask="true" :pt="{Button:{classd:'!border-none !rounded-none !shadow-none'}}">
             <div class="md:row col items-center w-full gap-4 p-4 mb-4 pb-0">
 <!-- lodash.findIndex(workList,(w)=>{return w.competition?.id==o.id})               lodash.findIndex(workList,(w)=>{return w.competition?.id==o.id})<0-->
-                <div v-for="(competition,index) in lodash.filter(competitionList,(o)=>{return (workGroup[o?.id] ? workGroup[o?.id] : 0) < uploadRule?.competitionGuiGeCount})" :key="index" class="w-4/5 md:w-48 h-60 gap-4 col">
+                <div v-for="(competition,index) in selCompList" :key="index" class="w-4/5 md:w-48 h-60 gap-4 col">
                     <Button :label="competition.name" severity="secondary" class="w-full h-48 !px-8 !border-2 !border-solid !border-gray-200" @click="refUploadWork.init(mainPage,updateWorkPage,{data:competition,masterCompetition:masterCompetition,uploadRule:uploadRule,userId:userId,process:'c',workGroup:workGroup,returnFunction:returnFunction,refreashUpdateKey:refreashUpdateKey});showDialog=false;updateWorkPage.open(mainPage);"/>
                     <div class="text-sm text-gray-900 h-28">
                         <span>{{competition.description}}</span>
@@ -99,6 +99,7 @@ const mainPage = useTemplateRef("mainPage");
 const refUploadWork = useTemplateRef("refUploadWork");
 const updateWorkPage = useTemplateRef("updateWorkPage");
 const forceUpdateKey = ref(0);
+const selCompList = ref([]);
 
 let userId = ""//注意，userId不是ref对象
 const workList = ref([]);
@@ -145,19 +146,24 @@ function loadWorksByUser() {
                     work.tempMap.status = lodash.find(Beans.workStatus(),(o)=>{return o.id==work.status}).name;
                     work.tempMap.psStatus = lodash.find(Beans.psStatus(),(o)=>{return o.id==work.psStatus}).name;
                 }
+                selCompList.value = lodash.filter(competitionList.value,(o)=>{return (workGroup[o?.id] ? workGroup[o?.id] : 0) < uploadRule.value?.competitionGuiGeCount});
+            } else {
+                selCompList.value = competitionList.value;
+                // console.log(selCompList.value);
             }
         }
     });
 }
 
 const groupByWorkCount = () => {
+    // console.log("groupByWorkCount");
     workGroup = lodash.mapValues(lodash.groupBy(workList.value,(w)=>{
         // console.log(w);
         return `${w.competition?.id}${w.guiGe?.id ? "_"+w.guiGe?.id : ""}`;
     }),(wu)=>{
         return wu.length;
     });
-    // console.log(workGroup);
+    // console.log("workGroup",workGroup,"workList",workList.value);
 }
 
 function showCompetitionList(event) {

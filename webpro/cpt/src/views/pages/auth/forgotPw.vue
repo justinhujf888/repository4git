@@ -34,7 +34,6 @@
             <div class="flex justify-end gap-2 mt-5 !border-btn">
                 <Button type="submit" label="重置密码" _as="router-link" _to="/" class="!bg-green-600 !rounded-full"></Button>
                 <Button severity="warn" label="返回" class="!bg-orange-400 !border-0 !rounded-full" _as="router-link" _to="/" @click="cancel"></Button>
-                <Button label="test" @click="afterSave()"></Button>
             </div>
         </Form>
     </div>
