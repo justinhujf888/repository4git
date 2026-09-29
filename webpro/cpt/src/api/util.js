@@ -624,7 +624,7 @@ export default {
 	getAppIdFromUrl(url) {
 		const parsedUrl = new URL(url);
 		let doman = parsedUrl.hostname;
-		return lodash.find([{id:"cpt.arkydesign.cn",doman:"localhost"},{id:"cpt.arkydesign.cn",doman:"www.ivac-hub.com"},{id:"cpt.arkydesign.cn",doman:"ivac-hub.com"}],(o)=>{
+		return lodash.find([{id:"cpt.arkydesign.cn",doman:"localhost"},{id:"cpt.arkydesign.cn",doman:"www.ivac-hub.com"},{id:"cpt.arkydesign.cn",doman:"ivac-hub.com"},{id:"goldfishcompetition.cn",doman:"goldfishcompetition.cn"},{id:"goldfishcompetition.cn",doman:"www.goldfishcompetition.cn"}],(o)=>{
 			return o.doman == doman;
 		}).id;
 	},
