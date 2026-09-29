@@ -10,11 +10,10 @@ import DialogService from 'primevue/dialogservice';
 import StyleClass from 'primevue/styleclass';
 import util from "@/api/util";
 import VueKonva from 'vue-konva';
-
+import { Beans } from '@/api/dbs/beans';
 import '@/assets/styles.scss';
 import zhCN from 'primelocale/zh-CN.json';
-import workRest from "@/api/dbs/workRest";
-import dayjs from "dayjs";
+
 
 const app = createApp(App);
 app.directive('styleclass', StyleClass);
@@ -25,7 +24,10 @@ const routerParams = ()=>{
 };
 
 (async () => {
-    await util.loadSkin("ct0");
+    const parsedUrl = new URL(window.location);
+    let domain = parsedUrl.hostname;
+    let dn = Object.entries(Beans.domainSetup()).find(([_, v]) => v.domains.includes(domain))?.[1] ?? null;
+    await util.loadSkin(dn.ctStyle);
 })();
 
 app.config.globalProperties.$router = router;

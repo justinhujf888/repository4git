@@ -2,6 +2,7 @@ import { Http } from '@/api/http.js';
 import dialog from "/src/api/uniapp/dialog.js";
 import { Config } from '@/api/config.js';
 import {Beans} from "@/api/dbs/beans";
+import util from '@/api/util';
 
 export default {
     setupSiteCompetition(siteCompetition, onfun) {
@@ -138,21 +139,22 @@ export default {
     },
     async gainCache8MasterCompetitionInfo(host) {
         // console.log(host,Config.siteJson,`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
-        return Http.fetchJson(`${Config.siteJson}/${host}/masterCompetition.json?${Beans.buildPId("")}`);
+        return Http.fetchJson(`${Config.siteJson}${util.getDomainFromUrl(window.location)}/json/${host}/masterCompetition.json?${Beans.buildPId("")}`);
         // return fetch(`${Config.siteJson}/masterCompetition.json`)
         //     .then(response => response.json())
         //     .then(data => {return data});
     },
     async gainCache8SiteInfo(host) {
-        return Http.fetchJson(`${Config.siteJson}/${host}/siteInfo.json?${Beans.buildPId("")}`);
+        // console.log(`${Config.siteJson}${util.getDomainFromUrl(window.location)}/json/${host}/siteInfo.json?${Beans.buildPId("")}`);
+        return Http.fetchJson(`${Config.siteJson}${util.getDomainFromUrl(window.location)}/json/${host}/siteInfo.json?${Beans.buildPId("")}`);
     },
     async gainJsonSetup(host,key) {
         // console.log(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
-        return Http.fetchJson(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
+        return Http.fetchJson(`${Config.siteJson}${util.getDomainFromUrl(window.location)}/json/${host}/${key}.json?${Beans.buildPId("")}`);
     },
     async gainPageSetup(host,key) {
         // console.log(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
-        return Http.fetchJson(`${Config.siteJson}/${host}/${key}.json?${Beans.buildPId("")}`);
+        return Http.fetchJson(`${Config.siteJson}${util.getDomainFromUrl(window.location)}/json/${host}/${key}.json?${Beans.buildPId("")}`);
     },
     async resetPingShen(ds,onfun) {
         return await Http.callHttpFunction('/r/work/resetPingShen',ds,onfun);

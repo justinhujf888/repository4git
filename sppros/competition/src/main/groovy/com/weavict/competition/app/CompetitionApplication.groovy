@@ -97,9 +97,7 @@ class GlobalCorsFilter {
         config.addAllowedOrigin("http://localhost");
 		config.addAllowedOrigin("http://localhost:5173");
 		config.addAllowedOrigin("https://www.ivac-hub.com");
-		config.addAllowedOrigin("https://ivac-hub.com");
-		config.addAllowedOrigin("https://test.arkydesign.cn");
-		config.addAllowedOrigin("http://test.arkydesign.cn");
+        config.addAllowedOrigin("https://www.goldfishcompetition.cn");
 		//是否发送Cookie
 		config.setAllowCredentials(true);
 		//支持请求方式

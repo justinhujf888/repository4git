@@ -3,6 +3,7 @@
 import {Config} from '@/api/config.js';
 import page from '@/api/uniapp/page';
  import lodash from 'lodash-es';
+ import { Beans } from '@/api/dbs/beans';
 // const a = require()
 var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 //将Ansi编码的字符串进行Base64编码
@@ -623,10 +624,11 @@ export default {
     },
 	getAppIdFromUrl(url) {
 		const parsedUrl = new URL(url);
-		let doman = parsedUrl.hostname;
-		return lodash.find([{id:"cpt.arkydesign.cn",doman:"localhost"},{id:"cpt.arkydesign.cn",doman:"www.ivac-hub.com"},{id:"cpt.arkydesign.cn",doman:"ivac-hub.com"},{id:"goldfishcompetition.cn",doman:"goldfishcompetition.cn"},{id:"goldfishcompetition.cn",doman:"www.goldfishcompetition.cn"}],(o)=>{
-			return o.doman == doman;
-		}).id;
+		let domain = parsedUrl.hostname;
+		// return lodash.find([{id:"cpt.arkydesign.cn",doman:"localhost"},{id:"cpt.arkydesign.cn",doman:"www.ivac-hub.com"},{id:"cpt.arkydesign.cn",doman:"ivac-hub.com"},{id:"goldfishcompetition.cn",doman:"goldfishcompetition.cn"},{id:"goldfishcompetition.cn",doman:"www.goldfishcompetition.cn"}],(o)=>{
+		// 	return o.doman == doman;
+		// }).id;
+        return Object.entries(Beans.domainSetup()).find(([_, v]) => v.domains.includes(domain))?.[0] ?? null;
 	},
     checkLoginGoPage(treeNode) {
         if (treeNode.isLogin==true && !localStorage.getItem("userId")) {

@@ -317,5 +317,18 @@ export const Beans = {
             {id:1,name:"作品通过初筛，进入复审"},
             {id:2,name:"作品进入第二轮复审"}
         ]
+    },
+
+    domainSetup() {
+        return {
+            "cpt.arkydesign.cn": {
+                domains: ["localhost","www.ivac-hub.com","ivac-hub.com"],
+                ctStyle:"ct0"
+            },
+            "goldfishcompetition.cn": {
+                domains: ["goldfishcompetition.cn","www.goldfishcompetition.cn"],
+                ctStyle:"ct1"
+            }
+        };
     }
 }

@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Masuit.Tools.Core" Version="2026.2.3" />
+        <PackageReference Include="Masuit.Tools.Core" Version="2026.3.3" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -15,7 +15,7 @@
         </PackageReference>
         <PackageReference Include="Npgsql" Version="10.0.3" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
-        <PackageReference Include="Quartz.AspNetCore" Version="4.0.1" />
+        <PackageReference Include="Quartz.AspNetCore" Version="4.3.0" />
         <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="13.0.1" />
         <PackageReference Include="StackExchange.Redis.Extensions.System.Text.Json" Version="13.0.1" />
     </ItemGroup>
