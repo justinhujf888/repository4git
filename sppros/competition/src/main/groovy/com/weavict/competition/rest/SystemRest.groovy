@@ -1,6 +1,9 @@
 package com.weavict.competition.rest
 
+import cn.hutool.core.date.DateUtil
+import com.alibaba.fastjson2.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.weavict.common.OtherUtils
 import com.weavict.competition.module.WorkService
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.POST
@@ -15,6 +18,33 @@ class SystemRest extends BaseRest
 {
     @Autowired
     WorkService workService;
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/systemConfig")
+    String systemConfig(@RequestBody Map<String,Object> query)
+    {
+        try
+        {
+//            ObjectMapper objectMapper = buildObjectMapper();
+            return JSON.toJSONString(
+                    ["status": "OK",
+                     "data"  : ({
+                         return [
+                                 dkey: OtherUtils.givePropsValue("publickey"),
+                                 dateTimeStr: DateUtil.now(),
+                                 dateTime: DateUtil.date()
+                         ];
+                     }).call()
+                    ]);
+        }
+        catch (Exception e)
+        {
+            processExcetion(e);
+            return """{"status":"FA_ER"}""";
+        }
+    }
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

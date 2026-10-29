@@ -6,5 +6,8 @@ import { Config } from '@/api/config.js';
 export default {
     pingShenFlow(ds, onfun) {
         Http.callHttpFunction('/r/system/pingShenFlow',ds,onfun);
+    },
+    async systemConfig(ds,onfun) {
+        return await Http.callHttpFunction('/r/system/systemConfig',ds,onfun);
     }
 };

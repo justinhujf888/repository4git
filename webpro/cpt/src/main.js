@@ -11,6 +11,7 @@ import StyleClass from 'primevue/styleclass';
 import util from "@/api/util";
 import VueKonva from 'vue-konva';
 import { Beans } from '@/api/dbs/beans';
+import systemRest from "@/api/dbs/systemRest";
 import '@/assets/styles.scss';
 import zhCN from 'primelocale/zh-CN.json';
 
@@ -28,6 +29,8 @@ const routerParams = ()=>{
     let domain = parsedUrl.hostname;
     let dn = Object.entries(Beans.domainSetup()).find(([_, v]) => v.domains.includes(domain))?.[1] ?? null;
     await util.loadSkin(dn.ctStyle);
+    // let configData = await systemRest.systemConfig({},null);
+    // console.log(configData.data);
 })();
 
 app.config.globalProperties.$router = router;
