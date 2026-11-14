@@ -323,11 +323,13 @@ export const Beans = {
         return {
             "cpt.arkydesign.cn": {
                 domains: ["localhost","www.ivac-hub.com","ivac-hub.com"],
-                ctStyle:"ct0"
+                ctStyle:"ct0",
+                ossServiceId:"cpt.arkydesign.cn"
             },
             "goldfishcompetition.cn": {
                 domains: ["goldfishcompetition.cn","www.goldfishcompetition.cn"],
-                ctStyle:"ct1"
+                ctStyle:"ct1",
+                ossServiceId:"goldfishcompetition.cn"
             }
         };
     }

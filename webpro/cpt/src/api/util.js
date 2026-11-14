@@ -622,6 +622,12 @@ export default {
         // }
         // return url;
     },
+    getDomainSetupAtt(sort) {
+        const parsedUrl = new URL(window.location);
+        let domain = parsedUrl.hostname;
+        // 注意：sort=0是json的key，sort=1是{...}，因为Beans.domainSetup()的结构是 key:{}
+        return Object.entries(Beans.domainSetup()).find(([_, v]) => v.domains.includes(domain))?.[sort] ?? null;
+    },
 	getAppIdFromUrl(url) {
 		const parsedUrl = new URL(url);
 		let domain = parsedUrl.hostname;

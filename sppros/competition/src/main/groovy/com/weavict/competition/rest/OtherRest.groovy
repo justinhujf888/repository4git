@@ -109,7 +109,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         OSS client = aliyunStsFactory.genOSSClient(query.appId as String);
+                         OSS client = aliyunStsFactory.genOSSClient(query.ossServiceId as String);
                          long expireTime = 30;
                          long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
                          PolicyConditions policyConds = new PolicyConditions();
@@ -118,7 +118,7 @@ class OtherRest extends BaseRest
                          String encodedPolicy = BinaryUtil.toBase64String(postPolicy.getBytes("utf-8"));
                          String postSignature = client.calculatePostSignature(postPolicy);
                          client.shutdown();
-                         return ["accessId":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessKey"),"policy":encodedPolicy,"signature":postSignature,"securityToken":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"securityToken"),"bucketUrl":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"bucketUrl"),"expire":String.valueOf(expireEndTime / 1000),"region":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_region"),"bucketName":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName")];
+                         return ["accessId":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"accessId"),"accessKey":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"accessKey"),"policy":encodedPolicy,"signature":postSignature,"securityToken":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"securityToken"),"bucketUrl":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"bucketUrl"),"expire":String.valueOf(expireEndTime / 1000),"region":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"ali_oss_region"),"bucketName":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"ali_oss_bucketName")];
                      }).call()
                     ]);
         }
@@ -333,7 +333,7 @@ class OtherRest extends BaseRest
             return objectMapper.writeValueAsString(
                     ["status":"OK",
                      "signatureInfo":({
-                         return ["expiration":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"expiration"),"accessId":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessId"),"accessKey":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"accessKey"),"securityToken":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"securityToken"),"requestId":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"requestId"),"endPoint":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_endPoint"),"selfEndPoint":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_selfEndPoint"),"region":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_region"),"bucketName":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"ali_oss_bucketName"),"bucketUrl":aliyunStsFactory.ganAliYunStsValue(query.appId as String,"bucketUrl")];
+                         return ["expiration":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"expiration"),"accessId":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"accessId"),"accessKey":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"accessKey"),"securityToken":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"securityToken"),"requestId":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"requestId"),"endPoint":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"ali_oss_endPoint"),"selfEndPoint":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"ali_oss_selfEndPoint"),"region":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"ali_oss_region"),"bucketName":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"ali_oss_bucketName"),"bucketUrl":aliyunStsFactory.ganAliYunStsValue(query.ossServiceId as String,"bucketUrl")];
                      }).call()
                     ]);
         }
